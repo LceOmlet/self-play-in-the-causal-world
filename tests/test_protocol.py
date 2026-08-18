@@ -21,6 +21,7 @@ from cpt_world import (
     opaque_labels,
     parse_command,
     render_batch,
+    render_batch_message,
     render_initial_messages,
     render_task_prompt,
     seed_by_id,
@@ -166,6 +167,47 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(sum(visible["joint_counts"].values()), 4)
         expected_prefix = f"{self.layout.labels[self.layout.target_order[0]]}="
         self.assertTrue(all(key.startswith(expected_prefix) for key in visible["joint_counts"]))
+
+    def test_batch_message_binds_intervention_and_remaining_budget(self) -> None:
+        world = seed_by_id("QN-EASY").world(Direction.FORWARD)
+        sampler = EpisodeSampler(world, OutcomeTape("visible-message"), Budget(1, 4, (4,)))
+        command = InterventionCommand(HardIntervention(Variable.FIRST, 1), 4)
+        batch = sampler.intervene(command)
+        message = render_batch_message(
+            batch,
+            self.task,
+            remaining_rounds=sampler.remaining_rounds,
+            remaining_samples=sampler.remaining_samples,
+        )
+        rendered, instruction = message.split("\n", 1)
+        payload = json.loads(rendered)
+        self.assertEqual(payload["type"], "batch_result")
+        self.assertEqual(payload["intervention"]["target"], self.layout.first_label)
+        self.assertEqual(payload["intervention"]["value"], 1)
+        self.assertEqual(payload["batch"]["n"], 4)
+        self.assertEqual(payload["remaining_rounds"], 0)
+        self.assertEqual(payload["remaining_samples"], 0)
+        self.assertIn("terminal answer", instruction)
+
+    def test_batch_message_rejects_invalid_remaining_budget(self) -> None:
+        world = seed_by_id("QN-EASY").world(Direction.FORWARD)
+        batch = EpisodeSampler(world, OutcomeTape("invalid-budget")).intervene(
+            InterventionCommand(HardIntervention(Variable.FIRST, 1), 4)
+        )
+        with self.assertRaisesRegex(ValueError, "remaining_rounds"):
+            render_batch_message(
+                batch,
+                self.task,
+                remaining_rounds=-1,
+                remaining_samples=60,
+            )
+        forced_answer = render_batch_message(
+            batch,
+            self.task,
+            remaining_rounds=1,
+            remaining_samples=2,
+        )
+        self.assertIn("No intervention remains legal", forced_answer)
 
     def test_surface_decoder_connects_to_canonical_metrics_without_reinferring_roles(self) -> None:
         layout = factorial_layouts()[1]

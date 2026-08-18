@@ -17,6 +17,41 @@ It does **not** yet define a self-play algorithm, a scalar training reward, or a
 final benchmark sampling mixture. Historical provider-specific pilot scripts
 are intentionally outside the core package.
 
+## Paired two-model seed pilot
+
+The repository includes one provider-specific research runner outside the core
+package. It freezes a marginally balanced six-layout subset and runs all three difficulty
+seeds in both hidden directions: `3 x 6 x 2 = 36` episodes per model. The full
+72-layout factorial remains the owner for later surface studies; this small
+subset is only a paired pilot.
+
+The runner reads `GPT_GE_API_KEY` from the process environment and never writes
+it to a result. Each model uses the same episode IDs and action-keyed outcome
+tape. Invalid model commands are recorded as protocol failures with no hidden
+repair call. Infrastructure failures stop the run; `--resume` adds a new attempt
+without deleting the failed transcript. Results describe the requested model as
+routed by gpt.ge for that run, not an independently verified vendor-native
+deployment.
+
+```bash
+python scripts/run_gpt_ge_seed_pilot.py --model qwen3.5-27b --dry-run
+python scripts/run_gpt_ge_seed_pilot.py \
+  --model qwen3.5-27b \
+  --output artifacts/pilots/qwen3.5-27b-seed-v1.json
+python scripts/run_gpt_ge_seed_pilot.py \
+  --model DeepSeek-V4-Pro \
+  --output artifacts/pilots/deepseek-v4-pro-seed-v1.json
+```
+
+Raw transcripts preserve the exact post-render messages and responses, except
+that an accidental exact credential echo is replaced by an explicit redaction
+marker. Profiles always report terminal-output coverage. The three continuous
+diagnostics are also reported on valid terminal records, and a
+`diagnostics_complete` value is present only when all 36 scheduled episodes
+succeeded. Pilot artifacts are intended to be reviewed and versioned as
+research evidence: they contain full transcripts and sealed evaluator truth,
+but never the API credential, and must never be reused as model-visible inputs.
+
 ## Quick start
 
 ```bash

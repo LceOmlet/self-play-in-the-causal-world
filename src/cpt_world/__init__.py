@@ -24,6 +24,7 @@ from .protocol import (
     opaque_labels,
     parse_command,
     render_batch,
+    render_batch_message,
     render_initial_messages,
     render_task_prompt,
 )
@@ -76,6 +77,7 @@ __all__ = [
     "opaque_labels",
     "parse_command",
     "render_batch",
+    "render_batch_message",
     "render_initial_messages",
     "render_task_prompt",
     "sample_batch",

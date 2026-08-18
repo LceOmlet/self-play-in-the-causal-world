@@ -280,3 +280,45 @@ def render_batch(batch: SampleBatch, layout: VisibleLayout) -> dict[str, Any]:
         )
         joint_counts[key] = count
     return {"n": batch.sample_count, "joint_counts": joint_counts}
+
+
+def render_batch_message(
+    batch: SampleBatch,
+    task: VisibleTask,
+    *,
+    remaining_rounds: int,
+    remaining_samples: int,
+) -> str:
+    """Render one sampled intervention result for the next model turn."""
+
+    if not isinstance(task, VisibleTask):
+        raise TypeError("task must be a VisibleTask")
+    if (
+        isinstance(remaining_rounds, bool)
+        or not isinstance(remaining_rounds, int)
+        or remaining_rounds < 0
+    ):
+        raise ValueError("remaining_rounds must be a nonnegative integer")
+    if (
+        isinstance(remaining_samples, bool)
+        or not isinstance(remaining_samples, int)
+        or remaining_samples < 0
+    ):
+        raise ValueError("remaining_samples must be a nonnegative integer")
+
+    visible_target = task.layout.labels[batch.intervention.target]
+    payload = {
+        "type": "batch_result",
+        "intervention": {
+            "target": visible_target,
+            "value": batch.intervention.value,
+        },
+        "batch": render_batch(batch, task.layout),
+        "remaining_rounds": remaining_rounds,
+        "remaining_samples": remaining_samples,
+    }
+    if remaining_rounds == 0 or remaining_samples < min(task.budget.batch_sizes):
+        instruction = "No intervention remains legal. Return a terminal answer now."
+    else:
+        instruction = "Return the next legal JSON command."
+    return json.dumps(payload, separators=(",", ":")) + "\n" + instruction
