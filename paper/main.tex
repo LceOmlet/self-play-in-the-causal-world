@@ -99,15 +99,33 @@ runtime support every task, so task variation comes from the causal query and th
 interaction surface.
 
 Counterfactual evaluation receives a second benefit from the finite CPT
-representation. A CPT world fixes each interventional marginal. It leaves the
-cross-world coupling open. If
-$P(Y_0{=}1)=0.2$ and $P(Y_1{=}1)=0.8$, then the fraction of units that change from
-$0$ to $1$ lies in $[0.6,0.8]$. A generated SCM selects one point in this interval.
-That choice injects an evaluator preference into the label and into any training
-signal derived from it. \method{} keeps the full compatible set and scores either
-its sharp interval or a submitted compatible value. The task therefore measures
-counterfactual reasoning supported by the stated causal information
-\citep{balke1997bounds,pearl2009causality}.
+representation. A CPT world fixes each interventional marginal and leaves their
+cross-world coupling open.
+
+\begin{center}
+\setlength{\fboxsep}{7pt}
+\fcolorbox{cwblue!55}{cwblue!4}{%
+\begin{minipage}{0.92\linewidth}
+\textbf{Example: interventional marginals leave individual transitions open.}
+Let $Y_x$ denote the outcome of the same unit under $\doop(X=x)$. Suppose
+$P(Y_0{=}1)=0.2$ and $P(Y_1{=}1)=0.8$. In a population of 100 units, 20 would
+have outcome 1 under $X=0$, while 80 would have outcome 1 under $X=1$. The
+marginals leave the overlap between these groups unspecified. Full overlap gives
+60 units that change from 0 to 1; zero overlap gives 80. Hence every compatible
+coupling satisfies
+\[
+  P(Y_1{=}1,Y_0{=}0)\in[0.6,0.8],
+\]
+and both endpoints are attainable. A cross-world assumption can select a smaller
+subset; monotonicity $Y_1\ge Y_0$ contracts the interval to the point $0.6$.
+\end{minipage}}
+\end{center}
+
+A generated SCM selects one compatible coupling. Encoding that selection as the
+label also encodes its cross-world preference. \method{} keeps the full compatible
+set and scores either its sharp interval or a submitted compatible value. The task
+therefore measures counterfactual reasoning supported by the stated causal
+information \citep{balke1997bounds,pearl2009causality}.
 
 The work contributes a unified experimental causal interface, a five-task
 construction pipeline, and an exact scalable verifier. The construction samples a
