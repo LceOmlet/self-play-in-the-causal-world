@@ -1,0 +1,262 @@
+[
+  {
+    "model_id": 0,
+    "story_id": "alarm",
+    "graph_id": "mediation",
+    "spec_id": 0,
+    "spec": {
+      "X": [
+        0.6,
+        0.8
+      ],
+      "V2": {
+        "X": -0.2
+      },
+      "Y": {
+        "X": 0.3,
+        "V2": 0.4
+      }
+    },
+    "seed": 101,
+    "builder": "difficulty",
+    "difficulty": "easy",
+    "equation_type": "bernoulli",
+    "background": "Imagine a self-contained, hypothetical world with only the following conditions, and without any unmentioned factors or causal relationships: Husband has a direct effect on wife and alarm clock. Wife has a direct effect on alarm clock.",
+    "variable_mapping": {
+      "Xname": "husband",
+      "X1": "alarm set by husband",
+      "X0": "alarm not set by husband",
+      "V2name": "wife",
+      "V21": "alarm set by wife",
+      "V20": "alarm not set by wife",
+      "Yname": "alarm clock",
+      "Y1": "ringing alarm",
+      "Y0": "silent alarm"
+    },
+    "structure": "X->V2,X->Y,V2->Y",
+    "params": {
+      "p(X)": 0.7887065011221108,
+      "p(V2 | X)": [
+        0.7416866188819118,
+        0.2351932407152126
+      ],
+      "p(Y | X, V2)": [
+        [
+          0.08430222457648492,
+          0.5394610521458689
+        ],
+        [
+          0.4061509701126924,
+          0.8620283206949243
+        ]
+      ]
+    },
+    "groundtruth": {
+      "ATE(Y | X)": 0.09148280511411633,
+      "ETT(Y | X)": 0.09148280511411633,
+      "NDE(Y | X)": 0.32238166444019534,
+      "NIE(Y | X)": -0.2305349321780112,
+      "P(Y=1 | X=1)": 0.5133702415647927,
+      "P(Y=1 | X=0)": 0.4218874364506764,
+      "P(X=1)": 0.7887065011221105,
+      "P(V2=1)": 0.3422119987465367,
+      "P(Y=1)": 0.49410116751885785
+    }
+  },
+  {
+    "model_id": 60,
+    "story_id": "firing_employee",
+    "graph_id": "diamondcut",
+    "spec_id": 0,
+    "spec": {
+      "V1": [
+        0.1,
+        0.3
+      ],
+      "X": {
+        "V1": 0.1
+      },
+      "V3": {
+        "V1": 0.2
+      },
+      "Y": {
+        "X": 0.3,
+        "V3": 0.3
+      }
+    },
+    "seed": 101,
+    "builder": "difficulty",
+    "difficulty": "easy",
+    "equation_type": "bernoulli",
+    "background": "Imagine a self-contained, hypothetical world with only the following conditions, and without any unmentioned factors or causal relationships: CEO has a direct effect on director and manager. Manager has a direct effect on employee. Director has a direct effect on employee.",
+    "variable_mapping": {
+      "V1name": "CEO",
+      "V11": "CEO's decision to fire the employee",
+      "V10": "CEO's decision to retain the employee",
+      "V3name": "director",
+      "V31": "director signing the termination letter",
+      "V30": "director not signing the termination letter",
+      "Xname": "manager",
+      "X1": "manager signing the termination letter",
+      "X0": "manager not signing the termination letter",
+      "Yname": "employee",
+      "Y1": "employee being fired",
+      "Y0": "employee not being fired"
+    },
+    "structure": "V1->V3,V1->X,X->Y,V3->Y",
+    "params": {
+      "p(V1)": 0.19305246859401015,
+      "p(V3 | V1)": [
+        0.3584523107019546,
+        0.8163043186523988
+      ],
+      "p(X | V1)": [
+        0.8339321469857077,
+        0.9788199408477651
+      ],
+      "p(Y | X, V3)": [
+        [
+          0.19888970759874242,
+          0.509414713607824
+        ],
+        [
+          0.5483675815705786,
+          0.8825615092596417
+        ]
+      ]
+    },
+    "groundtruth": {
+      "ATE(Y | X)": 0.36005413685505067,
+      "ETT(Y | X)": 0.3603379271979854,
+      "NDE(Y | X)": 0.36005413685505067,
+      "NIE(Y | X)": 0.0,
+      "P(Y=1 | X=1)": 0.7017063729033816,
+      "P(Y=1 | X=0)": 0.3144077081879164,
+      "P(V1=1)": 0.19305246859401062,
+      "P(V3=1)": 0.4468417710875124,
+      "P(X=1)": 0.8619030932599178,
+      "P(Y=1)": 0.6479770255471988
+    }
+  },
+  {
+    "model_id": 330,
+    "story_id": "celebrity",
+    "graph_id": "collision",
+    "spec_id": 0,
+    "spec": {
+      "X": 1,
+      "Y": 0,
+      "V3": {
+        "X": 1,
+        "Y": 1
+      }
+    },
+    "seed": 101,
+    "builder": "difficulty",
+    "difficulty": "easy",
+    "equation_type": "bernoulli",
+    "background": "Imagine a self-contained, hypothetical world with only the following conditions, and without any unmentioned factors or causal relationships: Appearance has a direct effect on fame. Talent has a direct effect on fame.",
+    "variable_mapping": {
+      "Yname": "talent",
+      "Y1": "talent",
+      "Y0": "lack of talent",
+      "Xname": "appearance",
+      "X1": "attractive appearance",
+      "X0": "unattractive appearance",
+      "V3name": "fame",
+      "V31": "fame",
+      "V30": "lack of fame"
+    },
+    "structure": "X->V3,Y->V3",
+    "params": {
+      "p(Y)": 0.12392463595447664,
+      "p(X)": 0.581025660339692,
+      "p(V3 | X, Y)": [
+        [
+          0.2859503528413894,
+          0.6893366223885482
+        ],
+        [
+          0.7187878208195015,
+          0.9387876526563427
+        ]
+      ]
+    },
+    "groundtruth": {
+      "ATE(Y | X)": 1.1102230246251565e-16,
+      "ETT(Y | X)": -2.498001805406602e-16,
+      "NDE(Y | X)": 1.1102230246251565e-16,
+      "NIE(Y | X)": 0.0,
+      "P(Y=1 | X=1)": 0.123924635954477,
+      "P(Y=1 | X=0)": 0.12392463595447689,
+      "P(Y=1)": 0.12392463595447697,
+      "P(X=1)": 0.581025660339692,
+      "P(V3=1)": 0.5742250792701845
+    }
+  },
+  {
+    "model_id": 810,
+    "story_id": "simpson_drug",
+    "graph_id": "confounding",
+    "spec_id": 0,
+    "spec": {
+      "V1": [
+        0.4,
+        0.6
+      ],
+      "X": {
+        "V1": -0.5
+      },
+      "Y": {
+        "X": 0.2,
+        "V1": 0.7
+      }
+    },
+    "seed": 101,
+    "builder": "difficulty",
+    "difficulty": "easy",
+    "simpson": true,
+    "equation_type": "bernoulli",
+    "background": "Imagine a self-contained, hypothetical world with only the following conditions, and without any unmentioned factors or causal relationships: Gender has a direct effect on treatment and recovery. Treatment has a direct effect on recovery.",
+    "variable_mapping": {
+      "V1name": "gender",
+      "V11": "male gender",
+      "V10": "non-male gender",
+      "Xname": "treatment",
+      "X1": "receives treatment",
+      "X0": "receives no treatment",
+      "Yname": "recovery",
+      "Y1": "recovery",
+      "Y0": "non-recovery"
+    },
+    "structure": "V1->X,V1->Y,X->Y",
+    "params": {
+      "p(V1)": 0.42785971716028626,
+      "p(X | V1)": [
+        0.8734018490462753,
+        0.1758582918621531
+      ],
+      "p(Y | V1, X)": [
+        [
+          0.038195509455095936,
+          0.2472586285533459
+        ],
+        [
+          0.7594400903229732,
+          0.9719214964896163
+        ]
+      ]
+    },
+    "groundtruth": {
+      "ATE(Y | X)": 0.21052566643650517,
+      "ETT(Y | X)": 0.20951046339341425,
+      "NDE(Y | X)": 0.21052566643650517,
+      "NIE(Y | X)": 0.0,
+      "P(Y=1 | X=1)": 0.34209378821165226,
+      "P(Y=1 | X=0)": 0.6365339686934529,
+      "P(V1=1)": 0.42785971716028637,
+      "P(X=1)": 0.5749510599624965,
+      "P(Y=1)": 0.46782896689559494
+    }
+  }
+]

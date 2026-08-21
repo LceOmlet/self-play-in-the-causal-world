@@ -1,56 +1,119 @@
 # Self-Play in the Causal World
 
-This repository contains a small reference environment for active causal
-reasoning with hidden binary CPT worlds. A model receives opaque variable names,
-may request batched hard interventions, and must finally return both directed
-causal effects as numbers.
+This repository implements a reference environment for active causal reasoning
+in hidden, finite CPT worlds. A model sees an anonymized task, gathers selected
+measurements through passive observation or batched hard interventions, and
+returns one structured terminal answer. The hidden graph, CPT entries, internal
+variable names, task truth, and scorer are never rendered to the model.
 
-The current milestone is deliberately narrow:
-
-- three exact candidate difficulty seeds;
-- one exact observational/hard-do probability-law owner;
-- an action-keyed outcome tape for reproducible policy comparisons;
-- a truth-free renderer and strict two-effect JSON decoder;
-- three frozen continuous terminal diagnostics.
-
+The current milestone provides the environment and task-generation pipeline.
 It does **not** yet define a self-play algorithm, a scalar training reward, or a
-final benchmark sampling mixture. Historical provider-specific pilot scripts
-are intentionally outside the core package.
+final benchmark mixture.
 
-## Paired two-model seed pilot
+## Implemented task family
 
-The repository includes one provider-specific research runner outside the core
-package. It freezes a marginally balanced six-layout subset and runs all three difficulty
-seeds in both hidden directions: `3 x 6 x 2 = 36` episodes per model. The full
-72-layout factorial remains the owner for later surface studies; this small
-subset is only a paired pilot.
+All tasks use the same `WorldSpec` sampler, renderer, interaction runtime, and
+exact truth owners.
 
-The runner reads `GPT_GE_API_KEY` from the process environment and never writes
-it to a result. Each model uses the same episode IDs and action-keyed outcome
-tape. Invalid model commands are recorded as protocol failures with no hidden
-repair call. Infrastructure failures stop the run; `--resume` adds a new attempt
-without deleting the failed transcript. Results describe the requested model as
-routed by gpt.ge for that run, not an independently verified vendor-native
-deployment.
+| Query | Terminal output |
+| --- | --- |
+| ATE | The numerical total effect between the named treatment and outcome. The generic sampler keeps both query endpoints readonly, so evidence must come from permitted indirect experiments or passive observations. |
+| Counterfactual transition bounds | Either the sharp compatible interval `[L, U]` or one compatible value, according to the rendered terminal mode. |
+| Experimental decision | A deployment intervention that minimizes or maximizes the named outcome event. Experiment targets and the deployment decision are separated. |
+| Backdoor adjustment | Every minimal valid adjustment set for the named treatment–outcome query. |
+| Mediator set and order | The mediator variables and the direct path-order relations between them. |
 
-```bash
-python scripts/run_gpt_ge_seed_pilot.py --model qwen3.5-27b --dry-run
-python scripts/run_gpt_ge_seed_pilot.py \
-  --model qwen3.5-27b \
-  --output artifacts/pilots/qwen3.5-27b-seed-v1.json
-python scripts/run_gpt_ge_seed_pilot.py \
-  --model DeepSeek-V4-Pro \
-  --output artifacts/pilots/deepseek-v4-pro-seed-v1.json
+Pinned real-world and motif seeds under `data/seeds/` are validation fixtures.
+They are not a second sampler and do not define the generated task distribution.
+
+## Model-visible interaction
+
+The initial prompt exposes only:
+
+- opaque variable labels and finite state domains;
+- the causal query and required terminal JSON schema;
+- legal hard-do targets and readable variables;
+- the maximum selected-measure width `M`;
+- the episode's permitted batch sizes and interaction limits.
+
+The model may issue:
+
+```json
+{"type":"observe","measure":["RTG"],"batch_size":4}
 ```
 
-Raw transcripts preserve the exact post-render messages and responses, except
-that an accidental exact credential echo is replaced by an explicit redaction
-marker. Profiles always report terminal-output coverage. The three continuous
-diagnostics are also reported on valid terminal records, and a
-`diagnostics_complete` value is present only when all 36 scheduled episodes
-succeeded. Pilot artifacts are intended to be reviewed and versioned as
-research evidence: they contain full transcripts and sealed evaluator truth,
-but never the API credential, and must never be reused as model-visible inputs.
+or:
+
+```json
+{"type":"intervene","target":"ITJ","value":"state_1","measure":["RTG"],"batch_size":8}
+```
+
+Each batch contains IID samples from one fixed hidden world. Feedback reports
+joint counts only for the requested variables. The count map is sparse:
+omitted requested-variable assignments have count exactly zero.
+
+## World and interaction-surface sampling
+
+`WorldGrammar` declares the probability model rather than enumerating a fixed
+grid. In the current implementation:
+
+- node count is uniform over the configured `node_counts` support; the current
+  default is `(2, 3, 4)`;
+- every node's domain size is uniform over `2..max_domain_size`, currently up to
+  five states;
+- a topological order is sampled, followed by a forward-edge subset and exact
+  rational CPT parameters;
+- legal query anchors are derived from the sampled world;
+- task-family answerability is evaluated before restricting the interaction
+  surface;
+- conditional on the eligible non-anchor intervention variables, the legal
+  hard-do width `K` is uniform over `1..|eligible|`, and the subset is uniform
+  conditional on that width;
+- `M` is sampled independently and uniformly over `1..n`.
+
+Thus `K` and `M` change the evidence surface without redefining whether the
+underlying world/query instance has an answer. The 4–15 node target range is
+not enabled yet; the remaining high-width answerability and CPT-table costs
+must be addressed before changing that default.
+
+## Exact probability engine
+
+The probability layer has one semantic owner and two execution paths:
+
+- `worldspec_interventional_distribution` retains the original exact
+  full-joint enumeration as a reference implementation;
+- selected exact marginals use variable elimination with the same `Fraction`
+  CPT factors and hard-do mechanism replacement;
+- interactive batches use ancestral sampling with a versioned, per-node
+  action-keyed outcome tape;
+- the tape remains invariant to surface renaming, requested-measure projection,
+  batch splitting, and action interleaving.
+
+For `n` nodes, maximum domain size `d`, selected width `m`, induced elimination
+width `w`, and batch size `b`, the main costs are:
+
+- old full-joint batch path: `O((n + b) d^n)` time and `O(d^n + d^m)` memory;
+- ancestral batch path: `O(b n d)` time and
+  `O(n + min(b, d^m))` working/output memory;
+- exact selected marginal: `O(n d^(w+1) + d^m)` time.
+
+On the included sparse binary-chain benchmark, the measured median speedups
+were:
+
+| Nodes | Joint states | Exact one-node marginal | 64-sample batch |
+| ---: | ---: | ---: | ---: |
+| 10 | 1,024 | 13.8x | 7.3x |
+| 14 | 16,384 | 230.4x | 58.4x |
+| 15 | 32,768 | 338.4x | 102.5x |
+
+Reproduce the comparison with:
+
+```bash
+python scripts/benchmark_worldspec_acceleration.py --nodes 15 --batch-size 64
+```
+
+The benchmark first requires exact `Fraction` equality with the full-joint
+reference; it does not use a post-hoc numerical tolerance.
 
 ## Quick start
 
@@ -61,53 +124,57 @@ python -m ruff check .
 python -m ruff format --check .
 ```
 
-Render a truth-free task:
+Run one generic episode:
 
 ```python
-from cpt_world import VisibleTask, factorial_layouts, render_initial_messages
+from cpt_world import Budget, OutcomeTape, WorldSpecEpisode
 
-task = VisibleTask(factorial_layouts()[0])
-messages = render_initial_messages(task)
+episode = WorldSpecEpisode(
+    world,
+    seed,
+    OutcomeTape("preregistered-tape-key"),
+    budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+)
+messages = episode.initial_messages()
+step = episode.step(
+    '{"type":"intervene","target":"ITJ","value":"state_1","measure":["RTG"],"batch_size":8}'
+)
 ```
 
-Construct the paired candidate cases:
+Sample all five task types through the main pipeline:
 
 ```python
-from cpt_world import build_candidate_episodes, factorial_layouts
+from cpt_world import WorldGrammar, iter_sampled_seeds
 
-# A pilot may use an explicitly preregistered subset of the full 72-way
-# surface factorial. No hidden subsampling occurs inside the builder.
-episodes = build_candidate_episodes(layouts=factorial_layouts()[:2])
+tasks = iter_sampled_seeds(
+    WorldGrammar(),
+    count=20,
+    query_types=(
+        "ate",
+        "counterfactual_transition_bounds",
+        "backadj_minimal_sets",
+        "best_intervention",
+        "mediator_set",
+    ),
+)
 ```
 
-## Frozen terminal diagnostics
+For prompt-to-feedback examples, run:
 
-For `N` episodes, every terminal answer contains two effects. The public schema
-`cpt-world-terminal-diagnostics-v1` fixes:
+```bash
+python scripts/demo_worldspec_runtime.py
+```
 
-1. `vector_rmse`: RMSE over all `2N` numeric components;
-2. `active_mae`: MAE on the generator-certified active direction;
-3. `inactive_mae`: MAE on the generator-certified zero-effect direction.
+## Ownership boundaries
 
-All three retain the full numeric error. There is no direction threshold,
-clipping, confidence field, or discrete correctness conversion. The active
-coordinate comes from the sealed seed certificate, never from the prediction.
-See [the metric contract](docs/metric-contract.md) for exact formulas.
+- `world_space.py`: world/task sampling, query anchors, and interaction masks;
+- `query_truth.py`: exact hard-do laws and query truth;
+- `world.py`: versioned action-keyed random tapes;
+- `world_runtime.py`: command execution, selected measurements, and feedback;
+- `rendering.py`: truth-free model-visible tasks;
+- `task_scoring.py`: strict terminal parsing and task diagnostics;
+- `seeds.py`: pinned validation-seed manifests.
 
-These values diagnose terminal estimation. They do not by themselves measure
-intervention efficiency, experimental-design quality, or calibration, and they
-are not used as a training reward.
-
-## Design boundaries
-
-The package uses concrete functions and immutable data records rather than a
-plugin system or inheritance framework. Ownership is intentionally simple:
-
-- `world.py` owns the exact causal law and sampling;
-- `protocol.py` owns visible rendering and decoding;
-- `metrics.py` owns the three diagnostics;
-- `seeds.py` owns the exact candidate parameters.
-
-New abstractions should be added only when two real implementations need them.
-The current candidate status and remaining validation boundary are recorded in
-[the seed environment contract](docs/seed-environment.md).
+The package deliberately uses concrete functions and immutable data records.
+New abstractions should be introduced only when two real implementations need
+them.

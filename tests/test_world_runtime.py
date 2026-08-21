@@ -1,0 +1,588 @@
+from __future__ import annotations
+
+import json
+import unittest
+from fractions import Fraction
+
+from cpt_world import (
+    HIDING_MODES,
+    Budget,
+    OutcomeTape,
+    WorldGrammar,
+    WorldIntervention,
+    WorldInterventionCommand,
+    WorldObservationCommand,
+    WorldSpec,
+    WorldSpecEpisode,
+    assemble_seed,
+    compute_query_truth,
+    legal_query_anchors,
+    sample_task_world,
+    sample_world,
+    sample_worldspec_batch,
+    worldspec_interventional_distribution,
+)
+
+
+def _sampled_task(
+    query_type: str,
+    *,
+    preferred_seed: int | None = None,
+    preferred_anchor: int = 0,
+):
+    grammar = WorldGrammar()
+    candidate_seeds = (preferred_seed,) if preferred_seed is not None else tuple(range(200))
+    for seed_number in candidate_seeds:
+        structural = sample_world(grammar, seed_number)
+        anchors_list = legal_query_anchors(structural, query_type)
+        if len(anchors_list) <= preferred_anchor:
+            continue
+        anchors = anchors_list[preferred_anchor]
+        world = sample_task_world(grammar, seed_number, query_type, anchors)
+        task_head = (
+            "target_query"
+            if query_type in {"ate", "counterfactual_transition_bounds"}
+            else "decision"
+        )
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            query_type,
+            task_head,
+            anchors=anchors,
+            seed_id=f"RUNTIME-{seed_number}-{query_type}-a{preferred_anchor}",
+        )
+        return seed, world
+    raise AssertionError(f"no sampled {query_type} task found")
+
+
+def _visible_label(seed, internal_name: str) -> str:
+    return str(seed["visible_schema"]["variable_labels"][internal_name])
+
+
+def _batch_count_map(batch) -> dict[tuple[int, ...], int]:
+    return dict(zip(batch.assignments, batch.counts, strict=True))
+
+
+def _combined_count_map(*batches) -> dict[tuple[int, ...], int]:
+    result: dict[tuple[int, ...], int] = {}
+    for batch in batches:
+        for assignment, count in _batch_count_map(batch).items():
+            result[assignment] = result.get(assignment, 0) + count
+    return result
+
+
+def _deterministic_multivalue_chain() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="T3-to-M2-to-Y3",
+        variables=("T", "M", "Y"),
+        domains=(3, 2, 3),
+        state_names=(("t0", "t1", "t2"), ("m0", "m1"), ("y0", "y1", "y2")),
+        edges=((0, 1), (1, 2)),
+        parents={0: (), 1: (0,), 2: (1,)},
+        cpt={
+            0: ((Fraction(1, 3), Fraction(1, 3), Fraction(1, 3)),),
+            1: ((Fraction(1), Fraction(0)), (Fraction(1), Fraction(0)), (Fraction(0), Fraction(1))),
+            2: ((Fraction(1), Fraction(0), Fraction(0)), (Fraction(0), Fraction(0), Fraction(1))),
+        },
+    )
+
+
+def _ternary_fork_world() -> WorldSpec:
+    copy_rows = (
+        (Fraction(1), Fraction(0), Fraction(0)),
+        (Fraction(0), Fraction(1), Fraction(0)),
+        (Fraction(0), Fraction(0), Fraction(1)),
+    )
+    return WorldSpec(
+        family="test_dag",
+        topology="C3-to-X3-and-Y3",
+        variables=("C", "X", "Y"),
+        domains=(3, 3, 3),
+        state_names=(("0", "1", "2"),) * 3,
+        edges=((0, 1), (0, 2)),
+        parents={0: (), 1: (0,), 2: (0,)},
+        cpt={
+            0: ((Fraction(1, 3), Fraction(1, 3), Fraction(1, 3)),),
+            1: copy_rows,
+            2: copy_rows,
+        },
+    )
+
+
+def _backdoor_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="Z-to-X-Z-to-Y-X-to-Y",
+        variables=("Z", "X", "Y"),
+        domains=(2, 2, 2),
+        state_names=(("z0", "z1"), ("x0", "x1"), ("y0", "y1")),
+        edges=((0, 1), (0, 2), (1, 2)),
+        parents={0: (), 1: (0,), 2: (0, 1)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(3, 4), Fraction(1, 4)), (Fraction(1, 4), Fraction(3, 4))),
+            2: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 5), Fraction(2, 5)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+        },
+    )
+
+
+def _first_command(seed, world, *, batch_size: int = 8) -> str:
+    target_name = next(name for name, allowed in seed["manipulability"].items() if allowed)
+    measure_names = [
+        name for name, readable in seed["readable"].items() if readable and name != target_name
+    ][:2]
+    return json.dumps(
+        {
+            "type": "intervene",
+            "target": _visible_label(seed, target_name),
+            "value": (
+                "state_1" if world.domains[world.variables.index(target_name)] > 1 else "state_0"
+            ),
+            "measure": [_visible_label(seed, name) for name in measure_names],
+            "batch_size": batch_size,
+        },
+        separators=(",", ":"),
+    )
+
+
+class WorldSpecRuntimeTests(unittest.TestCase):
+    def test_interventional_distribution_replaces_the_target_mechanism(self) -> None:
+        _, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        target = 2
+        state = 1
+        distribution = worldspec_interventional_distribution(world, {target: state})
+        self.assertEqual(sum(probability for _, probability in distribution), 1)
+        self.assertEqual(
+            sum(probability for values, probability in distribution if values[target] == state),
+            1,
+        )
+        self.assertEqual(
+            sum(probability for values, probability in distribution if values[target] != state),
+            0,
+        )
+
+    def test_hard_do_is_not_conditioning_on_the_intervened_value(self) -> None:
+        world = _ternary_fork_world()
+        distribution = {
+            assignment: probability
+            for assignment, probability in worldspec_interventional_distribution(world, {1: 2})
+            if probability
+        }
+        self.assertEqual(
+            distribution,
+            {
+                (0, 2, 0): Fraction(1, 3),
+                (1, 2, 1): Fraction(1, 3),
+                (2, 2, 2): Fraction(1, 3),
+            },
+        )
+
+    def test_parser_is_strict_visible_multivalued_and_budget_aware(self) -> None:
+        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-parser"),
+            budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+            measure_max=2,
+        )
+        raw = _first_command(seed, world)
+        command = episode.parse_intervention(raw)
+        self.assertEqual(command.batch_size, 8)
+        self.assertEqual(len(command.measure), 2)
+        self.assertNotIn(command.intervention.target, command.measure)
+
+        visible = json.loads(raw)
+        invalid = dict(visible)
+        invalid["target"] = world.variables[command.intervention.target]
+        with self.assertRaises(ValueError):
+            episode.parse_intervention(json.dumps(invalid))
+        invalid = dict(visible)
+        invalid["measure"] = [visible["target"]]
+        with self.assertRaises(ValueError):
+            episode.parse_intervention(json.dumps(invalid))
+        invalid = dict(visible)
+        invalid["value"] = "state_999"
+        with self.assertRaises(ValueError):
+            episode.parse_intervention(json.dumps(invalid))
+        invalid = dict(visible)
+        invalid["measure"] = visible["measure"] + [visible["measure"][0]]
+        with self.assertRaises(ValueError):
+            episode.parse_intervention(json.dumps(invalid))
+        with self.assertRaises(ValueError):
+            episode.parse_intervention(raw[:-1] + ',"target":"' + visible["target"] + '"}')
+        for noncanonical_state in ("state_01", "state_١"):
+            invalid = dict(visible)
+            invalid["value"] = noncanonical_state
+            with self.assertRaises(ValueError):
+                episode.parse_intervention(json.dumps(invalid))
+        with self.assertRaises(ValueError):
+            episode.parse_intervention(raw.replace('"batch_size":8', '"batch_size":NaN'))
+
+    def test_deterministic_multivalue_hard_do_and_selected_feedback(self) -> None:
+        world = _deterministic_multivalue_chain()
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            "mediator_set",
+            "discovery",
+            anchors={"treatment": 0, "outcome": 2},
+            seed_id="RUNTIME-MULTIVALUE-CHAIN",
+        )
+        labels = seed["visible_schema"]["variable_labels"]
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-deterministic-chain"),
+            budget=Budget(max_rounds=1, max_samples=4, batch_sizes=(4,)),
+            measure_max=2,
+        )
+        command = json.dumps(
+            {
+                "type": "intervene",
+                "target": labels["T"],
+                "value": "state_2",
+                "measure": [labels["M"], labels["Y"]],
+                "batch_size": 4,
+            }
+        )
+        step = episode.step(command)
+        self.assertEqual(step.batch.assignments, ((1, 2),))
+        self.assertEqual(step.batch.counts, (4,))
+        self.assertEqual(step.batch.count((0, 0)), 0)
+        payload = json.loads(str(step.message).splitlines()[0])
+        self.assertEqual(payload["batch"]["measure"], [labels["M"], labels["Y"]])
+        self.assertEqual(len(payload["batch"]["joint_counts"]), 1)
+        self.assertEqual(next(iter(payload["batch"]["joint_counts"].values())), 4)
+        self.assertEqual(payload["remaining_rounds"], 0)
+        self.assertEqual(payload["remaining_samples"], 0)
+        self.assertIn("Return a terminal answer now", str(step.message))
+
+        truth = compute_query_truth(world, seed)
+        answer = json.dumps(
+            {
+                "type": "answer",
+                "mediators": [labels[name] for name in truth["mediators"]],
+                "order": [[labels[left], labels[right]] for left, right in truth["order"]],
+            }
+        )
+        terminal = episode.step(answer)
+        self.assertEqual(terminal.score["mediator_f1"], 1)
+        self.assertEqual(terminal.score["order_f1"], 1)
+
+    def test_action_keyed_stream_is_split_interleave_and_measure_invariant(self) -> None:
+        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        target_name = next(name for name, allowed in seed["manipulability"].items() if allowed)
+        target = world.variables.index(target_name)
+        other_nodes = tuple(node for node in range(len(world.variables)) if node != target)
+        full_command = WorldInterventionCommand(
+            WorldIntervention(target, 1),
+            other_nodes,
+            16,
+        )
+        half_command = WorldInterventionCommand(
+            WorldIntervention(target, 1),
+            other_nodes,
+            8,
+        )
+        tape = OutcomeTape("runtime-pairing")
+        full = sample_worldspec_batch(world, tape, full_command, start_index=0)
+        first = sample_worldspec_batch(world, tape, half_command, start_index=0)
+        second = sample_worldspec_batch(world, tape, half_command, start_index=8)
+        self.assertEqual(_batch_count_map(full), _combined_count_map(first, second))
+
+        selected_command = WorldInterventionCommand(
+            WorldIntervention(target, 1),
+            (other_nodes[0],),
+            16,
+        )
+        selected = sample_worldspec_batch(world, tape, selected_command, start_index=0)
+        marginalized: dict[tuple[int, ...], int] = {}
+        for selected_state in range(world.domains[other_nodes[0]]):
+            count = sum(
+                count
+                for assignment, count in _batch_count_map(full).items()
+                if assignment[0] == selected_state
+            )
+            if count:
+                marginalized[(selected_state,)] = count
+        self.assertEqual(_batch_count_map(selected), marginalized)
+
+        episode_a = WorldSpecEpisode(world, seed, OutcomeTape("runtime-order"))
+        episode_b = WorldSpecEpisode(world, seed, OutcomeTape("runtime-order"))
+        primary = half_command
+        alternate = WorldInterventionCommand(
+            WorldIntervention(target, 0),
+            other_nodes,
+            8,
+        )
+        a_primary = episode_a.intervene(primary)
+        episode_a.intervene(alternate)
+        episode_b.intervene(alternate)
+        b_primary = episode_b.intervene(primary)
+        self.assertEqual(_batch_count_map(a_primary), _batch_count_map(b_primary))
+
+    def test_passive_observation_uses_natural_law_and_its_own_split_stable_stream(self) -> None:
+        world = _ternary_fork_world()
+        tape = OutcomeTape("runtime-natural-observation")
+        full_command = WorldObservationCommand(measure=(0, 1, 2), batch_size=16)
+        half_command = WorldObservationCommand(measure=(0, 1, 2), batch_size=8)
+        full = sample_worldspec_batch(world, tape, full_command, start_index=0)
+        first = sample_worldspec_batch(world, tape, half_command, start_index=0)
+        second = sample_worldspec_batch(world, tape, half_command, start_index=8)
+
+        self.assertIsNone(full.intervention)
+        self.assertEqual(_batch_count_map(full), _combined_count_map(first, second))
+        for assignment, count in zip(full.assignments, full.counts, strict=True):
+            if count:
+                self.assertEqual(assignment[0], assignment[1])
+                self.assertEqual(assignment[0], assignment[2])
+
+    def test_seed_owned_observation_bandwidth_and_observe_protocol(self) -> None:
+        world = _deterministic_multivalue_chain()
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            "mediator_set",
+            "discovery",
+            anchors={"treatment": 0, "outcome": 2},
+            seed_id="RUNTIME-OBSERVE",
+            observation_bandwidth=2,
+        )
+        labels = seed["visible_schema"]["variable_labels"]
+        budget = Budget(max_rounds=2, max_samples=8, batch_sizes=(4,))
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-observe-episode"),
+            budget=budget,
+        )
+        prompt = episode.initial_messages()[1]["content"]
+        self.assertIn('{"type":"observe"', prompt)
+        self.assertIn("natural distribution", prompt)
+        self.assertIn("At most 2 variables", prompt)
+        with self.assertRaisesRegex(ValueError, "cannot override"):
+            WorldSpecEpisode(
+                world,
+                seed,
+                OutcomeTape("runtime-observe-override"),
+                budget=budget,
+                measure_max=1,
+            )
+
+        command = {
+            "type": "observe",
+            "measure": [labels["T"], labels["Y"]],
+            "batch_size": 4,
+        }
+        parsed = episode.parse_observation(json.dumps(command))
+        self.assertEqual(parsed.measure, (0, 2))
+        invalid = {**command, "target": labels["M"]}
+        with self.assertRaises(ValueError):
+            episode.parse_observation(json.dumps(invalid))
+        invalid = {**command, "measure": [labels["T"], labels["M"], labels["Y"]]}
+        with self.assertRaises(ValueError):
+            episode.parse_observation(json.dumps(invalid))
+
+        step = episode.step(json.dumps(command))
+        self.assertEqual(step.kind, "batch")
+        self.assertIsNone(step.batch.intervention)
+        payload = json.loads(str(step.message).splitlines()[0])
+        self.assertEqual(payload["experiment"], {"type": "observe"})
+        self.assertNotIn("intervention", payload)
+        self.assertEqual(payload["batch"]["measure"], [labels["T"], labels["Y"]])
+        self.assertEqual(sum(payload["batch"]["joint_counts"].values()), 4)
+        self.assertEqual(episode.rounds_used, 1)
+        self.assertEqual(episode.samples_used, 4)
+
+    def test_feedback_contains_only_selected_visible_joint_counts(self) -> None:
+        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-feedback"),
+            budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+            measure_max=1,
+        )
+        raw = json.loads(_first_command(seed, world))
+        raw["measure"] = raw["measure"][:1]
+        step = episode.step(json.dumps(raw))
+        self.assertEqual(step.kind, "batch")
+        self.assertIsNotNone(step.message)
+        payload = json.loads(str(step.message).splitlines()[0])
+        self.assertEqual(payload["batch"]["measure"], raw["measure"])
+        self.assertEqual(payload["batch"]["n"], 8)
+        self.assertEqual(sum(payload["batch"]["joint_counts"].values()), 8)
+        unselected = {
+            label
+            for label in seed["visible_schema"]["variable_labels"].values()
+            if label not in raw["measure"]
+        }
+        for key in payload["batch"]["joint_counts"]:
+            self.assertTrue(all(label not in key for label in unselected))
+        for internal_name in world.variables:
+            self.assertNotIn(internal_name, step.message)
+        self.assertEqual(payload["remaining_rounds"], 1)
+        self.assertEqual(payload["remaining_samples"], 8)
+
+    def test_numeric_and_decision_tasks_run_from_prompt_to_terminal_score(self) -> None:
+        for query_type in ("ate", "counterfactual_transition_bounds", "best_intervention"):
+            seed, world = _sampled_task(query_type)
+            episode = WorldSpecEpisode(
+                world,
+                seed,
+                OutcomeTape(f"runtime-mode-{query_type}"),
+                budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+                measure_max=2,
+            )
+            initial = episode.initial_messages()
+            self.assertIn("CPT-WORLD HIDDEN-MECHANISM TASK", initial[1]["content"])
+            if query_type == "best_intervention":
+                decision_label = seed["query"]["decision_target"]
+                measure_label = next(
+                    label
+                    for internal, label in seed["visible_schema"]["variable_labels"].items()
+                    if seed["readable"][internal] and label != decision_label
+                )
+                with self.assertRaisesRegex(ValueError, "not manipulable"):
+                    episode.parse_intervention(
+                        json.dumps(
+                            {
+                                "type": "intervene",
+                                "target": decision_label,
+                                "value": "state_0",
+                                "measure": [measure_label],
+                                "batch_size": 4,
+                            }
+                        )
+                    )
+            batch_step = episode.step(_first_command(seed, world))
+            self.assertEqual(batch_step.kind, "batch")
+            self.assertEqual(episode.rounds_used, 1)
+            truth = compute_query_truth(world, seed)
+            if query_type == "best_intervention":
+                raw_answer = json.dumps(
+                    {
+                        "type": "answer",
+                        "intervention": {
+                            "target": _visible_label(seed, str(truth["target"])),
+                            "value": f"state_{truth['value']}",
+                        },
+                    }
+                )
+            elif query_type == "ate":
+                raw_answer = json.dumps({"type": "answer", "effect": float(truth["effect"])})
+            else:
+                raw_answer = json.dumps(
+                    {
+                        "type": "answer",
+                        "lower": float(truth["lower"]),
+                        "upper": float(truth["upper"]),
+                    }
+                )
+            terminal_step = episode.step(raw_answer)
+            self.assertEqual(terminal_step.kind, "terminal")
+            self.assertTrue(episode.completed)
+            if query_type == "best_intervention":
+                self.assertEqual(terminal_step.score["regret"], 0)
+            elif query_type == "ate":
+                self.assertLess(terminal_step.score["abs_error"], Fraction(1, 10**12))
+            else:
+                self.assertLess(
+                    terminal_step.score["mean_absolute_endpoint_error"],
+                    Fraction(1, 10**12),
+                )
+            with self.assertRaises(ValueError):
+                episode.step(raw_answer)
+
+    def test_counterfactual_compatible_value_runs_to_terminal_score(self) -> None:
+        seed, world = _sampled_task("counterfactual_transition_bounds")
+        query = {**seed["query"], "answer_mode": "compatible_value"}
+        seed = {
+            **seed,
+            "query": query,
+            "visible_schema": {**seed["visible_schema"], "query": query},
+        }
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-counterfactual-compatible-value"),
+            budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+            measure_max=2,
+        )
+        self.assertIn(
+            "one value for q that is compatible", episode.initial_messages()[1]["content"]
+        )
+        truth = compute_query_truth(world, seed)
+        midpoint = (truth["lower"] + truth["upper"]) / 2
+        terminal = episode.step(json.dumps({"type": "answer", "value": float(midpoint)}))
+        self.assertEqual(terminal.kind, "terminal")
+        self.assertTrue(terminal.score["compatible"])
+        self.assertEqual(terminal.score["distance_to_interval"], 0)
+
+    def test_backdoor_discovery_runs_from_intervention_to_exact_terminal_score(self) -> None:
+        world = _backdoor_world()
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            "backadj_minimal_sets",
+            "discovery",
+            anchors={"treatment": 1, "outcome": 2},
+            seed_id="RUNTIME-BACKDOOR",
+        )
+        labels = seed["visible_schema"]["variable_labels"]
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-backdoor"),
+            budget=Budget(max_rounds=1, max_samples=4, batch_sizes=(4,)),
+            measure_max=2,
+        )
+        step = episode.step(
+            json.dumps(
+                {
+                    "type": "intervene",
+                    "target": labels["X"],
+                    "value": "state_1",
+                    "measure": [labels["Z"], labels["Y"]],
+                    "batch_size": 4,
+                }
+            )
+        )
+        self.assertEqual(step.kind, "batch")
+        truth = compute_query_truth(world, seed)
+        terminal = episode.step(
+            json.dumps(
+                {
+                    "type": "answer",
+                    "adjustment_sets": [
+                        [labels[name] for name in adjustment_set]
+                        for adjustment_set in truth["adjustment_sets"]
+                    ],
+                }
+            )
+        )
+        self.assertEqual(terminal.score["f1"], 1)
+        self.assertTrue(terminal.score["exact_match"])
+
+    def test_episode_rejects_an_action_surface_with_no_target_measure_pair(self) -> None:
+        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        only_name = world.variables[0]
+        bad_seed = {
+            **seed,
+            "manipulability": {name: name == only_name for name in world.variables},
+            "readable": {name: name == only_name for name in world.variables},
+        }
+        with self.assertRaisesRegex(ValueError, "no legal target/measure pair"):
+            WorldSpecEpisode(world, bad_seed, OutcomeTape("runtime-impossible-actions"))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,475 @@
+{
+  "schema": "cpt-world-seed-manifest-v1",
+  "seeds": [
+    {
+      "seed_id": "SEED-CL-CONF-ATE",
+      "world_source": {
+        "type": "cladder_meta_model",
+        "file": "data/worlds/cladder/meta-models-subset.json",
+        "model_id": 810,
+        "graph_id": "confounding",
+        "story_id": "simpson_drug",
+        "structure": "V1->X,V1->Y,X->Y",
+        "params": {
+          "p(V1)": 0.42785971716028626,
+          "p(X | V1)": [
+            0.8734018490462753,
+            0.1758582918621531
+          ],
+          "p(Y | V1, X)": [
+            [
+              0.038195509455095936,
+              0.2472586285533459
+            ],
+            [
+              0.7594400903229732,
+              0.9719214964896163
+            ]
+          ]
+        },
+        "groundtruth": {
+          "ATE(Y | X)": 0.21052566643650517,
+          "ETT(Y | X)": 0.20951046339341425,
+          "NDE(Y | X)": 0.21052566643650517,
+          "NIE(Y | X)": 0.0,
+          "P(Y=1 | X=1)": 0.34209378821165226,
+          "P(Y=1 | X=0)": 0.6365339686934529,
+          "P(V1=1)": 0.42785971716028637,
+          "P(X=1)": 0.5749510599624965,
+          "P(Y=1)": 0.46782896689559494
+        }
+      },
+      "manipulability": {
+        "V1": true,
+        "X": false,
+        "Y": false
+      },
+      "readable": {
+        "V1": true,
+        "X": true,
+        "Y": true
+      },
+      "visible_schema": {
+        "variable_labels": {
+          "V1": "GMO",
+          "X": "TWU",
+          "Y": "SRU"
+        },
+        "variables": [
+          {
+            "label": "GMO",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "TWU",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "SRU",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          }
+        ]
+      },
+      "query": {
+        "type": "ate",
+        "treatment": "X",
+        "outcome": "Y",
+        "outcome_state": 1
+      },
+      "task_head": {
+        "head": "target_query",
+        "answer": "continuous_effect"
+      }
+    },
+    {
+      "seed_id": "SEED-CL-DIAMONDCUT-BACKADJ",
+      "world_source": {
+        "type": "cladder_meta_model",
+        "file": "data/worlds/cladder/meta-models-subset.json",
+        "model_id": 60,
+        "graph_id": "diamondcut",
+        "story_id": "firing_employee",
+        "structure": "V1->V3,V1->X,X->Y,V3->Y",
+        "params": {
+          "p(V1)": 0.19305246859401015,
+          "p(V3 | V1)": [
+            0.3584523107019546,
+            0.8163043186523988
+          ],
+          "p(X | V1)": [
+            0.8339321469857077,
+            0.9788199408477651
+          ],
+          "p(Y | X, V3)": [
+            [
+              0.19888970759874242,
+              0.509414713607824
+            ],
+            [
+              0.5483675815705786,
+              0.8825615092596417
+            ]
+          ]
+        },
+        "groundtruth": {
+          "ATE(Y | X)": 0.36005413685505067,
+          "ETT(Y | X)": 0.3603379271979854,
+          "NDE(Y | X)": 0.36005413685505067,
+          "NIE(Y | X)": 0.0,
+          "P(Y=1 | X=1)": 0.7017063729033816,
+          "P(Y=1 | X=0)": 0.3144077081879164,
+          "P(V1=1)": 0.19305246859401062,
+          "P(V3=1)": 0.4468417710875124,
+          "P(X=1)": 0.8619030932599178,
+          "P(Y=1)": 0.6479770255471988
+        }
+      },
+      "manipulability": {
+        "V1": false,
+        "V3": false,
+        "X": true,
+        "Y": false
+      },
+      "readable": {
+        "V1": true,
+        "V3": true,
+        "X": true,
+        "Y": true
+      },
+      "visible_schema": {
+        "variable_labels": {
+          "V1": "TIV",
+          "V3": "WIG",
+          "X": "VGR",
+          "Y": "RHT"
+        },
+        "variables": [
+          {
+            "label": "TIV",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "WIG",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "VGR",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "RHT",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          }
+        ]
+      },
+      "query": {
+        "type": "backadj_minimal_sets",
+        "treatment": "X",
+        "outcome": "Y"
+      },
+      "task_head": {
+        "head": "discovery",
+        "answer": "adjustment_sets"
+      }
+    },
+    {
+      "seed_id": "SEED-BN-CANCER-BESTINT",
+      "world_source": {
+        "type": "bnlearn_bif",
+        "file": "data/worlds/bnlearn/cancer.bif",
+        "bif": "network unknown {\n}\nvariable Pollution {\n  type discrete [ 2 ] { low, high };\n}\nvariable Smoker {\n  type discrete [ 2 ] { True, False };\n}\nvariable Cancer {\n  type discrete [ 2 ] { True, False };\n}\nvariable Xray {\n  type discrete [ 2 ] { positive, negative };\n}\nvariable Dyspnoea {\n  type discrete [ 2 ] { True, False };\n}\nprobability ( Pollution ) {\n  table 0.9, 0.1;\n}\nprobability ( Smoker ) {\n  table 0.3, 0.7;\n}\nprobability ( Cancer | Pollution, Smoker ) {\n  (low, True) 0.03, 0.97;\n  (high, True) 0.05, 0.95;\n  (low, False) 0.001, 0.999;\n  (high, False) 0.02, 0.98;\n}\nprobability ( Xray | Cancer ) {\n  (True) 0.9, 0.1;\n  (False) 0.2, 0.8;\n}\nprobability ( Dyspnoea | Cancer ) {\n  (True) 0.65, 0.35;\n  (False) 0.3, 0.7;\n}\n"
+      },
+      "manipulability": {
+        "Pollution": true,
+        "Smoker": true,
+        "Cancer": false,
+        "Xray": false,
+        "Dyspnoea": false
+      },
+      "readable": {
+        "Pollution": true,
+        "Smoker": true,
+        "Cancer": true,
+        "Xray": true,
+        "Dyspnoea": true
+      },
+      "visible_schema": {
+        "variable_labels": {
+          "Pollution": "MEH",
+          "Smoker": "MNW",
+          "Cancer": "HGR",
+          "Xray": "TPV",
+          "Dyspnoea": "NNG"
+        },
+        "variables": [
+          {
+            "label": "MEH",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "MNW",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "HGR",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "TPV",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "NNG",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          }
+        ]
+      },
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "Cancer",
+        "outcome": "Dyspnoea",
+        "target_state": "True",
+        "objective": "minimize"
+      },
+      "task_head": {
+        "head": "decision",
+        "answer": "single_intervention"
+      }
+    },
+    {
+      "seed_id": "SEED-BN-ASIA-MEDIATOR",
+      "world_source": {
+        "type": "bnlearn_bif",
+        "file": "data/worlds/bnlearn/asia.bif",
+        "bif": "network unknown {\n}\nvariable asia {\n  type discrete [ 2 ] { yes, no };\n}\nvariable tub {\n  type discrete [ 2 ] { yes, no };\n}\nvariable smoke {\n  type discrete [ 2 ] { yes, no };\n}\nvariable lung {\n  type discrete [ 2 ] { yes, no };\n}\nvariable bronc {\n  type discrete [ 2 ] { yes, no };\n}\nvariable either {\n  type discrete [ 2 ] { yes, no };\n}\nvariable xray {\n  type discrete [ 2 ] { yes, no };\n}\nvariable dysp {\n  type discrete [ 2 ] { yes, no };\n}\nprobability ( asia ) {\n  table 0.01, 0.99;\n}\nprobability ( tub | asia ) {\n  (yes) 0.05, 0.95;\n  (no) 0.01, 0.99;\n}\nprobability ( smoke ) {\n  table 0.5, 0.5;\n}\nprobability ( lung | smoke ) {\n  (yes) 0.1, 0.9;\n  (no) 0.01, 0.99;\n}\nprobability ( bronc | smoke ) {\n  (yes) 0.6, 0.4;\n  (no) 0.3, 0.7;\n}\nprobability ( either | lung, tub ) {\n  (yes, yes) 1.0, 0.0;\n  (no, yes) 1.0, 0.0;\n  (yes, no) 1.0, 0.0;\n  (no, no) 0.0, 1.0;\n}\nprobability ( xray | either ) {\n  (yes) 0.98, 0.02;\n  (no) 0.05, 0.95;\n}\nprobability ( dysp | bronc, either ) {\n  (yes, yes) 0.9, 0.1;\n  (no, yes) 0.7, 0.3;\n  (yes, no) 0.8, 0.2;\n  (no, no) 0.1, 0.9;\n}\n"
+      },
+      "manipulability": {
+        "asia": true,
+        "tub": true,
+        "smoke": true,
+        "lung": true,
+        "bronc": true,
+        "either": true,
+        "xray": false,
+        "dysp": false
+      },
+      "readable": {
+        "asia": true,
+        "tub": true,
+        "smoke": true,
+        "lung": true,
+        "bronc": true,
+        "either": true,
+        "xray": true,
+        "dysp": true
+      },
+      "visible_schema": {
+        "variable_labels": {
+          "asia": "JQP",
+          "tub": "HHH",
+          "smoke": "QJK",
+          "lung": "QDT",
+          "bronc": "DKI",
+          "either": "EIW",
+          "xray": "QDN",
+          "dysp": "NLE"
+        },
+        "variables": [
+          {
+            "label": "JQP",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "HHH",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "QJK",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "QDT",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "DKI",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "EIW",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "QDN",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "NLE",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          }
+        ]
+      },
+      "query": {
+        "type": "mediator_set",
+        "treatment": "smoke",
+        "outcome": "dysp",
+        "target_state": "yes"
+      },
+      "task_head": {
+        "head": "discovery",
+        "answer": "mediators_with_order"
+      }
+    },
+    {
+      "seed_id": "SEED-BN-SURVEY-BESTINT",
+      "world_source": {
+        "type": "bnlearn_bif",
+        "file": "data/worlds/bnlearn/survey.bif",
+        "bif": "network unknown {\n}\nvariable A {\n  type discrete [ 3 ] { young, adult, old };\n}\nvariable S {\n  type discrete [ 2 ] { M, F };\n}\nvariable E {\n  type discrete [ 2 ] { high, uni };\n}\nvariable O {\n  type discrete [ 2 ] { emp, self };\n}\nvariable R {\n  type discrete [ 2 ] { small, big };\n}\nvariable T {\n  type discrete [ 3 ] { car, train, other };\n}\nprobability ( A ) {\n  table 0.3, 0.5, 0.2;\n}\nprobability ( S ) {\n  table 0.6, 0.4;\n}\nprobability ( E | A, S ) {\n  (young, M) 0.75, 0.25;\n  (adult, M) 0.72, 0.28;\n  (old, M) 0.88, 0.12;\n  (young, F) 0.64, 0.36;\n  (adult, F) 0.7, 0.3;\n  (old, F) 0.9, 0.1;\n}\nprobability ( O | E ) {\n  (high) 0.96, 0.04;\n  (uni) 0.92, 0.08;\n}\nprobability ( R | E ) {\n  (high) 0.25, 0.75;\n  (uni) 0.2, 0.8;\n}\nprobability ( T | O, R ) {\n  (emp, small) 0.48, 0.42, 0.10;\n  (self, small) 0.56, 0.36, 0.08;\n  (emp, big) 0.58, 0.24, 0.18;\n  (self, big) 0.70, 0.21, 0.09;\n}\n"
+      },
+      "manipulability": {
+        "A": false,
+        "S": false,
+        "E": true,
+        "O": true,
+        "R": false,
+        "T": false
+      },
+      "readable": {
+        "A": true,
+        "S": true,
+        "E": true,
+        "O": true,
+        "R": true,
+        "T": true
+      },
+      "visible_schema": {
+        "variable_labels": {
+          "A": "HGN",
+          "S": "SVQ",
+          "E": "PTT",
+          "O": "GGR",
+          "R": "NJK",
+          "T": "GDM"
+        },
+        "variables": [
+          {
+            "label": "HGN",
+            "states": [
+              "state_0",
+              "state_1",
+              "state_2"
+            ]
+          },
+          {
+            "label": "SVQ",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "PTT",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "GGR",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "NJK",
+            "states": [
+              "state_0",
+              "state_1"
+            ]
+          },
+          {
+            "label": "GDM",
+            "states": [
+              "state_0",
+              "state_1",
+              "state_2"
+            ]
+          }
+        ]
+      },
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "R",
+        "outcome": "T",
+        "target_state": "car",
+        "objective": "maximize"
+      },
+      "task_head": {
+        "head": "decision",
+        "answer": "single_intervention"
+      }
+    }
+  ]
+}
