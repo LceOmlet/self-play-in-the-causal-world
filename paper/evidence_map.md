@@ -34,6 +34,9 @@ returns a structured causal answer checked by an exact oracle.
 | Multi-target experimental design optimizes batches of intervention target-value pairs. | Tigas et al., ICML 2023, PMLR. | Differentiable batch design over multiple intervention target-state pairs. |
 | Indirect experiments can target a causal query when treatment cannot be manipulated. | Dern et al., NeurIPS 2024; Ailer et al., ICML 2023. | Both papers explicitly study indirect or instrumental experiments for causal-effect learning. |
 | Scientific-discovery agents benefit from executable experiment environments. | Jansen et al., NeurIPS 2024 Datasets and Benchmarks. | DiscoveryWorld requires hypothesis formation, experiment design, result analysis, and action. |
+| CauGym is a static causal-reasoning corpus built from synthetic SCMs. | Chen et al., Findings of ACL 2026, official ACL Anthology paper. | Seven causal effect tasks provide questions, symbolic solutions, training variants, and five stress-test sets. |
+| CausalGame evaluates interactive experimental protocols in games with hidden causal complications. | Chen et al., ICML 2026 Oral; official ICML listing, project page, and full arXiv paper. | Agents design protocols, collect data, and submit solutions and explanation reports across 14 scenarios. |
+| CausaLab evaluates prediction and recovered mechanisms under a hidden sampled SCM. | Yang et al., arXiv:2605.26029 full text. | Agents receive prior records, intervene on a manipulator system, predict a held-out reactor, and emit graph/equation hypotheses. |
 | Causal effects and counterfactuals can be partially identified by sharp bounds. | Balke and Pearl, JASA 1997; Pearl, 2009. | Compatible causal models induce tight nonparametric bounds; SCM semantics define cross-world quantities. |
 
 ## Prohibited claims
@@ -45,4 +48,3 @@ returns a structured causal answer checked by an exact oracle.
 - No claim that the repository implements a self-play optimization algorithm.
 - No claim that compatible intervals identify a unique individual-level
   counterfactual when their endpoints differ.
-

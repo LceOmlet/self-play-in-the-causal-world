@@ -131,14 +131,17 @@ and end-to-end tests exercise every task from prompt through terminal score.
 
 \section{Related work and benchmark position}
 
-\paragraph{Causal reasoning in language models.}
+\paragraph{Causal reasoning datasets.}
 CLadder grounds natural-language questions in symbolic causal graphs, queries,
 and oracle answers across association, intervention, and counterfactual levels
-\citep{jin2023cladder}. Its generator provides the model specification and the
-quantities needed for an identifiable answer. This design measures formal
-inference through language and supplies a strong static anchor for our task
-semantics. \method{} moves the evidence acquisition step into the episode. The
-model receives an action interface and creates the data on which its answer rests.
+\citep{jin2023cladder}. Its generator supplies the causal specification and the
+quantities needed for an identifiable answer. CauGym generates questions and
+symbolic solutions from sampled SCMs for seven effect estimands, then repackages
+them as training and stress-test sets for post-training
+\citep{chen2026caugym}. These datasets evaluate whether a model can apply formal
+causal rules to supplied evidence. \method{} makes evidence construction part of
+the evaluated behavior: the model creates the numerical record through legal
+experiments and selected measurements.
 
 \paragraph{Causal experiment design.}
 ABCI integrates posterior inference over causal models and target queries with
@@ -152,34 +155,59 @@ unavailable for manipulation \citep{ailer2023sequential,dern2024targeted}.
 protocol with opaque symbols, discrete tool calls, selected measurements, and
 task-specific exact scoring.
 
-\paragraph{Scientific interaction environments.}
-DiscoveryWorld evaluates complete cycles of hypothesis formation, experiment
-design, analysis, and action in simulated scientific domains
-\citep{jansen2024discoveryworld}. Its rich environments test broad scientific
-agency. \method{} concentrates the environment semantics on causal variables,
-interventions, and probabilities. This concentration supports exact enumeration
-of task truth, controlled sampling of the evidence surface, and deterministic
-replay of stochastic experiments.
+\paragraph{Interactive causal and scientific agents.}
+DiscoveryWorld evaluates hypothesis formation, experiment design, analysis, and
+action across multimodal scientific tasks \citep{jansen2024discoveryworld}.
+CausalGame asks agents to design protocols, collect data, and solve interactive
+games containing selection bias, measurement error, and hidden confounding
+\citep{chen2026causalgame}. CausaLab samples a hidden SCM, lets an agent
+intervene on a manipulator system, and scores both held-out prediction and
+recovered causal mechanisms \citep{yang2026causalab}. These environments expose
+scientific agency through rich task-specific dynamics. \method{} places the same
+agency inside a compact probability laboratory: every action has a precise
+hard-do meaning, every readout is a selected joint distribution, and every
+terminal object is checked by the same exact causal layer.
 
 \begin{table}[H]
 \centering
-\small
-\setlength{\tabcolsep}{4.5pt}
-\begin{tabular}{>{\raggedright\arraybackslash}p{2.7cm}cccc}
+\scriptsize
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{
+  >{\raggedright\arraybackslash}p{1.85cm}
+  >{\raggedright\arraybackslash}p{2.15cm}
+  >{\centering\arraybackslash}p{0.85cm}
+  >{\raggedright\arraybackslash}p{1.75cm}
+  >{\raggedright\arraybackslash}p{2.45cm}
+  >{\raggedright\arraybackslash}p{1.55cm}
+  >{\raggedright\arraybackslash}p{2.15cm}}
 \toprule
-Setting & Hidden mechanism & Agent experiments & Selected readout & Exact task oracle \\
+Benchmark & World evidence & Probe & Returned evidence & Scored object & CF rule & Verifier \\
 \midrule
-Static causal QA &  &  &  & \checkmark \\
-Causal experiment design & \checkmark & \checkmark & method-specific & \checkmark \\
-Broad science environments & \checkmark & \checkmark & \checkmark & task-specific \\
-\method{} & \checkmark & \checkmark & \checkmark & \checkmark \\
+CLadder & supplied model and sufficient data & -- & prompt-fixed quantities & three-rung causal answer & SCM point & causal-inference oracle \\
+CauGym & supplied graph and probabilities & -- & prompt-fixed quantities & seven effect estimands & SCM point & answer and format rewards \\
+DiscoveryWorld & hidden multimodal world & \checkmark & world-mediated observations & task completion and explanatory knowledge & -- & procedural task metrics \\
+CausalGame & hidden game process & \checkmark & protocol-specific measurements & decision and causal report & -- & survival and rubric scores \\
+CausaLab (preprint) & hidden sampled SCM & \checkmark & laboratory record schema & prediction, graph, and equations & SCM truth & task and mechanism scores \\
+\textbf{\method{}} & \textbf{hidden finite CPT world} & \checkmark & \textbf{model-selected joint counts} & \textbf{five typed causal objects} & \textbf{compatible set} & \textbf{exact oracle and keyed replay} \\
 \bottomrule
 \end{tabular}
-\caption{\textbf{Benchmark position.} \method{} combines a hidden mechanism,
-model-chosen experiments, bandwidth-limited measurements, and an exact causal
-oracle in one compact environment.}
+\caption{\textbf{Comparison with representative causal datasets and agent
+benchmarks.} Probe means that the model creates evidence during the episode.
+The CF column records the semantics of counterfactual labels. \method{} combines
+a hidden mechanism, model-chosen perturbations, variable-level readout control,
+five causal objects, compatible-set counterfactual scoring, and exact replay.}
 \label{tab:position}
 \end{table}
+
+Table~\ref{tab:position} separates three capabilities that are often bundled
+together. Static causal datasets measure inference from a completed record.
+Interactive environments measure experiment planning inside a scientific or
+game process. \method{} joins active evidence acquisition to an exact causal
+benchmark substrate. The selected readout makes measurement choice an explicit
+decision alongside intervention choice. The compatible-set rule assigns the same
+legal counterfactual answers to every SCM coupling represented by one CPT world.
+Action-keyed sampling then makes stochastic histories reproducible under symbol
+permutation, batch partition, and interleaved actions.
 
 \section{The CPT-World episode}
 

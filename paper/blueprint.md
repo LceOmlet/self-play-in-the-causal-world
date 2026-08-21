@@ -43,11 +43,12 @@ inside a hidden finite world.
 
 ### 2. From causal questions to causal experiments
 
-- Position CLadder and causal-learning benchmarks as static inference.
+- Position CLadder and CauGym as static inference from supplied causal evidence.
 - Position ABCI, DiffCBED, targeted indirect design as experiment-design methods.
-- Position DiscoveryWorld as broad scientific agency.
+- Position DiscoveryWorld, CausalGame, and CausaLab as interactive scientific or causal agency.
 - Locate CPT-World at the intersection: LLM interface, hidden mechanism,
-  controlled causal experiments, exact verifier.
+  controlled causal experiments, model-selected readouts, compatible-set
+  counterfactual semantics, and exact replay.
 
 ### 3. The CPT-World episode
 
@@ -90,8 +91,8 @@ inside a hidden finite world.
    model sees an opaque prompt, chooses observation/intervention and readout,
    receives counts, and returns an answer to the exact verifier. A compact lower
    strip shows point-SCM coupling versus compatible interval.
-2. **Table 1.** Positioning across static causal QA, causal experimental design,
-   scientific environments, and CPT-World.
+2. **Table 1.** Benchmark-level comparison across world evidence, active probes,
+   returned evidence, scored objects, counterfactual semantics, and verification.
 3. **Table 2.** Five task modes and terminal objects.
 4. **Table 3.** Exactness and invariance validation.
 5. **Figure 2.** Log-scale acceleration plot for exact marginal and batch paths.
@@ -104,4 +105,3 @@ inside a hidden finite world.
 - D: Rendering and strict JSON protocol.
 - E: Validation fixtures and benchmark setup.
 - F: Full prompt example.
-
