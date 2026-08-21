@@ -10,6 +10,17 @@ The current milestone provides the environment and task-generation pipeline.
 It does **not** yet define a self-play algorithm, a scalar training reward, or a
 final benchmark mixture.
 
+## Paper
+
+The ICLR 2026 manuscript presents the benchmark intuition, shared interaction
+loop, five causal tasks, compatible-set counterfactual evaluator, exact
+execution engine, and validation results:
+
+- [compiled paper](paper/output/pdf/cpt-world-iclr2026.pdf)
+- [LaTeX source](paper/main.tex)
+- [evidence map](paper/evidence_map.md)
+- [paper blueprint](paper/blueprint.md)
+
 ## Implemented task family
 
 All tasks use the same `WorldSpec` sampler, renderer, interaction runtime, and

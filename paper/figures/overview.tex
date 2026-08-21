@@ -1,0 +1,57 @@
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners=2pt, line width=0.7pt, align=left, inner sep=6pt},
+  flow/.style={-{Latex[length=2.2mm]}, line width=0.9pt},
+  muted/.style={text=black!68},
+]
+\definecolor{cwblue}{HTML}{2F6690}
+\definecolor{cwgreen}{HTML}{3A7D44}
+\definecolor{cwgold}{HTML}{B7791F}
+\definecolor{cwred}{HTML}{A23B3B}
+
+\node[box, fill=cwblue!8, draw=cwblue, minimum width=3.9cm, minimum height=2.45cm]
+  (prompt) at (0,0) {
+  \textbf{Model-visible task}\\[2pt]
+  Opaque variables: \texttt{ITJ, RTG, FDR}\\
+  Query: effect of \texttt{ITJ} on \texttt{RTG}\\
+  Legal do target: \texttt{FDR}\\
+  Read at most $M=2$ variables};
+
+\node[box, fill=cwgold!10, draw=cwgold, minimum width=2.8cm, minimum height=1.5cm]
+  (agent) at (4.8,0) {
+  \textbf{LLM experimenter}\\[2pt]
+  choose intervention\\
+  choose readout};
+
+\node[box, fill=cwgreen!9, draw=cwgreen, minimum width=3.8cm, minimum height=2.45cm]
+  (world) at (9.7,0) {
+  \textbf{Hidden CPT-World}\\[2pt]
+  finite causal DAG $G$\\
+  exact CPT mechanisms $\Theta$\\
+  hard-do replacement\\
+  action-keyed sample tape};
+
+\draw[flow, cwblue] (prompt.east) -- (agent.west);
+\draw[flow, cwgold] (agent.east) -- (world.west);
+\node[align=center, text=cwgreen] (counts) at (7.25,-1.65)
+  {selected joint counts\\unrequested variables stay hidden};
+\draw[flow, cwgreen] (world.south west) -- (counts.north east);
+\draw[flow, cwgreen] (counts.north west) -- (agent.south east);
+
+\node[box, fill=cwred!7, draw=cwred, minimum width=3.35cm, minimum height=1.2cm]
+  (verify) at (4.8,-3.15) {\textbf{Exact verifier}\\task truth $\phi_q(W)$};
+\draw[flow, cwred] (agent.south) -- (verify.north);
+\draw[flow, cwgreen] (world.south) |- (verify.east);
+
+\node[anchor=west, font=\bfseries] at (-2.15,-4.75) {Counterfactual legality from the compatible set};
+\node[box, fill=black!2, draw=black!35, minimum width=13.35cm, minimum height=1.65cm]
+  (cf) at (4.8,-5.75) {};
+\node[anchor=west] at (-2.0,-5.35) {$P(Y_0=1)=0.2,\quad P(Y_1=1)=0.8$};
+\node[anchor=west, muted] at (-2.0,-6.05) {A single SCM selects one cross-world coupling};
+\draw[line width=2.0pt, cwblue] (5.9,-5.55) -- (10.7,-5.55);
+\draw[line width=0.7pt] (5.9,-5.72) -- (5.9,-5.38) node[above] {$0.6$};
+\draw[line width=0.7pt] (10.7,-5.72) -- (10.7,-5.38) node[above] {$0.8$};
+\fill[cwred] (8.05,-5.55) circle (2.2pt);
+\node[anchor=north, muted] at (8.05,-5.82) {one selected point};
+\node[anchor=south, text=cwblue, font=\bfseries] at (8.3,-5.23) {compatible interval};
+\end{tikzpicture}
