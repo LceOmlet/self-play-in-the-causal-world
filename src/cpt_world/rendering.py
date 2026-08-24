@@ -18,7 +18,7 @@ from .episode import (
     Budget,
     budget_for_observation_bandwidth,
 )
-from .registry import HIDING_MODES, counterfactual_answer_mode
+from .registry import HIDING_MODES
 from .world_space import world_state_names
 
 RENDERER_VERSION = "cpt-world-seed-renderer-v2"
@@ -119,7 +119,7 @@ class RenderedAteQuerySurface:
     labels: tuple[str, ...]
     domains: tuple[int, ...]
     query_type: str
-    answer_mode: str
+    terminal_kind: str
     treatment: int
     outcome: int
     treatment_value: int
@@ -137,7 +137,7 @@ class RenderedAteQuerySurface:
         return (
             self.domains,
             self.query_type,
-            self.answer_mode,
+            self.terminal_kind,
             self.treatment,
             self.outcome,
             self.treatment_value,
@@ -264,7 +264,7 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
     outcome_value = ctx.query.get("outcome")
     if query_type in {
         "ate",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "backadj_minimal_sets",
         "mediator_set",
     }:
@@ -289,7 +289,7 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
                 "from experiments on the legal do targets."
             )
         answer_schema = ['{"type":"answer","effect": <number in [-1,1]>}']
-    elif query_type == "counterfactual_transition_bounds":
+    elif query_type == "individual_counterfactual_probability":
         treatment_states = ctx.states_for_label(treatment)
         factual_state = ctx.resolve_state_token(treatment, ctx.query.get("factual_value"))
         counterfactual_state = ctx.resolve_state_token(
@@ -298,14 +298,11 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         factual_outcome_state = ctx.resolve_state_token(
             outcome, ctx.query.get("factual_outcome_state")
         )
-        target_outcome_state = ctx.resolve_state_token(
-            outcome, ctx.query.get("outcome_state")
-        )
+        target_outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state"))
         if factual_state == counterfactual_state:
             raise ValueError("factual and counterfactual treatment states must differ")
         if factual_state not in treatment_states or counterfactual_state not in treatment_states:
             raise ValueError("counterfactual treatment states are outside the rendered domain")
-        counterfactual_answer_mode(ctx.query)
         lines = [
             (
                 f"One individual was assigned do({treatment}={factual_state}) and "
@@ -561,11 +558,11 @@ def rendered_counterfactual_query_surface(
     *,
     measure_max: int | None = None,
 ) -> RenderedAteQuerySurface:
-    """Return the structured counterfactual-bound surface visible to the model."""
+    """Return the structured individual-counterfactual surface visible to the model."""
 
     return _rendered_target_query_surface(
         seed,
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         measure_max=measure_max,
     )
 
@@ -588,10 +585,8 @@ def _rendered_target_query_surface(
     label_positions = {label: index for index, label in enumerate(labels)}
     treatment = ctx.resolve_label(ctx.query.get("treatment"))
     outcome = ctx.resolve_label(ctx.query.get("outcome"))
-    if query_type == "counterfactual_transition_bounds":
-        treatment_state = ctx.resolve_state_token(
-            treatment, ctx.query.get("counterfactual_value")
-        )
+    if query_type == "individual_counterfactual_probability":
+        treatment_state = ctx.resolve_state_token(treatment, ctx.query.get("counterfactual_value"))
         baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("factual_value"))
         factual_outcome_state = ctx.resolve_state_token(
             outcome, ctx.query.get("factual_outcome_state")
@@ -611,9 +606,9 @@ def _rendered_target_query_surface(
         labels=labels,
         domains=tuple(len(ctx.states_for_label(label)) for label in labels),
         query_type=query_type,
-        answer_mode=(
-            counterfactual_answer_mode(ctx.query)
-            if query_type == "counterfactual_transition_bounds"
+        terminal_kind=(
+            "individual_probability"
+            if query_type == "individual_counterfactual_probability"
             else "effect"
         ),
         treatment=label_positions[treatment],

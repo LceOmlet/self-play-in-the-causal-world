@@ -32,7 +32,6 @@ from .registry import (
     HIDING_MODES,
     QUERY_TYPES,
     TASK_HEADS,
-    counterfactual_answer_mode,
     query_task_compatible,
 )
 
@@ -404,6 +403,7 @@ def _task_target_metrics(
     from .query_truth import (
         ate_effect,
         best_intervention_truth,
+        individual_counterfactual_frechet_outer_bounds,
         interventional_probability,
     )
 
@@ -414,10 +414,37 @@ def _task_target_metrics(
 
     outcome = int(anchors["outcome"])
     baseline = interventional_probability(world, {}, outcome, 1)
-    if query_type in {"ate", "counterfactual_transition_bounds"}:
+    if query_type == "ate":
         return {
             "target": ate_effect(world, int(anchors["treatment"]), outcome, outcome_state=1),
             "baseline": baseline,
+        }
+    if query_type == "individual_counterfactual_probability":
+        treatment = int(anchors["treatment"])
+        factual_value = int(anchors.get("factual_value", 0))
+        counterfactual_value = int(anchors.get("counterfactual_value", 1))
+        factual_outcome_state = int(anchors.get("factual_outcome_state", 0))
+        target_outcome_state = int(anchors.get("outcome_state", 1))
+        lower, upper = individual_counterfactual_frechet_outer_bounds(
+            world,
+            treatment,
+            outcome,
+            factual_value=factual_value,
+            counterfactual_value=counterfactual_value,
+            factual_outcome_state=factual_outcome_state,
+            target_outcome_state=target_outcome_state,
+        )
+        factual_probability = interventional_probability(
+            world,
+            {treatment: factual_value},
+            outcome,
+            factual_outcome_state,
+        )
+        return {
+            # This cheap diagnostic measures marginal ambiguity only. The task
+            # truth owner still computes the exact compatible interval.
+            "target": upper - lower,
+            "baseline": factual_probability,
         }
     if query_type == "best_intervention":
         objective = str(anchors.get("objective", "minimize"))
@@ -775,7 +802,7 @@ def task_answerability(
         family_seed = _family_answerability_seed(world, seed, query_type)
         if query_type == "ate":
             surface = rendered_ate_query_surface(family_seed)
-        elif query_type == "counterfactual_transition_bounds":
+        elif query_type == "individual_counterfactual_probability":
             surface = rendered_counterfactual_query_surface(family_seed)
         elif query_type == "best_intervention":
             surface = rendered_decision_query_surface(family_seed)
@@ -838,7 +865,7 @@ def task_difficulty_profile(
     }
     if query_type in {
         "ate",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "backadj_minimal_sets",
         "mediator_set",
     }:
@@ -1147,7 +1174,7 @@ def _legal_role_assignments(
                     stack.append(marker)
         return False
 
-    if query_type in {"ate", "counterfactual_transition_bounds", "backadj_minimal_sets"}:
+    if query_type in {"ate", "individual_counterfactual_probability", "backadj_minimal_sets"}:
         return tuple(
             {"treatment": source, "outcome": target}
             for source in range(node_count)
@@ -1249,7 +1276,7 @@ def _sample_task_attributes(
 
     anchors: dict[str, int | str] = dict(roles)
     rng = _axis_rng(seed_id, "task-attributes")
-    if query_type in {"ate", "counterfactual_transition_bounds"}:
+    if query_type in {"ate", "individual_counterfactual_probability"}:
         treatment = int(roles["treatment"])
         outcome = int(roles["outcome"])
         ordered_pairs = tuple(
@@ -1390,7 +1417,6 @@ def assemble_seed(
     manipulability: Mapping[str, bool] | None = None,
     readable: Mapping[str, bool] | None = None,
     observation_bandwidth: int | None = None,
-    answer_mode: str | None = None,
 ) -> Mapping[str, Any]:
     """Assemble an anonymous candidate seed or fail closed.
 
@@ -1399,8 +1425,7 @@ def assemble_seed(
     used. Masks default to the anchor-minimal rule from
     :func:`default_manipulability`; pinned seed masks can be passed explicitly.
     ``observation_bandwidth`` is optional for legacy/manual seeds and fixed in
-    every seed emitted by the main sampler. ``answer_mode`` is accepted only
-    for the registered scalar counterfactual terminal format.
+    every seed emitted by the main sampler.
     """
 
     if not isinstance(seed_id, str) or not seed_id:
@@ -1414,9 +1439,6 @@ def assemble_seed(
         raise ValueError(f"{seed_id}: task does not match query")
     if not supports_hiding(world, hiding_modes):
         raise ValueError(f"{seed_id}: unsupported hiding mode")
-    if answer_mode is not None and query_type != "counterfactual_transition_bounds":
-        raise ValueError("answer_mode is only valid for counterfactual transition bounds")
-
     legal_anchors = legal_query_anchors(world, query_type)
     if anchors is None:
         if not legal_anchors:
@@ -1444,7 +1466,7 @@ def assemble_seed(
     query_visible: dict[str, Any] = {"type": query_type}
     if query_type in {
         "ate",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "backadj_minimal_sets",
         "mediator_set",
     }:
@@ -1465,7 +1487,7 @@ def assemble_seed(
             query_visible["treatment_value"] = visible_state(treatment_name, treatment_value)
             query_visible["baseline_value"] = visible_state(treatment_name, baseline_value)
             query_visible["outcome_state"] = visible_state(outcome_name, outcome_state)
-        if query_type == "counterfactual_transition_bounds":
+        if query_type == "individual_counterfactual_probability":
             treatment_name = world.variables[int(selected_anchors["treatment"])]
             factual_value = int(selected_anchors.get("factual_value", 0))
             counterfactual_value = int(selected_anchors.get("counterfactual_value", 1))
@@ -1478,18 +1500,11 @@ def assemble_seed(
             query_visible.update(
                 {
                     "factual_value": visible_state(treatment_name, factual_value),
-                    "counterfactual_value": visible_state(
-                        treatment_name, counterfactual_value
-                    ),
-                    "factual_outcome_state": visible_state(
-                        outcome_name, factual_outcome_state
-                    ),
+                    "counterfactual_value": visible_state(treatment_name, counterfactual_value),
+                    "factual_outcome_state": visible_state(outcome_name, factual_outcome_state),
                     "outcome_state": visible_state(outcome_name, outcome_state),
                 }
             )
-            if answer_mode is not None:
-                query_visible["answer_mode"] = answer_mode
-            query_visible["answer_mode"] = counterfactual_answer_mode(query_visible)
     elif query_type == "best_intervention":
         outcome_name = world.variables[int(selected_anchors["outcome"])]
         outcome_state = int(selected_anchors.get("outcome_state", 1))
@@ -1605,7 +1620,7 @@ def assemble_sampled_anchor_tasks(
         raise ValueError("anchor_index must be a nonnegative integer")
     if query_type not in {
         "ate",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "backadj_minimal_sets",
         "best_intervention",
         "mediator_set",
@@ -1676,7 +1691,7 @@ def iter_sampled_seeds(
     admitted_query_types = frozenset(
         {
             "ate",
-            "counterfactual_transition_bounds",
+            "individual_counterfactual_probability",
             "backadj_minimal_sets",
             "best_intervention",
             "mediator_set",

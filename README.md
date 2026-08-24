@@ -29,7 +29,7 @@ exact truth owners.
 | Query | Terminal output |
 | --- | --- |
 | ATE | The numerical total effect between the named treatment and outcome. The generic sampler keeps both query endpoints readonly, so evidence must come from permitted indirect experiments or passive observations. |
-| Counterfactual transition bounds | Either the sharp compatible interval `[L, U]` or one compatible value, according to the rendered terminal mode. |
+| Individual counterfactual probability | One scalar probability for the same individual under a named counterfactual treatment, conditioned on that individual's factual treatment and observed outcome. A hidden compatible interval verifies the scalar. |
 | Experimental decision | A deployment intervention that minimizes or maximizes the named outcome event. Experiment targets and the deployment decision are separated. |
 | Backdoor adjustment | Every minimal valid adjustment set for the named treatment–outcome query. |
 | Mediator set and order | The mediator variables and the direct path-order relations between them. |
@@ -160,7 +160,7 @@ tasks = iter_sampled_seeds(
     count=20,
     query_types=(
         "ate",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "backadj_minimal_sets",
         "best_intervention",
         "mediator_set",

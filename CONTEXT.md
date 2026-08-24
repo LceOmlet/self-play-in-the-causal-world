@@ -84,13 +84,9 @@ _Avoid_: truncated support, approximate feedback, missing observation
 The query types admitted by the main seed-generation pipeline. Registration or fixture-only execution does not by itself make a query type part of the task family.
 _Avoid_: query registry, fixture collection
 
-**Counterfactual Transition Bounds**:
-The sharp interval for the probability that the outcome is in a named target state under the comparison intervention and not in that state under the reference intervention. The interval optimizes over every finite nonparametric mechanism completion jointly compatible with the complete DAG, every CPT row, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Coupling only the two endpoint interventional marginals gives an outer bound or a simple special case, not the general truth owner.
-_Avoid_: hidden-SCM point answer, endpoint-marginal coupling as a universal oracle, preferred functional family
-
-**Counterfactual Answer Mode**:
-One of two separately rendered terminal contracts for the same world, query, K, and M: `sharp_interval` asks for both exact endpoints; `compatible_value` asks for one value inside that interval and reports its continuous distance to the interval. Compatibility does not imply point identification.
-_Avoid_: model-selected answer format, second counterfactual sampler, scalarized reward
+**Individual Counterfactual Probability**:
+The probability of a named outcome for the same individual under a counterfactual assigned treatment, conditional on that individual's assigned factual treatment and observed factual outcome. The model returns one scalar. The verifier accepts it only when it lies in the hidden sharp interval over every finite nonparametric mechanism completion compatible with the complete DAG, all CPT rows, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Endpoint interventional marginals provide only a Fréchet outer interval in the generic case.
+_Avoid_: population transition query, model-returned interval, hidden-SCM point label, preferred functional family
 
 **Objective Computability**:
 The evaluator can derive one exact task answer from the sealed CPT-World semantics. This does not imply that the visible experiment surface determines that answer.

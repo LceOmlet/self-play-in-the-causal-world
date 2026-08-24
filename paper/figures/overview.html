@@ -54,7 +54,7 @@ text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
 <body>
 <svg id="fig" width="1200" height="776" viewBox="0 0 1200 776"
      role="img"
-     aria-label="The DoLens method engine in five stages arranged as a spiral. Stage one, the hidden CPT world: a sealed finite directed acyclic graph over four variables, with a confounder Z above X and Y and a mediator M between them, carries finite-state conditional probability table rows and fixes one causal truth before the model acts, so worlds with the same legal laws force the same accepted answer. Stage two, the controlled experimental surface: rendering seals the mechanism and the edges and renames the same four variables to opaque three-letter labels, exposing only K legal do targets and a readout width M, so evidence access varies while the causal truth does not. Stage three, the active episode loop: the model picks a probe and the environment draws independent units, the experiment being a hard intervention or an observation together with a readout of width at most M on a chosen batch size, and only the requested joint counts return, with omitted cells exactly zero. Stage four, the DoLens probability engine answers every request with batch counts and returns the terminal verdict for five terminal objects: total effect, counterfactual transition, experimental decision, minimal adjustment sets, and mediator structure, so feedback and verdict share one semantics. Stage five, the counterfactual outer check: endpoint marginals 0.2 and 0.8 give the universal Frechet outer interval from 0.6 to 0.8; the exact task verifier optimizes over complete mechanisms compatible with the DAG and every CPT row and can tighten this interval.">
+     aria-label="The DoLens method engine in five stages arranged as a spiral. Stage one, the hidden CPT world: a sealed finite directed acyclic graph over four variables, with a confounder Z above X and Y and a mediator M between them, carries finite-state conditional probability table rows and fixes one causal truth before the model acts, so worlds with the same legal laws force the same accepted answer. Stage two, the controlled experimental surface: rendering seals the mechanism and the edges and renames the same four variables to opaque three-letter labels, exposing only K legal do targets and a readout width M, so evidence access varies while the causal truth does not. Stage three, the active episode loop: the model picks a probe and the environment draws independent units, the experiment being a hard intervention or an observation together with a readout of width at most M on a chosen batch size, and only the requested joint counts return, with omitted cells exactly zero. Stage four, the DoLens probability engine answers every request with batch counts and returns the terminal verdict for five terminal objects: total effect, individual counterfactual probability, experimental decision, minimal adjustment sets, and mediator structure, so feedback and verdict share one semantics. Stage five, the individual counterfactual check: endpoint marginals and an observed factual outcome give the universal Frechet outer interval from 0.75 to 1; the exact task verifier optimizes over complete mechanisms compatible with the DAG and every CPT row and can tighten this interval.">
 
 <defs>
   <marker id="ar" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="5" markerHeight="4"
@@ -255,7 +255,7 @@ text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
   </g>
   <g class="t-small" fill="var(--ink)">
     <text x="66" y="440" data-in="field:4" data-pad="10">total effect</text>
-    <text x="66" y="465" data-in="field:4" data-pad="10">counterfactual transition</text>
+    <text x="66" y="465" data-in="field:4" data-pad="10">individual counterfactual</text>
     <text x="66" y="490" data-in="field:4" data-pad="10">experimental decision</text>
     <text x="66" y="515" data-in="field:4" data-pad="10">minimal adjustment sets</text>
     <text x="66" y="540" data-in="field:4" data-pad="10">mediator structure</text>
@@ -277,17 +277,17 @@ text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
     >Feedback and verdict share one semantics.</text>
 </g>
 
-<!-- ═══════════ 5 · the verdict is a set, not a number ═══════════ -->
+<!-- ═══════════ 5 · hidden compatible interval verifies a scalar ═══════════ -->
 <g>
-  <text class="t-tag" x="42" y="645" fill="#A23B3B" data-in="field:5" data-pad="10">5 &#183; COUNTERFACTUAL OUTER CHECK</text>
+  <text class="t-tag" x="42" y="645" fill="#A23B3B" data-in="field:5" data-pad="10">5 &#183; INDIVIDUAL COUNTERFACTUAL CHECK</text>
 
   <text class="t-claim" x="42" y="676" data-in="field:5" data-pad="10"
-    >Endpoint marginals give a universal</text>
+    >Factual evidence yields a conditional</text>
   <text class="t-claim" x="42" y="702" data-in="field:5" data-pad="10"
-    >outer interval for the task truth.</text>
+    >outer interval.</text>
   <text class="mu" x="42" y="738" font-size="22" fill="#8d2f2f" data-in="field:5" data-pad="10"
     ><tspan class="m">P</tspan><tspan>(</tspan><tspan class="m">Y</tspan
-    ><tspan dy="5" font-size="17">0</tspan><tspan dy="-5"> = 1) = 0.2</tspan
+    ><tspan dy="5" font-size="17">0</tspan><tspan dy="-5"> = 0) = 0.8</tspan
     ><tspan>&#160;&#160;&#160;&#160;</tspan><tspan class="m">P</tspan><tspan>(</tspan
     ><tspan class="m">Y</tspan><tspan dy="5" font-size="17">1</tspan
     ><tspan dy="-5"> = 1) = 0.8</tspan></text>
@@ -295,7 +295,7 @@ text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
   <!-- what a single point inside the interval would take: shown where it is chosen -->
   <circle cx="470" cy="686" r="6.5" fill="#fff" stroke="#3f464e" stroke-width="2.2"/>
   <text class="t-small" x="488" y="693" fill="#3f464e" data-in="field:5" data-pad="10"
-    >+ monotonicity: subset {0.6}</text>
+    >+ monotonicity: subset {0.75}</text>
   <circle cx="470" cy="722" r="6" fill="#3f464e"/>
   <text class="t-small" x="488" y="729" fill="#3f464e" data-in="field:5" data-pad="10"
     >one compatible SCM: one point</text>
@@ -303,7 +303,7 @@ text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
   <text class="mu" x="970" y="658" font-size="23" fill="#8d2f2f" text-anchor="middle"
         data-in="field:5" data-pad="10"
     ><tspan class="m">P</tspan><tspan>(</tspan><tspan class="m">Y</tspan
-    ><tspan dy="5" font-size="17">1</tspan><tspan dy="-5"> = 1, </tspan><tspan class="m">Y</tspan
+    ><tspan dy="5" font-size="17">1</tspan><tspan dy="-5"> = 1 | </tspan><tspan class="m">Y</tspan
     ><tspan dy="5" font-size="17">0</tspan><tspan dy="-5"> = 0)</tspan></text>
   <text class="t-claim" x="970" y="682" text-anchor="middle" data-in="field:5" data-pad="10"
     >marginal-only outer interval</text>
@@ -315,9 +315,9 @@ text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
     <line x1="1100" y1="700" x2="1100" y2="724" stroke-width="2.4"/>
   </g>
   <text class="mu" x="826" y="719" font-size="20" fill="#8d2f2f" text-anchor="end"
-        data-in="field:5" data-pad="10">0.6</text>
+        data-in="field:5" data-pad="10">0.75</text>
   <text class="mu" x="1114" y="719" font-size="20" fill="#8d2f2f"
-        data-in="field:5" data-pad="10">0.8</text>
+        data-in="field:5" data-pad="10">1.0</text>
 
   <circle cx="840" cy="712" r="6.5" fill="#fff" stroke="#3f464e" stroke-width="2.2"/>
   <circle cx="990" cy="712" r="6" fill="#3f464e"/>

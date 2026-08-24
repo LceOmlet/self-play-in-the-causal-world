@@ -67,7 +67,7 @@ def _find_task(query_type: str):
             continue
         task_head = (
             "target_query"
-            if query_type in {"ate", "counterfactual_transition_bounds"}
+            if query_type in {"ate", "individual_counterfactual_probability"}
             else "decision"
         )
         seed_obj = assemble_seed(
@@ -105,7 +105,7 @@ class TaskScoringTests(unittest.TestCase):
             parse_terminal_answer('{"type":"answer","effect":"not-a-number"}', seed_obj, world)
 
     def test_counterfactual_terminal_contract_is_scalar_only(self) -> None:
-        seed_obj, world = _find_task("counterfactual_transition_bounds")
+        seed_obj, world = _find_task("individual_counterfactual_probability")
         for answer in (
             {"type": "answer", "lower": 0.1, "upper": 0.2},
             {"type": "answer", "value": -0.1},
@@ -114,16 +114,12 @@ class TaskScoringTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 parse_terminal_answer(json.dumps(answer), seed_obj, world)
 
-    def test_counterfactual_compatible_value_uses_continuous_interval_distance(self) -> None:
+    def test_individual_counterfactual_probability_uses_continuous_interval_distance(
+        self,
+    ) -> None:
         from cpt_world import compute_query_truth
 
-        point_seed, world = _find_task("counterfactual_transition_bounds")
-        query = {**point_seed["query"], "answer_mode": "compatible_value"}
-        point_seed = {
-            **point_seed,
-            "query": query,
-            "visible_schema": {**point_seed["visible_schema"], "query": query},
-        }
+        point_seed, world = _find_task("individual_counterfactual_probability")
         truth = compute_query_truth(world, point_seed)
         midpoint = (truth["lower"] + truth["upper"]) / 2
         inside = score_terminal_answer(
@@ -131,7 +127,7 @@ class TaskScoringTests(unittest.TestCase):
             point_seed,
             world,
         )
-        self.assertEqual(inside["kind"], "counterfactual_compatible_value")
+        self.assertEqual(inside["kind"], "individual_counterfactual_probability")
         self.assertTrue(inside["compatible"])
         self.assertEqual(inside["distance_to_interval"], 0)
 

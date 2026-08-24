@@ -51,7 +51,7 @@ query, a legal
 experiment interface, and a structured terminal schema. It gathers selected joint
 counts through passive observation or batched hard interventions. One exact engine
 generates the feedback and verifies five terminal objects: total effects,
-counterfactual transition sets, experimental decisions, minimal adjustment sets,
+individual counterfactual probabilities, experimental decisions, minimal adjustment sets,
 and mediator structure. Counterfactual scoring ranges over every cross-world
 coupling compatible with the CPT world, so equally compatible structural causal
 models receive the same legal answer set. Variable elimination and ancestral
@@ -105,11 +105,12 @@ single exact engine, and the compatible-set counterfactual rule.
   the episode is a loop in which the model chooses a perturbation and a readout
   and receives only the requested joint counts. One probability engine
   generates that feedback and verifies all five terminal objects. For
-  counterfactual transitions, endpoint marginals supply a Fr\'echet outer
-  interval, while the verifier computes the exact interval over complete
-  mechanisms compatible with the DAG and every CPT row. A single SCM picks one
-  point inside that interval, and an added cross-world assumption selects a
-  smaller subset.}
+  an individual counterfactual query, assigned factual treatment and observed
+  outcome define the conditioning event. Endpoint marginals supply a Fr\'echet
+  outer interval for the requested probability, while the verifier computes the
+  exact interval over complete mechanisms compatible with the DAG and every CPT
+  row. A single SCM picks one point inside that interval, and an added
+  cross-world assumption selects a smaller subset.}
   \label{fig:overview}
 \end{figure}
 
@@ -130,28 +131,28 @@ cross-world coupling open.
 \setlength{\fboxsep}{7pt}
 \fcolorbox{cwblue!55}{cwblue!4}{%
 \begin{minipage}{0.92\linewidth}
-\textbf{Example: interventional marginals leave individual transitions open.}
+\textbf{Example: factual evidence still leaves an individual probability open.}
 Let $Y_x$ denote the outcome of the same unit under $\doop(X=x)$. Suppose
 $P(Y_0{=}1)=0.2$ and $P(Y_1{=}1)=0.8$. In a population of 100 units, 20 would
 have outcome 1 under $X=0$, while 80 would have outcome 1 under $X=1$. The
-marginals leave the overlap between these groups unspecified. Using only these
-endpoint marginals, full overlap gives
-60 units that change from 0 to 1; zero overlap gives 80. Hence every compatible
-coupling satisfies
+marginals leave the overlap between these groups unspecified. Now observe one
+individual with $Y_0=0$ and ask for the probability that this same individual
+would have $Y_1=1$. Endpoint marginals imply
 \[
-  P(Y_1{=}1,Y_0{=}0)\in[0.6,0.8],
+  P(Y_1{=}1\mid Y_0{=}0)\in[0.75,1].
 \]
-and both endpoints are attainable by endpoint-event couplings. Constraints from
+Both endpoints are attainable by endpoint-event couplings. Constraints from
 the complete DAG and all CPT rows can tighten this outer interval. A cross-world
-assumption can select a smaller subset; monotonicity $Y_1\ge Y_0$ contracts the
-endpoint interval to the point $0.6$.
+assumption can select a smaller subset; monotonicity $Y_1\ge Y_0$ contracts this
+conditional interval to the point $0.75$.
 \end{minipage}}
 \end{center}
 
 A generated SCM selects one complete compatible mechanism. Encoding that selection
 as the label also encodes its cross-world preference. \method{} keeps the full
-compatible mechanism set and scores either its sharp interval or a submitted
-compatible value. The task
+compatible mechanism set. The model submits one individual counterfactual
+probability, and the hidden verifier scores its distance to the sharp compatible
+interval. The task
 therefore measures counterfactual reasoning supported by the stated causal
 information \citep{balke1997bounds,pearl2009causality}.
 
@@ -319,7 +320,7 @@ Task & Question & Terminal object & Experimental separation \\
 \midrule
 \textbf{Total effect} & Effect of $X$ on $Y$ & scalar ATE & $X,Y$ read-only; probe legal non-endpoints \\
 \cmidrule(lr){1-4}
-\textbf{Counterfactual transition} & Units changing outcome across two treatments & sharp interval or compatible scalar & query endpoints read-only \\
+\textbf{Individual counterfactual} & Same individual's outcome under another treatment, given factual evidence & scalar probability & query endpoints read-only \\
 \cmidrule(lr){1-4}
 \textbf{Experimental decision} & Deployment value optimizing an outcome event & target-value intervention & deployment variable read-only during evidence collection \\
 \cmidrule(lr){1-4}
@@ -334,7 +335,7 @@ causal object.}
 \label{tab:tasks}
 \end{table}
 
-\subsection{Effects and counterfactual legal sets}
+\subsection{Effects and individual counterfactuals}
 
 For treatment states $x_1,x_0$ and outcome event $Y=y$, the total-effect target
 is
@@ -346,9 +347,10 @@ The generic interaction keeps $X$ and $Y$ read-only, turning the query into an
 indirect experimental problem. Passive batches and interventions on legal
 non-endpoints provide the evidence.
 
-For the transition event $q=P(Y_{x_1}=y,Y_{x_0}\ne y)$, the world fixes the two
-marginals and induces a compatible set of nonparametric SCMs $\compat(W)$. The
-verifier computes
+For assigned factual treatment $x_f$, observed factual outcome $y_f$,
+counterfactual treatment $x_c$, and target outcome $y^\star$, the model predicts
+$q=P(Y_{x_c}=y^\star\mid Y_{x_f}=y_f)$. The world induces a compatible set of
+nonparametric SCMs $\compat(W)$, and the hidden verifier computes
 \begin{equation}
   [L,U]=\left[
   \inf_{\mathcal M\in\compat(W)} q(\mathcal M),
@@ -357,12 +359,13 @@ verifier computes
   \quad\text{\scriptsize(all compatible complete mechanisms)}.
   \label{eq:cfset}
 \end{equation}
-The endpoint marginals $p_i=P(Y=y\mid\doop(X=x_i))$ give the Fr\'echet outer
-interval $[\max(0,p_1-p_0),\min(p_1,1-p_0)]$. The exact verifier retains all
+Let $p_f=P(Y=y_f\mid\doop(X=x_f))$ and
+$p_c=P(Y=y^\star\mid\doop(X=x_c))$. Their Fr\'echet outer interval is
+$[\max(0,p_f+p_c-1)/p_f,\min(p_f,p_c)/p_f]$. The exact verifier retains all
 complete mechanisms compatible with the DAG and every CPT row, so its sharp
 interval is contained in that outer interval and can be strictly tighter. The
-interval mode scores both exact endpoints continuously. The compatible-value
-mode accepts any point in the exact interval and reports its distance to it.
+model returns one scalar in $[0,1]$; the scorer reports membership and continuous
+distance to the exact interval.
 
 \subsection{Decision and structural discovery}
 
@@ -519,19 +522,21 @@ For the rendered treatment values $x_1,x_0$ and outcome state $y$, the truth own
 evaluates Eq.~\ref{eq:ate} with exact projected interventional marginals. The
 terminal diagnostics are absolute and squared error.
 
-\subsection{Counterfactual transition}
+\subsection{Individual counterfactual probability}
 
-Define $A=\mathbf{1}[Y_{x_1}=y]$ and $B=\mathbf{1}[Y_{x_0}=y]$. The CPT world
-fixes $P(A=1)=p_1$ and $P(B=1)=p_0$. The desired event is $A=1,B=0$. The two
-endpoint marginals alone give the Fr\'echet outer bounds
+Define $A=\mathbf{1}[Y_{x_c}=y^\star]$ and
+$B=\mathbf{1}[Y_{x_f}=y_f]$. The CPT world fixes
+$P(A=1)=p_c$ and $P(B=1)=p_f$. The requested probability is
+$q=P(A=1\mid B=1)$. The two endpoint marginals alone give the Fr\'echet outer
+bounds
 \begin{equation}
-\max(0,p_1-p_0)\le P(A=1,B=0)\le\min(p_1,1-p_0).
+\frac{\max(0,p_f+p_c-1)}{p_f}\le q\le
+\frac{\min(p_f,p_c)}{p_f}.
 \end{equation}
-The truth owner instead optimizes this event over complete mechanisms compatible
-with the DAG and every CPT row. Its exact interval lies inside the displayed
-outer bounds. The interval terminal reports endpoint errors, and the
-compatible-scalar terminal reports membership and distance to the exact interval.
-Both modes share the same world, query anchors, visible labels, $K$, and $M$.
+The truth owner optimizes the joint numerator over complete mechanisms compatible
+with the DAG and every CPT row, then divides by the fixed positive factual mass
+$p_f$. The model returns a scalar probability. The scorer reports membership and
+distance to the resulting exact interval.
 
 \subsection{Experimental decision}
 

@@ -46,19 +46,6 @@ OWNER_STATUSES = frozenset(
     }
 )
 
-COUNTERFACTUAL_ANSWER_MODES = frozenset({"compatible_value"})
-DEFAULT_COUNTERFACTUAL_ANSWER_MODE = "compatible_value"
-
-
-def counterfactual_answer_mode(query: Mapping[str, Any]) -> str:
-    """Return the registered counterfactual terminal mode or fail closed."""
-
-    mode = str(query.get("answer_mode", DEFAULT_COUNTERFACTUAL_ANSWER_MODE))
-    if mode not in COUNTERFACTUAL_ANSWER_MODES:
-        raise ValueError(f"unsupported counterfactual answer mode: {mode}")
-    return mode
-
-
 QUERY_TYPES: dict[str, Mapping[str, Any]] = {
     "ate": {
         "anchors": ("treatment", "outcome"),
@@ -66,9 +53,9 @@ QUERY_TYPES: dict[str, Mapping[str, Any]] = {
         "task_heads": frozenset({"target_query"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },
-    "counterfactual_transition_bounds": {
+    "individual_counterfactual_probability": {
         "anchors": ("treatment", "outcome"),
-        "answer_kind": "compatible_value",
+        "answer_kind": "individual_probability",
         "task_heads": frozenset({"target_query"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },
@@ -94,7 +81,7 @@ QUERY_TYPES: dict[str, Mapping[str, Any]] = {
 
 TASK_HEADS: dict[str, Mapping[str, Any]] = {
     "target_query": {
-        "answer_kind": "numeric_value_or_interval",
+        "answer_kind": "numeric_value",
         "scorer_owner_status": OWNER_STATUS_DIAGNOSTIC_ONLY,
     },
     "discovery": {
@@ -168,12 +155,6 @@ def check_seed_legality(seed: Mapping[str, Any]) -> list[str]:
             for anchor in QUERY_TYPES[query_type]["anchors"]:
                 if anchor not in query:
                     errors.append(f"{seed_id}: query missing anchor {anchor}")
-            if query_type == "counterfactual_transition_bounds":
-                try:
-                    counterfactual_answer_mode(query)
-                except ValueError as error:
-                    errors.append(f"{seed_id}: {error}")
-
     if not isinstance(task_head, Mapping):
         errors.append(f"{seed_id}: missing task_head")
     else:

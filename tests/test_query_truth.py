@@ -252,7 +252,7 @@ class QueryTruthOwnerTests(unittest.TestCase):
     def test_registry_distinguishes_registered_from_implemented(self) -> None:
         for query_type in (
             "ate",
-            "counterfactual_transition_bounds",
+            "individual_counterfactual_probability",
             "backadj_minimal_sets",
             "best_intervention",
             "mediator_set",
@@ -391,15 +391,11 @@ class QueryTruthOwnerTests(unittest.TestCase):
             expected,
         )
         self.assertEqual(
-            reference_individual_counterfactual_probability_bounds(
-                world, "X", "Y", **arguments
-            ),
+            reference_individual_counterfactual_probability_bounds(world, "X", "Y", **arguments),
             expected,
         )
         self.assertEqual(
-            individual_counterfactual_frechet_outer_bounds(
-                world, "X", "Y", **arguments
-            ),
+            individual_counterfactual_frechet_outer_bounds(world, "X", "Y", **arguments),
             expected,
         )
 
@@ -482,9 +478,7 @@ class QueryTruthOwnerTests(unittest.TestCase):
             "factual_outcome_state": 0,
             "target_outcome_state": 1,
         }
-        exact = validate_individual_counterfactual_probability(
-            world, "X", "Y", 0.8, **arguments
-        )
+        exact = validate_individual_counterfactual_probability(world, "X", "Y", 0.8, **arguments)
         self.assertEqual(exact["status"], "exact")
         self.assertTrue(exact["compatible"])
 

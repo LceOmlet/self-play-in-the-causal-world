@@ -8,7 +8,7 @@
 | query_type | anchors | answer_kind | 兼容 task_heads | truth owner |
 |---|---|---|---|---|
 | `ate` | treatment, outcome | single_effect | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
-| `counterfactual_transition_bounds` | treatment, outcome | compatible scalar value | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界精确界） |
+| `individual_counterfactual_probability` | treatment, outcome | individual probability | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界精确界） |
 | `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
 | `best_intervention` | decision_target, outcome | intervention | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
@@ -17,7 +17,7 @@
 
 | task_head | answer_kind | scorer owner |
 |---|---|---|
-| `target_query` | numeric_value_or_interval | diagnostic_only（`task_scoring.py`，effect / interval endpoint error） |
+| `target_query` | numeric_value | diagnostic_only（`task_scoring.py`，effect error / counterfactual interval distance） |
 | `discovery` | set_or_set_with_order | diagnostic_only（`task_scoring.py`，set F1 / order F1） |
 | `decision` | intervention | diagnostic_only（`task_scoring.py`，exact regret） |
 
@@ -42,7 +42,7 @@ compute_query_truth(world, seed)
 - 任意有限离散 `WorldSpec`；
 - exact `Fraction`；
 - `ate` 默认 `state_1` vs `state_0`，可由显式状态索引覆盖；
-- `counterfactual_transition_bounds` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率；
+- `individual_counterfactual_probability` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率；
 - 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率的 sharp interval，不选择隐藏 SCM；模型只返回一个 scalar，落在精确区间内即兼容；
 - 求解超时时，Fréchet 外界只能排除落在外界之外的 scalar；外界以内保持 unresolved，不会被当作正确答案；
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
@@ -56,9 +56,7 @@ compute_query_truth(world, seed)
 target_query:
   parsed effect -> truth effect
   abs_error, squared_error
-  parsed lower/upper -> truth lower/upper
-  mean absolute/squared endpoint error
-  parsed compatible value -> truth interval
+  parsed individual counterfactual probability -> hidden truth interval
   compatible, distance_to_interval
 
 decision:

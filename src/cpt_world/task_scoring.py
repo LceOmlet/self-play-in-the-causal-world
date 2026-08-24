@@ -19,7 +19,6 @@ from .query_truth import (
     compute_query_truth,
     interventional_probability,
 )
-from .registry import counterfactual_answer_mode
 from .world_space import WorldSpec
 
 _NUMERICAL_TOLERANCE = 1e-9
@@ -128,14 +127,13 @@ def parse_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "effect": _finite_float(value["effect"], field="effect"),
         }
 
-    if query_type == "counterfactual_transition_bounds" and head == "target_query":
-        counterfactual_answer_mode(query)
+    if query_type == "individual_counterfactual_probability" and head == "target_query":
         if set(value) != {"type", "value"}:
             raise ValueError("answer must contain exactly type and value")
         point = _finite_float(value["value"], field="value")
         if not 0.0 <= point <= 1.0:
             raise ValueError("counterfactual value must lie in [0, 1]")
-        return {"kind": "counterfactual_compatible_value", "value": point}
+        return {"kind": "individual_counterfactual_probability", "value": point}
 
     if query_type == "best_intervention" and head == "decision":
         if set(value) != {"type", "intervention"}:
@@ -288,13 +286,13 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "reward_scalarization": "not_frozen",
         }
 
-    if parsed["kind"] == "counterfactual_compatible_value":
+    if parsed["kind"] == "individual_counterfactual_probability":
         truth_lower = truth["lower"]
         truth_upper = truth["upper"]
         prediction = Fraction(parsed["value"])
         distance = max(truth_lower - prediction, Fraction(0), prediction - truth_upper)
         return {
-            "kind": "counterfactual_compatible_value",
+            "kind": "individual_counterfactual_probability",
             "truth": {"lower": truth_lower, "upper": truth_upper},
             "prediction": prediction,
             "compatible": float(distance) <= _NUMERICAL_TOLERANCE,

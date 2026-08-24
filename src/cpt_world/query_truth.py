@@ -809,9 +809,7 @@ def _direct_only_counterfactual_joint_bounds(
 
         treated = outcome_probability(treatment_value, treatment_outcome_states)
         baseline = outcome_probability(baseline_value, baseline_outcome_states)
-        lower_terms.append(
-            parent_probability * max(_zero(world), treated + baseline - _one(world))
-        )
+        lower_terms.append(parent_probability * max(_zero(world), treated + baseline - _one(world)))
         upper_terms.append(parent_probability * min(treated, baseline))
     return (
         _probability_sum(tuple(lower_terms), exact=exact),
@@ -1516,12 +1514,12 @@ def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[st
                 ),
             ),
         }
-    if query_type == "counterfactual_transition_bounds":
+    if query_type == "individual_counterfactual_probability":
         treatment = query.get("treatment")
         outcome = query.get("outcome")
         if treatment is None or outcome is None:
             raise ValueError(
-                "counterfactual_transition_bounds query requires treatment and outcome"
+                "individual_counterfactual_probability query requires treatment and outcome"
             )
         treatment_node = _resolve_seed_node(world, seed, treatment)
         outcome_node = _resolve_seed_node(world, seed, outcome)
@@ -1549,12 +1547,10 @@ def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[st
             factual_outcome_state=_state_index_for_node(
                 world, outcome_node, query["factual_outcome_state"], default=0
             ),
-            target_outcome_state=_state_index_for_node(
-                world, outcome_node, query["outcome_state"]
-            ),
+            target_outcome_state=_state_index_for_node(world, outcome_node, query["outcome_state"]),
         )
         return {
-            "type": "counterfactual_transition_bounds",
+            "type": "individual_counterfactual_probability",
             "lower": lower,
             "upper": upper,
         }

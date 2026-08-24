@@ -62,7 +62,7 @@ Step 4. 才允许实现 sampler
 - treatment ≠ outcome
 - 结构前提满足：
   ate               → treatment/outcome 存在
-  counterfactual_transition_bounds → treatment/outcome 存在
+  individual_counterfactual_probability → treatment/outcome 存在
   backadj           → treatment/outcome 存在
   mediator_set      → treatment→outcome 至少一条有向路径
   best_intervention → decision target 是 outcome 的有向祖先；两者实验阶段只读
@@ -203,9 +203,9 @@ world_runtime.py: IMPLEMENTED
   - 不设置独立查询次数上限；`batch_size` 可取任何能放入剩余预算的正整数
 
 query_truth.py: IMPLEMENTED（candidate，未经最终审核）
-  - ate、counterfactual_transition_bounds、backadj_minimal_sets、mediator_set、best_intervention
+  - ate、individual_counterfactual_probability、backadj_minimal_sets、mediator_set、best_intervention
   - selected-measure exact law 使用变量消元；原 full-joint 枚举保留为 reference owner 并逐 Fraction 对拍
-  - counterfactual_transition_bounds 采样一个 factual treatment/outcome 记录和一个 counterfactual target；主管线只发出 scalar-compatible 终局，不另建采样器
+  - individual_counterfactual_probability 采样一个 factual treatment/outcome 记录和一个 counterfactual target；主管线只发出 scalar-compatible 终局，不另建采样器
   - 通用 WorldSpec，exact Fraction
 REGRESSION:
   - n=2,3 的声明分布支持集覆盖全部 binary DAG

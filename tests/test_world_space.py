@@ -105,7 +105,7 @@ def _counterfactual_km_seed(
     return assemble_seed(
         world,
         "mechanism_hidden",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "target_query",
         seed_id=seed_id,
         anchors={"treatment": 0, "outcome": 2},
@@ -286,8 +286,8 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         self.fail("no world-first sampled ATE task found")
 
     def test_opaque_label_collision_retries_with_a_deterministic_nonce(self) -> None:
-        sample_index = 1923676317
-        query_type = "counterfactual_transition_bounds"
+        sample_index = 1000243
+        query_type = "individual_counterfactual_probability"
         anchor_index = 3
         seed_id = f"SAMPLED-{sample_index}-{query_type}-target_query-a{anchor_index}"
         label_pool = "DEFGHIJKLMNOPQRSTUVW"
@@ -496,7 +496,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
     def test_sample_task_world_never_resamples_on_numerical_answers(self) -> None:
         for query_type in (
             "ate",
-            "counterfactual_transition_bounds",
+            "individual_counterfactual_probability",
             "backadj_minimal_sets",
             "best_intervention",
             "mediator_set",
@@ -664,17 +664,19 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 self.assertLessEqual(width, 4)
                 self.assertIn(seed["observation_bandwidth"], range(1, 7))
 
-    def test_counterfactual_bounds_use_the_same_main_pipeline_and_k_m_surface(self) -> None:
+    def test_individual_counterfactual_probability_uses_main_pipeline_and_k_m_surface(
+        self,
+    ) -> None:
         seeds = iter_sampled_seeds(
             self.grammar,
             count=30,
-            query_types=("counterfactual_transition_bounds",),
+            query_types=("individual_counterfactual_probability",),
         )
         self.assertTrue(seeds)
         widths: set[int] = set()
         bandwidths: set[int] = set()
         for seed in seeds:
-            self.assertEqual(seed["query"]["type"], "counterfactual_transition_bounds")
+            self.assertEqual(seed["query"]["type"], "individual_counterfactual_probability")
             self.assertNotIn("answerability", seed)
             self.assertNotIn("answerability_scope", seed)
             labels = seed["visible_schema"]["variable_labels"]
@@ -685,8 +687,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertFalse(seed["manipulability"][outcome])
             widths.add(sum(seed["manipulability"].values()))
             bandwidths.add(int(seed["observation_bandwidth"]))
-            answer_mode = str(seed["query"]["answer_mode"])
-            self.assertEqual(answer_mode, "compatible_value")
+            self.assertNotIn("answer_mode", seed["query"])
             self.assertIn("factual_value", seed["query"])
             self.assertIn("counterfactual_value", seed["query"])
             self.assertIn("factual_outcome_state", seed["query"])

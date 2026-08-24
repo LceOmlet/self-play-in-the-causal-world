@@ -42,7 +42,7 @@ def _sampled_task(
         anchors = anchors_list[preferred_anchor]
         task_head = (
             "target_query"
-            if query_type in {"ate", "counterfactual_transition_bounds"}
+            if query_type in {"ate", "individual_counterfactual_probability"}
             else "decision"
         )
         seed = assemble_seed(
@@ -486,7 +486,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(payload["remaining_budget"], 8)
 
     def test_numeric_and_decision_tasks_run_from_prompt_to_terminal_score(self) -> None:
-        for query_type in ("ate", "counterfactual_transition_bounds", "best_intervention"):
+        for query_type in ("ate", "individual_counterfactual_probability", "best_intervention"):
             seed, world = _sampled_task(query_type)
             episode = WorldSpecEpisode(
                 world,
@@ -552,18 +552,12 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 episode.step(raw_answer)
 
-    def test_counterfactual_compatible_value_runs_to_terminal_score(self) -> None:
-        seed, world = _sampled_task("counterfactual_transition_bounds")
-        query = {**seed["query"], "answer_mode": "compatible_value"}
-        seed = {
-            **seed,
-            "query": query,
-            "visible_schema": {**seed["visible_schema"], "query": query},
-        }
+    def test_individual_counterfactual_probability_runs_to_terminal_score(self) -> None:
+        seed, world = _sampled_task("individual_counterfactual_probability")
         episode = WorldSpecEpisode(
             world,
             seed,
-            OutcomeTape("runtime-counterfactual-compatible-value"),
+            OutcomeTape("runtime-individual-counterfactual-probability"),
             budget=Budget(max_observations=16),
             measure_max=2,
         )

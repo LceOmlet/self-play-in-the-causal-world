@@ -21,9 +21,7 @@ from cpt_world import (
 )
 
 
-def _query_indices(
-    world: Any, seed: dict[str, Any]
-) -> tuple[int, int, int, int, int, int]:
+def _query_indices(world: Any, seed: dict[str, Any]) -> tuple[int, int, int, int, int, int]:
     query = seed["query"]
     visible_to_internal = {
         visible: internal for internal, visible in seed["visible_schema"]["variable_labels"].items()
@@ -32,9 +30,7 @@ def _query_indices(
     outcome = world.variables.index(visible_to_internal[query["outcome"]])
     factual = int(str(query["factual_value"]).removeprefix("state_"))
     counterfactual = int(str(query["counterfactual_value"]).removeprefix("state_"))
-    factual_outcome = int(
-        str(query["factual_outcome_state"]).removeprefix("state_")
-    )
+    factual_outcome = int(str(query["factual_outcome_state"]).removeprefix("state_"))
     outcome_state = int(str(query["outcome_state"]).removeprefix("state_"))
     return treatment, outcome, factual, counterfactual, factual_outcome, outcome_state
 
@@ -100,9 +96,9 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
             grammar,
             start_seed=sample_index,
             count=1,
-            query_types=("counterfactual_transition_bounds",),
+            query_types=("individual_counterfactual_probability",),
         )[0]
-        world = sample_task_world(grammar, sample_index, "counterfactual_transition_bounds")
+        world = sample_task_world(grammar, sample_index, "individual_counterfactual_probability")
         (
             treatment,
             outcome,

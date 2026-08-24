@@ -16,7 +16,7 @@ _CANDIDATE_SEED_MANIFEST_RELPATH = Path("data") / "seeds" / "candidate-v1.json"
 ALLOWED_CANDIDATE_QUERY_TYPES = frozenset(
     {
         "ate",
-        "counterfactual_transition_bounds",
+        "individual_counterfactual_probability",
         "backadj_minimal_sets",
         "best_intervention",
         "mediator_set",

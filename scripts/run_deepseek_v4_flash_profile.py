@@ -40,17 +40,16 @@ from cpt_world import (
 
 API_URL = "https://api.ponderera.com/v1/chat/completions"
 MODEL = "deepseek-v4-flash"
-RESULT_SCHEMA = "dolens-ponderera-profile-v4"
-SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v3"
+RESULT_SCHEMA = "dolens-ponderera-profile-v5"
+SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v4"
 MASTER_SEED = 2026082201
 QUERY_TYPES = (
     "ate",
-    "counterfactual_transition_bounds",
+    "individual_counterfactual_probability",
     "best_intervention",
     "backadj_minimal_sets",
     "mediator_set",
 )
-COUNTERFACTUAL_MODES = ("compatible_value",)
 DEFAULT_REPEATS = 30
 DEFAULT_TIMEOUT_SECONDS = 180.0
 
@@ -159,13 +158,9 @@ def _materialize(entry: Mapping[str, Any]) -> tuple[WorldSpec, Mapping[str, Any]
         str(entry["query_type"]),
         int(entry["anchor_index"]),
     )
-    answer_mode = entry.get("answer_mode")
-    matches = [
-        (world, seed) for world, seed in tasks if seed["query"].get("answer_mode") == answer_mode
-    ]
-    if len(matches) != 1:
+    if len(tasks) != 1:
         raise ValueError("schedule entry did not resolve to exactly one task")
-    return matches[0]
+    return tasks[0]
 
 
 def _schedule_entry(
@@ -232,19 +227,9 @@ def _schedule_entry(
                     ),
                     flush=True,
                 )
-            answer_mode = (
-                COUNTERFACTUAL_MODES[repeat % len(COUNTERFACTUAL_MODES)]
-                if query_type == "counterfactual_transition_bounds"
-                else None
-            )
-            matches = [
-                (world, seed)
-                for world, seed in tasks
-                if seed["query"].get("answer_mode") == answer_mode
-            ]
-            if len(matches) != 1:
+            if len(tasks) != 1:
                 continue
-            world, seed = matches[0]
+            world, seed = tasks[0]
             episode_id = f"{query_type}:{repeat:02d}"
             episode = WorldSpecEpisode(
                 world,
@@ -261,7 +246,6 @@ def _schedule_entry(
                 "max_domain_size": max_domain_size,
                 "world_seed": world_seed,
                 "anchor_index": anchor_index,
-                "answer_mode": answer_mode,
                 "seed_id": seed["seed_id"],
                 "world_sha256": _sha256(_world_payload(world)),
                 "seed_sha256": _sha256(seed),
@@ -728,7 +712,7 @@ def summarize(document: Mapping[str, Any]) -> Mapping[str, Any]:
             metrics[query_type]["mean_squared_endpoint_error"].append(
                 _as_float(score["mean_squared_endpoint_error"])
             )
-        elif kind == "counterfactual_compatible_value":
+        elif kind == "individual_counterfactual_probability":
             metrics[query_type]["compatible"].append(1.0 if score["compatible"] else 0.0)
             metrics[query_type]["distance_to_interval"].append(
                 _as_float(score["distance_to_interval"])

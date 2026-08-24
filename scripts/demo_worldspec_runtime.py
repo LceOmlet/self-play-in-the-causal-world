@@ -24,12 +24,12 @@ from cpt_world import (
 
 _DEMO_SEEDS = {
     "ate": 0,
-    "counterfactual_transition_bounds": 0,
+    "individual_counterfactual_probability": 0,
     "best_intervention": 0,
     "backadj_minimal_sets": 0,
     "mediator_set": 5,
 }
-_NUMERICAL_MODES = frozenset({"ate", "counterfactual_transition_bounds", "best_intervention"})
+_NUMERICAL_MODES = frozenset({"ate", "individual_counterfactual_probability", "best_intervention"})
 
 
 def _jsonable(value: Any) -> Any:
@@ -54,7 +54,7 @@ def _task(query_type: str) -> tuple[Mapping[str, Any], WorldSpec, str]:
     sampling_status = "current_admitted_sampler"
     task_head = (
         "target_query"
-        if query_type in {"ate", "counterfactual_transition_bounds"}
+        if query_type in {"ate", "individual_counterfactual_probability"}
         else ("decision" if query_type == "best_intervention" else "discovery")
     )
     seed = assemble_seed(
@@ -107,7 +107,7 @@ def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, A
     query_type = seed["query"]["type"]
     if query_type == "ate":
         return {"type": "answer", "effect": float(truth["effect"])}
-    if query_type == "counterfactual_transition_bounds":
+    if query_type == "individual_counterfactual_probability":
         return {
             "type": "answer",
             "lower": float(truth["lower"]),

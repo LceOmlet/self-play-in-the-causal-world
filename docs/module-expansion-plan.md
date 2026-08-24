@@ -43,7 +43,7 @@
 ### Phase 2：查询维度
 
 ```text
-当前: ate, counterfactual_transition_bounds, backadj_minimal_sets, best_intervention, mediator_set
+当前: ate, individual_counterfactual_probability, backadj_minimal_sets, best_intervention, mediator_set
 下一步: intervention_target_selection（LeGIT）
 之后: path_specific_effect / minimal_adjustment_set（需先冻结答案 schema）
 ```
@@ -89,7 +89,7 @@ DONE: iter_world_space 先枚举 upstream fixtures 再采样 sampled_dag，输�
 DONE: rendering.py 实现 seed 任务渲染边界；6 个 pinned seed 均可渲染
 DONE: legal_query_anchors 限制 sampled seeds 只枚举结构合法锚点组合
 DONE: registry 显式区分 registered / implemented / diagnostic_only
-DONE: query_truth.py 实现 ate / counterfactual_transition_bounds / backadj / mediator_set / best_intervention；collider 条件对比仅保留为 ATE 诊断函数
+DONE: query_truth.py 实现 ate / individual_counterfactual_probability / backadj / mediator_set / best_intervention；collider 条件对比仅保留为 ATE 诊断函数
 DONE: task_scoring.py 实现 target_query / decision / discovery parser 与 raw scorer
 DONE: 五类 query 均进入同一个 iter_sampled_seeds 主管线；结构 discovery 复用 sample_world，不新增 sampler
 DONE: task_answerability 保留为候选族内的独立诊断函数；不接入五类任务主管线；task_difficulty_profile 与该诊断分开

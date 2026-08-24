@@ -25,7 +25,7 @@ inside a hidden finite world.
 5. **Solution.** Finite CPT worlds provide an exact world law; K and M define the
    interaction surface; a common runtime executes observations and hard
    interventions; exact query owners verify terminal answers; compatible-SCM
-   bounds define counterfactual legality.
+   bounds verify individual counterfactual probabilities.
 6. **Evidence.** Five task modes run end to end, exact acceleration matches the
    full-joint oracle, action-keyed sampling passes invariance tests, and sparse
    15-node benchmarks obtain large speedups.
@@ -60,7 +60,7 @@ inside a hidden finite world.
 
 ### 4. One world engine, five causal tasks
 
-- Table: ATE, counterfactual bounds/value, experimental decision, backdoor sets,
+- Table: ATE, individual counterfactual probability, experimental decision, backdoor sets,
   mediator set/order.
 - Explain query-action separation per task.
 - Explain compatible-SCM interval with the 0.2/0.8 example.
