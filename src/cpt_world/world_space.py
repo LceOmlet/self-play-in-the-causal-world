@@ -29,7 +29,6 @@ from pathlib import Path
 from typing import Any
 
 from .registry import (
-    COUNTERFACTUAL_ANSWER_MODES,
     HIDING_MODES,
     QUERY_TYPES,
     TASK_HEADS,
@@ -1260,13 +1259,44 @@ def _sample_task_attributes(
             if reference != comparison
         )
         reference, comparison = rng.choice(ordered_pairs)
-        anchors.update(
-            {
-                "baseline_value": reference,
-                "treatment_value": comparison,
-                "outcome_state": rng.randrange(world.domains[outcome]),
-            }
-        )
+        if query_type == "ate":
+            anchors.update(
+                {
+                    "baseline_value": reference,
+                    "treatment_value": comparison,
+                    "outcome_state": rng.randrange(world.domains[outcome]),
+                }
+            )
+        else:
+            from .query_truth import interventional_probability
+
+            probabilities = tuple(
+                float(
+                    interventional_probability(
+                        world,
+                        {treatment: reference},
+                        outcome,
+                        state,
+                    )
+                )
+                for state in range(world.domains[outcome])
+            )
+            draw = rng.random()
+            cumulative = 0.0
+            factual_outcome_state = len(probabilities) - 1
+            for state, probability in enumerate(probabilities):
+                cumulative += probability
+                if draw < cumulative:
+                    factual_outcome_state = state
+                    break
+            anchors.update(
+                {
+                    "factual_value": reference,
+                    "counterfactual_value": comparison,
+                    "factual_outcome_state": factual_outcome_state,
+                    "outcome_state": rng.randrange(world.domains[outcome]),
+                }
+            )
     elif query_type == "best_intervention":
         outcome = int(roles["outcome"])
         anchors.update(
@@ -1369,8 +1399,8 @@ def assemble_seed(
     used. Masks default to the anchor-minimal rule from
     :func:`default_manipulability`; pinned seed masks can be passed explicitly.
     ``observation_bandwidth`` is optional for legacy/manual seeds and fixed in
-    every seed emitted by the main sampler. ``answer_mode`` only selects one
-    of the two registered terminal formats for a counterfactual-bound task.
+    every seed emitted by the main sampler. ``answer_mode`` is accepted only
+    for the registered scalar counterfactual terminal format.
     """
 
     if not isinstance(seed_id, str) or not seed_id:
@@ -1425,7 +1455,7 @@ def assemble_seed(
                 "outcome": anchor_label("outcome"),
             }
         )
-        if query_type in {"ate", "counterfactual_transition_bounds"}:
+        if query_type == "ate":
             treatment_name = world.variables[int(selected_anchors["treatment"])]
             baseline_value = int(selected_anchors.get("baseline_value", 0))
             treatment_value = int(selected_anchors.get("treatment_value", 1))
@@ -1436,6 +1466,27 @@ def assemble_seed(
             query_visible["baseline_value"] = visible_state(treatment_name, baseline_value)
             query_visible["outcome_state"] = visible_state(outcome_name, outcome_state)
         if query_type == "counterfactual_transition_bounds":
+            treatment_name = world.variables[int(selected_anchors["treatment"])]
+            factual_value = int(selected_anchors.get("factual_value", 0))
+            counterfactual_value = int(selected_anchors.get("counterfactual_value", 1))
+            factual_outcome_state = int(selected_anchors.get("factual_outcome_state", 0))
+            outcome_state = int(selected_anchors.get("outcome_state", 1))
+            if factual_value == counterfactual_value:
+                raise ValueError(
+                    f"{seed_id}: factual and counterfactual treatment values must differ"
+                )
+            query_visible.update(
+                {
+                    "factual_value": visible_state(treatment_name, factual_value),
+                    "counterfactual_value": visible_state(
+                        treatment_name, counterfactual_value
+                    ),
+                    "factual_outcome_state": visible_state(
+                        outcome_name, factual_outcome_state
+                    ),
+                    "outcome_state": visible_state(outcome_name, outcome_state),
+                }
+            )
             if answer_mode is not None:
                 query_visible["answer_mode"] = answer_mode
             query_visible["answer_mode"] = counterfactual_answer_mode(query_visible)
@@ -1595,33 +1646,8 @@ def assemble_sampled_anchor_tasks(
         manipulability=manipulability,
         observation_bandwidth=observation_bandwidth,
     )
-    answer_modes: tuple[str | None, ...] = (
-        tuple(sorted(COUNTERFACTUAL_ANSWER_MODES))
-        if query_type == "counterfactual_transition_bounds"
-        else (None,)
-    )
-    assembled_tasks: list[tuple[WorldSpec, Mapping[str, Any]]] = []
-    for answer_mode in answer_modes:
-        seed_id = f"{base_seed_id}-mode-{answer_mode}" if answer_mode is not None else base_seed_id
-        if answer_mode is None:
-            assembled = base_assembled
-        else:
-            query = {
-                **base_assembled["query"],
-                "answer_mode": answer_mode,
-            }
-            assembled = {
-                **base_assembled,
-                "seed_id": seed_id,
-                "query": query,
-                "visible_schema": {
-                    **base_assembled["visible_schema"],
-                    "query": query,
-                },
-            }
-        render_seed_prompt(assembled)
-        assembled_tasks.append((task_world, assembled))
-    return tuple(assembled_tasks)
+    render_seed_prompt(base_assembled)
+    return ((task_world, base_assembled),)
 
 
 def iter_sampled_seeds(

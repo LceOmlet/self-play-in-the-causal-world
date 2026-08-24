@@ -125,6 +125,7 @@ class RenderedAteQuerySurface:
     treatment_value: int
     baseline_value: int
     outcome_state: int
+    factual_outcome_state: int | None
     legal_targets: tuple[int, ...]
     readable: tuple[int, ...]
     hiding_modes: tuple[str, ...]
@@ -142,6 +143,7 @@ class RenderedAteQuerySurface:
             self.treatment_value,
             self.baseline_value,
             self.outcome_state,
+            self.factual_outcome_state,
             self.legal_targets,
             self.readable,
             tuple(sorted(self.hiding_modes)),
@@ -289,38 +291,37 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         answer_schema = ['{"type":"answer","effect": <number in [-1,1]>}']
     elif query_type == "counterfactual_transition_bounds":
         treatment_states = ctx.states_for_label(treatment)
-        treatment_state = ctx.resolve_state_token(treatment, ctx.query.get("treatment_value", 1))
-        baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("baseline_value", 0))
-        outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state", 1))
-        if treatment_state == baseline_state:
-            raise ValueError("counterfactual treatment and baseline states must differ")
-        if treatment_state not in treatment_states or baseline_state not in treatment_states:
+        factual_state = ctx.resolve_state_token(treatment, ctx.query.get("factual_value"))
+        counterfactual_state = ctx.resolve_state_token(
+            treatment, ctx.query.get("counterfactual_value")
+        )
+        factual_outcome_state = ctx.resolve_state_token(
+            outcome, ctx.query.get("factual_outcome_state")
+        )
+        target_outcome_state = ctx.resolve_state_token(
+            outcome, ctx.query.get("outcome_state")
+        )
+        if factual_state == counterfactual_state:
+            raise ValueError("factual and counterfactual treatment states must differ")
+        if factual_state not in treatment_states or counterfactual_state not in treatment_states:
             raise ValueError("counterfactual treatment states are outside the rendered domain")
-        answer_mode = counterfactual_answer_mode(ctx.query)
+        counterfactual_answer_mode(ctx.query)
         lines = [
             (
-                f"q = P({outcome}_do({treatment}={treatment_state})={outcome_state} AND "
-                f"{outcome}_do({treatment}={baseline_state})!={outcome_state})."
+                f"One individual was assigned do({treatment}={factual_state}) and "
+                f"their observed outcome was {outcome}={factual_outcome_state}."
             ),
             (
-                "The interval ranges over every cross-world coupling compatible with the two "
-                "CPT-World interventional marginals; no single hidden SCM or coupling is selected."
+                f"Estimate q = P({outcome}_do({treatment}={counterfactual_state})="
+                f"{target_outcome_state} | {outcome}_do({treatment}={factual_state})="
+                f"{factual_outcome_state}) for this same individual."
             ),
+            "Return one counterfactual probability compatible with the hidden CPT-World.",
         ]
-        if answer_mode == "sharp_interval":
-            lines.insert(0, "Return the sharp legal interval [lower, upper] for")
-            answer_schema = [
-                '{"type":"answer","lower": <number in [0,1]>,"upper": <number in [0,1]>}'
-            ]
-        else:
-            lines.insert(0, "Return one value for q that is compatible with the sharp interval.")
-            lines.append(
-                "This checks compatibility only; it does not claim that q is point identified."
-            )
-            answer_schema = ['{"type":"answer","value": <number in [0,1]>}']
+        answer_schema = ['{"type":"answer","value": <number in [0,1]>}']
         if treatment not in ctx.legal_targets() and outcome not in ctx.legal_targets():
             lines.append(
-                "Both query endpoints are readonly. Identify the interval indirectly "
+                "Both query endpoints are readonly. Identify the probability indirectly "
                 "from experiments on the legal do targets."
             )
     elif query_type == "backadj_minimal_sets":
@@ -587,8 +588,18 @@ def _rendered_target_query_surface(
     label_positions = {label: index for index, label in enumerate(labels)}
     treatment = ctx.resolve_label(ctx.query.get("treatment"))
     outcome = ctx.resolve_label(ctx.query.get("outcome"))
-    treatment_state = ctx.resolve_state_token(treatment, ctx.query.get("treatment_value", 1))
-    baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("baseline_value", 0))
+    if query_type == "counterfactual_transition_bounds":
+        treatment_state = ctx.resolve_state_token(
+            treatment, ctx.query.get("counterfactual_value")
+        )
+        baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("factual_value"))
+        factual_outcome_state = ctx.resolve_state_token(
+            outcome, ctx.query.get("factual_outcome_state")
+        )
+    else:
+        treatment_state = ctx.resolve_state_token(treatment, ctx.query.get("treatment_value", 1))
+        baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("baseline_value", 0))
+        factual_outcome_state = None
     treatment_states = ctx.states_for_label(treatment)
     outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state", 1))
     outcome_states = ctx.states_for_label(outcome)
@@ -610,6 +621,11 @@ def _rendered_target_query_surface(
         treatment_value=treatment_states.index(treatment_state),
         baseline_value=treatment_states.index(baseline_state),
         outcome_state=outcome_states.index(outcome_state),
+        factual_outcome_state=(
+            outcome_states.index(factual_outcome_state)
+            if factual_outcome_state is not None
+            else None
+        ),
         legal_targets=tuple(label_positions[label] for label in legal_targets),
         readable=tuple(label_positions[label] for label in readable_labels),
         hiding_modes=ctx.hiding_modes,

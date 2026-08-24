@@ -22,6 +22,8 @@ from .query_truth import (
 from .registry import counterfactual_answer_mode
 from .world_space import WorldSpec
 
+_NUMERICAL_TOLERANCE = 1e-9
+
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     result: dict[str, Any] = {}
@@ -127,25 +129,11 @@ def parse_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
         }
 
     if query_type == "counterfactual_transition_bounds" and head == "target_query":
-        answer_mode = counterfactual_answer_mode(query)
-        if answer_mode == "sharp_interval":
-            if set(value) != {"type", "lower", "upper"}:
-                raise ValueError("answer must contain exactly type, lower, and upper")
-            lower = _finite_float(value["lower"], field="lower")
-            upper = _finite_float(value["upper"], field="upper")
-            if lower < 0.0 or upper < 0.0:
-                raise ValueError("counterfactual interval endpoints must lie in [0, 1]")
-            if lower > upper:
-                raise ValueError("counterfactual interval lower endpoint exceeds upper endpoint")
-            return {
-                "kind": "counterfactual_interval",
-                "lower": lower,
-                "upper": upper,
-            }
+        counterfactual_answer_mode(query)
         if set(value) != {"type", "value"}:
             raise ValueError("answer must contain exactly type and value")
         point = _finite_float(value["value"], field="value")
-        if point < 0.0:
+        if not 0.0 <= point <= 1.0:
             raise ValueError("counterfactual value must lie in [0, 1]")
         return {"kind": "counterfactual_compatible_value", "value": point}
 
@@ -300,24 +288,6 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "reward_scalarization": "not_frozen",
         }
 
-    if parsed["kind"] == "counterfactual_interval":
-        truth_lower = truth["lower"]
-        truth_upper = truth["upper"]
-        predicted_lower = Fraction(parsed["lower"])
-        predicted_upper = Fraction(parsed["upper"])
-        lower_error = abs(predicted_lower - truth_lower)
-        upper_error = abs(predicted_upper - truth_upper)
-        return {
-            "kind": "counterfactual_interval",
-            "truth": {"lower": truth_lower, "upper": truth_upper},
-            "prediction": {"lower": predicted_lower, "upper": predicted_upper},
-            "lower_abs_error": lower_error,
-            "upper_abs_error": upper_error,
-            "mean_absolute_endpoint_error": (lower_error + upper_error) / 2,
-            "mean_squared_endpoint_error": (lower_error**2 + upper_error**2) / 2,
-            "reward_scalarization": "not_frozen",
-        }
-
     if parsed["kind"] == "counterfactual_compatible_value":
         truth_lower = truth["lower"]
         truth_upper = truth["upper"]
@@ -327,8 +297,9 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "kind": "counterfactual_compatible_value",
             "truth": {"lower": truth_lower, "upper": truth_upper},
             "prediction": prediction,
-            "compatible": distance == 0,
+            "compatible": float(distance) <= _NUMERICAL_TOLERANCE,
             "distance_to_interval": distance,
+            "numerical_tolerance": _NUMERICAL_TOLERANCE,
             "reward_scalarization": "not_frozen",
         }
 

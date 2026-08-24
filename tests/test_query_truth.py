@@ -6,6 +6,7 @@ from dataclasses import asdict
 from fractions import Fraction
 from itertools import combinations, product
 from pathlib import Path
+from unittest.mock import patch
 
 from cpt_world import (
     OWNER_STATUS_IMPLEMENTED,
@@ -16,6 +17,8 @@ from cpt_world import (
     collider_bias_effect,
     compute_query_truth,
     counterfactual_transition_bounds,
+    individual_counterfactual_frechet_outer_bounds,
+    individual_counterfactual_probability_bounds,
     interventional_frechet_transition_outer_bounds,
     load_bnlearn_world,
     load_candidate_seed_manifest,
@@ -23,9 +26,12 @@ from cpt_world import (
     mediator_set_truth,
     query_truth_owner_status,
     reference_counterfactual_transition_bounds,
+    reference_individual_counterfactual_probability_bounds,
     sample_world,
     sample_worldspec_assignment,
     sparse_counterfactual_transition_bounds,
+    sparse_individual_counterfactual_probability_bounds,
+    validate_individual_counterfactual_probability,
     worldspec_interventional_distribution,
     worldspec_projected_interventional_distribution,
 )
@@ -368,6 +374,134 @@ class QueryTruthOwnerTests(unittest.TestCase):
             counterfactual_transition_bounds(world, "X", "Y"),
             (Fraction(3, 5), Fraction(4, 5)),
         )
+
+    def test_individual_counterfactual_direct_bounds_condition_on_factual_outcome(
+        self,
+    ) -> None:
+        world = _binary_chain_world()
+        expected = (Fraction(2, 3), Fraction(1))
+        arguments = {
+            "factual_value": 0,
+            "counterfactual_value": 1,
+            "factual_outcome_state": 0,
+            "target_outcome_state": 1,
+        }
+        self.assertEqual(
+            individual_counterfactual_probability_bounds(world, "X", "Y", **arguments),
+            expected,
+        )
+        self.assertEqual(
+            reference_individual_counterfactual_probability_bounds(
+                world, "X", "Y", **arguments
+            ),
+            expected,
+        )
+        self.assertEqual(
+            individual_counterfactual_frechet_outer_bounds(
+                world, "X", "Y", **arguments
+            ),
+            expected,
+        )
+
+    def test_individual_counterfactual_sparse_owner_matches_explicit_reference(
+        self,
+    ) -> None:
+        world = WorldSpec(
+            family="test_dag",
+            topology="X-to-M-to-Y",
+            variables=("X", "M", "Y"),
+            domains=(2, 2, 2),
+            state_names=(("0", "1"),) * 3,
+            edges=((0, 1), (1, 2)),
+            parents={0: (), 1: (0,), 2: (1,)},
+            cpt={
+                0: ((Fraction(1, 2), Fraction(1, 2)),),
+                1: (
+                    (Fraction(4, 5), Fraction(1, 5)),
+                    (Fraction(1, 5), Fraction(4, 5)),
+                ),
+                2: (
+                    (Fraction(9, 10), Fraction(1, 10)),
+                    (Fraction(1, 10), Fraction(9, 10)),
+                ),
+            },
+        )
+        for factual_value, counterfactual_value in ((0, 1), (1, 0)):
+            for factual_state, target_state in product(range(2), repeat=2):
+                arguments = {
+                    "factual_value": factual_value,
+                    "counterfactual_value": counterfactual_value,
+                    "factual_outcome_state": factual_state,
+                    "target_outcome_state": target_state,
+                }
+                with self.subTest(**arguments):
+                    expected = reference_individual_counterfactual_probability_bounds(
+                        world, "X", "Y", **arguments
+                    )
+                    sparse = sparse_individual_counterfactual_probability_bounds(
+                        world, 0, 2, **arguments
+                    )
+                    produced = individual_counterfactual_probability_bounds(
+                        world, "X", "Y", **arguments
+                    )
+                    self.assertAlmostEqual(sparse.lower, float(expected[0]), places=8)
+                    self.assertAlmostEqual(sparse.upper, float(expected[1]), places=8)
+                    self.assertAlmostEqual(float(produced[0]), float(expected[0]), places=8)
+                    self.assertAlmostEqual(float(produced[1]), float(expected[1]), places=8)
+                    outer = individual_counterfactual_frechet_outer_bounds(
+                        world, "X", "Y", **arguments
+                    )
+                    self.assertLessEqual(float(outer[0]), float(produced[0]) + 1e-9)
+                    self.assertGreaterEqual(float(outer[1]), float(produced[1]) - 1e-9)
+
+    def test_individual_counterfactual_no_path_is_same_person_identity(self) -> None:
+        world = _binary_world_from_edges(3, ((0, 1),))
+        common = {
+            "factual_value": 0,
+            "counterfactual_value": 1,
+            "factual_outcome_state": 1,
+        }
+        self.assertEqual(
+            individual_counterfactual_probability_bounds(
+                world, 0, 2, target_outcome_state=1, **common
+            ),
+            (Fraction(1), Fraction(1)),
+        )
+        self.assertEqual(
+            individual_counterfactual_probability_bounds(
+                world, 0, 2, target_outcome_state=0, **common
+            ),
+            (Fraction(0), Fraction(0)),
+        )
+
+    def test_individual_scalar_verifier_is_exact_or_fail_closed(self) -> None:
+        world = _binary_chain_world()
+        arguments = {
+            "factual_value": 0,
+            "counterfactual_value": 1,
+            "factual_outcome_state": 0,
+            "target_outcome_state": 1,
+        }
+        exact = validate_individual_counterfactual_probability(
+            world, "X", "Y", 0.8, **arguments
+        )
+        self.assertEqual(exact["status"], "exact")
+        self.assertTrue(exact["compatible"])
+
+        with patch(
+            "cpt_world.query_truth.individual_counterfactual_probability_bounds",
+            side_effect=RuntimeError("time limit reached"),
+        ):
+            rejected = validate_individual_counterfactual_probability(
+                world, "X", "Y", 0.0, **arguments
+            )
+            unresolved = validate_individual_counterfactual_probability(
+                world, "X", "Y", 0.8, **arguments
+            )
+        self.assertEqual(rejected["status"], "rejected_by_frechet_outer")
+        self.assertFalse(rejected["compatible"])
+        self.assertEqual(unresolved["status"], "unresolved_timeout")
+        self.assertIsNone(unresolved["compatible"])
 
     def test_markovian_counterfactual_bounds_can_be_tighter_than_marginal_frechet(
         self,

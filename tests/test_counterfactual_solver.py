@@ -4,7 +4,7 @@ import unittest
 from fractions import Fraction
 from unittest.mock import patch
 
-from pyscipopt import Model
+from pyscipopt import SCIP_RESULT, Model
 
 from cpt_world import (
     WorldSpec,
@@ -12,7 +12,9 @@ from cpt_world import (
 )
 from cpt_world.counterfactual_solver import (
     _eliminate_factor_tokens,
+    _exact_pairwise_map,
     _PairwiseMapOptimization,
+    _ResponsePricer,
     _SparseResponseModel,
     _SymbolicFactor,
     sparse_counterfactual_transition_bounds,
@@ -205,6 +207,34 @@ def _contract_transport_message(
 
 
 class CounterfactualSolverOptimizationTests(unittest.TestCase):
+    def test_farkas_pricing_does_not_erase_a_reduced_cost_certificate(self) -> None:
+        pricer = _ResponsePricer([], {})
+        pricer.begin_solve(deadline=None)
+        self.assertTrue(pricer.closed)
+        result = pricer._price(farkas=True)
+        self.assertEqual(result["result"], SCIP_RESULT.SUCCESS)
+        self.assertTrue(pricer.closed)
+
+    def test_pairwise_pricing_can_exactly_exclude_existing_responses(self) -> None:
+        unrestricted = _exact_pairwise_map(
+            {0: (0.0, 1.0), 1: (0.0, 2.0)},
+            {},
+            domain_size=2,
+            constant=0.0,
+        )
+        self.assertEqual(unrestricted.status, "optimal")
+        self.assertEqual(unrestricted.response, (0, 0))
+        excluded = _exact_pairwise_map(
+            {0: (0.0, 1.0), 1: (0.0, 2.0)},
+            {},
+            domain_size=2,
+            constant=0.0,
+            forbidden_responses=frozenset({(0, 0)}),
+        )
+        self.assertEqual(excluded.status, "optimal")
+        self.assertEqual(excluded.response, (1, 0))
+        self.assertAlmostEqual(excluded.value, 1.0)
+
     def test_probability_bound_preserves_local_transport_contraction(self) -> None:
         for domain_size in (3, 5):
             with self.subTest(domain_size=domain_size):

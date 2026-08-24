@@ -46,8 +46,8 @@ OWNER_STATUSES = frozenset(
     }
 )
 
-COUNTERFACTUAL_ANSWER_MODES = frozenset({"sharp_interval", "compatible_value"})
-DEFAULT_COUNTERFACTUAL_ANSWER_MODE = "sharp_interval"
+COUNTERFACTUAL_ANSWER_MODES = frozenset({"compatible_value"})
+DEFAULT_COUNTERFACTUAL_ANSWER_MODE = "compatible_value"
 
 
 def counterfactual_answer_mode(query: Mapping[str, Any]) -> str:
@@ -68,7 +68,7 @@ QUERY_TYPES: dict[str, Mapping[str, Any]] = {
     },
     "counterfactual_transition_bounds": {
         "anchors": ("treatment", "outcome"),
-        "answer_kind": "interval_or_compatible_value",
+        "answer_kind": "compatible_value",
         "task_heads": frozenset({"target_query"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },

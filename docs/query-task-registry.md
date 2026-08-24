@@ -8,7 +8,7 @@
 | query_type | anchors | answer_kind | 兼容 task_heads | truth owner |
 |---|---|---|---|---|
 | `ate` | treatment, outcome | single_effect | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
-| `counterfactual_transition_bounds` | treatment, outcome | interval_or_compatible_value | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，完整相容世界上的精确界） |
+| `counterfactual_transition_bounds` | treatment, outcome | compatible scalar value | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界精确界） |
 | `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
 | `best_intervention` | decision_target, outcome | intervention | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
@@ -28,6 +28,8 @@
 ```text
 ate_effect(world, treatment, outcome)
 counterfactual_transition_bounds(world, treatment, outcome)
+individual_counterfactual_probability_bounds(world, treatment, outcome, factual evidence)
+validate_individual_counterfactual_probability(world, treatment, outcome, scalar prediction)
 backdoor_adjustment_sets(world, treatment, outcome)
 collider_bias_effect(world, treatment, outcome, collider)  # ATE diagnostic only
 mediator_set_truth(world, treatment, outcome)
@@ -40,8 +42,9 @@ compute_query_truth(world, seed)
 - 任意有限离散 `WorldSpec`；
 - exact `Fraction`；
 - `ate` 默认 `state_1` vs `state_0`，可由显式状态索引覆盖；
-- `counterfactual_transition_bounds` 返回目标状态从 baseline 未发生到 treatment 发生的 sharp interval；在与完整 DAG、全部 CPT 行和公开因果语义相容的全部机制完成上优化，不选择隐藏 SCM；Fréchet 仅作诊断外界；
-- 同一 counterfactual world/query 由主采样管线成对渲染为 `sharp_interval` 和 `compatible_value`；二者共享 K、M 与符号表，后者只检查点是否兼容并报告到区间的连续距离；
+- `counterfactual_transition_bounds` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率；
+- 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率的 sharp interval，不选择隐藏 SCM；模型只返回一个 scalar，落在精确区间内即兼容；
+- 求解超时时，Fréchet 外界只能排除落在外界之外的 scalar；外界以内保持 unresolved，不会被当作正确答案；
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；
 - `mediator_set` 返回所有 X→Y 有向路径上的中间变量与路径边偏序；

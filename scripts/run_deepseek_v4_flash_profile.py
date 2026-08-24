@@ -40,8 +40,8 @@ from cpt_world import (
 
 API_URL = "https://api.ponderera.com/v1/chat/completions"
 MODEL = "deepseek-v4-flash"
-RESULT_SCHEMA = "dolens-ponderera-profile-v3"
-SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v2"
+RESULT_SCHEMA = "dolens-ponderera-profile-v4"
+SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v3"
 MASTER_SEED = 2026082201
 QUERY_TYPES = (
     "ate",
@@ -50,7 +50,7 @@ QUERY_TYPES = (
     "backadj_minimal_sets",
     "mediator_set",
 )
-COUNTERFACTUAL_MODES = ("sharp_interval", "compatible_value")
+COUNTERFACTUAL_MODES = ("compatible_value",)
 DEFAULT_REPEATS = 30
 DEFAULT_TIMEOUT_SECONDS = 180.0
 

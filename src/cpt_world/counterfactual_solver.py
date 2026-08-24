@@ -294,15 +294,20 @@ def _exact_pairwise_map(
     domain_size: int,
     constant: float,
     time_limit_seconds: float | None = None,
+    forbidden_responses: frozenset[tuple[int, ...]] = frozenset(),
 ) -> _PairwiseMapOptimization:
     """Solve the categorical pairwise MAP used by response pricing exactly."""
 
     started = time.perf_counter()
-    min_sum = _exact_pairwise_min_sum(
-        unary,
-        pairwise,
-        domain_size=domain_size,
-        constant=constant,
+    min_sum = (
+        None
+        if forbidden_responses
+        else _exact_pairwise_min_sum(
+            unary,
+            pairwise,
+            domain_size=domain_size,
+            constant=constant,
+        )
     )
     if min_sum is not None:
         return _PairwiseMapOptimization(
@@ -332,6 +337,16 @@ def _exact_pairwise_map(
     }
     for context in unary:
         model.addCons(quicksum(choices[(context, state)] for state in range(domain_size)) == 1.0)
+    for response in forbidden_responses:
+        if len(response) != len(unary):
+            raise ValueError("forbidden response has the wrong number of contexts")
+        model.addCons(
+            quicksum(
+                choices[(context, response[context])]
+                for context in range(len(unary))
+            )
+            <= len(unary) - 1
+        )
     objective: Any = constant + quicksum(
         unary[context][state] * choices[(context, state)]
         for context in unary
@@ -390,6 +405,8 @@ def _exact_pairwise_map(
                 for right_state in range(domain_size)
             )
         backend = "transport"
+    if forbidden_responses:
+        backend += "_excluding_existing"
     model.setObjective(objective, "minimize")
     model.optimize()
     status = str(model.getStatus())
@@ -571,15 +588,47 @@ class _ResponsePricer(Pricer):
             return False
         if pricing.response is None:
             raise RuntimeError("optimal pricing returned no deterministic response")
-        if pricing.response in {response for response, _ in block.columns}:
-            raise RuntimeError("pricing returned a strictly improving existing column")
+        existing = frozenset(response for response, _ in block.columns)
+        if pricing.response in existing:
+            remaining = None
+            if self.deadline is not None:
+                remaining = self.deadline - time.perf_counter()
+                if remaining <= 0.0:
+                    self.timed_out = True
+                    self.model.interruptSolve()
+                    return None
+            pricing = _exact_pairwise_map(
+                unary,
+                pairwise,
+                domain_size=domain_size,
+                constant=constant,
+                time_limit_seconds=remaining,
+                forbidden_responses=existing,
+            )
+            self.scip_fallback_calls += 1
+            if pricing.status == "infeasible":
+                return False
+            if pricing.status == "timelimit":
+                self.timed_out = True
+                self.model.interruptSolve()
+                return None
+            if pricing.status != "optimal":
+                raise RuntimeError(
+                    "response repricing excluding existing columns did not solve "
+                    "to global optimality"
+                )
+            if not self.model.isLT(pricing.value, -_SCIP_NUMERICAL_TOLERANCE):
+                return False
+            if pricing.response is None or pricing.response in existing:
+                raise RuntimeError("exact response repricing failed to return an unseen column")
         self._add_response_column(block, pricing.response)
         return True
 
     def _price(self, *, farkas: bool) -> dict[str, Any]:
         round_state = _PricingRoundState(farkas=farkas)
         self.rounds.append(round_state)
-        self.closed = False
+        if not farkas:
+            self.closed = False
         generated_before = self.generated_columns
         for block in self.blocks:
             generated = self._price_block(block, farkas=farkas)
@@ -691,14 +740,22 @@ def _token_states(
     world: WorldSpec,
     token: tuple[int, int],
     outcome: int,
-    outcome_state: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None = None,
 ) -> tuple[int, ...]:
-    """Return the states compatible with the terminal transition event."""
+    """Return states compatible with the selected two-world outcome event."""
 
+    if outcome_events is None:
+        if outcome_state is None:
+            raise ValueError("outcome_state is required for a transition event")
+        outcome_events = (
+            tuple(state for state in range(world.domains[outcome]) if state != outcome_state),
+            (outcome_state,),
+        )
     if token == (outcome, 0):
-        return tuple(state for state in range(world.domains[outcome]) if state != outcome_state)
+        return outcome_events[0]
     if token == (outcome, 1):
-        return (outcome_state,)
+        return outcome_events[1]
     return tuple(range(_token_domain(world, token)))
 
 
@@ -790,7 +847,8 @@ def _eliminate_factor_tokens(
     local_factor: _SymbolicFactor,
     *,
     outcome: int,
-    outcome_state: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None = None,
     auxiliary_values: list[tuple[Any, float]],
     probability_message_bounds: bool = True,
 ) -> list[_SymbolicFactor]:
@@ -810,13 +868,19 @@ def _eliminate_factor_tokens(
     upper_bounds: dict[tuple[int, ...], float] = {}
     initial_values: dict[tuple[int, ...], float] = {}
     for assignment in product(
-        *(_token_states(world, item, outcome, outcome_state) for item in union_scope)
+        *(
+            _token_states(world, item, outcome, outcome_state, outcome_events)
+            for item in union_scope
+        )
     ):
         terms: list[Any] = []
         upper = 0.0
         initial = 0.0
         for eliminated_assignment in product(
-            *(_token_states(world, item, outcome, outcome_state) for item in tokens)
+            *(
+                _token_states(world, item, outcome, outcome_state, outcome_events)
+                for item in tokens
+            )
         ):
             full_assignment = (*assignment, *eliminated_assignment)
             term: Any = 1.0
@@ -865,9 +929,10 @@ class _SparseResponseModel:
         *,
         baseline_value: int,
         treatment_value: int,
-        outcome_state: int,
+        outcome_state: int | None,
         sense: str,
         target_outer_bounds: tuple[float, float],
+        outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None = None,
         probability_message_bounds: bool = True,
         on_demand_response_columns: bool = True,
     ) -> None:
@@ -877,6 +942,7 @@ class _SparseResponseModel:
         self.baseline_value = baseline_value
         self.treatment_value = treatment_value
         self.outcome_state = outcome_state
+        self.outcome_events = outcome_events
         self.sense = sense
         self.target_outer_bounds = target_outer_bounds
         self.probability_message_bounds = probability_message_bounds
@@ -1312,6 +1378,7 @@ class _SparseResponseModel:
                 local_factor,
                 outcome=self.outcome,
                 outcome_state=self.outcome_state,
+                outcome_events=self.outcome_events,
                 auxiliary_values=self.auxiliary_values,
                 probability_message_bounds=self.probability_message_bounds,
             )
@@ -1455,46 +1522,30 @@ class _SparseResponseModel:
         elapsed = time.perf_counter() - started
         scip_status = str(self.model.getStatus())
         pricing_closed = self.pricer.closed and not self.pricer.timed_out
+        primal_bound = float(self.model.getPrimalbound())
         certified_optimal = scip_status == "optimal" and pricing_closed
         if not certified_optimal:
             raise RuntimeError(
                 "SCIP did not certify an optimal counterfactual bound: "
                 f"status={scip_status}, pricing_closed={self.pricer.closed}, "
-                f"pricing_timed_out={self.pricer.timed_out}"
+                f"pricing_timed_out={self.pricer.timed_out}, "
+                f"sense={self.sense}, primal={primal_bound}"
             )
-        return float(self.model.getPrimalbound()), elapsed
+        return primal_bound, elapsed
 
 
-def sparse_counterfactual_transition_bounds(
+def _solve_sparse_two_world_event_bounds(
     world: WorldSpec,
     treatment: int,
     outcome: int,
     *,
     treatment_value: int,
     baseline_value: int,
-    outcome_state: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None,
+    target_outer_bounds: tuple[float, float],
     time_limit_seconds: float | None = None,
 ) -> CounterfactualBoundsResult:
-    """Globally solve both sharp endpoints using implicit sparse columns.
-
-    A time limit is fail-closed: if either endpoint is not globally optimal,
-    the solver raises instead of returning a partial interval.
-    """
-
-    if time_limit_seconds is not None and time_limit_seconds <= 0:
-        raise ValueError("time_limit_seconds must be positive")
-    from .query_truth import interventional_frechet_transition_outer_bounds
-
-    outer_lower, outer_upper = interventional_frechet_transition_outer_bounds(
-        world,
-        treatment,
-        outcome,
-        treatment_value=treatment_value,
-        baseline_value=baseline_value,
-        outcome_state=outcome_state,
-    )
-    target_outer_bounds = (float(outer_lower), float(outer_upper))
-
     build_started = time.perf_counter()
     lower_model = _SparseResponseModel(
         world,
@@ -1505,6 +1556,7 @@ def sparse_counterfactual_transition_bounds(
         outcome_state=outcome_state,
         sense="minimize",
         target_outer_bounds=target_outer_bounds,
+        outcome_events=outcome_events,
     )
     lower_build_seconds = time.perf_counter() - build_started
     lower, lower_seconds = lower_model.optimize(time_limit_seconds=time_limit_seconds)
@@ -1527,4 +1579,121 @@ def sparse_counterfactual_transition_bounds(
             default=0,
         ),
         auxiliary_variables=len(lower_model.auxiliary_values),
+    )
+
+
+def sparse_counterfactual_transition_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    outcome_state: int,
+    time_limit_seconds: float | None = None,
+) -> CounterfactualBoundsResult:
+    """Globally solve both sharp transition endpoints using sparse columns.
+
+    A time limit is fail-closed: if either endpoint is not globally optimal,
+    the solver raises instead of returning a partial interval.
+    """
+
+    if time_limit_seconds is not None and time_limit_seconds <= 0:
+        raise ValueError("time_limit_seconds must be positive")
+    from .query_truth import interventional_frechet_transition_outer_bounds
+
+    outer_lower, outer_upper = interventional_frechet_transition_outer_bounds(
+        world,
+        treatment,
+        outcome,
+        treatment_value=treatment_value,
+        baseline_value=baseline_value,
+        outcome_state=outcome_state,
+    )
+    return _solve_sparse_two_world_event_bounds(
+        world,
+        treatment,
+        outcome,
+        treatment_value=treatment_value,
+        baseline_value=baseline_value,
+        outcome_state=outcome_state,
+        outcome_events=None,
+        target_outer_bounds=(float(outer_lower), float(outer_upper)),
+        time_limit_seconds=time_limit_seconds,
+    )
+
+
+def sparse_individual_counterfactual_probability_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    factual_value: int,
+    counterfactual_value: int,
+    factual_outcome_state: int,
+    target_outcome_state: int,
+    time_limit_seconds: float | None = None,
+) -> CounterfactualBoundsResult:
+    """Return sharp bounds for one endpoint-aligned individual prediction.
+
+    The target is
+
+    ``P(Y(counterfactual_value)=target_outcome_state |
+         Y(factual_value)=factual_outcome_state)``.
+
+    The conditioning event is an observed outcome under an assigned factual
+    treatment.  Its probability is fixed by the CPT-World, so optimizing the
+    conditional query is exactly equivalent to optimizing the two-world joint
+    numerator and dividing both endpoints by that fixed positive mass.
+    """
+
+    if time_limit_seconds is not None and time_limit_seconds <= 0:
+        raise ValueError("time_limit_seconds must be positive")
+    from .query_truth import interventional_probability
+
+    factual_probability = float(
+        interventional_probability(
+            world,
+            {treatment: factual_value},
+            outcome,
+            factual_outcome_state,
+        )
+    )
+    if factual_probability <= 0.0:
+        raise ValueError("the factual outcome has zero probability in the CPT-World")
+    counterfactual_probability = float(
+        interventional_probability(
+            world,
+            {treatment: counterfactual_value},
+            outcome,
+            target_outcome_state,
+        )
+    )
+    joint_outer_bounds = (
+        max(0.0, factual_probability + counterfactual_probability - 1.0),
+        min(factual_probability, counterfactual_probability),
+    )
+    joint = _solve_sparse_two_world_event_bounds(
+        world,
+        treatment,
+        outcome,
+        treatment_value=counterfactual_value,
+        baseline_value=factual_value,
+        outcome_state=None,
+        outcome_events=((factual_outcome_state,), (target_outcome_state,)),
+        target_outer_bounds=joint_outer_bounds,
+        time_limit_seconds=time_limit_seconds,
+    )
+    return CounterfactualBoundsResult(
+        lower=joint.lower / factual_probability,
+        upper=joint.upper / factual_probability,
+        build_seconds=joint.build_seconds,
+        solve_seconds=joint.solve_seconds,
+        affected_nodes=joint.affected_nodes,
+        pair_kernel_entries=joint.pair_kernel_entries,
+        generated_columns=joint.generated_columns,
+        response_blocks=joint.response_blocks,
+        dynamic_response_blocks=joint.dynamic_response_blocks,
+        max_response_contexts=joint.max_response_contexts,
+        auxiliary_variables=joint.auxiliary_variables,
     )

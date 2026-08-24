@@ -3,6 +3,7 @@
 from .counterfactual_solver import (
     CounterfactualBoundsResult,
     sparse_counterfactual_transition_bounds,
+    sparse_individual_counterfactual_probability_bounds,
 )
 from .episode import (
     OBSERVATIONS_PER_BANDWIDTH_UNIT,
@@ -17,12 +18,16 @@ from .query_truth import (
     collider_bias_effect,
     compute_query_truth,
     counterfactual_transition_bounds,
+    individual_counterfactual_frechet_outer_bounds,
+    individual_counterfactual_probability_bounds,
     interventional_frechet_transition_outer_bounds,
     interventional_joint_probability,
     interventional_probability,
     mediator_set_truth,
     reference_counterfactual_transition_bounds,
+    reference_individual_counterfactual_probability_bounds,
     sample_worldspec_assignment,
+    validate_individual_counterfactual_probability,
     worldspec_interventional_distribution,
     worldspec_projected_interventional_distribution,
 )
@@ -145,6 +150,8 @@ __all__ = [
     "interventional_joint_probability",
     "interventional_probability",
     "interventional_frechet_transition_outer_bounds",
+    "individual_counterfactual_frechet_outer_bounds",
+    "individual_counterfactual_probability_bounds",
     "iter_sampled_seeds",
     "iter_upstream_worlds",
     "iter_world_space",
@@ -161,6 +168,7 @@ __all__ = [
     "query_task_compatible",
     "query_truth_owner_status",
     "reference_counterfactual_transition_bounds",
+    "reference_individual_counterfactual_probability_bounds",
     "render_seed_initial_messages",
     "render_seed_prompt",
     "render_seed_task_prompt",
@@ -176,6 +184,7 @@ __all__ = [
     "score_terminal_answer",
     "seed_triple_is_registered",
     "sparse_counterfactual_transition_bounds",
+    "sparse_individual_counterfactual_probability_bounds",
     "supports_hiding",
     "supports_query",
     "supports_task",
@@ -183,6 +192,7 @@ __all__ = [
     "task_difficulty_profile",
     "task_scorer_owner_status",
     "validate_candidate_seed_manifest",
+    "validate_individual_counterfactual_probability",
     "worldspec_interventional_distribution",
     "worldspec_projected_interventional_distribution",
 ]

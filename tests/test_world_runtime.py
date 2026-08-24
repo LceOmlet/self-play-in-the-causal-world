@@ -533,11 +533,11 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             elif query_type == "ate":
                 raw_answer = json.dumps({"type": "answer", "effect": float(truth["effect"])})
             else:
+                midpoint = (truth["lower"] + truth["upper"]) / 2
                 raw_answer = json.dumps(
                     {
                         "type": "answer",
-                        "lower": float(truth["lower"]),
-                        "upper": float(truth["upper"]),
+                        "value": float(midpoint),
                     }
                 )
             terminal_step = episode.step(raw_answer)
@@ -548,10 +548,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             elif query_type == "ate":
                 self.assertLess(terminal_step.score["abs_error"], Fraction(1, 10**12))
             else:
-                self.assertLess(
-                    terminal_step.score["mean_absolute_endpoint_error"],
-                    Fraction(1, 10**12),
-                )
+                self.assertTrue(terminal_step.score["compatible"])
             with self.assertRaises(ValueError):
                 episode.step(raw_answer)
 
@@ -571,7 +568,8 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             measure_max=2,
         )
         self.assertIn(
-            "one value for q that is compatible", episode.initial_messages()[1]["content"]
+            "one counterfactual probability compatible",
+            episode.initial_messages()[1]["content"],
         )
         truth = compute_query_truth(world, seed)
         midpoint = (truth["lower"] + truth["upper"]) / 2

@@ -104,43 +104,25 @@ class TaskScoringTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_terminal_answer('{"type":"answer","effect":"not-a-number"}', seed_obj, world)
 
-    def test_counterfactual_interval_parser_and_endpoint_score(self) -> None:
-        from cpt_world import compute_query_truth
-
+    def test_counterfactual_terminal_contract_is_scalar_only(self) -> None:
         seed_obj, world = _find_task("counterfactual_transition_bounds")
-        truth = compute_query_truth(world, seed_obj)
-        raw = json.dumps(
-            {
-                "type": "answer",
-                "lower": float(truth["lower"]),
-                "upper": float(truth["upper"]),
-            }
-        )
-        parsed = parse_terminal_answer(raw, seed_obj, world)
-        self.assertEqual(parsed["kind"], "counterfactual_interval")
-        score = score_terminal_answer(raw, seed_obj, world)
-        self.assertEqual(score["kind"], "counterfactual_interval")
-        self.assertLess(score["mean_absolute_endpoint_error"], Fraction(1, 10**12))
-        self.assertLess(score["mean_squared_endpoint_error"], Fraction(1, 10**24))
-
-        invalid = (
-            {"type": "answer", "lower": 0.8, "upper": 0.2},
-            {"type": "answer", "lower": -0.1, "upper": 0.2},
-            {"type": "answer", "lower": 0.1, "upper": 1.1},
-        )
-        for answer in invalid:
+        for answer in (
+            {"type": "answer", "lower": 0.1, "upper": 0.2},
+            {"type": "answer", "value": -0.1},
+            {"type": "answer", "value": 1.1},
+        ):
             with self.assertRaises(ValueError):
                 parse_terminal_answer(json.dumps(answer), seed_obj, world)
 
     def test_counterfactual_compatible_value_uses_continuous_interval_distance(self) -> None:
         from cpt_world import compute_query_truth
 
-        interval_seed, world = _find_task("counterfactual_transition_bounds")
-        query = {**interval_seed["query"], "answer_mode": "compatible_value"}
+        point_seed, world = _find_task("counterfactual_transition_bounds")
+        query = {**point_seed["query"], "answer_mode": "compatible_value"}
         point_seed = {
-            **interval_seed,
+            **point_seed,
             "query": query,
-            "visible_schema": {**interval_seed["visible_schema"], "query": query},
+            "visible_schema": {**point_seed["visible_schema"], "query": query},
         }
         truth = compute_query_truth(world, point_seed)
         midpoint = (truth["lower"] + truth["upper"]) / 2
@@ -173,12 +155,6 @@ class TaskScoringTests(unittest.TestCase):
             parse_terminal_answer(
                 json.dumps({"type": "answer", "lower": 0.1, "upper": 0.2}),
                 point_seed,
-                world,
-            )
-        with self.assertRaises(ValueError):
-            parse_terminal_answer(
-                json.dumps({"type": "answer", "value": 0.5}),
-                interval_seed,
                 world,
             )
 

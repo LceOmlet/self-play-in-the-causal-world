@@ -496,6 +496,166 @@ def counterfactual_transition_bounds(
     return result.lower, result.upper
 
 
+def individual_counterfactual_probability_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    factual_value: int,
+    counterfactual_value: int,
+    factual_outcome_state: int,
+    target_outcome_state: int,
+    time_limit_seconds: float | None = None,
+) -> tuple[Probability, Probability]:
+    """Return sharp bounds for an endpoint-aligned individual query.
+
+    The query is
+
+    ``P(Y(counterfactual_value)=target_outcome_state |
+         Y(factual_value)=factual_outcome_state)``.
+
+    The factual treatment is assigned, so its observed outcome is a clean
+    potential-outcome event.  The interval ranges over the same full set of
+    Markovian finite response mechanisms used by the population transition
+    owner; no hidden SCM or response prior is selected.
+    """
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    if treatment_node == outcome_node:
+        raise ValueError("treatment and outcome must be different variables")
+    if factual_value == counterfactual_value:
+        raise ValueError("factual and counterfactual treatment values must differ")
+    if not 0 <= factual_value < world.domains[treatment_node]:
+        raise ValueError("factual treatment value out of range")
+    if not 0 <= counterfactual_value < world.domains[treatment_node]:
+        raise ValueError("counterfactual treatment value out of range")
+    if not 0 <= factual_outcome_state < world.domains[outcome_node]:
+        raise ValueError("factual outcome state out of range")
+    if not 0 <= target_outcome_state < world.domains[outcome_node]:
+        raise ValueError("target outcome state out of range")
+    if time_limit_seconds is not None and time_limit_seconds <= 0:
+        raise ValueError("time_limit_seconds must be positive")
+
+    factual_probability = interventional_probability(
+        world,
+        {treatment_node: factual_value},
+        outcome_node,
+        factual_outcome_state,
+    )
+    if factual_probability <= 0:
+        raise ValueError("the factual outcome has zero probability in the CPT-World")
+
+    descendants = _descendants(world, treatment_node)
+    if outcome_node not in descendants:
+        one = _one(world)
+        zero = _zero(world)
+        return (one, one) if factual_outcome_state == target_outcome_state else (zero, zero)
+
+    other_outcome_parents = tuple(
+        parent for parent in world.parents[outcome_node] if parent != treatment_node
+    )
+    direct_only = (treatment_node, outcome_node) in world.edges and all(
+        parent not in descendants for parent in other_outcome_parents
+    )
+    if direct_only:
+        joint_lower, joint_upper = _direct_only_counterfactual_joint_bounds(
+            world,
+            treatment_node,
+            outcome_node,
+            treatment_value=counterfactual_value,
+            baseline_value=factual_value,
+            baseline_outcome_states=(factual_outcome_state,),
+            treatment_outcome_states=(target_outcome_state,),
+        )
+        return joint_lower / factual_probability, joint_upper / factual_probability
+
+    from .counterfactual_solver import sparse_individual_counterfactual_probability_bounds
+
+    result = sparse_individual_counterfactual_probability_bounds(
+        world,
+        treatment_node,
+        outcome_node,
+        factual_value=factual_value,
+        counterfactual_value=counterfactual_value,
+        factual_outcome_state=factual_outcome_state,
+        target_outcome_state=target_outcome_state,
+        time_limit_seconds=time_limit_seconds,
+    )
+    return result.lower, result.upper
+
+
+def validate_individual_counterfactual_probability(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    prediction: float,
+    *,
+    factual_value: int,
+    counterfactual_value: int,
+    factual_outcome_state: int,
+    target_outcome_state: int,
+    time_limit_seconds: float | None = None,
+    numerical_tolerance: float = 1e-9,
+) -> Mapping[str, Any]:
+    """Validate one scalar, failing closed when exact optimization times out.
+
+    A completed exact interval decides compatibility.  On solver timeout, the
+    marginal Frechet interval may still reject a value outside that necessary
+    outer range; a value inside it remains unresolved and is never accepted as
+    correct without the exact interval.
+    """
+
+    if not isfinite(prediction) or not 0.0 <= prediction <= 1.0:
+        raise ValueError("prediction must be a finite probability in [0, 1]")
+    if not isfinite(numerical_tolerance) or numerical_tolerance < 0.0:
+        raise ValueError("numerical_tolerance must be finite and nonnegative")
+    arguments = {
+        "factual_value": factual_value,
+        "counterfactual_value": counterfactual_value,
+        "factual_outcome_state": factual_outcome_state,
+        "target_outcome_state": target_outcome_state,
+    }
+    outer_lower, outer_upper = individual_counterfactual_frechet_outer_bounds(
+        world,
+        treatment,
+        outcome,
+        **arguments,
+    )
+    try:
+        lower, upper = individual_counterfactual_probability_bounds(
+            world,
+            treatment,
+            outcome,
+            time_limit_seconds=time_limit_seconds,
+            **arguments,
+        )
+    except RuntimeError as error:
+        outside = (
+            prediction < float(outer_lower) - numerical_tolerance
+            or prediction > float(outer_upper) + numerical_tolerance
+        )
+        return {
+            "compatible": False if outside else None,
+            "status": "rejected_by_frechet_outer" if outside else "unresolved_timeout",
+            "interval_source": "frechet_outer",
+            "lower": outer_lower,
+            "upper": outer_upper,
+            "numerical_tolerance": numerical_tolerance,
+            "solver_error": str(error),
+        }
+    distance = max(float(lower) - prediction, 0.0, prediction - float(upper))
+    return {
+        "compatible": distance <= numerical_tolerance,
+        "status": "exact",
+        "interval_source": "exact_markovian",
+        "lower": lower,
+        "upper": upper,
+        "distance_to_interval": distance,
+        "numerical_tolerance": numerical_tolerance,
+    }
+
+
 def interventional_frechet_transition_outer_bounds(
     world: WorldSpec,
     treatment: object,
@@ -531,6 +691,54 @@ def interventional_frechet_transition_outer_bounds(
     return lower, upper
 
 
+def individual_counterfactual_frechet_outer_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    factual_value: int,
+    counterfactual_value: int,
+    factual_outcome_state: int,
+    target_outcome_state: int,
+) -> tuple[Probability, Probability]:
+    """Return the endpoint-marginal outer interval for one individual query."""
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    if treatment_node == outcome_node:
+        raise ValueError("treatment and outcome must be different variables")
+    if factual_value == counterfactual_value:
+        raise ValueError("factual and counterfactual treatment values must differ")
+    if not 0 <= factual_value < world.domains[treatment_node]:
+        raise ValueError("factual treatment value out of range")
+    if not 0 <= counterfactual_value < world.domains[treatment_node]:
+        raise ValueError("counterfactual treatment value out of range")
+    if not 0 <= factual_outcome_state < world.domains[outcome_node]:
+        raise ValueError("factual outcome state out of range")
+    if not 0 <= target_outcome_state < world.domains[outcome_node]:
+        raise ValueError("target outcome state out of range")
+    factual_probability = interventional_probability(
+        world,
+        {treatment_node: factual_value},
+        outcome_node,
+        factual_outcome_state,
+    )
+    if factual_probability <= 0:
+        raise ValueError("the factual outcome has zero probability in the CPT-World")
+    counterfactual_probability = interventional_probability(
+        world,
+        {treatment_node: counterfactual_value},
+        outcome_node,
+        target_outcome_state,
+    )
+    joint_lower = max(
+        _zero(world),
+        factual_probability + counterfactual_probability - _one(world),
+    )
+    joint_upper = min(factual_probability, counterfactual_probability)
+    return joint_lower / factual_probability, joint_upper / factual_probability
+
+
 def _direct_only_counterfactual_transition_bounds(
     world: WorldSpec,
     treatment_node: int,
@@ -541,6 +749,31 @@ def _direct_only_counterfactual_transition_bounds(
     outcome_state: int,
 ) -> tuple[Probability, Probability]:
     """Exact row-wise bounds when treatment reaches outcome only directly."""
+
+    return _direct_only_counterfactual_joint_bounds(
+        world,
+        treatment_node,
+        outcome_node,
+        treatment_value=treatment_value,
+        baseline_value=baseline_value,
+        baseline_outcome_states=tuple(
+            state for state in range(world.domains[outcome_node]) if state != outcome_state
+        ),
+        treatment_outcome_states=(outcome_state,),
+    )
+
+
+def _direct_only_counterfactual_joint_bounds(
+    world: WorldSpec,
+    treatment_node: int,
+    outcome_node: int,
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    baseline_outcome_states: tuple[int, ...],
+    treatment_outcome_states: tuple[int, ...],
+) -> tuple[Probability, Probability]:
+    """Exact row-wise joint bounds for two endpoint outcome events."""
 
     other_parents = tuple(
         parent for parent in world.parents[outcome_node] if parent != treatment_node
@@ -561,18 +794,25 @@ def _direct_only_counterfactual_transition_bounds(
 
         def outcome_probability(
             treatment_state: int,
+            outcome_states: tuple[int, ...],
             current_shared: Mapping[int, int] = shared_values,
         ) -> Probability:
             row_index = 0
             for parent in world.parents[outcome_node]:
                 state = treatment_state if parent == treatment_node else current_shared[parent]
                 row_index = row_index * world.domains[parent] + state
-            return world.cpt[outcome_node][row_index][outcome_state]
+            row = world.cpt[outcome_node][row_index]
+            return _probability_sum(
+                tuple(row[state] for state in outcome_states),
+                exact=exact,
+            )
 
-        treated = outcome_probability(treatment_value)
-        baseline = outcome_probability(baseline_value)
-        lower_terms.append(parent_probability * max(_zero(world), treated - baseline))
-        upper_terms.append(parent_probability * min(treated, _one(world) - baseline))
+        treated = outcome_probability(treatment_value, treatment_outcome_states)
+        baseline = outcome_probability(baseline_value, baseline_outcome_states)
+        lower_terms.append(
+            parent_probability * max(_zero(world), treated + baseline - _one(world))
+        )
+        upper_terms.append(parent_probability * min(treated, baseline))
     return (
         _probability_sum(tuple(lower_terms), exact=exact),
         _probability_sum(tuple(upper_terms), exact=exact),
@@ -751,7 +991,8 @@ def _counterfactual_probability_for_vertices(
     *,
     treatment_value: int,
     baseline_value: int,
-    outcome_state: int,
+    baseline_outcome_states: tuple[int, ...],
+    treatment_outcome_states: tuple[int, ...],
 ) -> Probability:
     exact = _uses_exact_probabilities(world)
     if shared:
@@ -797,36 +1038,34 @@ def _counterfactual_probability_for_vertices(
             tuple(
                 mass
                 for left_values, right_values, mass in frontier
-                if right_values[outcome_node] == outcome_state
-                and left_values[outcome_node] != outcome_state
+                if right_values[outcome_node] in treatment_outcome_states
+                and left_values[outcome_node] in baseline_outcome_states
             ),
             exact=exact,
         )
     return total
 
 
-def reference_counterfactual_transition_bounds(
+def _reference_counterfactual_joint_bounds(
     world: WorldSpec,
-    treatment: object,
-    outcome: object,
+    treatment_node: int,
+    outcome_node: int,
     *,
-    treatment_value: int = 1,
-    baseline_value: int = 0,
-    outcome_state: int = 1,
+    treatment_value: int,
+    baseline_value: int,
+    baseline_outcome_states: tuple[int, ...],
+    treatment_outcome_states: tuple[int, ...],
 ) -> tuple[Probability, Probability]:
-    """Exact finite response-function oracle for cross-checks and fallback.
+    """Enumerate the exact two-world joint event on small instances.
 
     The runtime is exponential in the local response-coupling dimensions and
-    in the number of affected nodes.  It is nevertheless a complete finite
-    algorithm: it adds no SCM restriction and no node-count or timeout gate.
+    in the number of affected nodes.  This is the independent reference path
+    used to cross-check the sparse production owner.
     """
 
-    treatment_node = _node_index(world, treatment)
-    outcome_node = _node_index(world, outcome)
     descendants = _descendants(world, treatment_node)
     if outcome_node not in descendants:
-        zero = _zero(world)
-        return zero, zero
+        raise ValueError("the reference joint owner requires a causal path")
     ancestors = _ancestors(world, outcome_node) | {outcome_node}
     affected_set = descendants & ancestors
     affected = tuple(node for node in _topological_order(world) if node in affected_set)
@@ -874,13 +1113,81 @@ def reference_counterfactual_transition_bounds(
             dict(zip(affected, selected_vertices, strict=True)),
             treatment_value=treatment_value,
             baseline_value=baseline_value,
-            outcome_state=outcome_state,
+            baseline_outcome_states=baseline_outcome_states,
+            treatment_outcome_states=treatment_outcome_states,
         )
         lower = probability if lower is None else min(lower, probability)
         upper = probability if upper is None else max(upper, probability)
     if lower is None or upper is None:
         raise RuntimeError("counterfactual response enumeration produced no completion")
     return lower, upper
+
+
+def reference_counterfactual_transition_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    treatment_value: int = 1,
+    baseline_value: int = 0,
+    outcome_state: int = 1,
+) -> tuple[Probability, Probability]:
+    """Exact finite response-function oracle for transition cross-checks."""
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    if outcome_node not in _descendants(world, treatment_node):
+        zero = _zero(world)
+        return zero, zero
+    return _reference_counterfactual_joint_bounds(
+        world,
+        treatment_node,
+        outcome_node,
+        treatment_value=treatment_value,
+        baseline_value=baseline_value,
+        baseline_outcome_states=tuple(
+            state for state in range(world.domains[outcome_node]) if state != outcome_state
+        ),
+        treatment_outcome_states=(outcome_state,),
+    )
+
+
+def reference_individual_counterfactual_probability_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    factual_value: int,
+    counterfactual_value: int,
+    factual_outcome_state: int,
+    target_outcome_state: int,
+) -> tuple[Probability, Probability]:
+    """Explicit small-instance oracle for an individual probability interval."""
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    factual_probability = interventional_probability(
+        world,
+        {treatment_node: factual_value},
+        outcome_node,
+        factual_outcome_state,
+    )
+    if factual_probability <= 0:
+        raise ValueError("the factual outcome has zero probability in the CPT-World")
+    if outcome_node not in _descendants(world, treatment_node):
+        one = _one(world)
+        zero = _zero(world)
+        return (one, one) if factual_outcome_state == target_outcome_state else (zero, zero)
+    joint_lower, joint_upper = _reference_counterfactual_joint_bounds(
+        world,
+        treatment_node,
+        outcome_node,
+        treatment_value=counterfactual_value,
+        baseline_value=factual_value,
+        baseline_outcome_states=(factual_outcome_state,),
+        treatment_outcome_states=(target_outcome_state,),
+    )
+    return joint_lower / factual_probability, joint_upper / factual_probability
 
 
 def best_intervention_states(
@@ -1218,17 +1525,33 @@ def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[st
             )
         treatment_node = _resolve_seed_node(world, seed, treatment)
         outcome_node = _resolve_seed_node(world, seed, outcome)
-        lower, upper = counterfactual_transition_bounds(
+        required_fields = (
+            "factual_value",
+            "counterfactual_value",
+            "factual_outcome_state",
+            "outcome_state",
+        )
+        missing = tuple(field for field in required_fields if field not in query)
+        if missing:
+            raise ValueError(
+                "individual counterfactual query missing fields: " + ", ".join(missing)
+            )
+        lower, upper = individual_counterfactual_probability_bounds(
             world,
             treatment_node,
             outcome_node,
-            treatment_value=_state_index_for_node(
-                world, treatment_node, query.get("treatment_value", 1)
+            factual_value=_state_index_for_node(
+                world, treatment_node, query["factual_value"], default=0
             ),
-            baseline_value=_state_index_for_node(
-                world, treatment_node, query.get("baseline_value", 0), default=0
+            counterfactual_value=_state_index_for_node(
+                world, treatment_node, query["counterfactual_value"]
             ),
-            outcome_state=_state_index_for_node(world, outcome_node, query.get("outcome_state", 1)),
+            factual_outcome_state=_state_index_for_node(
+                world, outcome_node, query["factual_outcome_state"], default=0
+            ),
+            target_outcome_state=_state_index_for_node(
+                world, outcome_node, query["outcome_state"]
+            ),
         )
         return {
             "type": "counterfactual_transition_bounds",

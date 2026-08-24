@@ -13,24 +13,30 @@ from typing import Any
 
 from cpt_world import (
     WorldGrammar,
-    counterfactual_transition_bounds,
+    individual_counterfactual_frechet_outer_bounds,
+    individual_counterfactual_probability_bounds,
     iter_sampled_seeds,
     sample_task_world,
-    sparse_counterfactual_transition_bounds,
+    sparse_individual_counterfactual_probability_bounds,
 )
 
 
-def _query_indices(world: Any, seed: dict[str, Any]) -> tuple[int, int, int, int, int]:
+def _query_indices(
+    world: Any, seed: dict[str, Any]
+) -> tuple[int, int, int, int, int, int]:
     query = seed["query"]
     visible_to_internal = {
         visible: internal for internal, visible in seed["visible_schema"]["variable_labels"].items()
     }
     treatment = world.variables.index(visible_to_internal[query["treatment"]])
     outcome = world.variables.index(visible_to_internal[query["outcome"]])
-    baseline = int(str(query["baseline_value"]).removeprefix("state_"))
-    comparison = int(str(query["treatment_value"]).removeprefix("state_"))
+    factual = int(str(query["factual_value"]).removeprefix("state_"))
+    counterfactual = int(str(query["counterfactual_value"]).removeprefix("state_"))
+    factual_outcome = int(
+        str(query["factual_outcome_state"]).removeprefix("state_")
+    )
     outcome_state = int(str(query["outcome_state"]).removeprefix("state_"))
-    return treatment, outcome, baseline, comparison, outcome_state
+    return treatment, outcome, factual, counterfactual, factual_outcome, outcome_state
 
 
 def _direct_only(world: Any, treatment: int, outcome: int) -> bool:
@@ -97,53 +103,87 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
             query_types=("counterfactual_transition_bounds",),
         )[0]
         world = sample_task_world(grammar, sample_index, "counterfactual_transition_bounds")
-        treatment, outcome, baseline, comparison, outcome_state = _query_indices(world, seed)
+        (
+            treatment,
+            outcome,
+            factual_value,
+            counterfactual_value,
+            factual_outcome_state,
+            outcome_state,
+        ) = _query_indices(world, seed)
+        individual = {
+            "individual_rng_key": f"{seed['seed_id']}/task-attributes",
+            "factual_value": factual_value,
+            "counterfactual_value": counterfactual_value,
+            "factual_outcome_state": factual_outcome_state,
+            "target_outcome_state": outcome_state,
+        }
+        outer_lower, outer_upper = individual_counterfactual_frechet_outer_bounds(
+            world,
+            treatment,
+            outcome,
+            factual_value=individual["factual_value"],
+            counterfactual_value=individual["counterfactual_value"],
+            factual_outcome_state=individual["factual_outcome_state"],
+            target_outcome_state=individual["target_outcome_state"],
+        )
         started = time.perf_counter()
         if _direct_only(world, treatment, outcome):
-            lower, upper = counterfactual_transition_bounds(
+            lower, upper = individual_counterfactual_probability_bounds(
                 world,
                 treatment,
                 outcome,
-                treatment_value=comparison,
-                baseline_value=baseline,
-                outcome_state=outcome_state,
+                factual_value=individual["factual_value"],
+                counterfactual_value=individual["counterfactual_value"],
+                factual_outcome_state=individual["factual_outcome_state"],
+                target_outcome_state=individual["target_outcome_state"],
             )
             record = {
                 "seed": sample_index,
                 "nodes": len(world.variables),
+                **individual,
                 "path": "direct_closed_form",
                 "closed": True,
                 "lower": float(lower),
                 "upper": float(upper),
+                "frechet_lower": float(outer_lower),
+                "frechet_upper": float(outer_upper),
                 "generated_columns": 0,
             }
         else:
             try:
-                result = sparse_counterfactual_transition_bounds(
+                result = sparse_individual_counterfactual_probability_bounds(
                     world,
                     treatment,
                     outcome,
-                    treatment_value=comparison,
-                    baseline_value=baseline,
-                    outcome_state=outcome_state,
+                    factual_value=individual["factual_value"],
+                    counterfactual_value=individual["counterfactual_value"],
+                    factual_outcome_state=individual["factual_outcome_state"],
+                    target_outcome_state=individual["target_outcome_state"],
                     time_limit_seconds=endpoint_seconds,
                 )
             except RuntimeError as error:
                 record = {
                     "seed": sample_index,
                     "nodes": len(world.variables),
+                    **individual,
                     "path": "on_demand_columns",
                     "closed": False,
+                    "frechet_lower": float(outer_lower),
+                    "frechet_upper": float(outer_upper),
                     "error": str(error),
                 }
             else:
                 record = {
                     "seed": sample_index,
                     "nodes": len(world.variables),
+                    **individual,
                     "path": "on_demand_columns",
                     "closed": True,
                     "lower": result.lower,
                     "upper": result.upper,
+                    "frechet_lower": float(outer_lower),
+                    "frechet_upper": float(outer_upper),
                     "build_seconds": result.build_seconds,
                     "solve_seconds": result.solve_seconds,
                     "generated_columns": result.generated_columns,
@@ -164,12 +204,15 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
     p95_index = max(0, min(len(times) - 1, int(0.95 * len(times) + 0.999999) - 1))
     return {
         "contract": {
+            "query": "individual_counterfactual_probability",
+            "conditioning": "assigned factual treatment and observed factual outcome",
             "node_counts": [3, 15],
             "start_seed": start_seed,
             "count": count,
             "requested_scip_endpoint_seconds": endpoint_seconds,
             "strict_wall_limit": False,
             "truth_requires_optimal": True,
+            "timeout_fallback": "Frechet outer interval rejects only values outside it",
         },
         "closed": closed,
         "closed_rate": closed / count,

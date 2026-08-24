@@ -306,7 +306,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         first = assemble_sampled_anchor_tasks(grammar, sample_index, query_type, anchor_index)
         second = assemble_sampled_anchor_tasks(grammar, sample_index, query_type, anchor_index)
         self.assertEqual(first, second)
-        self.assertEqual(len(first), 2)
+        self.assertEqual(len(first), 1)
         for _, seed in first:
             labels = tuple(seed["visible_schema"]["variable_labels"].values())
             self.assertEqual(len(labels), 6)
@@ -650,8 +650,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         grammar = WorldGrammar(node_counts=(6,), max_domain_size=3)
         for query_type in QUERY_TYPES:
             seeds = iter_sampled_seeds(grammar, count=20, query_types=(query_type,))
-            expected_count = 40 if query_type == "counterfactual_transition_bounds" else 20
-            self.assertEqual(len(seeds), expected_count)
+            self.assertEqual(len(seeds), 20)
             for seed in seeds:
                 labels = seed["visible_schema"]["variable_labels"]
                 internal_by_label = {visible: internal for internal, visible in labels.items()}
@@ -674,7 +673,6 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         self.assertTrue(seeds)
         widths: set[int] = set()
         bandwidths: set[int] = set()
-        paired: dict[str, dict[str, Mapping[str, object]]] = {}
         for seed in seeds:
             self.assertEqual(seed["query"]["type"], "counterfactual_transition_bounds")
             self.assertNotIn("answerability", seed)
@@ -688,34 +686,16 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             widths.add(sum(seed["manipulability"].values()))
             bandwidths.add(int(seed["observation_bandwidth"]))
             answer_mode = str(seed["query"]["answer_mode"])
-            base_seed_id = str(seed["seed_id"]).rsplit("-mode-", 1)[0]
-            paired.setdefault(base_seed_id, {})[answer_mode] = seed
+            self.assertEqual(answer_mode, "compatible_value")
+            self.assertIn("factual_value", seed["query"])
+            self.assertIn("counterfactual_value", seed["query"])
+            self.assertIn("factual_outcome_state", seed["query"])
             prompt = render_seed_task_prompt(seed)
-            self.assertIn("no single hidden SCM", prompt)
-            if answer_mode == "sharp_interval":
-                self.assertIn("sharp legal interval", prompt)
-                self.assertIn('"lower": <number in [0,1]>', prompt)
-            else:
-                self.assertEqual(answer_mode, "compatible_value")
-                self.assertIn("one value for q that is compatible", prompt)
-                self.assertIn("does not claim that q is point identified", prompt)
-                self.assertIn('"value": <number in [0,1]>', prompt)
-        self.assertTrue(paired)
-        for modes in paired.values():
-            self.assertEqual(set(modes), {"sharp_interval", "compatible_value"})
-            interval = modes["sharp_interval"]
-            compatible = modes["compatible_value"]
-            for field in (
-                "world_source",
-                "manipulability",
-                "readable",
-                "observation_bandwidth",
-            ):
-                self.assertEqual(interval[field], compatible[field])
-            self.assertEqual(
-                interval["visible_schema"]["variable_labels"],
-                compatible["visible_schema"]["variable_labels"],
-            )
+            self.assertIn("One individual was assigned", prompt)
+            self.assertIn("for this same individual", prompt)
+            self.assertIn("one counterfactual probability compatible", prompt)
+            self.assertNotIn('"lower": <number in [0,1]>', prompt)
+            self.assertIn('"value": <number in [0,1]>', prompt)
         self.assertGreater(len(widths), 1)
         self.assertGreater(len(bandwidths), 1)
 
