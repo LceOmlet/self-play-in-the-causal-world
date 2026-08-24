@@ -12,14 +12,46 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from fractions import Fraction
 from itertools import combinations, product
-from math import prod
+from math import fsum, isfinite, prod
 from typing import Any
 
-from .registry import (
-    OWNER_STATUS_IMPLEMENTED,
-    query_truth_owner_status,
-)
-from .world_space import WorldSpec
+from .registry import OWNER_STATUS_IMPLEMENTED, query_truth_owner_status
+from .world_space import Probability, WorldSpec
+
+_PROBABILITY_TOLERANCE = 1e-12
+
+
+def _uses_exact_probabilities(world: WorldSpec) -> bool:
+    return all(
+        isinstance(probability, Fraction)
+        for rows in world.cpt.values()
+        for row in rows
+        for probability in row
+    )
+
+
+def _zero(world: WorldSpec) -> Probability:
+    return Fraction(0) if _uses_exact_probabilities(world) else 0.0
+
+
+def _one(world: WorldSpec) -> Probability:
+    return Fraction(1) if _uses_exact_probabilities(world) else 1.0
+
+
+def _probability_sum(values: tuple[Probability, ...], *, exact: bool) -> Probability:
+    if exact:
+        return sum(values, start=Fraction(0))
+    return fsum(float(value) for value in values)
+
+
+def _require_normalized(values: tuple[Probability, ...], *, exact: bool) -> None:
+    total = _probability_sum(values, exact=exact)
+    if exact:
+        if total != 1:
+            raise RuntimeError("internal error: distribution is not normalized")
+        return
+    if not isfinite(float(total)) or abs(float(total) - 1.0) > _PROBABILITY_TOLERANCE:
+        raise RuntimeError("internal error: distribution is not normalized")
 
 
 def _node_index(world: WorldSpec, value: object) -> int:
@@ -65,7 +97,7 @@ def _validate_interventions(
 @dataclass(frozen=True, slots=True)
 class _Factor:
     variables: tuple[int, ...]
-    values: tuple[Fraction, ...]
+    values: tuple[Probability, ...]
 
 
 def _factor_index(
@@ -84,7 +116,7 @@ def _factor_value(
     factor: _Factor,
     variables: tuple[int, ...],
     assignment: tuple[int, ...],
-) -> Fraction:
+) -> Probability:
     positions = {variable: position for position, variable in enumerate(variables)}
     projected = tuple(assignment[positions[variable]] for variable in factor.variables)
     return factor.values[_factor_index(world, factor.variables, projected)]
@@ -92,12 +124,13 @@ def _factor_value(
 
 def _multiply_factors(world: WorldSpec, factors: tuple[_Factor, ...]) -> _Factor:
     if not factors:
-        return _Factor((), (Fraction(1),))
+        return _Factor((), (_one(world),))
+    exact = _uses_exact_probabilities(world)
     variables = tuple(sorted({variable for factor in factors for variable in factor.variables}))
     ranges = tuple(range(world.domains[variable]) for variable in variables)
-    values: list[Fraction] = []
+    values: list[Probability] = []
     for assignment in product(*ranges):
-        value = Fraction(1)
+        value: Probability = Fraction(1) if exact else 1.0
         for factor in factors:
             value *= _factor_value(world, factor, variables, assignment)
         values.append(value)
@@ -107,16 +140,17 @@ def _multiply_factors(world: WorldSpec, factors: tuple[_Factor, ...]) -> _Factor
 def _sum_out(world: WorldSpec, factor: _Factor, variable: int) -> _Factor:
     remaining = tuple(item for item in factor.variables if item != variable)
     positions = {item: position for position, item in enumerate(remaining)}
-    values: list[Fraction] = []
+    exact = _uses_exact_probabilities(world)
+    values: list[Probability] = []
     for assignment in product(*(range(world.domains[item]) for item in remaining)):
-        total = Fraction(0)
+        terms: list[Probability] = []
         for state in range(world.domains[variable]):
             original = tuple(
                 state if item == variable else assignment[positions[item]]
                 for item in factor.variables
             )
-            total += factor.values[_factor_index(world, factor.variables, original)]
-        values.append(total)
+            terms.append(factor.values[_factor_index(world, factor.variables, original)])
+        values.append(_probability_sum(tuple(terms), exact=exact))
     return _Factor(remaining, tuple(values))
 
 
@@ -153,13 +187,16 @@ def _interventional_factors(
 ) -> tuple[_Factor, ...]:
     fixed = _validate_interventions(world, interventions)
     factors: list[_Factor] = []
+    exact = _uses_exact_probabilities(world)
     for node in range(len(world.variables)):
         if node in fixed:
             factors.append(
                 _Factor(
                     (node,),
                     tuple(
-                        Fraction(1) if state == fixed[node] else Fraction(0)
+                        (Fraction(1) if exact else 1.0)
+                        if state == fixed[node]
+                        else (Fraction(0) if exact else 0.0)
                         for state in range(world.domains[node])
                     ),
                 )
@@ -178,7 +215,7 @@ def _variable_elimination_distribution(
     world: WorldSpec,
     interventions: Mapping[int, int],
     measure: tuple[int, ...],
-) -> tuple[tuple[tuple[int, ...], Fraction], ...]:
+) -> tuple[tuple[tuple[int, ...], Probability], ...]:
     factors = _interventional_factors(world, interventions)
     hidden = set(range(len(world.variables))) - set(measure)
     while hidden:
@@ -192,8 +229,7 @@ def _variable_elimination_distribution(
     probabilities = tuple(
         _factor_value(world, result, measure, assignment) for assignment in assignments
     )
-    if sum(probabilities, start=Fraction(0)) != 1:
-        raise RuntimeError("internal error: eliminated distribution is not normalized")
+    _require_normalized(probabilities, exact=_uses_exact_probabilities(world))
     return tuple(zip(assignments, probabilities, strict=True))
 
 
@@ -220,15 +256,22 @@ def _topological_order(world: WorldSpec) -> tuple[int, ...]:
 def sample_worldspec_assignment(
     world: WorldSpec,
     interventions: Mapping[int, int],
-    uniforms: tuple[Fraction, ...],
+    uniforms: tuple[Probability, ...],
 ) -> tuple[int, ...]:
-    """Sample one assignment ancestrally from the exact hard-do law."""
+    """Sample one assignment ancestrally from the hard-do law."""
 
     fixed = _validate_interventions(world, interventions)
     if len(uniforms) != len(world.variables):
         raise ValueError("uniforms must contain one draw per WorldSpec node")
-    if any(not isinstance(draw, Fraction) or not 0 <= draw < 1 for draw in uniforms):
-        raise ValueError("uniform draws must be Fractions in [0, 1)")
+    if any(
+        isinstance(draw, bool)
+        or not isinstance(draw, (Fraction, float, int))
+        or not isfinite(float(draw))
+        or not 0 <= draw < 1
+        for draw in uniforms
+    ):
+        raise ValueError("uniform draws must be finite numbers in [0, 1)")
+    exact = _uses_exact_probabilities(world)
     values = [0] * len(world.variables)
     for node in _topological_order(world):
         if node in fixed:
@@ -236,11 +279,12 @@ def sample_worldspec_assignment(
             continue
         row_index = _parent_row_index(world, node, tuple(values))
         row = world.cpt[node][row_index]
-        cumulative = Fraction(0)
+        cumulative: Probability = Fraction(0) if exact else 0.0
+        draw: Probability = Fraction(uniforms[node]) if exact else float(uniforms[node])
         selected = len(row) - 1
         for state, probability in enumerate(row):
             cumulative += probability
-            if uniforms[node] < cumulative:
+            if draw < cumulative:
                 selected = state
                 break
         values[node] = selected
@@ -250,8 +294,8 @@ def sample_worldspec_assignment(
 def worldspec_interventional_distribution(
     world: WorldSpec,
     interventions: Mapping[int, int],
-) -> tuple[tuple[tuple[int, ...], Fraction], ...]:
-    """Return the exact full-joint law under a finite hard-do assignment.
+) -> tuple[tuple[tuple[int, ...], Probability], ...]:
+    """Return the full-joint law under a finite hard-do assignment.
 
     This is the executable probability-law owner for generic ``WorldSpec``
     worlds.  Query truth and the interactive sampler both consume this same
@@ -260,22 +304,23 @@ def worldspec_interventional_distribution(
 
     fixed = _validate_interventions(world, interventions)
 
-    distribution: list[tuple[tuple[int, ...], Fraction]] = []
-    total = Fraction(0)
+    exact = _uses_exact_probabilities(world)
+    distribution: list[tuple[tuple[int, ...], Probability]] = []
     for values in product(*(range(size) for size in world.domains)):
         if any(values[node] != state for node, state in fixed.items()):
-            probability = Fraction(0)
+            probability: Probability = Fraction(0) if exact else 0.0
         else:
-            probability = Fraction(1)
+            probability = Fraction(1) if exact else 1.0
             for node in range(len(world.variables)):
                 if node in fixed:
                     continue
                 row_index = _parent_row_index(world, node, values)
                 probability *= world.cpt[node][row_index][values[node]]
         distribution.append((values, probability))
-        total += probability
-    if total != 1:
-        raise RuntimeError("internal error: interventional distribution is not normalized")
+    _require_normalized(
+        tuple(probability for _, probability in distribution),
+        exact=exact,
+    )
     return tuple(distribution)
 
 
@@ -283,8 +328,8 @@ def worldspec_projected_interventional_distribution(
     world: WorldSpec,
     interventions: Mapping[int, int],
     measure: tuple[int, ...],
-) -> tuple[tuple[tuple[int, ...], Fraction], ...]:
-    """Return an exact selected-measure law under a finite hard intervention.
+) -> tuple[tuple[tuple[int, ...], Probability], ...]:
+    """Return a selected-measure law under a finite hard intervention.
 
     The assignment order is the Cartesian order of ``measure``. Exact variable
     elimination uses the same CPT factors and hard-do replacement semantics as
@@ -307,8 +352,8 @@ def interventional_joint_probability(
     world: WorldSpec,
     interventions: Mapping[int, int],
     targets: Mapping[int, int],
-) -> Fraction:
-    """Return the exact probability of ``targets`` under hard-do ``interventions``."""
+) -> Probability:
+    """Return the probability of ``targets`` under hard-do ``interventions``."""
 
     target_values: dict[int, int] = {}
     for node, state in dict(targets).items():
@@ -323,7 +368,7 @@ def interventional_joint_probability(
         target_values[node] = state
 
     if not target_values:
-        return Fraction(1)
+        return _one(world)
     measure = tuple(sorted(target_values))
     assignment = tuple(target_values[node] for node in measure)
     law = worldspec_projected_interventional_distribution(world, interventions, measure)
@@ -335,8 +380,8 @@ def interventional_probability(
     interventions: Mapping[int, int],
     outcome: int,
     outcome_state: int,
-) -> Fraction:
-    """Return exact P(outcome=outcome_state) under a hard-do assignment."""
+) -> Probability:
+    """Return P(outcome=outcome_state) under a hard-do assignment."""
 
     return interventional_joint_probability(
         world,
@@ -353,7 +398,7 @@ def ate_effect(
     treatment_value: int = 1,
     baseline_value: int = 0,
     outcome_state: int = 1,
-) -> Fraction:
+) -> Probability:
     """Return E[outcome | do(treatment=treatment_value)] minus baseline.
 
     The default states implement the binary ATE rendered as state_1 vs state_0.
@@ -387,18 +432,22 @@ def counterfactual_transition_bounds(
     treatment_value: int = 1,
     baseline_value: int = 0,
     outcome_state: int = 1,
-) -> tuple[Fraction, Fraction]:
-    """Return sharp bounds for a cross-world target-state transition.
+) -> tuple[Probability, Probability]:
+    """Return sharp Markovian bounds for a target-state transition.
 
     The target event is
 
     ``outcome(treatment_value) = outcome_state`` and
     ``outcome(baseline_value) != outcome_state``.
 
-    A CPT-World fixes the two interventional event marginals but deliberately
-    leaves their cross-world coupling unspecified.  The returned Frechet
-    bounds therefore range over every coupling of those two Bernoulli events;
-    no generated or hidden SCM is selected.
+    Bounds range over all finite deterministic response-function completions
+    whose node mechanisms are mutually independent and whose response
+    marginals equal the WorldSpec CPT.  No single hidden SCM is selected.
+
+    A direct-only causal family has an exact row-wise transport formula.  Every
+    other legal WorldSpec uses the certified sparse-response solver.  The
+    explicit response-vertex enumeration remains separately exposed only as a
+    small-instance reference oracle for cross-checks.
     """
 
     treatment_node = _node_index(world, treatment)
@@ -407,6 +456,64 @@ def counterfactual_transition_bounds(
         raise ValueError("treatment and outcome must be different variables")
     if treatment_value == baseline_value:
         raise ValueError("treatment and baseline values must differ")
+    if not 0 <= treatment_value < world.domains[treatment_node]:
+        raise ValueError("treatment value out of range")
+    if not 0 <= baseline_value < world.domains[treatment_node]:
+        raise ValueError("baseline value out of range")
+    if not 0 <= outcome_state < world.domains[outcome_node]:
+        raise ValueError("outcome state out of range")
+
+    descendants = _descendants(world, treatment_node)
+    if outcome_node not in descendants:
+        zero = _zero(world)
+        return zero, zero
+
+    other_outcome_parents = tuple(
+        parent for parent in world.parents[outcome_node] if parent != treatment_node
+    )
+    direct_only = (treatment_node, outcome_node) in world.edges and all(
+        parent not in descendants for parent in other_outcome_parents
+    )
+    if direct_only:
+        return _direct_only_counterfactual_transition_bounds(
+            world,
+            treatment_node,
+            outcome_node,
+            treatment_value=treatment_value,
+            baseline_value=baseline_value,
+            outcome_state=outcome_state,
+        )
+    from .counterfactual_solver import sparse_counterfactual_transition_bounds
+
+    result = sparse_counterfactual_transition_bounds(
+        world,
+        treatment_node,
+        outcome_node,
+        treatment_value=treatment_value,
+        baseline_value=baseline_value,
+        outcome_state=outcome_state,
+    )
+    return result.lower, result.upper
+
+
+def interventional_frechet_transition_outer_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    treatment_value: int = 1,
+    baseline_value: int = 0,
+    outcome_state: int = 1,
+) -> tuple[Probability, Probability]:
+    """Return the marginal-only Frechet outer bounds for diagnostics.
+
+    These bounds deliberately ignore the cross-node mechanism-independence
+    restrictions of a Markovian CPT-World.  They are therefore a useful outer
+    check, not the generic task truth owner.
+    """
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
     treated_probability = interventional_probability(
         world,
         {treatment_node: treatment_value},
@@ -419,8 +526,360 @@ def counterfactual_transition_bounds(
         outcome_node,
         outcome_state,
     )
-    lower = max(Fraction(0), treated_probability - baseline_probability)
-    upper = min(treated_probability, Fraction(1) - baseline_probability)
+    lower = max(_zero(world), treated_probability - baseline_probability)
+    upper = min(treated_probability, _one(world) - baseline_probability)
+    return lower, upper
+
+
+def _direct_only_counterfactual_transition_bounds(
+    world: WorldSpec,
+    treatment_node: int,
+    outcome_node: int,
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    outcome_state: int,
+) -> tuple[Probability, Probability]:
+    """Exact row-wise bounds when treatment reaches outcome only directly."""
+
+    other_parents = tuple(
+        parent for parent in world.parents[outcome_node] if parent != treatment_node
+    )
+    if other_parents:
+        parent_law = worldspec_projected_interventional_distribution(
+            world,
+            {treatment_node: baseline_value},
+            other_parents,
+        )
+    else:
+        parent_law = (((), _one(world)),)
+    exact = _uses_exact_probabilities(world)
+    lower_terms: list[Probability] = []
+    upper_terms: list[Probability] = []
+    for assignment, parent_probability in parent_law:
+        shared_values = dict(zip(other_parents, assignment, strict=True))
+
+        def outcome_probability(
+            treatment_state: int,
+            current_shared: Mapping[int, int] = shared_values,
+        ) -> Probability:
+            row_index = 0
+            for parent in world.parents[outcome_node]:
+                state = treatment_state if parent == treatment_node else current_shared[parent]
+                row_index = row_index * world.domains[parent] + state
+            return world.cpt[outcome_node][row_index][outcome_state]
+
+        treated = outcome_probability(treatment_value)
+        baseline = outcome_probability(baseline_value)
+        lower_terms.append(parent_probability * max(_zero(world), treated - baseline))
+        upper_terms.append(parent_probability * min(treated, _one(world) - baseline))
+    return (
+        _probability_sum(tuple(lower_terms), exact=exact),
+        _probability_sum(tuple(upper_terms), exact=exact),
+    )
+
+
+def _ancestors(world: WorldSpec, node: int) -> frozenset[int]:
+    seen: set[int] = set()
+    stack = [node]
+    while stack:
+        current = stack.pop()
+        for parent in world.parents[current]:
+            if parent not in seen:
+                seen.add(parent)
+                stack.append(parent)
+    return frozenset(seen)
+
+
+def _solve_square_system(
+    matrix: tuple[tuple[Probability, ...], ...],
+    target: tuple[Probability, ...],
+    *,
+    exact: bool,
+) -> tuple[Probability, ...] | None:
+    """Solve one candidate response-polytope basis by elimination."""
+
+    size = len(target)
+    augmented = [list(row) + [target[index]] for index, row in enumerate(matrix)]
+    zero: Probability = Fraction(0) if exact else 0.0
+    for column in range(size):
+        candidates = range(column, size)
+        if exact:
+            pivot = next((row for row in candidates if augmented[row][column] != 0), None)
+        else:
+            pivot = max(candidates, key=lambda row: abs(float(augmented[row][column])))
+            if abs(float(augmented[pivot][column])) <= _PROBABILITY_TOLERANCE:
+                return None
+        if pivot is None:
+            return None
+        augmented[column], augmented[pivot] = augmented[pivot], augmented[column]
+        pivot_value = augmented[column][column]
+        augmented[column] = [value / pivot_value for value in augmented[column]]
+        for row in range(size):
+            if row == column:
+                continue
+            multiplier = augmented[row][column]
+            if multiplier == zero:
+                continue
+            augmented[row] = [
+                value - multiplier * pivot_entry
+                for value, pivot_entry in zip(augmented[row], augmented[column], strict=True)
+            ]
+    solution = tuple(row[-1] for row in augmented)
+    if exact:
+        return solution if all(value >= 0 for value in solution) else None
+    if any(float(value) < -1e-10 or not isfinite(float(value)) for value in solution):
+        return None
+    cleaned = tuple(max(0.0, float(value)) for value in solution)
+    for row, expected in zip(matrix, target, strict=True):
+        actual = fsum(
+            float(coefficient) * value for coefficient, value in zip(row, cleaned, strict=True)
+        )
+        if abs(actual - float(expected)) > 1e-9 + 1e-9 * abs(float(expected)):
+            return None
+    return cleaned
+
+
+def _response_coupling_vertices(
+    marginals: tuple[tuple[Probability, ...], ...],
+) -> tuple[tuple[tuple[tuple[int, ...], Probability], ...], ...]:
+    """Enumerate vertices of one finite multi-context response coupling."""
+
+    if not marginals:
+        raise ValueError("response coupling needs at least one parent context")
+    domain_size = len(marginals[0])
+    if domain_size < 1 or any(len(row) != domain_size for row in marginals):
+        raise ValueError("response marginals have inconsistent domains")
+    exact = all(isinstance(value, Fraction) for row in marginals for value in row)
+    response_types = tuple(product(range(domain_size), repeat=len(marginals)))
+    constraint_count = 1 + len(marginals) * (domain_size - 1)
+    rows: list[tuple[Probability, ...]] = [tuple(_one_value(exact) for _ in response_types)]
+    target: list[Probability] = [_one_value(exact)]
+    for context, marginal in enumerate(marginals):
+        for state in range(domain_size - 1):
+            rows.append(
+                tuple(
+                    _one_value(exact) if response[context] == state else _zero_value(exact)
+                    for response in response_types
+                )
+            )
+            target.append(marginal[state])
+
+    vertices: list[tuple[tuple[tuple[int, ...], Probability], ...]] = []
+    seen_supports: set[tuple[int, ...]] = set()
+    for basis in combinations(range(len(response_types)), constraint_count):
+        matrix = tuple(tuple(row[column] for column in basis) for row in rows)
+        solution = _solve_square_system(matrix, tuple(target), exact=exact)
+        if solution is None:
+            continue
+        support = tuple(
+            column
+            for column, value in zip(basis, solution, strict=True)
+            if value != 0 and (exact or float(value) > _PROBABILITY_TOLERANCE)
+        )
+        if support in seen_supports:
+            continue
+        seen_supports.add(support)
+        vertex = tuple(
+            (response_types[column], value)
+            for column, value in zip(basis, solution, strict=True)
+            if value != 0 and (exact or float(value) > _PROBABILITY_TOLERANCE)
+        )
+        vertices.append(vertex)
+    if not vertices:
+        raise RuntimeError("response-coupling polytope has no enumerated vertex")
+    return tuple(vertices)
+
+
+def _zero_value(exact: bool) -> Probability:
+    return Fraction(0) if exact else 0.0
+
+
+def _one_value(exact: bool) -> Probability:
+    return Fraction(1) if exact else 1.0
+
+
+def _active_parent_contexts(
+    world: WorldSpec,
+    node: int,
+    treatment_node: int,
+    baseline_value: int,
+    treatment_value: int,
+) -> tuple[tuple[int, ...], ...]:
+    parents = world.parents[node]
+    contexts = product(*(range(world.domains[parent]) for parent in parents))
+    if treatment_node not in parents:
+        return tuple(contexts)
+    treatment_position = parents.index(treatment_node)
+    return tuple(
+        context
+        for context in contexts
+        if context[treatment_position] in {baseline_value, treatment_value}
+    )
+
+
+def _response_pair_kernel(
+    vertex: tuple[tuple[tuple[int, ...], Probability], ...],
+    contexts: tuple[tuple[int, ...], ...],
+    baseline_context: tuple[int, ...],
+    treated_context: tuple[int, ...],
+    domain_size: int,
+    *,
+    exact: bool,
+) -> tuple[tuple[tuple[int, int], Probability], ...]:
+    baseline_index = contexts.index(baseline_context)
+    treated_index = contexts.index(treated_context)
+    masses = {
+        (left, right): _zero_value(exact)
+        for left in range(domain_size)
+        for right in range(domain_size)
+    }
+    for response, probability in vertex:
+        pair = (response[baseline_index], response[treated_index])
+        masses[pair] += probability
+    return tuple((pair, probability) for pair, probability in masses.items() if probability != 0)
+
+
+def _counterfactual_probability_for_vertices(
+    world: WorldSpec,
+    treatment_node: int,
+    outcome_node: int,
+    affected: tuple[int, ...],
+    shared: tuple[int, ...],
+    contexts_by_node: Mapping[int, tuple[tuple[int, ...], ...]],
+    vertices_by_node: Mapping[int, tuple[tuple[tuple[int, ...], Probability], ...]],
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    outcome_state: int,
+) -> Probability:
+    exact = _uses_exact_probabilities(world)
+    if shared:
+        shared_law = worldspec_projected_interventional_distribution(
+            world,
+            {treatment_node: baseline_value},
+            shared,
+        )
+    else:
+        shared_law = (((), _one(world)),)
+    total = _zero(world)
+    for shared_assignment, shared_probability in shared_law:
+        initial_left = {treatment_node: baseline_value}
+        initial_right = {treatment_node: treatment_value}
+        for node, state in zip(shared, shared_assignment, strict=True):
+            initial_left[node] = state
+            initial_right[node] = state
+        frontier: list[tuple[dict[int, int], dict[int, int], Probability]] = [
+            (initial_left, initial_right, shared_probability)
+        ]
+        for node in affected:
+            expanded: list[tuple[dict[int, int], dict[int, int], Probability]] = []
+            parents = world.parents[node]
+            contexts = contexts_by_node[node]
+            vertex = vertices_by_node[node]
+            for left_values, right_values, mass in frontier:
+                left_context = tuple(left_values[parent] for parent in parents)
+                right_context = tuple(right_values[parent] for parent in parents)
+                kernel = _response_pair_kernel(
+                    vertex,
+                    contexts,
+                    left_context,
+                    right_context,
+                    world.domains[node],
+                    exact=exact,
+                )
+                for (left_state, right_state), probability in kernel:
+                    next_left = {**left_values, node: left_state}
+                    next_right = {**right_values, node: right_state}
+                    expanded.append((next_left, next_right, mass * probability))
+            frontier = expanded
+        total += _probability_sum(
+            tuple(
+                mass
+                for left_values, right_values, mass in frontier
+                if right_values[outcome_node] == outcome_state
+                and left_values[outcome_node] != outcome_state
+            ),
+            exact=exact,
+        )
+    return total
+
+
+def reference_counterfactual_transition_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    treatment_value: int = 1,
+    baseline_value: int = 0,
+    outcome_state: int = 1,
+) -> tuple[Probability, Probability]:
+    """Exact finite response-function oracle for cross-checks and fallback.
+
+    The runtime is exponential in the local response-coupling dimensions and
+    in the number of affected nodes.  It is nevertheless a complete finite
+    algorithm: it adds no SCM restriction and no node-count or timeout gate.
+    """
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    descendants = _descendants(world, treatment_node)
+    if outcome_node not in descendants:
+        zero = _zero(world)
+        return zero, zero
+    ancestors = _ancestors(world, outcome_node) | {outcome_node}
+    affected_set = descendants & ancestors
+    affected = tuple(node for node in _topological_order(world) if node in affected_set)
+    shared = tuple(
+        node
+        for node in _topological_order(world)
+        if node in ancestors and node not in affected_set and node != treatment_node
+    )
+
+    contexts_by_node: dict[int, tuple[tuple[int, ...], ...]] = {}
+    vertex_sets: list[tuple[tuple[tuple[tuple[int, ...], Probability], ...], ...]] = []
+    for node in affected:
+        contexts = _active_parent_contexts(
+            world,
+            node,
+            treatment_node,
+            baseline_value,
+            treatment_value,
+        )
+        contexts_by_node[node] = contexts
+        marginals = tuple(
+            world.cpt[node][
+                sum(
+                    state
+                    * prod(world.domains[parent] for parent in world.parents[node][index + 1 :])
+                    for index, (parent, state) in enumerate(
+                        zip(world.parents[node], context, strict=True)
+                    )
+                )
+            ]
+            for context in contexts
+        )
+        vertex_sets.append(_response_coupling_vertices(marginals))
+
+    lower: Probability | None = None
+    upper: Probability | None = None
+    for selected_vertices in product(*vertex_sets):
+        probability = _counterfactual_probability_for_vertices(
+            world,
+            treatment_node,
+            outcome_node,
+            affected,
+            shared,
+            contexts_by_node,
+            dict(zip(affected, selected_vertices, strict=True)),
+            treatment_value=treatment_value,
+            baseline_value=baseline_value,
+            outcome_state=outcome_state,
+        )
+        lower = probability if lower is None else min(lower, probability)
+        upper = probability if upper is None else max(upper, probability)
+    if lower is None or upper is None:
+        raise RuntimeError("counterfactual response enumeration produced no completion")
     return lower, upper
 
 
@@ -431,7 +890,7 @@ def best_intervention_states(
     decision_target: object,
     *,
     outcome_state: int = 1,
-) -> tuple[tuple[int, ...], Fraction]:
+) -> tuple[tuple[int, ...], Probability]:
     """Return every zero-regret state and its exact outcome probability.
 
     ``decision_target`` is deliberately independent of the variables that may
@@ -473,8 +932,8 @@ def best_intervention_truth(
     decision_target: object,
     *,
     outcome_state: int = 1,
-) -> tuple[str, int, Fraction]:
-    """Return the canonical exact deployment intervention.
+) -> tuple[str, int, Probability]:
+    """Return the canonical deployment intervention.
 
     Every state returned by :func:`best_intervention_states` has zero regret.
     This compatibility entry point selects the first such state in domain
@@ -506,55 +965,59 @@ def _descendants(world: WorldSpec, node: int) -> frozenset[int]:
     return frozenset(seen)
 
 
-def _undirected_neighbors(world: WorldSpec, node: int) -> set[int]:
-    return {
-        child if parent == node else parent
-        for parent, child in world.edges
-        if parent == node or child == node
-    }
+def _backdoor_separated(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    condition: frozenset[int],
+) -> bool:
+    """Test the back-door criterion without enumerating simple paths.
 
-
-def _backdoor_paths(world: WorldSpec, treatment: int, outcome: int) -> tuple[tuple[int, ...], ...]:
-    """Return all simple back-door paths from treatment to outcome.
-
-    A back-door path is an undirected path whose first step enters treatment
-    through one of its parents.
+    Remove arrows leaving the treatment, restrict the resulting DAG to the
+    ancestors of the query and conditioning nodes, moralize that ancestral
+    graph, and test undirected separation after deleting the conditioning
+    nodes. This is equivalent to d-separation in the back-door graph while
+    remaining polynomial in the graph size for each candidate set.
     """
 
-    paths: list[tuple[int, ...]] = []
+    backdoor_edges = tuple(edge for edge in world.edges if edge[0] != treatment)
+    parents: dict[int, set[int]] = {node: set() for node in range(len(world.variables))}
+    for parent, child in backdoor_edges:
+        parents[child].add(parent)
 
-    def visit(current: int, path: list[int], seen: set[int]) -> None:
-        if current == outcome:
-            paths.append(tuple(path))
-            return
-        for neighbor in sorted(_undirected_neighbors(world, current)):
-            if neighbor in seen:
+    ancestors = {treatment, outcome, *condition}
+    stack = list(ancestors)
+    while stack:
+        child = stack.pop()
+        for parent in parents[child]:
+            if parent not in ancestors:
+                ancestors.add(parent)
+                stack.append(parent)
+
+    moral_neighbors = {node: set() for node in ancestors}
+    for parent, child in backdoor_edges:
+        if parent in ancestors and child in ancestors:
+            moral_neighbors[parent].add(child)
+            moral_neighbors[child].add(parent)
+    for child in ancestors:
+        relevant_parents = sorted(parents[child] & ancestors)
+        for left_index, left in enumerate(relevant_parents):
+            for right in relevant_parents[left_index + 1 :]:
+                moral_neighbors[left].add(right)
+                moral_neighbors[right].add(left)
+
+    reachable = {treatment}
+    stack = [treatment]
+    while stack:
+        current = stack.pop()
+        for neighbor in moral_neighbors[current]:
+            if neighbor in condition or neighbor in reachable:
                 continue
-            seen.add(neighbor)
-            path.append(neighbor)
-            visit(neighbor, path, seen)
-            path.pop()
-            seen.remove(neighbor)
-
-    for start in world.parents.get(treatment, ()):
-        visit(start, [treatment, start], {treatment, start})
-    return tuple(paths)
-
-
-def _path_is_open(world: WorldSpec, path: tuple[int, ...], condition: frozenset[int]) -> bool:
-    edge_set = set(world.edges)
-    descendants = {node: _descendants(world, node) for node in range(len(world.variables))}
-    for index in range(1, len(path) - 1):
-        node = path[index]
-        previous = path[index - 1]
-        following = path[index + 1]
-        collider = (previous, node) in edge_set and (following, node) in edge_set
-        if collider:
-            if node not in condition and not (descendants[node] & condition):
+            if neighbor == outcome:
                 return False
-        elif node in condition:
-            return False
-    return True
+            reachable.add(neighbor)
+            stack.append(neighbor)
+    return outcome not in reachable
 
 
 def backdoor_adjustment_sets(
@@ -571,7 +1034,6 @@ def backdoor_adjustment_sets(
     outcome_node = _node_index(world, outcome)
     if treatment_node == outcome_node:
         raise ValueError("treatment and outcome must be different variables")
-    paths = _backdoor_paths(world, treatment_node, outcome_node)
     treatment_descendants = _descendants(world, treatment_node)
     allowed = [
         node
@@ -582,13 +1044,12 @@ def backdoor_adjustment_sets(
     for size in range(len(allowed) + 1):
         for subset in combinations(allowed, size):
             condition = frozenset(subset)
-            if all(not _path_is_open(world, path, condition) for path in paths):
+            if any(other < condition for other in valid):
+                continue
+            if _backdoor_separated(world, treatment_node, outcome_node, condition):
                 valid.append(condition)
-    minimal = [candidate for candidate in valid if not any(other < candidate for other in valid)]
-    minimal.sort(key=lambda candidate: (len(candidate), tuple(sorted(candidate))))
-    return tuple(
-        tuple(world.variables[node] for node in sorted(candidate)) for candidate in minimal
-    )
+    valid.sort(key=lambda candidate: (len(candidate), tuple(sorted(candidate))))
+    return tuple(tuple(world.variables[node] for node in sorted(candidate)) for candidate in valid)
 
 
 def collider_bias_effect(
@@ -601,7 +1062,7 @@ def collider_bias_effect(
     baseline_value: int = 0,
     outcome_state: int = 1,
     condition_state: int = 1,
-) -> Fraction:
+) -> Probability:
     """Return a collider-conditioned do contrast for ATE diagnostics.
 
     The estimand is
@@ -615,7 +1076,7 @@ def collider_bias_effect(
     if len({treatment_node, outcome_node, collider_node}) != 3:
         raise ValueError("treatment, outcome, and collider must be distinct")
 
-    def conditional_effect(value: int) -> Fraction:
+    def conditional_effect(value: int) -> Probability:
         joint = interventional_joint_probability(
             world,
             {treatment_node: value},
@@ -712,7 +1173,7 @@ def _resolve_seed_node(world: WorldSpec, seed: Mapping[str, Any], value: object)
 
 
 def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, Any]:
-    """Compute exact truth for a seed whose query owner is implemented."""
+    """Compute hidden truth for a seed whose query owner is implemented."""
 
     query = seed.get("query")
     if not isinstance(query, Mapping):
@@ -729,13 +1190,20 @@ def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[st
         outcome = query.get("outcome")
         if treatment is None or outcome is None:
             raise ValueError("ate query requires treatment and outcome")
+        treatment_node = _resolve_seed_node(world, seed, treatment)
         outcome_node = _resolve_seed_node(world, seed, outcome)
         return {
             "type": "ate",
             "effect": ate_effect(
                 world,
-                _resolve_seed_node(world, seed, treatment),
+                treatment_node,
                 outcome_node,
+                treatment_value=_state_index_for_node(
+                    world, treatment_node, query.get("treatment_value", 1)
+                ),
+                baseline_value=_state_index_for_node(
+                    world, treatment_node, query.get("baseline_value", 0), default=0
+                ),
                 outcome_state=_state_index_for_node(
                     world, outcome_node, query.get("outcome_state", 1)
                 ),

@@ -18,7 +18,6 @@ from cpt_world import (
     compute_query_truth,
     legal_query_anchors,
     sample_task_world,
-    sample_world,
     sample_worldspec_batch,
     worldspec_interventional_distribution,
 )
@@ -30,15 +29,17 @@ def _sampled_task(
     preferred_seed: int | None = None,
     preferred_anchor: int = 0,
 ):
-    grammar = WorldGrammar()
+    grammar = WorldGrammar(node_counts=(2, 3, 4))
     candidate_seeds = (preferred_seed,) if preferred_seed is not None else tuple(range(200))
     for seed_number in candidate_seeds:
-        structural = sample_world(grammar, seed_number)
-        anchors_list = legal_query_anchors(structural, query_type)
+        # The task-conditioned world is the world-first owner.  Looking up
+        # roles on an independently sampled, unconditioned world can select a
+        # different DAG for the same integer seed.
+        world = sample_task_world(grammar, seed_number, query_type)
+        anchors_list = legal_query_anchors(world, query_type)
         if len(anchors_list) <= preferred_anchor:
             continue
         anchors = anchors_list[preferred_anchor]
-        world = sample_task_world(grammar, seed_number, query_type, anchors)
         task_head = (
             "target_query"
             if query_type in {"ate", "counterfactual_transition_bounds"}
@@ -154,7 +155,7 @@ def _first_command(seed, world, *, batch_size: int = 8) -> str:
 
 class WorldSpecRuntimeTests(unittest.TestCase):
     def test_interventional_distribution_replaces_the_target_mechanism(self) -> None:
-        _, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        _, world = _sampled_task("ate", preferred_seed=64)
         target = 2
         state = 1
         distribution = worldspec_interventional_distribution(world, {target: state})
@@ -185,12 +186,12 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         )
 
     def test_parser_is_strict_visible_multivalued_and_budget_aware(self) -> None:
-        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        seed, world = _sampled_task("ate", preferred_seed=64)
         episode = WorldSpecEpisode(
             world,
             seed,
             OutcomeTape("runtime-parser"),
-            budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+            budget=Budget(max_observations=16),
             measure_max=2,
         )
         raw = _first_command(seed, world)
@@ -226,6 +227,46 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             episode.parse_intervention(raw.replace('"batch_size":8', '"batch_size":NaN'))
 
+    def test_arbitrary_positive_batches_and_more_than_four_queries_are_legal(self) -> None:
+        seed, world = _sampled_task("ate", preferred_seed=64)
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-unbounded-query-count"),
+            budget=Budget(max_observations=17),
+            measure_max=1,
+        )
+        command = json.loads(_first_command(seed, world))
+        command["measure"] = command["measure"][:1]
+        command["batch_size"] = 3
+        episode.step(json.dumps(command))
+        command["batch_size"] = 2
+        for _ in range(7):
+            episode.step(json.dumps(command))
+
+        self.assertEqual(episode.queries_used, 8)
+        self.assertEqual(episode.sample_rows_used, 17)
+        self.assertEqual(episode.observations_used, 17)
+        self.assertEqual(episode.remaining_budget, 0)
+        command["batch_size"] = 1
+        with self.assertRaisesRegex(ValueError, "terminal answer is required"):
+            episode.parse_intervention(json.dumps(command))
+
+    def test_query_cost_uses_batch_size_times_actual_measure_width(self) -> None:
+        seed, world = _sampled_task("ate", preferred_seed=64)
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-observation-cost"),
+            budget=Budget(max_observations=10),
+            measure_max=2,
+        )
+        command = json.loads(_first_command(seed, world))
+        command["batch_size"] = 5
+        episode.step(json.dumps(command))
+        self.assertEqual(episode.observations_used, 10)
+        self.assertEqual(episode.remaining_budget, 0)
+
     def test_deterministic_multivalue_hard_do_and_selected_feedback(self) -> None:
         world = _deterministic_multivalue_chain()
         seed = assemble_seed(
@@ -235,13 +276,16 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             "discovery",
             anchors={"treatment": 0, "outcome": 2},
             seed_id="RUNTIME-MULTIVALUE-CHAIN",
+            # This pinned runtime fixture exercises a hard intervention on T;
+            # main-pipeline tasks still draw K through the shared sampler.
+            manipulability={"T": True, "M": False, "Y": False},
         )
         labels = seed["visible_schema"]["variable_labels"]
         episode = WorldSpecEpisode(
             world,
             seed,
             OutcomeTape("runtime-deterministic-chain"),
-            budget=Budget(max_rounds=1, max_samples=4, batch_sizes=(4,)),
+            budget=Budget(max_observations=8),
             measure_max=2,
         )
         command = json.dumps(
@@ -261,8 +305,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(payload["batch"]["measure"], [labels["M"], labels["Y"]])
         self.assertEqual(len(payload["batch"]["joint_counts"]), 1)
         self.assertEqual(next(iter(payload["batch"]["joint_counts"].values())), 4)
-        self.assertEqual(payload["remaining_rounds"], 0)
-        self.assertEqual(payload["remaining_samples"], 0)
+        self.assertEqual(payload["remaining_budget"], 0)
         self.assertIn("Return a terminal answer now", str(step.message))
 
         truth = compute_query_truth(world, seed)
@@ -278,7 +321,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(terminal.score["order_f1"], 1)
 
     def test_action_keyed_stream_is_split_interleave_and_measure_invariant(self) -> None:
-        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        seed, world = _sampled_task("ate", preferred_seed=64)
         target_name = next(name for name, allowed in seed["manipulability"].items() if allowed)
         target = world.variables.index(target_name)
         other_nodes = tuple(node for node in range(len(world.variables)) if node != target)
@@ -315,8 +358,18 @@ class WorldSpecRuntimeTests(unittest.TestCase):
                 marginalized[(selected_state,)] = count
         self.assertEqual(_batch_count_map(selected), marginalized)
 
-        episode_a = WorldSpecEpisode(world, seed, OutcomeTape("runtime-order"))
-        episode_b = WorldSpecEpisode(world, seed, OutcomeTape("runtime-order"))
+        episode_a = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-order"),
+            budget=Budget(max_observations=128),
+        )
+        episode_b = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-order"),
+            budget=Budget(max_observations=128),
+        )
         primary = half_command
         alternate = WorldInterventionCommand(
             WorldIntervention(target, 0),
@@ -357,7 +410,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             observation_bandwidth=2,
         )
         labels = seed["visible_schema"]["variable_labels"]
-        budget = Budget(max_rounds=2, max_samples=8, batch_sizes=(4,))
+        budget = Budget(max_observations=16)
         episode = WorldSpecEpisode(
             world,
             seed,
@@ -399,16 +452,17 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertNotIn("intervention", payload)
         self.assertEqual(payload["batch"]["measure"], [labels["T"], labels["Y"]])
         self.assertEqual(sum(payload["batch"]["joint_counts"].values()), 4)
-        self.assertEqual(episode.rounds_used, 1)
-        self.assertEqual(episode.samples_used, 4)
+        self.assertEqual(episode.queries_used, 1)
+        self.assertEqual(episode.sample_rows_used, 4)
+        self.assertEqual(episode.observations_used, 8)
 
     def test_feedback_contains_only_selected_visible_joint_counts(self) -> None:
-        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        seed, world = _sampled_task("ate", preferred_seed=64)
         episode = WorldSpecEpisode(
             world,
             seed,
             OutcomeTape("runtime-feedback"),
-            budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+            budget=Budget(max_observations=16),
             measure_max=1,
         )
         raw = json.loads(_first_command(seed, world))
@@ -429,8 +483,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             self.assertTrue(all(label not in key for label in unselected))
         for internal_name in world.variables:
             self.assertNotIn(internal_name, step.message)
-        self.assertEqual(payload["remaining_rounds"], 1)
-        self.assertEqual(payload["remaining_samples"], 8)
+        self.assertEqual(payload["remaining_budget"], 8)
 
     def test_numeric_and_decision_tasks_run_from_prompt_to_terminal_score(self) -> None:
         for query_type in ("ate", "counterfactual_transition_bounds", "best_intervention"):
@@ -439,11 +492,11 @@ class WorldSpecRuntimeTests(unittest.TestCase):
                 world,
                 seed,
                 OutcomeTape(f"runtime-mode-{query_type}"),
-                budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+                budget=Budget(max_observations=16),
                 measure_max=2,
             )
             initial = episode.initial_messages()
-            self.assertIn("CPT-WORLD HIDDEN-MECHANISM TASK", initial[1]["content"])
+            self.assertIn("DOLENS HIDDEN-MECHANISM TASK", initial[1]["content"])
             if query_type == "best_intervention":
                 decision_label = seed["query"]["decision_target"]
                 measure_label = next(
@@ -465,7 +518,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
                     )
             batch_step = episode.step(_first_command(seed, world))
             self.assertEqual(batch_step.kind, "batch")
-            self.assertEqual(episode.rounds_used, 1)
+            self.assertEqual(episode.queries_used, 1)
             truth = compute_query_truth(world, seed)
             if query_type == "best_intervention":
                 raw_answer = json.dumps(
@@ -514,7 +567,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             world,
             seed,
             OutcomeTape("runtime-counterfactual-compatible-value"),
-            budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+            budget=Budget(max_observations=16),
             measure_max=2,
         )
         self.assertIn(
@@ -542,16 +595,16 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             world,
             seed,
             OutcomeTape("runtime-backdoor"),
-            budget=Budget(max_rounds=1, max_samples=4, batch_sizes=(4,)),
+            budget=Budget(max_observations=8),
             measure_max=2,
         )
         step = episode.step(
             json.dumps(
                 {
                     "type": "intervene",
-                    "target": labels["X"],
+                    "target": labels["Z"],
                     "value": "state_1",
-                    "measure": [labels["Z"], labels["Y"]],
+                    "measure": [labels["X"], labels["Y"]],
                     "batch_size": 4,
                 }
             )
@@ -573,7 +626,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertTrue(terminal.score["exact_match"])
 
     def test_episode_rejects_an_action_surface_with_no_target_measure_pair(self) -> None:
-        seed, world = _sampled_task("ate", preferred_seed=64, preferred_anchor=1)
+        seed, world = _sampled_task("ate", preferred_seed=64)
         only_name = world.variables[0]
         bad_seed = {
             **seed,
@@ -581,7 +634,12 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             "readable": {name: name == only_name for name in world.variables},
         }
         with self.assertRaisesRegex(ValueError, "no legal target/measure pair"):
-            WorldSpecEpisode(world, bad_seed, OutcomeTape("runtime-impossible-actions"))
+            WorldSpecEpisode(
+                world,
+                bad_seed,
+                OutcomeTape("runtime-impossible-actions"),
+                budget=Budget(max_observations=8),
+            )
 
 
 if __name__ == "__main__":

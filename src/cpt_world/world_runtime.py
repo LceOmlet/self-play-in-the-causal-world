@@ -18,7 +18,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from .episode import Budget
+from .episode import Budget, budget_for_observation_bandwidth
 from .query_truth import sample_worldspec_assignment
 from .rendering import render_seed_initial_messages, resolve_observation_bandwidth
 from .task_scoring import score_terminal_answer
@@ -268,11 +268,22 @@ def _parse_visible_measure(
     return tuple(measure)
 
 
-def _parse_batch_size(value: object, budget: Budget, remaining_samples: int) -> int:
+def _query_cost(batch_size: int, measure: tuple[int, ...]) -> int:
+    return batch_size * len(measure)
+
+
+def _parse_batch_size(
+    value: object,
+    *,
+    measure: tuple[int, ...],
+    remaining_budget: int,
+) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise ValueError("batch_size must be an integer")
-    if value not in budget.batch_sizes or value > remaining_samples:
-        raise ValueError("batch_size is not legal with the remaining budget")
+    if value <= 0:
+        raise ValueError("batch_size must be positive")
+    if _query_cost(value, measure) > remaining_budget:
+        raise ValueError("batch_size and measure exceed the remaining observation budget")
     return value
 
 
@@ -282,23 +293,21 @@ def parse_world_intervention(
     world: WorldSpec,
     *,
     budget: Budget,
-    remaining_rounds: int,
-    remaining_samples: int,
+    remaining_budget: int,
     measure_max: int | None = None,
 ) -> WorldInterventionCommand:
     """Parse one strict visible intervention for a generic WorldSpec episode."""
 
     if not isinstance(budget, Budget):
         raise TypeError("budget must be a Budget")
-    remaining_rounds = _nonnegative_int(remaining_rounds, field="remaining_rounds")
-    remaining_samples = _nonnegative_int(remaining_samples, field="remaining_samples")
-    if remaining_rounds > budget.max_rounds or remaining_samples > budget.max_samples:
+    remaining_budget = _nonnegative_int(remaining_budget, field="remaining_budget")
+    if remaining_budget > budget.max_observations:
         raise ValueError("remaining budget exceeds the episode budget")
     if measure_max is not None and (
         isinstance(measure_max, bool) or not isinstance(measure_max, int) or measure_max <= 0
     ):
         raise ValueError("measure_max must be a positive integer or None")
-    if remaining_rounds == 0 or remaining_samples < min(budget.batch_sizes):
+    if remaining_budget == 0:
         raise ValueError("no experiment is legal; a terminal answer is required")
 
     value = _json_object(raw)
@@ -326,7 +335,11 @@ def parse_world_intervention(
         measure_max=measure_max,
         excluded_label=visible_target,
     )
-    batch_size = _parse_batch_size(value.get("batch_size"), budget, remaining_samples)
+    batch_size = _parse_batch_size(
+        value.get("batch_size"),
+        measure=measure,
+        remaining_budget=remaining_budget,
+    )
     return WorldInterventionCommand(
         intervention=WorldIntervention(target=target, value=state),
         measure=measure,
@@ -340,23 +353,21 @@ def parse_world_observation(
     world: WorldSpec,
     *,
     budget: Budget,
-    remaining_rounds: int,
-    remaining_samples: int,
+    remaining_budget: int,
     measure_max: int | None = None,
 ) -> WorldObservationCommand:
     """Parse one strict passive-observation request for a WorldSpec episode."""
 
     if not isinstance(budget, Budget):
         raise TypeError("budget must be a Budget")
-    remaining_rounds = _nonnegative_int(remaining_rounds, field="remaining_rounds")
-    remaining_samples = _nonnegative_int(remaining_samples, field="remaining_samples")
-    if remaining_rounds > budget.max_rounds or remaining_samples > budget.max_samples:
+    remaining_budget = _nonnegative_int(remaining_budget, field="remaining_budget")
+    if remaining_budget > budget.max_observations:
         raise ValueError("remaining budget exceeds the episode budget")
     if measure_max is not None and (
         isinstance(measure_max, bool) or not isinstance(measure_max, int) or measure_max <= 0
     ):
         raise ValueError("measure_max must be a positive integer or None")
-    if remaining_rounds == 0 or remaining_samples < min(budget.batch_sizes):
+    if remaining_budget == 0:
         raise ValueError("no experiment is legal; a terminal answer is required")
 
     value = _json_object(raw)
@@ -371,7 +382,11 @@ def parse_world_observation(
         world,
         measure_max=measure_max,
     )
-    batch_size = _parse_batch_size(value.get("batch_size"), budget, remaining_samples)
+    batch_size = _parse_batch_size(
+        value.get("batch_size"),
+        measure=measure,
+        remaining_budget=remaining_budget,
+    )
     return WorldObservationCommand(measure=measure, batch_size=batch_size)
 
 
@@ -437,8 +452,8 @@ def render_world_batch_message(
     world: WorldSpec,
     *,
     budget: Budget,
-    remaining_rounds: int,
-    remaining_samples: int,
+    remaining_budget: int,
+    measure_max: int | None = None,
 ) -> str:
     """Render selected-measure counts without exposing any unrequested variable."""
 
@@ -446,8 +461,9 @@ def render_world_batch_message(
         raise TypeError("batch must be a WorldMeasuredBatch")
     if not isinstance(budget, Budget):
         raise TypeError("budget must be a Budget")
-    remaining_rounds = _nonnegative_int(remaining_rounds, field="remaining_rounds")
-    remaining_samples = _nonnegative_int(remaining_samples, field="remaining_samples")
+    remaining_budget = _nonnegative_int(remaining_budget, field="remaining_budget")
+    if remaining_budget > budget.max_observations:
+        raise ValueError("remaining budget exceeds the episode budget")
     view = _runtime_view(seed, world)
     measure_names = tuple(world.variables[node] for node in batch.measure)
     measure_labels = tuple(view.labels[name] for name in measure_names)
@@ -465,9 +481,9 @@ def render_world_batch_message(
             "measure": list(measure_labels),
             "joint_counts": joint_counts,
         },
-        "remaining_rounds": remaining_rounds,
-        "remaining_samples": remaining_samples,
+        "remaining_budget": remaining_budget,
     }
+    resolve_observation_bandwidth(seed, measure_max)
     if batch.intervention is None:
         payload["experiment"] = {"type": "observe"}
     else:
@@ -476,10 +492,42 @@ def render_world_batch_message(
             "target": view.labels[target_name],
             "value": f"state_{batch.intervention.value}",
         }
-    if remaining_rounds == 0 or remaining_samples < min(budget.batch_sizes):
+    if remaining_budget == 0:
         instruction = "No experiment remains legal. Return a terminal answer now."
     else:
         instruction = "Return the next legal JSON command."
+    return json.dumps(payload, separators=(",", ":")) + "\n" + instruction
+
+
+def _render_protocol_error_message(
+    error: Exception,
+    *,
+    budget: Budget,
+    remaining_budget: int,
+) -> str:
+    """Render a rejected command without advancing the experiment state."""
+
+    if not isinstance(budget, Budget):
+        raise TypeError("budget must be a Budget")
+    remaining_budget = _nonnegative_int(remaining_budget, field="remaining_budget")
+    if remaining_budget > budget.max_observations:
+        raise ValueError("remaining budget exceeds the episode budget")
+    payload: dict[str, Any] = {
+        "type": "protocol_error",
+        "accepted": False,
+        "error": {"code": type(error).__name__, "message": str(error)},
+        "budget_consumed": 0,
+        "remaining_budget": remaining_budget,
+    }
+    if remaining_budget == 0:
+        instruction = (
+            "The command was invalid. No experiment remains legal; return a corrected "
+            "terminal answer as one legal JSON object."
+        )
+    else:
+        instruction = (
+            "The command was invalid and was not executed. Return one corrected legal JSON command."
+        )
     return json.dumps(payload, separators=(",", ":")) + "\n" + instruction
 
 
@@ -502,8 +550,13 @@ class WorldSpecEpisode:
         if budget is not None and not isinstance(budget, Budget):
             raise TypeError("budget must be a Budget")
         _runtime_view(seed, world)
-        resolved_budget = budget if budget is not None else Budget()
         resolved_measure_max = resolve_observation_bandwidth(seed, measure_max)
+        if budget is None:
+            if resolved_measure_max is None:
+                raise ValueError("a seed without observation_bandwidth requires an explicit Budget")
+            resolved_budget = budget_for_observation_bandwidth(resolved_measure_max)
+        else:
+            resolved_budget = budget
         # Reuse the renderer's public action-surface validation so an episode
         # cannot exist when every legal target is also the only readable measure.
         render_seed_initial_messages(
@@ -516,28 +569,29 @@ class WorldSpecEpisode:
         self.tape = tape
         self.budget = resolved_budget
         self.measure_max = resolved_measure_max
-        self._rounds_used = 0
-        self._samples_used = 0
+        self._queries_used = 0
+        self._sample_rows_used = 0
+        self._observations_used = 0
         self._arm_offsets: dict[WorldIntervention, int] = {}
         self._observation_offset = 0
         self._history: list[WorldMeasuredBatch] = []
         self._terminal_score: Mapping[str, Any] | None = None
 
     @property
-    def rounds_used(self) -> int:
-        return self._rounds_used
+    def queries_used(self) -> int:
+        return self._queries_used
 
     @property
-    def samples_used(self) -> int:
-        return self._samples_used
+    def sample_rows_used(self) -> int:
+        return self._sample_rows_used
 
     @property
-    def remaining_rounds(self) -> int:
-        return self.budget.max_rounds - self._rounds_used
+    def observations_used(self) -> int:
+        return self._observations_used
 
     @property
-    def remaining_samples(self) -> int:
-        return self.budget.max_samples - self._samples_used
+    def remaining_budget(self) -> int:
+        return self.budget.max_observations - self._observations_used
 
     @property
     def history(self) -> tuple[WorldMeasuredBatch, ...]:
@@ -564,8 +618,7 @@ class WorldSpecEpisode:
             self.seed,
             self.world,
             budget=self.budget,
-            remaining_rounds=self.remaining_rounds,
-            remaining_samples=self.remaining_samples,
+            remaining_budget=self.remaining_budget,
             measure_max=self.measure_max,
         )
 
@@ -575,8 +628,7 @@ class WorldSpecEpisode:
             self.seed,
             self.world,
             budget=self.budget,
-            remaining_rounds=self.remaining_rounds,
-            remaining_samples=self.remaining_samples,
+            remaining_budget=self.remaining_budget,
             measure_max=self.measure_max,
         )
 
@@ -603,12 +655,11 @@ class WorldSpecEpisode:
             raise ValueError("measure contains an unreadable variable")
         if self.measure_max is not None and len(command.measure) > self.measure_max:
             raise ValueError("measure exceeds the per-batch variable limit")
-        if command.batch_size not in self.budget.batch_sizes:
-            raise ValueError("batch_size is not permitted by this episode")
-        if self.remaining_rounds <= 0:
-            raise ValueError("the experiment-round budget is exhausted")
-        if command.batch_size > self.remaining_samples:
-            raise ValueError("the experiment-sample budget is exhausted")
+        if isinstance(command.batch_size, bool) or command.batch_size <= 0:
+            raise ValueError("batch_size must be a positive integer")
+        cost = _query_cost(command.batch_size, command.measure)
+        if cost > self.remaining_budget:
+            raise ValueError("the observation budget is exhausted")
 
         start_index = self._arm_offsets.get(command.intervention, 0)
         batch = sample_worldspec_batch(
@@ -618,8 +669,9 @@ class WorldSpecEpisode:
             start_index=start_index,
         )
         self._arm_offsets[command.intervention] = start_index + command.batch_size
-        self._rounds_used += 1
-        self._samples_used += command.batch_size
+        self._queries_used += 1
+        self._sample_rows_used += command.batch_size
+        self._observations_used += cost
         self._history.append(batch)
         return batch
 
@@ -637,12 +689,11 @@ class WorldSpecEpisode:
             raise ValueError("measure contains an unreadable variable")
         if self.measure_max is not None and len(command.measure) > self.measure_max:
             raise ValueError("measure exceeds the per-batch variable limit")
-        if command.batch_size not in self.budget.batch_sizes:
-            raise ValueError("batch_size is not permitted by this episode")
-        if self.remaining_rounds <= 0:
-            raise ValueError("the experiment-round budget is exhausted")
-        if command.batch_size > self.remaining_samples:
-            raise ValueError("the experiment-sample budget is exhausted")
+        if isinstance(command.batch_size, bool) or command.batch_size <= 0:
+            raise ValueError("batch_size must be a positive integer")
+        cost = _query_cost(command.batch_size, command.measure)
+        if cost > self.remaining_budget:
+            raise ValueError("the observation budget is exhausted")
 
         batch = sample_worldspec_batch(
             self.world,
@@ -651,8 +702,9 @@ class WorldSpecEpisode:
             start_index=self._observation_offset,
         )
         self._observation_offset += command.batch_size
-        self._rounds_used += 1
-        self._samples_used += command.batch_size
+        self._queries_used += 1
+        self._sample_rows_used += command.batch_size
+        self._observations_used += cost
         self._history.append(batch)
         return batch
 
@@ -664,8 +716,19 @@ class WorldSpecEpisode:
             self.seed,
             self.world,
             budget=self.budget,
-            remaining_rounds=self.remaining_rounds,
-            remaining_samples=self.remaining_samples,
+            remaining_budget=self.remaining_budget,
+            measure_max=self.measure_max,
+        )
+
+    def render_protocol_error(self, error: Exception) -> str:
+        """Report an invalid command while preserving the current budget."""
+
+        if not isinstance(error, Exception):
+            raise TypeError("error must be an Exception")
+        return _render_protocol_error_message(
+            error,
+            budget=self.budget,
+            remaining_budget=self.remaining_budget,
         )
 
     def step(self, raw: str) -> WorldEpisodeStep:

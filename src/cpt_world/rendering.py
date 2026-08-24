@@ -13,11 +13,15 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from .episode import Budget
+from .episode import (
+    OBSERVATIONS_PER_BANDWIDTH_UNIT,
+    Budget,
+    budget_for_observation_bandwidth,
+)
 from .registry import HIDING_MODES, counterfactual_answer_mode
 from .world_space import world_state_names
 
-RENDERER_VERSION = "cpt-world-seed-renderer-v1"
+RENDERER_VERSION = "cpt-world-seed-renderer-v2"
 SYSTEM_MESSAGE = (
     "You are evaluated on active causal experimentation. "
     "Return exactly one legal JSON command and no prose."
@@ -394,7 +398,7 @@ def _validated_action_surface(
 
 
 def _render_prompt(ctx: _RenderContext) -> str:
-    lines: list[str] = ["CPT-WORLD HIDDEN-MECHANISM TASK", ""]
+    lines: list[str] = ["DOLENS HIDDEN-MECHANISM TASK", ""]
     lines.append("Variables and finite states:")
     for item in ctx.variables:
         label = str(item["label"])
@@ -450,10 +454,30 @@ def _render_prompt(ctx: _RenderContext) -> str:
         lines.append(
             "There is no initial dataset; evidence comes only from requested batch experiments."
         )
+    budget_line = f"The total observation budget is {ctx.budget.max_observations} scalar values."
+    if (
+        ctx.measure_max is not None
+        and ctx.budget.max_observations == ctx.measure_max * OBSERVATIONS_PER_BANDWIDTH_UNIT
+    ):
+        budget_line = (
+            f"The total observation budget is {ctx.budget.max_observations} scalar values "
+            f"({ctx.measure_max} x {OBSERVATIONS_PER_BANDWIDTH_UNIT})."
+        )
+    lines.append(budget_line)
     lines.append(
-        f"Legal batch sizes are {list(ctx.budget.batch_sizes)}. "
-        f"You may perform at most {ctx.budget.max_rounds} batch experiments and "
-        f"use at most {ctx.budget.max_samples} atomic samples in total."
+        "Each query with batch_size b and r measured variables costs b*r from this budget. "
+        "batch_size may be any positive integer whose cost fits the remaining budget. "
+        "There is no separate limit on the number of queries."
+    )
+    lines.append(
+        "Solve the task through this multi-turn protocol: first collect evidence with "
+        "one or more legal observe/intervene commands, inspect each batch_result and "
+        "the remaining budget, then return the terminal answer when the evidence is "
+        "sufficient. You do not need to exhaust the budget."
+    )
+    lines.append(
+        "If a command is invalid, it is not executed and consumes no experiment budget; "
+        "use the protocol_error feedback to submit a corrected command."
     )
 
     lines.append("")
@@ -472,14 +496,18 @@ def json_dumps_list(values: object) -> str:
 def _render_context(
     seed: Mapping[str, Any],
     *,
-    budget: Budget,
+    budget: Budget | None,
     measure_max: int | None,
 ) -> _RenderContext:
     if not isinstance(seed, Mapping):
         raise TypeError("seed must be a mapping")
+    measure_max = resolve_observation_bandwidth(seed, measure_max)
+    if budget is None:
+        if measure_max is None:
+            raise ValueError("a seed without observation_bandwidth requires an explicit Budget")
+        budget = budget_for_observation_bandwidth(measure_max)
     if not isinstance(budget, Budget):
         raise TypeError("budget must be a Budget")
-    measure_max = resolve_observation_bandwidth(seed, measure_max)
 
     visible_schema = seed.get("visible_schema")
     if not isinstance(visible_schema, Mapping):
@@ -549,7 +577,7 @@ def _rendered_target_query_surface(
 ) -> RenderedAteQuerySurface:
     """Build the shared treatment/outcome surface without duplicating rendering."""
 
-    ctx = _render_context(seed, budget=Budget(), measure_max=measure_max)
+    ctx = _render_context(seed, budget=None, measure_max=measure_max)
     query_type = str(ctx.query.get("type"))
     if query_type != expected_query_type:
         raise ValueError(f"target query surface requires {expected_query_type}, got {query_type}")
@@ -597,7 +625,7 @@ def rendered_decision_query_surface(
 ) -> RenderedDecisionQuerySurface:
     """Return the exact structured best-intervention surface visible to the model."""
 
-    ctx = _render_context(seed, budget=Budget(), measure_max=measure_max)
+    ctx = _render_context(seed, budget=None, measure_max=measure_max)
     if str(ctx.query.get("type")) != "best_intervention":
         raise ValueError("rendered_decision_query_surface requires a best_intervention seed")
     _render_query_block(ctx)
@@ -638,7 +666,7 @@ def rendered_discovery_query_surface(
 ) -> RenderedDiscoveryQuerySurface:
     """Return the exact structured discovery surface visible to the model."""
 
-    ctx = _render_context(seed, budget=Budget(), measure_max=measure_max)
+    ctx = _render_context(seed, budget=None, measure_max=measure_max)
     query_type = str(ctx.query.get("type"))
     if query_type not in {"backadj_minimal_sets", "mediator_set"}:
         raise ValueError("rendered_discovery_query_surface requires a discovery seed")
@@ -677,7 +705,7 @@ def render_seed_task_prompt(
 
     context = _render_context(
         seed,
-        budget=budget if budget is not None else Budget(),
+        budget=budget,
         measure_max=measure_max,
     )
     return _render_prompt(context)

@@ -54,7 +54,7 @@ def _decision_world():
 
 
 def _find_task(query_type: str):
-    grammar = WorldGrammar()
+    grammar = WorldGrammar(node_counts=(2, 3, 4))
     for seed in range(300):
         structural = sample_world(grammar, seed)
         anchors_list = legal_query_anchors(structural, query_type)
@@ -261,7 +261,7 @@ class TaskScoringTests(unittest.TestCase):
 
 
 def _find_discovery_task(query_type: str):
-    grammar = WorldGrammar()
+    grammar = WorldGrammar(node_counts=(2, 3, 4))
     for seed in range(300):
         world = sample_world(grammar, seed)
         anchors_list = legal_query_anchors(world, query_type)

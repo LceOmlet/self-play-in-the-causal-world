@@ -8,7 +8,7 @@
 | query_type | anchors | answer_kind | 兼容 task_heads | truth owner |
 |---|---|---|---|---|
 | `ate` | treatment, outcome | single_effect | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
-| `counterfactual_transition_bounds` | treatment, outcome | interval_or_compatible_value | `target_query` | implemented（`query_truth.py`，exact Fréchet bounds） |
+| `counterfactual_transition_bounds` | treatment, outcome | interval_or_compatible_value | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，完整相容世界上的精确界） |
 | `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
 | `best_intervention` | decision_target, outcome | intervention | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
@@ -40,7 +40,7 @@ compute_query_truth(world, seed)
 - 任意有限离散 `WorldSpec`；
 - exact `Fraction`；
 - `ate` 默认 `state_1` vs `state_0`，可由显式状态索引覆盖；
-- `counterfactual_transition_bounds` 返回目标状态从 baseline 未发生到 treatment 发生的 sharp interval；只释放 CPT 未规定的两个跨世界事件耦合，不选择隐藏 SCM；
+- `counterfactual_transition_bounds` 返回目标状态从 baseline 未发生到 treatment 发生的 sharp interval；在与完整 DAG、全部 CPT 行和公开因果语义相容的全部机制完成上优化，不选择隐藏 SCM；Fréchet 仅作诊断外界；
 - 同一 counterfactual world/query 由主采样管线成对渲染为 `sharp_interval` 和 `compatible_value`；二者共享 K、M 与符号表，后者只检查点是否兼容并报告到区间的连续距离；
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；

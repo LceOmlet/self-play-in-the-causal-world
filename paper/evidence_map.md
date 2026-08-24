@@ -1,10 +1,10 @@
-# CPT-World paper evidence map
+# DoLens paper evidence map
 
 This file is a drafting aid. It is not part of the submitted paper.
 
 ## Central claim
 
-CPT-World turns finite causal models into interactive, hidden-world episodes in
+DoLens turns finite causal models into interactive, hidden-world episodes in
 which a language model chooses experiments, receives selected joint counts, and
 returns a structured causal answer checked by an exact oracle.
 
@@ -17,7 +17,7 @@ returns a structured causal answer checked by an exact oracle.
 | Five causal task families share one WorldSpec sampler, renderer, runtime, and exact truth layer. | `README.md`; `docs/query-task-registry.md`; `src/cpt_world/world_space.py`; `src/cpt_world/query_truth.py`; `src/cpt_world/task_scoring.py`. | “The same hidden world supports effect, counterfactual, decision, adjustment, and mediation queries.” |
 | ATE and counterfactual query endpoints are read-only in the generic sampler; the deployment variable is read-only during experimental-decision episodes. | `src/cpt_world/world_space.py`; `src/cpt_world/rendering.py`; tests covering default manipulability and strict parsing. | “Query and action are separated at the interaction surface.” |
 | Counterfactual labels are sharp compatible intervals or compatible scalar values. | `counterfactual_transition_bounds` in `src/cpt_world/query_truth.py`; counterfactual parser/scorer; exact bounds tests. | “The verifier scores the set of cross-world couplings compatible with the CPT world.” |
-| K controls the legal intervention subset and M controls maximum readout width; both are sampled after family-level answerability. | `src/cpt_world/world_space.py`; `docs/world-space-sampler-contract.md`; tests for randomized interaction surfaces. | “K and M vary evidence access while the underlying query truth stays fixed.” |
+| K controls the legal intervention subset and M controls maximum readout width; neither is filtered by the optional answerability diagnostic. | `src/cpt_world/world_space.py`; `docs/world-space-sampler-contract.md`; tests for randomized interaction surfaces. | “K and M vary evidence access while the underlying query truth stays fixed.” |
 | Exact selected marginals preserve the full-joint Fraction semantics. | Variable-elimination implementation in `query_truth.py`; 24-world exact differential tests. | “Variable elimination matches full-joint enumeration exactly.” |
 | Ancestral batch sampling preserves hard-do semantics and action-keyed reproducibility. | `world_runtime.py`; `world.py`; 12-DAG exact mass tests; split/interleave/rename tests. | “The same action-index pair receives the same random draw under batching, projection, and surface renaming.” |
 | The accelerated engine scales beyond the old joint-state path. | `scripts/benchmark_worldspec_acceleration.py`; frozen README table. | “At 15 binary nodes, selected exact inference and 64-sample feedback are 338.4x and 102.5x faster on the repository benchmark.” |
@@ -43,8 +43,8 @@ returns a structured causal answer checked by an exact oracle.
 
 - No claim of state-of-the-art LLM performance.
 - No claim that current K/M sampling yields a final uniform difficulty mixture.
-- No claim that the default world-size support is 4--15; the current default is
-  2--4 and the exact engine is benchmarked through 15 binary nodes.
+- The default generated world-size support is 3--15; experimental profiles
+  must report their domain-size setting separately.
 - No claim that the repository implements a self-play optimization algorithm.
 - No claim that compatible intervals identify a unique individual-level
   counterfactual when their endpoints differ.

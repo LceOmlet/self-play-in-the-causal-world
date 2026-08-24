@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import random
 import re
 import unittest
 from collections.abc import Mapping
@@ -11,8 +13,10 @@ from pathlib import Path
 
 from cpt_world import (
     QUERY_TYPES,
+    Budget,
     WorldGrammar,
     WorldSpec,
+    assemble_sampled_anchor_tasks,
     assemble_seed,
     check_seed_legality,
     compute_query_truth,
@@ -25,7 +29,6 @@ from cpt_world import (
     load_candidate_seed_manifest,
     load_cladder_world,
     profile_task_targets,
-    render_seed_prompt,
     render_seed_task_prompt,
     sample_task_world,
     sample_world,
@@ -152,7 +155,10 @@ def _decision_chain_seed(world: WorldSpec, seed_id: str) -> Mapping[str, object]
 
 class WorldSpaceSamplerTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.grammar = WorldGrammar()
+        self.grammar = WorldGrammar(node_counts=(3, 4))
+
+    def test_default_node_count_support_is_three_through_fifteen(self) -> None:
+        self.assertEqual(WorldGrammar().node_counts, tuple(range(3, 16)))
 
     def test_upstream_worlds_load_as_legal_worldspecs(self) -> None:
         upstream = iter_upstream_worlds()
@@ -237,6 +243,75 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertTrue(legal_world(world))
             self.assertEqual(world, sample_world(self.grammar, seed))
 
+    def test_three_to_fifteen_node_sampling_is_reproducible(self) -> None:
+        grammar = WorldGrammar(node_counts=tuple(range(3, 16)), max_domain_size=2)
+        first = tuple(sample_world(grammar, seed) for seed in range(30))
+        second = tuple(sample_world(grammar, seed) for seed in range(30))
+
+        self.assertEqual(first, second)
+        self.assertTrue(all(3 <= len(world.variables) <= 15 for world in first))
+        self.assertTrue(all(legal_world(world) for world in first))
+
+    def test_task_world_holds_the_first_sampled_node_count_fixed(self) -> None:
+        grammar = WorldGrammar(node_counts=tuple(range(3, 16)), max_domain_size=2)
+        for query_type in QUERY_TYPES:
+            for sample_index in range(30):
+                expected_count = random.Random(sample_index).choice(grammar.node_counts)
+                world = sample_task_world(grammar, sample_index, query_type)
+                self.assertEqual(len(world.variables), expected_count)
+                self.assertTrue(supports_query(world, query_type))
+
+    def test_world_first_sampler_selects_one_role_and_uses_shared_composition(self) -> None:
+        grammar = WorldGrammar(node_counts=(3,), max_domain_size=2)
+        for sample_index in range(100):
+            expanded = iter_sampled_seeds(
+                grammar,
+                query_types=("ate",),
+                start_seed=sample_index,
+                count=1,
+            )
+            self.assertEqual(len(expanded), 1)
+            match = re.search(r"-a(\d+)$", str(expanded[0]["seed_id"]))
+            self.assertIsNotNone(match)
+            anchor_index = int(match.group(1))
+            composed = assemble_sampled_anchor_tasks(
+                grammar,
+                sample_index,
+                "ate",
+                anchor_index,
+            )
+            self.assertEqual(tuple(seed for _, seed in composed), expanded)
+            self.assertTrue(all(legal_world(world) for world, _ in composed))
+            return
+        self.fail("no world-first sampled ATE task found")
+
+    def test_opaque_label_collision_retries_with_a_deterministic_nonce(self) -> None:
+        sample_index = 1923676317
+        query_type = "counterfactual_transition_bounds"
+        anchor_index = 3
+        seed_id = f"SAMPLED-{sample_index}-{query_type}-target_query-a{anchor_index}"
+        label_pool = "DEFGHIJKLMNOPQRSTUVW"
+        first_attempts = tuple(
+            "".join(
+                label_pool[byte % len(label_pool)]
+                for byte in hashlib.sha256(
+                    f"cpt-world-space-labels-v1\0{seed_id}\0{index}\0{index}".encode()
+                ).digest()[:3]
+            )
+            for index in range(6)
+        )
+        self.assertLess(len(set(first_attempts)), len(first_attempts))
+
+        grammar = WorldGrammar(node_counts=(6,), max_domain_size=2)
+        first = assemble_sampled_anchor_tasks(grammar, sample_index, query_type, anchor_index)
+        second = assemble_sampled_anchor_tasks(grammar, sample_index, query_type, anchor_index)
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 2)
+        for _, seed in first:
+            labels = tuple(seed["visible_schema"]["variable_labels"].values())
+            self.assertEqual(len(labels), 6)
+            self.assertEqual(len(set(labels)), 6)
+
     def test_declared_distribution_covers_declared_dags(self) -> None:
         for node_count, sample_size, expected_count in ((2, 200, 3), (3, 5000, 25)):
             grammar = WorldGrammar(node_counts=(node_count,), max_domain_size=2)
@@ -269,7 +344,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                     profile["sample_count"],
                     profile["zero_count"] + profile["negative_count"] + profile["positive_count"],
                 )
-                self.assertLessEqual(profile["stable_count"], profile["sample_count"])
+                self.assertLessEqual(profile["target_min"], profile["target_max"])
                 return
         self.fail("no profileable ATE world found")
 
@@ -418,67 +493,30 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             return
         self.fail("no profileable ATE task found")
 
-    def test_sample_task_world_is_numerically_and_causally_stable(self) -> None:
-        from cpt_world.query_truth import (
-            ate_effect,
-            best_intervention_truth,
-            interventional_probability,
-        )
-
-        for query_type in ("ate", "best_intervention"):
+    def test_sample_task_world_never_resamples_on_numerical_answers(self) -> None:
+        for query_type in (
+            "ate",
+            "counterfactual_transition_bounds",
+            "backadj_minimal_sets",
+            "best_intervention",
+            "mediator_set",
+        ):
             for seed in range(200):
                 structural = sample_world(self.grammar, seed)
                 anchors_list = legal_query_anchors(structural, query_type)
                 if not anchors_list:
                     continue
                 anchors = anchors_list[0]
-                try:
-                    world = sample_task_world(self.grammar, seed, query_type, anchors)
-                except ValueError:
-                    continue
+                world = sample_task_world(self.grammar, seed, query_type, anchors)
                 self.assertTrue(legal_world(world))
-                outcome = int(anchors["outcome"])
-                baseline = interventional_probability(world, {}, outcome, 1)
-                self.assertGreater(baseline, 0)
-                self.assertLess(baseline, 1)
-                if query_type == "ate":
-                    self.assertNotEqual(
-                        ate_effect(world, int(anchors["treatment"]), outcome, outcome_state=1),
-                        0,
-                    )
-                else:
-                    objective = str(anchors["objective"])
-                    decision_target = int(anchors["decision_target"])
-                    _, _, best_probability = best_intervention_truth(
-                        world,
-                        outcome,
-                        objective,
-                        decision_target,
-                        outcome_state=1,
-                    )
-                    probabilities = [
-                        interventional_probability(world, {decision_target: state}, outcome, 1)
-                        for state in range(world.domains[decision_target])
-                    ]
-                    sorted_probabilities = sorted(set(probabilities))
-                    if objective == "minimize":
-                        gap = sorted_probabilities[1] - sorted_probabilities[0]
-                    else:
-                        gap = sorted_probabilities[-1] - sorted_probabilities[-2]
-                    self.assertGreater(gap, 0)
+                self.assertEqual(world, structural)
                 break
             else:
-                self.fail(f"no stable sampled {query_type} world found")
+                self.fail(f"no structurally legal sampled {query_type} world found")
 
     def test_structural_discovery_uses_the_main_sampler_without_numeric_resampling(
         self,
     ) -> None:
-        for query_type, anchors in (
-            ("backadj_minimal_sets", {"treatment": 0, "outcome": 1}),
-            ("mediator_set", {"treatment": 0, "outcome": 2}),
-        ):
-            with self.assertRaises(NotImplementedError):
-                sample_task_world(self.grammar, 0, query_type, anchors)
         seeds = iter_sampled_seeds(
             self.grammar,
             count=30,
@@ -491,7 +529,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         )
         for seed in seeds:
             self.assertEqual(check_seed_legality(seed), [])
-            self.assertIn(seed["answerability"], {"answerable", "unanswerable"})
+            self.assertNotIn("answerability", seed)
             self.assertEqual(seed["task_head"]["head"], "discovery")
         with self.assertRaisesRegex(ValueError, "collider_bias"):
             iter_sampled_seeds(
@@ -515,12 +553,15 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 anchors=anchors[0],
                 seed_id="RENDER-TEST",
             )
-            prompt = render_seed_prompt(seed_obj)
+            prompt = render_seed_task_prompt(
+                seed_obj,
+                budget=Budget(max_observations=64),
+            )
             for name in world.variables:
                 self.assertIsNone(
                     re.search(rf"(?<![A-Za-z0-9]){re.escape(name)}(?![A-Za-z0-9])", prompt)
                 )
-            self.assertIn("CPT-WORLD HIDDEN-MECHANISM TASK", prompt)
+            self.assertIn("DOLENS HIDDEN-MECHANISM TASK", prompt)
             self.assertIn("Estimate the average treatment effect", prompt)
             self.assertNotIn("probability", prompt.lower())
             return
@@ -536,7 +577,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         widths: set[int] = set()
         bandwidths: set[int] = set()
         for seed in seeds:
-            self.assertIn(seed["answerability"], {"answerable", "unanswerable"})
+            self.assertNotIn("answerability", seed)
             labels = seed["visible_schema"]["variable_labels"]
             internal_by_label = {visible: internal for internal, visible in labels.items()}
             treatment = internal_by_label[seed["query"]["treatment"]]
@@ -576,6 +617,54 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             ],
         )
 
+    def test_sampled_state_anchors_are_legal_and_not_numerically_filtered(self) -> None:
+        grammar = WorldGrammar(node_counts=(5,), max_domain_size=5)
+        observed_pairs: set[tuple[int, int]] = set()
+        observed_outcome_states: set[int] = set()
+        for sample_index in range(60):
+            seed = iter_sampled_seeds(
+                grammar,
+                start_seed=sample_index,
+                count=1,
+                query_types=("ate",),
+            )[0]
+            world = sample_task_world(grammar, sample_index, "ate")
+            labels = seed["visible_schema"]["variable_labels"]
+            internal_by_label = {visible: internal for internal, visible in labels.items()}
+            treatment = world.variables.index(internal_by_label[seed["query"]["treatment"]])
+            outcome = world.variables.index(internal_by_label[seed["query"]["outcome"]])
+            baseline = int(str(seed["query"]["baseline_value"]).removeprefix("state_"))
+            comparison = int(str(seed["query"]["treatment_value"]).removeprefix("state_"))
+            outcome_state = int(str(seed["query"]["outcome_state"]).removeprefix("state_"))
+            self.assertNotEqual(baseline, comparison)
+            self.assertIn(baseline, range(world.domains[treatment]))
+            self.assertIn(comparison, range(world.domains[treatment]))
+            self.assertIn(outcome_state, range(world.domains[outcome]))
+            observed_pairs.add((baseline, comparison))
+            observed_outcome_states.add(outcome_state)
+            self.assertEqual(compute_query_truth(world, seed)["type"], "ate")
+        self.assertGreater(len(observed_pairs), 1)
+        self.assertGreater(len(observed_outcome_states), 1)
+
+    def test_all_five_families_sample_k_and_m_within_the_declared_support(self) -> None:
+        grammar = WorldGrammar(node_counts=(6,), max_domain_size=3)
+        for query_type in QUERY_TYPES:
+            seeds = iter_sampled_seeds(grammar, count=20, query_types=(query_type,))
+            expected_count = 40 if query_type == "counterfactual_transition_bounds" else 20
+            self.assertEqual(len(seeds), expected_count)
+            for seed in seeds:
+                labels = seed["visible_schema"]["variable_labels"]
+                internal_by_label = {visible: internal for internal, visible in labels.items()}
+                anchor_names = QUERY_TYPES[query_type]["anchors"]
+                anchor_variables = {
+                    internal_by_label[seed["query"][anchor_name]] for anchor_name in anchor_names
+                }
+                self.assertTrue(all(not seed["manipulability"][name] for name in anchor_variables))
+                width = sum(seed["manipulability"].values())
+                self.assertGreaterEqual(width, 1)
+                self.assertLessEqual(width, 4)
+                self.assertIn(seed["observation_bandwidth"], range(1, 7))
+
     def test_counterfactual_bounds_use_the_same_main_pipeline_and_k_m_surface(self) -> None:
         seeds = iter_sampled_seeds(
             self.grammar,
@@ -585,15 +674,11 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         self.assertTrue(seeds)
         widths: set[int] = set()
         bandwidths: set[int] = set()
-        statuses: set[str] = set()
         paired: dict[str, dict[str, Mapping[str, object]]] = {}
         for seed in seeds:
             self.assertEqual(seed["query"]["type"], "counterfactual_transition_bounds")
-            self.assertEqual(
-                seed["answerability_scope"],
-                "sampled_candidate_family_full_query_surface",
-            )
-            statuses.add(str(seed["answerability"]))
+            self.assertNotIn("answerability", seed)
+            self.assertNotIn("answerability_scope", seed)
             labels = seed["visible_schema"]["variable_labels"]
             internal_by_label = {visible: internal for internal, visible in labels.items()}
             treatment = internal_by_label[seed["query"]["treatment"]]
@@ -625,14 +710,12 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 "manipulability",
                 "readable",
                 "observation_bandwidth",
-                "answerability",
             ):
                 self.assertEqual(interval[field], compatible[field])
             self.assertEqual(
                 interval["visible_schema"]["variable_labels"],
                 compatible["visible_schema"]["variable_labels"],
             )
-        self.assertTrue(statuses <= {"answerable", "unanswerable"})
         self.assertGreater(len(widths), 1)
         self.assertGreater(len(bandwidths), 1)
 
@@ -644,7 +727,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         )
         self.assertTrue(seeds)
         for seed in seeds:
-            self.assertIn(seed["answerability"], {"answerable", "unanswerable"})
+            self.assertNotIn("answerability", seed)
             labels = seed["visible_schema"]["variable_labels"]
             internal_by_label = {visible: internal for internal, visible in labels.items()}
             decision_target = internal_by_label[seed["query"]["decision_target"]]
@@ -663,7 +746,10 @@ class WorldSpaceSamplerTests(unittest.TestCase):
 
     def test_pinned_seeds_render_without_internal_leaks(self) -> None:
         for seed in load_candidate_seed_manifest():
-            prompt = render_seed_task_prompt(asdict(seed))
+            prompt = render_seed_task_prompt(
+                asdict(seed),
+                budget=Budget(max_observations=64),
+            )
             for name in seed.internal_variable_names():
                 self.assertIsNone(
                     re.search(rf"(?<![A-Za-z0-9]){re.escape(name)}(?![A-Za-z0-9])", prompt),
@@ -703,7 +789,11 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 seed_id="HIDE-INVARIANT",
             )
             self.assertNotEqual(first["world_source"]["cpt"], second["world_source"]["cpt"])
-            self.assertEqual(render_seed_task_prompt(first), render_seed_task_prompt(second))
+            budget = Budget(max_observations=64)
+            self.assertEqual(
+                render_seed_task_prompt(first, budget=budget),
+                render_seed_task_prompt(second, budget=budget),
+            )
             return
         self.fail("no invariant-render world found")
 

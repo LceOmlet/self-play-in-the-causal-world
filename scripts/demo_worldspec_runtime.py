@@ -142,7 +142,7 @@ def run_demo(query_type: str) -> Mapping[str, Any]:
         world,
         seed,
         OutcomeTape(f"worldspec-demo-tape:{query_type}"),
-        budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+        budget=Budget(max_observations=16),
         measure_max=2,
     )
     prompt = episode.initial_messages()[1]["content"]

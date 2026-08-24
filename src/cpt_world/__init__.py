@@ -1,6 +1,14 @@
 """Public API for the generic CPT-world environment."""
 
-from .episode import Budget
+from .counterfactual_solver import (
+    CounterfactualBoundsResult,
+    sparse_counterfactual_transition_bounds,
+)
+from .episode import (
+    OBSERVATIONS_PER_BANDWIDTH_UNIT,
+    Budget,
+    budget_for_observation_bandwidth,
+)
 from .query_truth import (
     ate_effect,
     backdoor_adjustment_sets,
@@ -9,9 +17,11 @@ from .query_truth import (
     collider_bias_effect,
     compute_query_truth,
     counterfactual_transition_bounds,
+    interventional_frechet_transition_outer_bounds,
     interventional_joint_probability,
     interventional_probability,
     mediator_set_truth,
+    reference_counterfactual_transition_bounds,
     sample_worldspec_assignment,
     worldspec_interventional_distribution,
     worldspec_projected_interventional_distribution,
@@ -66,8 +76,10 @@ from .world_runtime import (
     sample_worldspec_batch,
 )
 from .world_space import (
+    DEFAULT_NODE_COUNTS,
     WorldGrammar,
     WorldSpec,
+    assemble_sampled_anchor_tasks,
     assemble_seed,
     default_manipulability,
     iter_sampled_seeds,
@@ -94,10 +106,13 @@ __all__ = [
     "Budget",
     "CANDIDATE_SEED_MANIFEST_SCHEMA",
     "CandidateSeedSpec",
+    "CounterfactualBoundsResult",
+    "DEFAULT_NODE_COUNTS",
     "HIDING_MODES",
     "OWNER_STATUS_DIAGNOSTIC_ONLY",
     "OWNER_STATUS_IMPLEMENTED",
     "OWNER_STATUS_REGISTERED",
+    "OBSERVATIONS_PER_BANDWIDTH_UNIT",
     "OutcomeTape",
     "QUERY_TYPES",
     "RenderedAteQuerySurface",
@@ -113,11 +128,13 @@ __all__ = [
     "WorldObservationCommand",
     "WorldSpec",
     "WorldSpecEpisode",
+    "assemble_sampled_anchor_tasks",
     "assemble_seed",
     "ate_effect",
     "backdoor_adjustment_sets",
     "best_intervention_truth",
     "best_intervention_states",
+    "budget_for_observation_bandwidth",
     "candidate_seed_manifest_path",
     "check_seed_legality",
     "cladder_ate_is_degenerate",
@@ -127,6 +144,7 @@ __all__ = [
     "default_manipulability",
     "interventional_joint_probability",
     "interventional_probability",
+    "interventional_frechet_transition_outer_bounds",
     "iter_sampled_seeds",
     "iter_upstream_worlds",
     "iter_world_space",
@@ -142,6 +160,7 @@ __all__ = [
     "profile_task_targets",
     "query_task_compatible",
     "query_truth_owner_status",
+    "reference_counterfactual_transition_bounds",
     "render_seed_initial_messages",
     "render_seed_prompt",
     "render_seed_task_prompt",
@@ -156,6 +175,7 @@ __all__ = [
     "sample_worldspec_batch",
     "score_terminal_answer",
     "seed_triple_is_registered",
+    "sparse_counterfactual_transition_bounds",
     "supports_hiding",
     "supports_query",
     "supports_task",

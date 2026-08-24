@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<!--
+  DoLens Figure 1 : the method engine.
+  Canonical source of record. Export with:  python scripts/build_overview_figure.py
+  Verify geometry with:                     python scripts/check_overview_layout.py
+  Fixed canvas 1200 x 776 px. Local TrueType fonts only, no network assets.
+
+  Included at \linewidth = 5.5in, so 1200 px maps to 396 pt: 1 px = 0.33 pt.
+  The smallest type is 20 px = 6.6 pt on the printed page.
+
+  Reading path is a spiral, so every connector is short and none cross:
+      1 world (TL) -> 2 surface (TR) -> 3 episode (BR) -> 4 engine (BL) -> 5 strip
+  Grid: columns 14-585 | gutter 30 | 615-1186
+        rows    14-268 | 288-588 | strip 612-762
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+/* TrueType, not OTF: Chrome's print-to-PDF turns CFF outlines into Type 3 fonts. */
+@font-face{font-family:"FigSans";src:url("fonts/texgyreheros-regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"FigSans";src:url("fonts/texgyreheros-bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:block}
+@font-face{font-family:"FigMath";src:url("fonts/texgyretermes-italic.ttf") format("truetype");font-weight:400;font-style:italic;font-display:block}
+@font-face{font-family:"FigMath";src:url("fonts/texgyretermes-bolditalic.ttf") format("truetype");font-weight:700;font-style:italic;font-display:block}
+@font-face{font-family:"FigMath";src:url("fonts/texgyretermes-regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"FigMath";src:url("fonts/texgyretermes-bold.ttf") format("truetype");font-weight:700;font-style:normal;font-display:block}
+
+:root{
+  --ink:#16191d;      /* prose and labels        */
+  --mute:#5a636c;     /* secondary annotation    */
+  --world:#2E6F3E;    /* 1 sealed world          */
+  --surf:#8a5c12;     /* 2 evidence surface      */
+  --epi:#2F6690;      /* 3 episode               */
+  --eng:#A23B3B;      /* 4 engine, 5 verdict     */
+  --extra:#3f464e;    /* assumptions the world does not supply */
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1200px;height:776px;overflow:hidden;background:#fff}
+body{font-family:"FigSans",sans-serif;color:var(--ink);font-synthesis:none}
+@page{size:1200px 776px;margin:0}
+svg{display:block}
+text{font-family:"FigSans",sans-serif;font-synthesis:none;fill:var(--ink)}
+/* px -> printed pt at 5.5in: x 0.33 */
+.t-tag  {font-size:20px;font-weight:700;letter-spacing:.1em}   /* 6.6pt */
+.t-title{font-size:30px;font-weight:700}                       /* 9.9pt */
+.t-sub  {font-size:21px;fill:var(--mute)}                      /* 6.9pt */
+.t-claim{font-size:22px;font-weight:700}                       /* 7.3pt */
+.t-lab  {font-size:21px}                                       /* 6.9pt */
+.t-small{font-size:20px;fill:var(--mute)}                      /* 6.6pt */
+.m      {font-family:"FigMath",serif;font-style:italic;font-weight:700;font-synthesis:none}
+.mu     {font-family:"FigMath",serif;font-style:normal;font-synthesis:none}
+</style>
+</head>
+<body>
+<svg id="fig" width="1200" height="776" viewBox="0 0 1200 776"
+     role="img"
+     aria-label="The DoLens method engine in five stages arranged as a spiral. Stage one, the hidden CPT world: a sealed finite directed acyclic graph over four variables, with a confounder Z above X and Y and a mediator M between them, carries finite-state conditional probability table rows and fixes one causal truth before the model acts, so worlds with the same legal laws force the same accepted answer. Stage two, the controlled experimental surface: rendering seals the mechanism and the edges and renames the same four variables to opaque three-letter labels, exposing only K legal do targets and a readout width M, so evidence access varies while the causal truth does not. Stage three, the active episode loop: the model picks a probe and the environment draws independent units, the experiment being a hard intervention or an observation together with a readout of width at most M on a chosen batch size, and only the requested joint counts return, with omitted cells exactly zero. Stage four, the DoLens probability engine answers every request with batch counts and returns the terminal verdict for five terminal objects: total effect, counterfactual transition, experimental decision, minimal adjustment sets, and mediator structure, so feedback and verdict share one semantics. Stage five, the counterfactual outer check: endpoint marginals 0.2 and 0.8 give the universal Frechet outer interval from 0.6 to 0.8; the exact task verifier optimizes over complete mechanisms compatible with the DAG and every CPT row and can tighten this interval.">
+
+<defs>
+  <marker id="ar" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="5" markerHeight="4"
+          orient="auto-start-reverse">
+    <path d="M1.2,1.7 L8.2,5 L1.2,8.3" fill="none" stroke="context-stroke"
+          stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="ar-s" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="4.2" markerHeight="3.4"
+          orient="auto-start-reverse">
+    <path d="M1.2,1.9 L8.2,5 L1.2,8.1" fill="none" stroke="context-stroke"
+          stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <!-- the mechanism is present but unreadable -->
+  <pattern id="seal" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="0" y2="9" stroke="#2E6F3E" stroke-width="1.7" opacity=".18"/>
+  </pattern>
+</defs>
+
+<!-- ═══════ tinted stage fields: grouping without card borders ═══════ -->
+<g>
+  <rect data-box="field:1" x="14"  y="14"  width="571"  height="254" rx="11" fill="#2E6F3E" opacity=".055"/>
+  <rect data-box="field:2" x="615" y="14"  width="571"  height="254" rx="11" fill="#B7791F" opacity=".062"/>
+  <rect data-box="field:4" x="14"  y="288" width="571"  height="300" rx="11" fill="#A23B3B" opacity=".05"/>
+  <rect data-box="field:3" x="615" y="288" width="571"  height="300" rx="11" fill="#2F6690" opacity=".055"/>
+  <rect data-box="field:5" x="14"  y="612" width="1172" height="150" rx="11" fill="#A23B3B" opacity=".045"/>
+</g>
+
+<!-- ═══════ the spiral route, drawn under every node ═══════ -->
+<g fill="none" stroke-linecap="round" stroke-width="2.6">
+  <path d="M576,150 L624,150" stroke="#B7791F" marker-end="url(#ar)"/>
+  <path d="M900,270 L900,286" stroke="#B7791F" marker-end="url(#ar)"/>
+  <path d="M630,424 L560,424" stroke="#2F6690" marker-end="url(#ar)"/>
+  <path d="M558,462 L630,462" stroke="#A23B3B" marker-end="url(#ar)"/>
+  <path d="M430,516 L430,606" stroke="#A23B3B" marker-end="url(#ar)"/>
+</g>
+<text class="t-small" x="600" y="414" text-anchor="middle">asks</text>
+<text class="t-small" x="600" y="486" text-anchor="middle">answers</text>
+
+<!-- ═══════════ 1 · the sealed world fixes the truth ═══════════ -->
+<g>
+  <text class="t-tag"   x="42" y="48"  fill="#2E6F3E" data-in="field:1" data-pad="10">1 &#183; HIDDEN WORLD</text>
+  <text class="t-title" x="42" y="84"  data-in="field:1" data-pad="10">Hidden CPT world</text>
+  <text class="t-sub"   x="42" y="110" data-in="field:1" data-pad="10">fixed before the model acts</text>
+
+  <!-- a mechanism you can see as an object but cannot read as content -->
+  <rect x="42" y="124" width="286" height="94" rx="10" fill="url(#seal)"
+        stroke="#2E6F3E" stroke-width="1.2" stroke-opacity=".45"/>
+  <g fill="none" stroke="#2E6F3E" stroke-width="2.1" stroke-linecap="round">
+    <path d="M158.9,156.2 L94.9,186.9" marker-end="url(#ar-s)"/>
+    <path d="M193.1,156.2 L257.1,186.9" marker-end="url(#ar-s)"/>
+    <path d="M95,196 L155,196"          marker-end="url(#ar-s)"/>
+    <path d="M195,196 L255,196"         marker-end="url(#ar-s)"/>
+  </g>
+  <g fill="#fff" stroke="#2E6F3E" stroke-width="2.2">
+    <circle cx="176" cy="148" r="19"/><circle cx="76"  cy="196" r="19"/>
+    <circle cx="176" cy="196" r="19"/><circle cx="276" cy="196" r="19"/>
+  </g>
+  <g class="m" font-size="21" fill="#245633" text-anchor="middle">
+    <text x="175" y="155" data-in="field:1">Z</text>
+    <text x="75"  y="203" data-in="field:1">X</text>
+    <text x="175" y="203" data-in="field:1">M</text>
+    <text x="275" y="203" data-in="field:1">Y</text>
+  </g>
+
+  <!-- one CPT row -->
+  <text class="t-small" x="356" y="138" data-in="field:1" data-pad="10">one exact CPT row</text>
+  <text class="mu" x="356" y="176" font-size="23" fill="#245633" data-in="field:1" data-pad="10"
+    ><tspan class="m">P</tspan><tspan>(</tspan><tspan class="m">v</tspan
+    ><tspan dy="5" font-size="17">j</tspan><tspan dy="-5"> | </tspan><tspan class="m">v</tspan
+    ><tspan dy="5" font-size="17">pa(j)</tspan><tspan dy="-5">)</tspan></text>
+  <rect x="356" y="188" width="176" height="30" rx="4" fill="#fff"
+        stroke="#2E6F3E" stroke-width="1.2" stroke-opacity=".5"/>
+  <text class="mu" x="444" y="209" font-size="20" fill="#245633" text-anchor="middle"
+        data-in="field:1">3/8&#160;&#160;&#160;1/4&#160;&#160;&#160;3/8</text>
+
+  <text class="t-claim" x="42" y="248" fill="#245633" data-in="field:1" data-pad="10"
+    >Same legal laws force the same accepted answer.</text>
+</g>
+
+<!-- ═══════════ 2 · rendering meters the evidence surface ═══════════ -->
+<g>
+  <text class="t-tag"   x="643" y="48"  fill="#8a5c12" data-in="field:2" data-pad="10">2 &#183; EXPERIMENT SURFACE</text>
+  <text class="t-title" x="643" y="84"  data-in="field:2" data-pad="10">Controlled surface</text>
+  <text class="t-sub"   x="643" y="110" data-in="field:2" data-pad="10">seals the mechanism, meters the evidence</text>
+
+  <!-- one legal readout: at most M variables read jointly -->
+  <rect x="735" y="173" width="184" height="50" rx="15" fill="none"
+        stroke="#B7791F" stroke-width="1.6" stroke-dasharray="4 3.4" stroke-opacity=".9"/>
+
+  <!-- the same four variables, renamed and stripped of their edges -->
+  <g fill="#fff" stroke="#B7791F" stroke-width="1.8">
+    <rect x="743" y="124" width="68" height="40" rx="13"/>
+    <rect x="643" y="178" width="68" height="40" rx="13"/>
+    <rect x="743" y="178" width="68" height="40" rx="13"/>
+    <rect x="843" y="178" width="68" height="40" rx="13"/>
+  </g>
+  <g class="mu" font-size="20" fill="#8a5c12" text-anchor="middle">
+    <text x="777" y="150" data-in="field:2">QWN</text>
+    <text x="677" y="204" data-in="field:2">ITJ</text>
+    <text x="777" y="204" data-in="field:2">RTG</text>
+    <text x="877" y="204" data-in="field:2">FDR</text>
+  </g>
+  <g fill="#B7791F">
+    <circle cx="811" cy="124" r="6" data-audit="do-target"/>
+    <circle cx="711" cy="178" r="6" data-audit="do-target"/>
+  </g>
+
+  <circle cx="946" cy="143" r="6" fill="#B7791F"/>
+  <text class="t-lab" x="968" y="150" data-in="field:2" data-pad="10"
+    ><tspan class="m" font-size="22" fill="#8a5c12">K</tspan
+    ><tspan class="t-small"> legal do targets</tspan></text>
+  <rect x="936" y="184" width="22" height="16" rx="7" fill="none"
+        stroke="#B7791F" stroke-width="1.6" stroke-dasharray="4 3.4"/>
+  <text class="t-lab" x="968" y="195" data-in="field:2" data-pad="10"
+    ><tspan class="t-small">readout width </tspan
+    ><tspan class="m" font-size="22" fill="#8a5c12">M</tspan></text>
+
+  <text class="t-claim" x="643" y="248" fill="#8a5c12" data-in="field:2" data-pad="10"
+    >Access varies; the causal truth does not.</text>
+</g>
+
+<!-- ═══════════ 3 · one active episode, one stage ═══════════ -->
+<g>
+  <text class="t-tag"   x="643" y="322" fill="#2F6690" data-in="field:3" data-pad="10">3 &#183; ACTIVE EPISODE</text>
+  <text class="t-title" x="643" y="358" data-in="field:3" data-pad="10">Probe, then read</text>
+  <text class="t-sub"   x="643" y="384" data-in="field:3" data-pad="10">the model chooses each experiment</text>
+
+  <rect data-box="box:mod" x="643" y="392" width="196" height="62" rx="9"
+        fill="#fff" stroke="#2F6690" stroke-width="1.8"/>
+  <text class="t-claim" x="741" y="422" text-anchor="middle" fill="#24506f"
+        data-in="box:mod" data-pad="4">model</text>
+  <text class="t-small" x="741" y="442" text-anchor="middle"
+        data-in="box:mod" data-pad="4">picks the probe</text>
+
+  <rect data-box="box:env" x="643" y="478" width="196" height="62" rx="9"
+        fill="#fff" stroke="#2F6690" stroke-width="1.8"/>
+  <text class="t-claim" x="741" y="508" text-anchor="middle" fill="#24506f"
+        data-in="box:env" data-pad="4">environment</text>
+  <text class="t-small" x="741" y="528" text-anchor="middle"
+        data-in="box:env" data-pad="4">draws IID units</text>
+
+  <g fill="none" stroke="#2F6690" stroke-width="2.4" stroke-linecap="round">
+    <path d="M690,456 L690,476" marker-end="url(#ar-s)"/>
+    <path d="M792,476 L792,456" marker-end="url(#ar-s)"/>
+  </g>
+  <text class="t-small" x="702" y="473" data-in="field:3">act</text>
+  <text class="t-small" x="804" y="473" data-in="field:3">counts</text>
+
+  <!-- what one action is, in three short lines -->
+  <g class="mu" font-size="21" fill="#24506f">
+    <text x="880" y="412" data-in="field:3" data-pad="10"
+      ><tspan class="mu">do</tspan><tspan>(</tspan><tspan class="m">X</tspan
+      ><tspan> = </tspan><tspan class="m">x</tspan><tspan>)</tspan
+      ><tspan class="t-small"> or observe</tspan></text>
+    <text x="880" y="442" data-in="field:3" data-pad="10"
+      ><tspan class="t-small">read </tspan><tspan class="m">R</tspan
+      ><tspan dy="5" font-size="17">t</tspan><tspan dy="-5" class="t-small"> of width </tspan
+      ><tspan>&#8804; </tspan><tspan class="m">M</tspan></text>
+    <text x="880" y="472" data-in="field:3" data-pad="10"
+      ><tspan class="t-small">on </tspan><tspan class="m">b</tspan
+      ><tspan dy="5" font-size="17">t</tspan><tspan dy="-5" class="t-small"> units</tspan></text>
+  </g>
+
+  <!-- only the requested cells come back -->
+  <g stroke="#2F6690" stroke-width="1.3" stroke-opacity=".55">
+    <rect x="880" y="492" width="30" height="22" fill="#2F6690" fill-opacity=".16"/>
+    <rect x="914" y="492" width="30" height="22" fill="#fff"/>
+    <rect x="948" y="492" width="30" height="22" fill="#2F6690" fill-opacity=".16"/>
+    <rect x="982" y="492" width="30" height="22" fill="#fff"/>
+    <rect x="880" y="518" width="30" height="22" fill="#fff"/>
+    <rect x="914" y="518" width="30" height="22" fill="#2F6690" fill-opacity=".16"/>
+    <rect x="948" y="518" width="30" height="22" fill="#fff"/>
+    <rect x="982" y="518" width="30" height="22" fill="#fff"/>
+  </g>
+  <g class="mu" font-size="20" fill="#24506f" text-anchor="middle">
+    <text x="895" y="508" data-in="field:3">4</text>
+    <text x="963" y="508" data-in="field:3">3</text>
+    <text x="929" y="534" data-in="field:3">1</text>
+  </g>
+  <text class="t-small" x="1026" y="509" data-in="field:3" data-pad="10">sparse counts</text>
+  <text class="t-small" x="1026" y="533" data-in="field:3" data-pad="10">omitted cells = 0</text>
+
+  <text class="t-claim" x="643" y="570" fill="#24506f" data-in="field:3" data-pad="10"
+    >Only the requested joint counts return.</text>
+</g>
+
+<!-- ═══════════ 4 · one semantics answers everything ═══════════ -->
+<g>
+  <text class="t-tag"   x="42" y="322" fill="#A23B3B" data-in="field:4" data-pad="10">4 &#183; ONE SEMANTICS</text>
+  <text class="t-title" x="42" y="358" data-in="field:4" data-pad="10">DoLens semantic engine</text>
+  <text class="t-sub"   x="42" y="384" data-in="field:4" data-pad="10">one CPT law and verdict; counts are sampled</text>
+
+  <text class="t-small" x="42" y="412" data-in="field:4" data-pad="10">five terminal objects</text>
+  <g fill="#A23B3B">
+    <circle cx="48" cy="433" r="3.4"/><circle cx="48" cy="458" r="3.4"/>
+    <circle cx="48" cy="483" r="3.4"/><circle cx="48" cy="508" r="3.4"/>
+    <circle cx="48" cy="533" r="3.4"/>
+  </g>
+  <g class="t-small" fill="var(--ink)">
+    <text x="66" y="440" data-in="field:4" data-pad="10">total effect</text>
+    <text x="66" y="465" data-in="field:4" data-pad="10">counterfactual transition</text>
+    <text x="66" y="490" data-in="field:4" data-pad="10">experimental decision</text>
+    <text x="66" y="515" data-in="field:4" data-pad="10">minimal adjustment sets</text>
+    <text x="66" y="540" data-in="field:4" data-pad="10">mediator structure</text>
+  </g>
+
+  <rect data-box="box:eng" x="310" y="402" width="240" height="114" rx="10"
+        fill="#fff" stroke="#A23B3B" stroke-width="1.8"/>
+  <text x="430" y="435" text-anchor="middle" font-size="21" font-weight="700" fill="#8d2f2f"
+        data-in="box:eng" data-pad="8">probability engine</text>
+  <line x1="326" y1="452" x2="534" y2="452" stroke="#A23B3B" stroke-width="1" stroke-opacity=".4"/>
+  <g fill="none" stroke="#A23B3B" stroke-width="2" stroke-linecap="round">
+    <path d="M330,470 L348,470" marker-end="url(#ar-s)"/>
+    <path d="M330,494 L348,494" marker-end="url(#ar-s)"/>
+  </g>
+  <text class="t-small" x="358" y="476" data-in="box:eng" data-pad="8">batch counts</text>
+  <text class="t-small" x="358" y="500" data-in="box:eng" data-pad="8">terminal verdict</text>
+
+  <text class="t-claim" x="42" y="570" fill="#8d2f2f" data-in="field:4" data-pad="10"
+    >Feedback and verdict share one semantics.</text>
+</g>
+
+<!-- ═══════════ 5 · the verdict is a set, not a number ═══════════ -->
+<g>
+  <text class="t-tag" x="42" y="645" fill="#A23B3B" data-in="field:5" data-pad="10">5 &#183; COUNTERFACTUAL OUTER CHECK</text>
+
+  <text class="t-claim" x="42" y="676" data-in="field:5" data-pad="10"
+    >Endpoint marginals give a universal</text>
+  <text class="t-claim" x="42" y="702" data-in="field:5" data-pad="10"
+    >outer interval for the task truth.</text>
+  <text class="mu" x="42" y="738" font-size="22" fill="#8d2f2f" data-in="field:5" data-pad="10"
+    ><tspan class="m">P</tspan><tspan>(</tspan><tspan class="m">Y</tspan
+    ><tspan dy="5" font-size="17">0</tspan><tspan dy="-5"> = 1) = 0.2</tspan
+    ><tspan>&#160;&#160;&#160;&#160;</tspan><tspan class="m">P</tspan><tspan>(</tspan
+    ><tspan class="m">Y</tspan><tspan dy="5" font-size="17">1</tspan
+    ><tspan dy="-5"> = 1) = 0.8</tspan></text>
+
+  <!-- what a single point inside the interval would take: shown where it is chosen -->
+  <circle cx="470" cy="686" r="6.5" fill="#fff" stroke="#3f464e" stroke-width="2.2"/>
+  <text class="t-small" x="488" y="693" fill="#3f464e" data-in="field:5" data-pad="10"
+    >+ monotonicity: subset {0.6}</text>
+  <circle cx="470" cy="722" r="6" fill="#3f464e"/>
+  <text class="t-small" x="488" y="729" fill="#3f464e" data-in="field:5" data-pad="10"
+    >one compatible SCM: one point</text>
+
+  <text class="mu" x="970" y="658" font-size="23" fill="#8d2f2f" text-anchor="middle"
+        data-in="field:5" data-pad="10"
+    ><tspan class="m">P</tspan><tspan>(</tspan><tspan class="m">Y</tspan
+    ><tspan dy="5" font-size="17">1</tspan><tspan dy="-5"> = 1, </tspan><tspan class="m">Y</tspan
+    ><tspan dy="5" font-size="17">0</tspan><tspan dy="-5"> = 0)</tspan></text>
+  <text class="t-claim" x="970" y="682" text-anchor="middle" data-in="field:5" data-pad="10"
+    >marginal-only outer interval</text>
+
+  <rect x="840" y="700" width="260" height="24" fill="#A23B3B" opacity=".12" rx="3"/>
+  <g stroke="#A23B3B" stroke-linecap="butt">
+    <line x1="840" y1="712" x2="1100" y2="712" stroke-width="4.6"/>
+    <line x1="840" y1="700" x2="840" y2="724" stroke-width="2.4"/>
+    <line x1="1100" y1="700" x2="1100" y2="724" stroke-width="2.4"/>
+  </g>
+  <text class="mu" x="826" y="719" font-size="20" fill="#8d2f2f" text-anchor="end"
+        data-in="field:5" data-pad="10">0.6</text>
+  <text class="mu" x="1114" y="719" font-size="20" fill="#8d2f2f"
+        data-in="field:5" data-pad="10">0.8</text>
+
+  <circle cx="840" cy="712" r="6.5" fill="#fff" stroke="#3f464e" stroke-width="2.2"/>
+  <circle cx="990" cy="712" r="6" fill="#3f464e"/>
+
+  <text class="t-small" x="970" y="745" text-anchor="middle" data-in="field:5" data-pad="10"
+    >exact full-world verifier may tighten it</text>
+</g>
+
+</svg>
+<script>
+// Export gate: assert every face the figure actually draws with, so a silent
+// fallback can never reach the PDF. Variables are bold italic; numerals,
+// parentheses and the upright "do" operator come from the roman math faces.
+(async () => {
+  await document.fonts.ready;
+  const required = [
+    '400 20px "FigSans"', '700 30px "FigSans"',
+    'italic 700 23px "FigMath"', '400 23px "FigMath"',
+  ];
+  const missing = required.filter(f => !document.fonts.check(f));
+  if (missing.length) {
+    document.title = "FONT-ERROR " + missing.join(" | ");
+    throw new Error("figure fonts did not load: " + missing.join(", "));
+  }
+  document.documentElement.setAttribute("data-fonts", "ready");
+})();
+</script>
+</body>
+</html>

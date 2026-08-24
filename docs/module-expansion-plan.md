@@ -15,7 +15,7 @@
 | `legality` | 世界合法、query 合法、hiding 合法、task 合法 |
 | `degeneration` | do=obs、full-joint 捷径、passive 短路、干预无关 |
 | `renderer` | visible schema、opaque labels、state anonymization |
-| `answerability` | 在采样 K/M 前，对五类任务按查询特定完整实验面的精确反馈等价类区分 answerable / unanswerable；范围只限当前候选世界族 |
+| `answerability` | 独立诊断函数；暂不应用到五类任务的生成、筛选、标签或准入 |
 | `difficulty_profile` | 结构与 target 分布的难度坐标，不设阈值 |
 
 当前已完成：
@@ -92,6 +92,6 @@ DONE: registry 显式区分 registered / implemented / diagnostic_only
 DONE: query_truth.py 实现 ate / counterfactual_transition_bounds / backadj / mediator_set / best_intervention；collider 条件对比仅保留为 ATE 诊断函数
 DONE: task_scoring.py 实现 target_query / decision / discovery parser 与 raw scorer
 DONE: 五类 query 均进入同一个 iter_sampled_seeds 主管线；结构 discovery 复用 sample_world，不新增 sampler
-DONE: task_answerability 在采样 K/M 前按查询特定完整实验面做候选族内精确可答性划分；反事实区间要求不可区分世界端点完全相同；决策任务要求不可区分世界至少共享一个零后悔部署动作；task_difficulty_profile 与可答性分开
-NEXT: 对 answerable sampled tasks 做直观演示与难度 profile
+DONE: task_answerability 保留为候选族内的独立诊断函数；不接入五类任务主管线；task_difficulty_profile 与该诊断分开
+NEXT: 直接对未经过 answerability 筛选或标注的 sampled tasks 做直观演示与难度 profile
 ```

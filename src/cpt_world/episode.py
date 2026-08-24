@@ -1,4 +1,4 @@
-"""Shared episode-budget type for the generic WorldSpec runtime."""
+"""Shared observation-budget type for the generic WorldSpec runtime."""
 
 from __future__ import annotations
 
@@ -7,31 +7,29 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class Budget:
-    max_rounds: int = 4
-    max_samples: int = 64
-    batch_sizes: tuple[int, ...] = (4, 8, 16, 32)
+    """The sole episode budget, measured in returned scalar observations."""
+
+    max_observations: int
 
     def __post_init__(self) -> None:
         if (
-            isinstance(self.max_rounds, bool)
-            or not isinstance(self.max_rounds, int)
-            or self.max_rounds <= 0
+            isinstance(self.max_observations, bool)
+            or not isinstance(self.max_observations, int)
+            or self.max_observations <= 0
         ):
-            raise ValueError("max_rounds must be a positive integer")
-        if (
-            isinstance(self.max_samples, bool)
-            or not isinstance(self.max_samples, int)
-            or self.max_samples <= 0
-        ):
-            raise ValueError("max_samples must be a positive integer")
-        if not self.batch_sizes:
-            raise ValueError("batch_sizes must not be empty")
-        if any(
-            isinstance(size, bool) or not isinstance(size, int) or size <= 0
-            for size in self.batch_sizes
-        ):
-            raise ValueError("batch_sizes must contain positive integers")
-        if tuple(sorted(set(self.batch_sizes))) != self.batch_sizes:
-            raise ValueError("batch_sizes must be sorted and contain no duplicates")
-        if self.batch_sizes[-1] > self.max_samples:
-            raise ValueError("batch_sizes cannot exceed max_samples")
+            raise ValueError("max_observations must be a positive integer")
+
+
+OBSERVATIONS_PER_BANDWIDTH_UNIT = 2048
+
+
+def budget_for_observation_bandwidth(observation_bandwidth: int) -> Budget:
+    """Apply the research contract ``B = observation_bandwidth * 2048``."""
+
+    if (
+        isinstance(observation_bandwidth, bool)
+        or not isinstance(observation_bandwidth, int)
+        or observation_bandwidth <= 0
+    ):
+        raise ValueError("observation_bandwidth must be a positive integer")
+    return Budget(max_observations=observation_bandwidth * OBSERVATIONS_PER_BANDWIDTH_UNIT)

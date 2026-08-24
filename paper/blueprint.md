@@ -1,4 +1,4 @@
-# CPT-World paper blueprint
+# DoLens paper blueprint
 
 This file is a drafting aid. It follows the Supervisor-Skills benchmark-paper
 logic: research gap, construction pipeline, evaluation framework, and empirical
@@ -6,7 +6,7 @@ validation.
 
 ## One-sentence thesis
 
-CPT-World evaluates causal reasoning as a closed loop of choosing an experiment,
+DoLens evaluates causal reasoning as a closed loop of choosing an experiment,
 reading its selected evidence, and returning an exactly verifiable causal object
 inside a hidden finite world.
 
@@ -46,11 +46,11 @@ inside a hidden finite world.
 - Position CLadder and CauGym as static inference from supplied causal evidence.
 - Position ABCI, DiffCBED, targeted indirect design as experiment-design methods.
 - Position DiscoveryWorld, CausalGame, and CausaLab as interactive scientific or causal agency.
-- Locate CPT-World at the intersection: LLM interface, hidden mechanism,
+- Locate DoLens at the intersection: LLM interface, hidden mechanism,
   controlled causal experiments, model-selected readouts, compatible-set
   counterfactual semantics, and exact replay.
 
-### 3. The CPT-World episode
+### 3. The DoLens episode
 
 - Finite world `W=(G,Theta)`.
 - Action `a=(do/observe, R, b)`.

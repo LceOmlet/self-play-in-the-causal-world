@@ -198,7 +198,9 @@ world_runtime.py: IMPLEMENTED
   - exact hard-do / natural ancestral sampling；只物化 batch 中实际出现的 requested joint counts，遗漏格的 count 精确为 0
   - OutcomeTape v2 按 canonical (target,state,index,node) 定址；与改名/measure/batch 拆分无关
   - WorldSpecEpisode 串联 prompt → 多轮实验 → batch feedback → terminal scorer
-  - max_samples 口径为 IID 原子样本行，单轮消耗 batch_size
+  - 唯一预算口径为返回的标量观测数；单次查询消耗
+    `batch_size * len(measure)`，累计不超过 `observation_bandwidth * 2048`
+  - 不设置独立查询次数上限；`batch_size` 可取任何能放入剩余预算的正整数
 
 query_truth.py: IMPLEMENTED（candidate，未经最终审核）
   - ate、counterfactual_transition_bounds、backadj_minimal_sets、mediator_set、best_intervention

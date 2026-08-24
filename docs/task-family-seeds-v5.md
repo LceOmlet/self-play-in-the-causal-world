@@ -136,7 +136,7 @@ REVERSE 世界对称。也就是说：
 3. **中介查询**：X→Y 的 mediator set / path-specific effect。CLadder mediation、CauGym CDE/NDE。
 4. **干预目标选择**：给定 outcome，找最优单变量干预。LeGIT 的 online intervention targeting。
 5. **结构恢复**：correlation → skeleton → orientation。CausalBench 三层任务；但结构恢复只作诊断，不作主评分。
-6. **反事实转变范围**：不选择隐藏 SCM；由两条 CPT-World 干预边缘分布给出跨世界转变概率的 sharp interval。要求唯一 PN/PS 点值仍排除。
+6. **反事实转变范围**：不选择隐藏 SCM；在与完整 CPT-World 相容的全部机制完成上计算跨世界转变概率的精确上下界。两条干预边缘给出的 Fréchet 区间只作外界或可另证 sharp 的特例。要求唯一 PN/PS 点值仍排除。
 
 ### 4.3 可直接做 seed 的实例（用 BIF 真实 CPT 的 exact 值）
 

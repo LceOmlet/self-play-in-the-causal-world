@@ -29,7 +29,8 @@ rendering.py 不做：
 - 查询目标：effect 公式、最优干预目标、mediator 问题等
 - 动作语法：intervene JSON 与 observe JSON；合法 do target 由 manipulability 掩码转换而来
 - measure 语法：可读变量列表；intervene 时 target 不可出现在 measure；长度不超过 seed 的 M
-- 预算：max_rounds / max_samples / batch_sizes
+- 唯一预算：`max_observations`；一次查询消耗
+  `batch_size * len(measure)`，查询次数不另设上限，`batch_size` 可取任何能放入剩余预算的正整数
 - 反馈合同：同一隐藏世界下的 IID hard-do 或自然分布样本，只返回所选 measure 的 joint counts
 - 终局 JSON 字段：由 task_head 决定
 ```

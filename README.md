@@ -1,7 +1,7 @@
-# Self-Play in the Causal World
+# DoLens
 
-This repository implements a reference environment for active causal reasoning
-in hidden, finite CPT worlds. A model sees an anonymized task, gathers selected
+DoLens is a reference environment for active causal reasoning in hidden, finite
+CPT worlds. A model sees an anonymized task, gathers selected
 measurements through passive observation or batched hard interventions, and
 returns one structured terminal answer. The hidden graph, CPT entries, internal
 variable names, task truth, and scorer are never rendered to the model.
@@ -12,11 +12,11 @@ final benchmark mixture.
 
 ## Paper
 
-The ICLR 2026 manuscript presents the benchmark intuition, shared interaction
+The ICLR 2026 manuscript presents the DoLens intuition, shared interaction
 loop, five causal tasks, compatible-set counterfactual evaluator, exact
 execution engine, and validation results:
 
-- [compiled paper](paper/output/pdf/cpt-world-iclr2026.pdf)
+- [compiled paper](paper/output/pdf/dolens-iclr.pdf)
 - [LaTeX source](paper/main.tex)
 - [evidence map](paper/evidence_map.md)
 - [paper blueprint](paper/blueprint.md)
@@ -44,8 +44,7 @@ The initial prompt exposes only:
 - opaque variable labels and finite state domains;
 - the causal query and required terminal JSON schema;
 - legal hard-do targets and readable variables;
-- the maximum selected-measure width `M`;
-- the episode's permitted batch sizes and interaction limits.
+- the selected-measure width `M` and remaining scalar-observation budget.
 
 The model may issue:
 
@@ -68,33 +67,31 @@ omitted requested-variable assignments have count exactly zero.
 `WorldGrammar` declares the probability model rather than enumerating a fixed
 grid. In the current implementation:
 
-- node count is uniform over the configured `node_counts` support; the current
-  default is `(2, 3, 4)`;
+- node count is uniform over the configured `node_counts` support; the default
+  support is every integer from 3 through 15;
 - every node's domain size is uniform over `2..max_domain_size`, currently up to
   five states;
-- a topological order is sampled, followed by a forward-edge subset and exact
-  rational CPT parameters;
+- a topological order is sampled, followed by a forward-edge subset and
+  continuous float64 CPT parameters;
 - legal query anchors are derived from the sampled world;
-- task-family answerability is evaluated before restricting the interaction
-  surface;
+- task-family answerability remains an optional diagnostic and is not applied
+  as a generation label, filter, or admission check;
 - conditional on the eligible non-anchor intervention variables, the legal
   hard-do width `K` is uniform over `1..|eligible|`, and the subset is uniform
   conditional on that width;
 - `M` is sampled independently and uniformly over `1..n`.
 
 Thus `K` and `M` change the evidence surface without redefining whether the
-underlying world/query instance has an answer. The 4–15 node target range is
-not enabled yet; the remaining high-width answerability and CPT-table costs
-must be addressed before changing that default.
+underlying world/query instance has an answer.
 
-## Exact probability engine
+## Probability engine
 
 The probability layer has one semantic owner and two execution paths:
 
-- `worldspec_interventional_distribution` retains the original exact
+- `worldspec_interventional_distribution` retains the original
   full-joint enumeration as a reference implementation;
-- selected exact marginals use variable elimination with the same `Fraction`
-  CPT factors and hard-do mechanism replacement;
+- selected marginals use variable elimination with the same CPT factors and
+  hard-do mechanism replacement;
 - interactive batches use ancestral sampling with a versioned, per-node
   action-keyed outcome tape;
 - the tape remains invariant to surface renaming, requested-measure projection,
@@ -106,7 +103,7 @@ width `w`, and batch size `b`, the main costs are:
 - old full-joint batch path: `O((n + b) d^n)` time and `O(d^n + d^m)` memory;
 - ancestral batch path: `O(b n d)` time and
   `O(n + min(b, d^m))` working/output memory;
-- exact selected marginal: `O(n d^(w+1) + d^m)` time.
+- selected marginal: `O(n d^(w+1) + d^m)` time.
 
 On the included sparse binary-chain benchmark, the measured median speedups
 were:
@@ -123,8 +120,9 @@ Reproduce the comparison with:
 python scripts/benchmark_worldspec_acceleration.py --nodes 15 --batch-size 64
 ```
 
-The benchmark first requires exact `Fraction` equality with the full-joint
-reference; it does not use a post-hoc numerical tolerance.
+The benchmark uses a fixed `Fraction` fixture and first requires exact equality
+with the full-joint reference. Generated float64 worlds use the shared CPT
+validity tolerance instead.
 
 ## Quick start
 
@@ -144,7 +142,7 @@ episode = WorldSpecEpisode(
     world,
     seed,
     OutcomeTape("preregistered-tape-key"),
-    budget=Budget(max_rounds=2, max_samples=16, batch_sizes=(4, 8)),
+    budget=Budget(max_observations=16),
 )
 messages = episode.initial_messages()
 step = episode.step(

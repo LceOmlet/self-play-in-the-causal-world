@@ -1,28 +1,30 @@
-"""Sampler for the CPT-World seed subspace.
+"""Sampler for finite hidden CPT worlds.
 
-The sampler declares an explicit probability model:
+The main sampler owns one declared distribution:
 
-- node count: uniform over ``node_counts``
-- domain size: uniform over ``{2, ..., max_domain_size}``
-- topological order: uniform over all orders
-- edge subset: uniform over all forward-edge subsets of that order
-- root prior: uniform over ``(0, 1)``, exactly rationalized
-- edge effect: uniform over ``(-1/2, 1/2)``, exactly rationalized
+- node count is uniform over ``node_counts``;
+- node cardinalities are independent and uniform over ``2..max_domain_size``;
+- the node order is a uniform permutation;
+- each node's parent count is uniform over ``0..min(3, predecessor_count)``;
+- the parent subset is uniform conditional on that count;
+- CPTs use a simplex-uniform base distribution and one isotropic joint-effect
+  table over all parent configurations.
 
-``seed`` is used only as a reproducible RNG seed; it never encodes a grid,
-array index, or coordinate expansion.
+Generated worlds use ``float``/binary64 probabilities. Exact ``Fraction``
+worlds remain valid fixed fixtures and reference inputs.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 import random
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from fractions import Fraction
-from itertools import combinations, product
+from itertools import combinations
 from pathlib import Path
 from typing import Any
 
@@ -37,8 +39,12 @@ from .registry import (
 
 _LABEL_POOL = "DEFGHIJKLMNOPQRSTUVW"
 
-_DEFAULT_NODE_COUNTS = (2, 3, 4)
-_MAX_GRAMMAR_NODES = 6
+DEFAULT_NODE_COUNTS = tuple(range(3, 16))
+_MAX_GRAMMAR_NODES = 15
+_MAX_PARENT_COUNT = 3
+_CPT_VALIDITY_TOLERANCE = 1e-12
+
+Probability = float | Fraction
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,7 +58,7 @@ class WorldSpec:
     state_names: tuple[tuple[str, ...], ...]
     edges: tuple[tuple[int, int], ...]
     parents: Mapping[int, tuple[int, ...]]
-    cpt: Mapping[int, tuple[tuple[Fraction, ...], ...]]
+    cpt: Mapping[int, tuple[tuple[Probability, ...], ...]]
 
     def child_count(self, node: int) -> int:
         return sum(1 for parent, child in self.edges if parent == node)
@@ -94,18 +100,10 @@ class WorldGrammar:
 
     - ``node_counts``: support of the uniform node-count distribution
     - ``max_domain_size``: upper bound for the uniform domain-size distribution
-    - ``edge_effect_range``: open interval for the signed edge-effect uniform
-    - ``root_prior_range``: open interval for the root-prior uniform
-    - ``rational_denominator_bound``: exact-rational precision bound
-    - ``max_stability_attempts``: computational bound for fail-closed stability
     """
 
-    node_counts: tuple[int, ...] = _DEFAULT_NODE_COUNTS
+    node_counts: tuple[int, ...] = DEFAULT_NODE_COUNTS
     max_domain_size: int = 5
-    edge_effect_range: tuple[Fraction, Fraction] = (Fraction(-1, 2), Fraction(1, 2))
-    root_prior_range: tuple[Fraction, Fraction] = (Fraction(0), Fraction(1))
-    rational_denominator_bound: int = 1000
-    max_stability_attempts: int = 10000
 
     def __post_init__(self) -> None:
         if not self.node_counts:
@@ -125,69 +123,77 @@ class WorldGrammar:
             or self.max_domain_size < 2
         ):
             raise ValueError("max_domain_size must be an integer >= 2")
-        if len(self.edge_effect_range) != 2:
-            raise ValueError("edge_effect_range must contain two endpoints")
-        if self.edge_effect_range[0] >= self.edge_effect_range[1]:
-            raise ValueError("edge_effect_range must be an increasing interval")
-        if not -Fraction(1, 2) <= self.edge_effect_range[0]:
-            raise ValueError("edge_effect_range lower bound must be >= -1/2")
-        if self.edge_effect_range[1] > Fraction(1, 2):
-            raise ValueError("edge_effect_range upper bound must be <= 1/2")
-        if len(self.root_prior_range) != 2:
-            raise ValueError("root_prior_range must contain two endpoints")
-        if not 0 <= self.root_prior_range[0] < self.root_prior_range[1] <= 1:
-            raise ValueError("root_prior_range must lie inside [0, 1]")
-        if (
-            isinstance(self.rational_denominator_bound, bool)
-            or not isinstance(self.rational_denominator_bound, int)
-            or self.rational_denominator_bound <= 0
-        ):
-            raise ValueError("rational_denominator_bound must be a positive integer")
-        if (
-            isinstance(self.max_stability_attempts, bool)
-            or not isinstance(self.max_stability_attempts, int)
-            or self.max_stability_attempts <= 0
-        ):
-            raise ValueError("max_stability_attempts must be a positive integer")
 
 
-def _root_cpt_row(domain_size: int, root_prior: Fraction) -> tuple[Fraction, ...]:
-    """Canonical root distribution.
+def _simplex_uniform(domain_size: int, rng: random.Random) -> tuple[float, ...]:
+    """Draw ``Dirichlet(1, ..., 1)`` without introducing a second RNG owner."""
 
-    State 1 receives ``root_prior``; the remaining mass is uniform over every
-    other state. For binary domains this reduces to the original root prior.
-    """
-
-    other_mass = (1 - root_prior) / (domain_size - 1)
-    row = [other_mass] * domain_size
-    row[1] = root_prior
-    return tuple(row)
+    while True:
+        draws = [rng.expovariate(1.0) for _ in range(domain_size)]
+        total = math.fsum(draws)
+        if total > 0.0 and all(value > 0.0 for value in draws):
+            return tuple(value / total for value in draws)
 
 
-def _child_cpt_row(
-    parent_values: tuple[int, ...],
+def _project_joint_effect(
+    row_count: int,
     domain_size: int,
-    parent_effects: tuple[Fraction, ...],
-) -> tuple[Fraction, ...]:
-    """Signed multiplicative finite-domain child mechanism.
+    rng: random.Random,
+) -> tuple[tuple[float, ...], ...]:
+    """Draw a unit direction in the row/column-centred joint-effect space."""
 
-    Each parent ``p`` with signed effect ``e_p`` prefers child state
-    ``parent_state mod domain_size``. Its multiplicative odds are
+    while True:
+        gaussian = [[rng.gauss(0.0, 1.0) for _ in range(domain_size)] for _ in range(row_count)]
+        row_means = [math.fsum(row) / domain_size for row in gaussian]
+        column_means = [
+            math.fsum(gaussian[row][state] for row in range(row_count)) / row_count
+            for state in range(domain_size)
+        ]
+        grand_mean = math.fsum(row_means) / row_count
+        projected = [
+            [
+                gaussian[row][state] - row_means[row] - column_means[state] + grand_mean
+                for state in range(domain_size)
+            ]
+            for row in range(row_count)
+        ]
+        norm = math.sqrt(math.fsum(value * value for row in projected for value in row))
+        if math.isfinite(norm) and norm > 0.0:
+            return tuple(tuple(value / norm for value in row) for row in projected)
 
-    ``q_p = (1/2 + e_p) / (1/2 - e_p)``.
 
-    Raw child-state weight is the product of ``q_p`` for every parent that
-    prefers that state, normalized to sum to one. For one binary parent this
-    reduces to ``P(preferred)=1/2+e`` and ``P(other)=1/2-e``.
-    """
+def _maximum_legal_effect_scale(
+    base: tuple[float, ...],
+    direction: tuple[tuple[float, ...], ...],
+) -> float:
+    limits = [
+        base[state] / -value for row in direction for state, value in enumerate(row) if value < 0.0
+    ]
+    if not limits:
+        raise RuntimeError("a nonzero row-centred effect direction must contain a negative entry")
+    scale = min(limits)
+    if not math.isfinite(scale) or scale <= 0.0:
+        raise RuntimeError("joint-effect direction has no positive legal scale")
+    return scale
 
-    weights = [Fraction(1)] * domain_size
-    for parent_value, effect in zip(parent_values, parent_effects, strict=True):
-        preferred = parent_value % domain_size
-        odds = (Fraction(1, 2) + effect) / (Fraction(1, 2) - effect)
-        weights[preferred] *= odds
-    total = sum(weights, Fraction(0))
-    return tuple(weight / total for weight in weights)
+
+def _finalize_cpt_row(values: Sequence[float]) -> tuple[float, ...]:
+    """Apply the single accepted binary64 CPT-boundary rule."""
+
+    cleaned: list[float] = []
+    for raw in values:
+        value = float(raw)
+        if not math.isfinite(value):
+            raise ValueError("CPT entries must be finite")
+        if value < -_CPT_VALIDITY_TOLERANCE:
+            raise ValueError("CPT entry is below the numerical validity tolerance")
+        cleaned.append(0.0 if value < 0.0 else value)
+    total = math.fsum(cleaned)
+    if not math.isfinite(total) or abs(total - 1.0) > _CPT_VALIDITY_TOLERANCE:
+        raise ValueError("CPT row does not sum to one within the validity tolerance")
+    if total <= 0.0:
+        raise ValueError("CPT row has zero mass")
+    return tuple(value / total for value in cleaned)
 
 
 def _shortest_path_nodes(world: WorldSpec, source: int, target: int) -> tuple[int, ...] | None:
@@ -221,14 +227,16 @@ def _shortest_path_nodes(world: WorldSpec, source: int, target: int) -> tuple[in
 def _opaque_labels(n: int, seed_id: str) -> tuple[str, ...]:
     labels: list[str] = []
     for index in range(n):
+        nonce = index
         while True:
             digest = hashlib.sha256(
-                f"cpt-world-space-labels-v1\0{seed_id}\0{index}\0{len(labels)}".encode()
+                f"cpt-world-space-labels-v1\0{seed_id}\0{index}\0{nonce}".encode()
             ).digest()
             token = "".join(_LABEL_POOL[byte % len(_LABEL_POOL)] for byte in digest[:3])
             if token not in labels:
                 labels.append(token)
                 break
+            nonce += 1
     return tuple(labels)
 
 
@@ -305,24 +313,21 @@ class _SampledStructure:
     topology: str
 
 
-def _sample_structure(grammar: WorldGrammar, rng: random.Random) -> _SampledStructure:
-    node_count = rng.choice(grammar.node_counts)
+def _sample_structure_at_size(
+    grammar: WorldGrammar,
+    node_count: int,
+    rng: random.Random,
+) -> _SampledStructure:
     domains = tuple(rng.randint(2, grammar.max_domain_size) for _ in range(node_count))
     order = list(range(node_count))
     rng.shuffle(order)
-    forward_pairs = [
-        (order[left], order[right])
-        for left in range(node_count)
-        for right in range(left + 1, node_count)
-    ]
-    if forward_pairs:
-        mask = rng.getrandbits(len(forward_pairs))
-        edges = tuple(pair for bit, pair in enumerate(forward_pairs) if mask & (1 << bit))
-    else:
-        edges = ()
     parents_list: list[tuple[int, ...]] = [() for _ in range(node_count)]
-    for parent, child in edges:
-        parents_list[child] = parents_list[child] + (parent,)
+    for position, child in enumerate(order):
+        parent_count = rng.randint(0, min(_MAX_PARENT_COUNT, position))
+        parents_list[child] = tuple(sorted(rng.sample(order[:position], parent_count)))
+    edges = tuple(
+        sorted((parent, child) for child, parents in enumerate(parents_list) for parent in parents)
+    )
     variables = tuple(f"V{index}" for index in range(node_count))
     topology = f"dag-n{node_count}-d{'-'.join(str(size) for size in domains)}-e{len(edges)}"
     return _SampledStructure(
@@ -335,60 +340,32 @@ def _sample_structure(grammar: WorldGrammar, rng: random.Random) -> _SampledStru
     )
 
 
-def _sample_edge_effect(grammar: WorldGrammar, rng: random.Random) -> Fraction:
-    low, high = grammar.edge_effect_range
-    while True:
-        value = low + (high - low) * rng.random()
-        effect = Fraction.from_float(float(value)).limit_denominator(
-            grammar.rational_denominator_bound
-        )
-        if effect != 0 and low < effect < high:
-            return effect
-
-
-def _sample_root_prior(grammar: WorldGrammar, rng: random.Random) -> Fraction:
-    low, high = grammar.root_prior_range
-    while True:
-        value = low + (high - low) * rng.random()
-        prior = Fraction.from_float(float(value)).limit_denominator(
-            grammar.rational_denominator_bound
-        )
-        if low < prior < high:
-            return prior
-
-
-def _sample_parameter_maps(
-    grammar: WorldGrammar, structure: _SampledStructure, rng: random.Random
-) -> tuple[Mapping[int, Fraction], Mapping[tuple[int, int], Fraction]]:
-    root_prior_map = {
-        node: _sample_root_prior(grammar, rng)
-        for node in range(structure.node_count)
-        if not structure.parents[node]
-    }
-    edge_effect_map = {edge: _sample_edge_effect(grammar, rng) for edge in structure.edges}
-    return root_prior_map, edge_effect_map
+def _sample_structure(grammar: WorldGrammar, rng: random.Random) -> _SampledStructure:
+    return _sample_structure_at_size(grammar, rng.choice(grammar.node_counts), rng)
 
 
 def _build_world(
-    grammar: WorldGrammar,
     structure: _SampledStructure,
-    root_prior_map: Mapping[int, Fraction],
-    edge_effect_map: Mapping[tuple[int, int], Fraction],
+    rng: random.Random,
 ) -> WorldSpec:
-    del grammar  # structure and parameter maps already carry the CPT semantics
-    cpt: dict[int, tuple[tuple[Fraction, ...], ...]] = {}
+    cpt: dict[int, tuple[tuple[float, ...], ...]] = {}
     for node in range(structure.node_count):
         domain_size = structure.domains[node]
         node_parents = structure.parents[node]
+        base = _simplex_uniform(domain_size, rng)
         if not node_parents:
-            cpt[node] = (_root_cpt_row(domain_size, root_prior_map[node]),)
+            cpt[node] = (_finalize_cpt_row(base),)
         else:
-            parent_effects = tuple(edge_effect_map[(parent, node)] for parent in node_parents)
-            rows: list[tuple[Fraction, ...]] = []
-            parent_ranges = (range(structure.domains[parent]) for parent in node_parents)
-            for parent_values in product(*parent_ranges):
-                rows.append(_child_cpt_row(parent_values, domain_size, parent_effects))
-            cpt[node] = tuple(rows)
+            row_count = math.prod(structure.domains[parent] for parent in node_parents)
+            direction = _project_joint_effect(row_count, domain_size, rng)
+            maximum_scale = _maximum_legal_effect_scale(base, direction)
+            scale = rng.random() * maximum_scale
+            cpt[node] = tuple(
+                _finalize_cpt_row(
+                    tuple(base[state] + scale * row[state] for state in range(domain_size))
+                )
+                for row in direction
+            )
     return WorldSpec(
         family="sampled_dag",
         topology=structure.topology,
@@ -414,14 +391,16 @@ def sample_world(grammar: WorldGrammar, seed: int) -> WorldSpec:
         raise TypeError("grammar must be a WorldGrammar")
     rng = random.Random(seed)
     structure = _sample_structure(grammar, rng)
-    root_prior_map, edge_effect_map = _sample_parameter_maps(grammar, structure, rng)
-    return _build_world(grammar, structure, root_prior_map, edge_effect_map)
+    world = _build_world(structure, rng)
+    if not legal_world(world):
+        raise RuntimeError("internal error: main sampler produced an illegal WorldSpec")
+    return world
 
 
 def _task_target_metrics(
     world: WorldSpec, query_type: str, anchors: Mapping[str, int | str]
-) -> Mapping[str, Fraction]:
-    """Exact task-relevant targets; no goodness thresholds are applied."""
+) -> Mapping[str, Probability]:
+    """Task-relevant numerical targets for optional distribution diagnostics."""
 
     from .query_truth import (
         ate_effect,
@@ -457,29 +436,12 @@ def _task_target_metrics(
         ]
         if objective == "minimize":
             others = [p for p in probabilities if p > best_probability]
-            gap = min(others) - best_probability if others else Fraction(0)
+            gap = min(others) - best_probability if others else 0.0
         else:
             others = [p for p in probabilities if p < best_probability]
-            gap = best_probability - max(others) if others else Fraction(0)
+            gap = best_probability - max(others) if others else 0.0
         return {"target": gap, "baseline": baseline}
     raise ValueError(f"unsupported query type {query_type}")
-
-
-def _numerically_and_causally_stable(metrics: Mapping[str, Fraction]) -> bool:
-    """Binary stability gate with no magnitude thresholds.
-
-    Numerical stability: every probability strictly inside (0, 1).
-    Causal stability: the task target is nonzero (effect or decision gap).
-    """
-
-    probabilities = [
-        value
-        for key, value in metrics.items()
-        if key in {"baseline", "condition_mass_treated", "condition_mass_baseline"}
-    ]
-    if any(value <= 0 or value >= 1 for value in probabilities):
-        return False
-    return metrics["target"] != 0
 
 
 def profile_task_targets(
@@ -493,46 +455,32 @@ def profile_task_targets(
     """Sample and profile the task-target distribution, without filtering.
 
     ``seed`` is an RNG seed. One structure is drawn, then ``sample_count``
-    CPT instances are drawn from the declared parameter distributions. The
-    returned profile reports target signs, stability counts, and per-edge
-    positive/negative effect counts.
+    CPT instances are drawn from the declared parameter distribution. This
+    diagnostic never filters or changes the main sampling law.
     """
 
     if sample_count <= 0:
         raise ValueError("sample_count must be positive")
     rng = random.Random(seed)
     structure = _sample_structure(grammar, rng)
-    targets: list[Fraction] = []
-    stable_count = 0
-    edge_sign_counts: dict[tuple[int, int], list[int]] = {edge: [0, 0] for edge in structure.edges}
+    structural_world = _build_world(structure, rng)
+    legal_anchors = legal_query_anchors(structural_world, query_type)
+    if dict(anchors) not in [dict(item) for item in legal_anchors]:
+        raise ValueError("anchors are not structurally legal for the sampled world")
+    targets: list[Probability] = []
     for _ in range(sample_count):
-        root_prior_map, edge_effect_map = _sample_parameter_maps(grammar, structure, rng)
-        for edge, effect in edge_effect_map.items():
-            bucket = 0 if effect > 0 else 1
-            edge_sign_counts[edge][bucket] += 1
-        world = _build_world(grammar, structure, root_prior_map, edge_effect_map)
+        world = _build_world(structure, rng)
         metrics = _task_target_metrics(world, query_type, anchors)
         targets.append(metrics["target"])
-        if _numerically_and_causally_stable(metrics):
-            stable_count += 1
     return {
         "seed": seed,
         "query_type": query_type,
         "sample_count": sample_count,
-        "stable_count": stable_count,
         "zero_count": sum(1 for target in targets if target == 0),
         "negative_count": sum(1 for target in targets if target < 0),
         "positive_count": sum(1 for target in targets if target > 0),
-        "target_min": float(min(targets, default=Fraction(0))),
-        "target_max": float(max(targets, default=Fraction(0))),
-        "edge_sign_counts": {
-            str(edge): {"positive": counts[0], "negative": counts[1]}
-            for edge, counts in edge_sign_counts.items()
-        },
-        "max_edge_sign_imbalance": max(
-            (abs(counts[0] - counts[1]) for counts in edge_sign_counts.values()),
-            default=0,
-        ),
+        "target_min": float(min(targets, default=0.0)),
+        "target_max": float(max(targets, default=0.0)),
     }
 
 
@@ -540,29 +488,37 @@ def sample_task_world(
     grammar: WorldGrammar,
     seed: int,
     query_type: str,
-    anchors: Mapping[str, int | str],
+    anchors: Mapping[str, int | str] | None = None,
 ) -> WorldSpec:
-    """Sample one numerically and causally stable task world.
+    """Sample one world conditioned only on task structural eligibility.
 
-    A structure is drawn first, then CPT instances are drawn from the declared
-    distributions until one passes the binary stability gate. This is
-    acceptance-rejection over the declared parameter distribution, so the
-    returned world is distributed as the declared distribution conditioned on
-    stability. If no stable draw is found within the declared computational
-    bound, the function fails closed.
+    Node count is drawn once and held fixed while structures are redrawn. CPT
+    parameters are sampled only after an eligible structure is found. Optional
+    ``anchors`` validate a caller-selected role assignment without affecting
+    the sampled mechanisms.
     """
 
     if isinstance(seed, bool) or not isinstance(seed, int) or seed < 0:
         raise ValueError("seed must be a nonnegative integer")
+    if query_type not in QUERY_TYPES:
+        raise ValueError(f"unsupported query type: {query_type}")
     rng = random.Random(seed)
-    structure = _sample_structure(grammar, rng)
-    for _ in range(grammar.max_stability_attempts):
-        root_prior_map, edge_effect_map = _sample_parameter_maps(grammar, structure, rng)
-        world = _build_world(grammar, structure, root_prior_map, edge_effect_map)
-        metrics = _task_target_metrics(world, query_type, anchors)
-        if _numerically_and_causally_stable(metrics):
-            return world
-    raise ValueError(f"no numerically and causally stable CPT draw for {query_type} at seed {seed}")
+    node_count = rng.choice(grammar.node_counts)
+    while True:
+        structure = _sample_structure_at_size(grammar, node_count, rng)
+        roles = _legal_role_assignments(node_count, structure.edges, query_type)
+        if roles:
+            break
+    world = _build_world(structure, rng)
+    if not legal_world(world):
+        raise RuntimeError("internal error: task sampler produced an illegal WorldSpec")
+    if anchors is not None:
+        structural_anchors = {
+            name: anchors.get(name) for name in QUERY_TYPES[query_type]["anchors"]
+        }
+        if structural_anchors not in [dict(item) for item in roles]:
+            raise ValueError("anchors are not structurally legal for the sampled task world")
+    return world
 
 
 def _surface_display_nodes(
@@ -679,13 +635,22 @@ def _acceptable_answers(
         truth = compute_query_truth(world, seed)
         if surface.query_type == "ate":
             effect = truth.get("effect")
-            if not isinstance(effect, Fraction):
-                raise TypeError("ATE truth owner must return an exact Fraction")
+            if (
+                isinstance(effect, bool)
+                or not isinstance(effect, (int, float, Fraction))
+                or not math.isfinite(float(effect))
+            ):
+                raise TypeError("ATE truth owner must return a finite numeric effect")
             return frozenset({("effect", effect)})
         lower = truth.get("lower")
         upper = truth.get("upper")
-        if not isinstance(lower, Fraction) or not isinstance(upper, Fraction):
-            raise TypeError("counterfactual truth owner must return exact interval endpoints")
+        if any(
+            isinstance(endpoint, bool)
+            or not isinstance(endpoint, (int, float, Fraction))
+            or not math.isfinite(float(endpoint))
+            for endpoint in (lower, upper)
+        ):
+            raise TypeError("counterfactual truth owner must return finite interval endpoints")
         return frozenset({("counterfactual_interval", lower, upper)})
     if isinstance(surface, RenderedDecisionQuerySurface):
         display_nodes = _surface_display_nodes(world, seed, surface)
@@ -760,7 +725,7 @@ def task_answerability(
     *,
     measure_max: int | None = None,
 ) -> dict[str, str]:
-    """Partition task families by exact answerability before K/M sampling.
+    """Diagnose candidate-family answerability on the full pre-K/M surface.
 
     Two candidates are observationally equivalent when they expose the same
     query-specific full experiment surface (up to opaque label spelling) and
@@ -771,9 +736,9 @@ def task_answerability(
     action. Discovery candidates are answerable when the evidence determines
     one exact structural answer.
 
-    The classification is relative to the supplied task family. Per-seed K and
-    M, batch sizes, and round counts are intentionally absent: they affect the
-    difficulty of gathering evidence, not task-family answerability.
+    The classification is relative to the supplied task family. It is not
+    applied as a generator label, filter, or admission check. Per-seed K and M
+    are intentionally absent from this optional diagnostic.
     """
 
     if measure_max is not None:
@@ -857,8 +822,9 @@ def task_difficulty_profile(
 ) -> Mapping[str, Any]:
     """Report structure and target-distribution difficulty coordinates.
 
-    No thresholds are applied and no planner is used. Answerability is a
-    family-level property computed separately by :func:`task_answerability`.
+    No thresholds are applied and no planner is used. The optional
+    :func:`task_answerability` diagnostic is computed separately and is not a
+    generation gate.
     """
 
     structural = sample_world(grammar, seed)
@@ -1104,6 +1070,8 @@ def _is_acyclic(node_count: int, edges: tuple[tuple[int, int], ...]) -> bool:
 def legal_world(world: WorldSpec) -> bool:
     if len(world.variables) != len(world.domains):
         return False
+    if len(set(world.variables)) != len(world.variables):
+        return False
     if len(world.state_names) != len(world.variables):
         return False
     if any(size <= 0 for size in world.domains):
@@ -1112,6 +1080,9 @@ def legal_world(world: WorldSpec) -> bool:
         len(names) != size for names, size in zip(world.state_names, world.domains, strict=True)
     ):
         return False
+    if len(set(world.edges)) != len(world.edges):
+        return False
+    declared_edges: set[tuple[int, int]] = set()
     for child, parent_nodes in world.parents.items():
         if child < 0 or child >= len(world.variables):
             return False
@@ -1119,6 +1090,9 @@ def legal_world(world: WorldSpec) -> bool:
             return False
         if any(parent < 0 or parent >= len(world.variables) for parent in parent_nodes):
             return False
+        declared_edges.update((parent, child) for parent in parent_nodes)
+    if declared_edges != set(world.edges):
+        return False
     if not _is_acyclic(len(world.variables), world.edges):
         return False
     for child in range(len(world.variables)):
@@ -1132,52 +1106,83 @@ def legal_world(world: WorldSpec) -> bool:
         for row in rows:
             if len(row) != world.domains[child]:
                 return False
-            if any(not 0 <= value <= 1 for value in row):
+            if any(
+                isinstance(value, bool)
+                or not math.isfinite(float(value))
+                or not 0.0 <= float(value) <= 1.0
+                for value in row
+            ):
                 return False
-            if sum(row, Fraction(0)) != 1:
+            if all(isinstance(value, Fraction) for value in row):
+                if sum(row, Fraction(0)) != 1:
+                    return False
+            elif abs(math.fsum(float(value) for value in row) - 1.0) > _CPT_VALIDITY_TOLERANCE:
                 return False
     return True
 
 
-def legal_query_anchors(world: WorldSpec, query_type: str) -> tuple[dict[str, int | str], ...]:
-    """Return every structurally legal anchor assignment for a query.
-
-    These are structural legality rules only. Query truth and scorers are not
-    implemented here, so an assignment being listed does not yet certify a
-    nondegenerate or solvable task.
-    """
-
+def _legal_role_assignments(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    query_type: str,
+) -> tuple[dict[str, int], ...]:
     if query_type not in QUERY_TYPES:
         return ()
-    node_count = len(world.variables)
+
+    adjacency: list[list[int]] = [[] for _ in range(node_count)]
+    for parent, child in edges:
+        adjacency[parent].append(child)
+
+    def path_exists(source: int, target: int, *, minimum_length: int = 1) -> bool:
+        stack = [(source, 0)]
+        seen_depth: set[tuple[int, int]] = {(source, 0)}
+        while stack:
+            node, depth = stack.pop()
+            for child in adjacency[node]:
+                next_depth = depth + 1
+                if child == target and next_depth >= minimum_length:
+                    return True
+                marker = (child, next_depth)
+                if marker not in seen_depth:
+                    seen_depth.add(marker)
+                    stack.append(marker)
+        return False
+
     if query_type in {"ate", "counterfactual_transition_bounds", "backadj_minimal_sets"}:
         return tuple(
             {"treatment": source, "outcome": target}
             for source in range(node_count)
             for target in range(node_count)
-            if world.path_exists(source, target)
+            if source != target and path_exists(source, target)
         )
     if query_type == "mediator_set":
         return tuple(
             {"treatment": source, "outcome": target}
             for source in range(node_count)
             for target in range(node_count)
-            if world.has_indirect_path(source, target)
+            if source != target and path_exists(source, target, minimum_length=2)
         )
     if query_type == "best_intervention":
         return tuple(
             {
                 "decision_target": decision_target,
                 "outcome": outcome,
-                "objective": objective,
             }
-            for outcome in range(node_count)
-            if world.child_count(outcome) == 0 and world.parent_count(outcome) > 0
             for decision_target in range(node_count)
-            if decision_target != outcome and world.path_exists(decision_target, outcome)
-            for objective in ("minimize", "maximize")
+            for outcome in range(node_count)
+            if decision_target != outcome and path_exists(decision_target, outcome)
         )
     return ()
+
+
+def legal_query_anchors(world: WorldSpec, query_type: str) -> tuple[dict[str, int], ...]:
+    """Return every structurally legal variable-role assignment for a query.
+
+    Numerical states and decision objectives are sampled only after one role
+    assignment is chosen; they are not part of this structural set.
+    """
+
+    return _legal_role_assignments(len(world.variables), world.edges, query_type)
 
 
 def supports_query(world: WorldSpec, query_type: str) -> bool:
@@ -1219,30 +1224,58 @@ def supports_hiding(world: WorldSpec, hiding: str | object) -> bool:
 def default_manipulability(
     world: WorldSpec, query_type: str, anchors: Mapping[str, int | str]
 ) -> dict[str, bool]:
-    """Derive the anchor-minimal manipulability mask.
-
-    Every non-anchor variable defaults to manipulable and readable. Query
-    outcome and collider anchors are readonly. For ATE and counterfactual
-    transition bounds, the treatment is also readonly. For best intervention,
-    the deployment target is readonly during experimentation: its candidate
-    states are reserved for the terminal decision rather than being directly
-    sampled.
-    """
+    """Make exactly the non-anchor variables eligible for K sampling."""
 
     manipulability = {name: True for name in world.variables}
-    for anchor_name in ("outcome", "collider"):
+    for anchor_name in QUERY_TYPES[query_type]["anchors"]:
         node = anchors.get(anchor_name)
         if isinstance(node, int):
             manipulability[world.variables[node]] = False
-    if query_type in {"ate", "counterfactual_transition_bounds"}:
-        treatment = anchors.get("treatment")
-        if isinstance(treatment, int):
-            manipulability[world.variables[treatment]] = False
-    if query_type == "best_intervention":
-        decision_target = anchors.get("decision_target")
-        if isinstance(decision_target, int):
-            manipulability[world.variables[decision_target]] = False
     return manipulability
+
+
+def _axis_rng(seed_id: str, axis: str) -> random.Random:
+    payload = f"cpt-world-task-v1\0{axis}\0{seed_id}".encode()
+    return random.Random(int.from_bytes(hashlib.sha256(payload).digest(), "big"))
+
+
+def _sample_task_attributes(
+    world: WorldSpec,
+    query_type: str,
+    roles: Mapping[str, int],
+    *,
+    seed_id: str,
+) -> dict[str, int | str]:
+    """Sample only the already-declared post-role task attributes."""
+
+    anchors: dict[str, int | str] = dict(roles)
+    rng = _axis_rng(seed_id, "task-attributes")
+    if query_type in {"ate", "counterfactual_transition_bounds"}:
+        treatment = int(roles["treatment"])
+        outcome = int(roles["outcome"])
+        ordered_pairs = tuple(
+            (reference, comparison)
+            for reference in range(world.domains[treatment])
+            for comparison in range(world.domains[treatment])
+            if reference != comparison
+        )
+        reference, comparison = rng.choice(ordered_pairs)
+        anchors.update(
+            {
+                "baseline_value": reference,
+                "treatment_value": comparison,
+                "outcome_state": rng.randrange(world.domains[outcome]),
+            }
+        )
+    elif query_type == "best_intervention":
+        outcome = int(roles["outcome"])
+        anchors.update(
+            {
+                "objective": rng.choice(("minimize", "maximize")),
+                "outcome_state": rng.randrange(world.domains[outcome]),
+            }
+        )
+    return anchors
 
 
 def _randomized_interaction_surface(
@@ -1266,15 +1299,13 @@ def _randomized_interaction_surface(
     if not candidates:
         raise ValueError("query leaves no non-anchor intervention candidate")
 
-    def rng(axis: str) -> random.Random:
-        payload = f"cpt-world-interaction-surface-v1\0{axis}\0{seed_id}".encode()
-        return random.Random(int.from_bytes(hashlib.sha256(payload).digest(), "big"))
-
-    width_rng = rng("manipulability")
+    width_rng = _axis_rng(seed_id, "manipulability")
     width = width_rng.randint(1, len(candidates))
     selected = frozenset(width_rng.sample(candidates, width))
     manipulability = {name: name in selected for name in world.variables}
-    observation_bandwidth = rng("observation-bandwidth").randint(1, len(world.variables))
+    observation_bandwidth = _axis_rng(seed_id, "observation-bandwidth").randint(
+        1, len(world.variables)
+    )
     return manipulability, observation_bandwidth
 
 
@@ -1363,7 +1394,10 @@ def assemble_seed(
         selected_anchors = dict(legal_anchors[0])
     else:
         selected_anchors = dict(anchors)
-        if selected_anchors not in [dict(item) for item in legal_anchors]:
+        structural_anchors = {
+            name: selected_anchors.get(name) for name in QUERY_TYPES[query_type]["anchors"]
+        }
+        if structural_anchors not in [dict(item) for item in legal_anchors]:
             raise ValueError(f"{seed_id}: anchors are not structurally legal for query")
 
     label_map, visible_variables = anonymize_world(world, seed_id)
@@ -1391,23 +1425,29 @@ def assemble_seed(
                 "outcome": anchor_label("outcome"),
             }
         )
-        if query_type in {"ate", "counterfactual_transition_bounds", "mediator_set"}:
-            query_visible["outcome_state"] = visible_state(outcome_name, 1)
-        if query_type == "counterfactual_transition_bounds":
+        if query_type in {"ate", "counterfactual_transition_bounds"}:
             treatment_name = world.variables[int(selected_anchors["treatment"])]
-            query_visible["treatment_value"] = visible_state(treatment_name, 1)
-            query_visible["baseline_value"] = visible_state(treatment_name, 0)
+            baseline_value = int(selected_anchors.get("baseline_value", 0))
+            treatment_value = int(selected_anchors.get("treatment_value", 1))
+            outcome_state = int(selected_anchors.get("outcome_state", 1))
+            if baseline_value == treatment_value:
+                raise ValueError(f"{seed_id}: treatment and baseline values must differ")
+            query_visible["treatment_value"] = visible_state(treatment_name, treatment_value)
+            query_visible["baseline_value"] = visible_state(treatment_name, baseline_value)
+            query_visible["outcome_state"] = visible_state(outcome_name, outcome_state)
+        if query_type == "counterfactual_transition_bounds":
             if answer_mode is not None:
                 query_visible["answer_mode"] = answer_mode
             query_visible["answer_mode"] = counterfactual_answer_mode(query_visible)
     elif query_type == "best_intervention":
         outcome_name = world.variables[int(selected_anchors["outcome"])]
+        outcome_state = int(selected_anchors.get("outcome_state", 1))
         query_visible.update(
             {
                 "decision_target": anchor_label("decision_target"),
                 "outcome": anchor_label("outcome"),
-                "objective": str(selected_anchors["objective"]),
-                "outcome_state": visible_state(outcome_name, 1),
+                "objective": str(selected_anchors.get("objective", "minimize")),
+                "outcome_state": visible_state(outcome_name, outcome_state),
             }
         )
 
@@ -1493,6 +1533,97 @@ def iter_world_space(
     return tuple(worlds)
 
 
+def assemble_sampled_anchor_tasks(
+    grammar: WorldGrammar,
+    sample_index: int,
+    query_type: str,
+    anchor_index: int,
+    *,
+    hiding: str | object = "mechanism_hidden",
+) -> tuple[tuple[WorldSpec, Mapping[str, Any]], ...]:
+    """Build the existing main-pipeline task for one legal query anchor.
+
+    This is the single-item composition seam used by both exhaustive seed
+    expansion and evaluation schedules.  World, CPT, interaction-surface,
+    renderer, and task semantics remain owned by their existing functions.
+    """
+
+    if isinstance(sample_index, bool) or not isinstance(sample_index, int) or sample_index < 0:
+        raise ValueError("sample_index must be a nonnegative integer")
+    if isinstance(anchor_index, bool) or not isinstance(anchor_index, int) or anchor_index < 0:
+        raise ValueError("anchor_index must be a nonnegative integer")
+    if query_type not in {
+        "ate",
+        "counterfactual_transition_bounds",
+        "backadj_minimal_sets",
+        "best_intervention",
+        "mediator_set",
+    }:
+        raise ValueError(f"generic sampler does not admit query type: {query_type}")
+
+    task_world = sample_task_world(grammar, sample_index, query_type)
+    legal_anchors = legal_query_anchors(task_world, query_type)
+    if anchor_index >= len(legal_anchors):
+        raise ValueError("anchor_index is outside the legal query anchors")
+    roles = legal_anchors[anchor_index]
+    compatible_heads = tuple(
+        task_head for task_head in TASK_HEADS if supports_task(query_type, task_head)
+    )
+    if len(compatible_heads) != 1:
+        raise ValueError("query type must resolve to exactly one task head")
+    task_head = compatible_heads[0]
+    base_seed_id = f"SAMPLED-{sample_index}-{query_type}-{task_head}-a{anchor_index}"
+    anchors = _sample_task_attributes(
+        task_world,
+        query_type,
+        roles,
+        seed_id=base_seed_id,
+    )
+    manipulability, observation_bandwidth = _randomized_interaction_surface(
+        task_world,
+        query_type,
+        anchors,
+        seed_id=base_seed_id,
+    )
+    base_assembled = assemble_seed(
+        task_world,
+        hiding,
+        query_type,
+        task_head,
+        anchors=anchors,
+        seed_id=base_seed_id,
+        manipulability=manipulability,
+        observation_bandwidth=observation_bandwidth,
+    )
+    answer_modes: tuple[str | None, ...] = (
+        tuple(sorted(COUNTERFACTUAL_ANSWER_MODES))
+        if query_type == "counterfactual_transition_bounds"
+        else (None,)
+    )
+    assembled_tasks: list[tuple[WorldSpec, Mapping[str, Any]]] = []
+    for answer_mode in answer_modes:
+        seed_id = f"{base_seed_id}-mode-{answer_mode}" if answer_mode is not None else base_seed_id
+        if answer_mode is None:
+            assembled = base_assembled
+        else:
+            query = {
+                **base_assembled["query"],
+                "answer_mode": answer_mode,
+            }
+            assembled = {
+                **base_assembled,
+                "seed_id": seed_id,
+                "query": query,
+                "visible_schema": {
+                    **base_assembled["visible_schema"],
+                    "query": query,
+                },
+            }
+        render_seed_prompt(assembled)
+        assembled_tasks.append((task_world, assembled))
+    return tuple(assembled_tasks)
+
+
 def iter_sampled_seeds(
     grammar: WorldGrammar,
     *,
@@ -1501,18 +1632,17 @@ def iter_sampled_seeds(
     count: int = 1,
     hiding: str | object = "mechanism_hidden",
 ) -> tuple[Mapping[str, Any], ...]:
-    """Yield generic task seeds from stable worlds through the main pipeline.
+    """Yield one world-first role sample per requested task family and seed.
 
     Linear expansion step:
 
-    ``structure -> hiding -> numerical query -> legal anchors -> task``.
+    ``node count -> eligible world -> one uniform role -> states -> K/M``.
 
     The caller explicitly names a nonempty subset of the five implemented
-    query types. All use the same assembly path. Numerical ATE and decision
-    tasks use the existing stable-CPT resampling owner; structural discovery
-    tasks use the already sampled structural world directly. The main pipeline
-    samples a nonempty manipulable subset of the eligible variables and an
-    independent seed-fixed observation bandwidth.
+    query types. Node count stays fixed during structural eligibility sampling.
+    Numerical answers never filter mechanisms. The main pipeline samples one
+    legal variable-role assignment uniformly, then the declared state anchors,
+    a nonempty K-subset, and an independent seed-fixed M.
     """
 
     if count <= 0:
@@ -1537,80 +1667,18 @@ def iter_sampled_seeds(
         )
     generated: list[tuple[WorldSpec, Mapping[str, Any]]] = []
     for sample_index in range(start_seed, start_seed + count):
-        structural_world = sample_world(grammar, sample_index)
         for query_type in query_types:
-            legal_anchors = legal_query_anchors(structural_world, query_type)
-            if not legal_anchors:
-                continue
-            for anchor_index, anchors in enumerate(legal_anchors):
-                for task_head in TASK_HEADS:
-                    if not supports_task(query_type, task_head):
-                        continue
-                    try:
-                        task_world = (
-                            structural_world
-                            if query_type in {"backadj_minimal_sets", "mediator_set"}
-                            else sample_task_world(grammar, sample_index, query_type, anchors)
-                        )
-                        base_seed_id = (
-                            f"SAMPLED-{sample_index}-{query_type}-{task_head}-a{anchor_index}"
-                        )
-                        manipulability, observation_bandwidth = _randomized_interaction_surface(
-                            task_world,
-                            query_type,
-                            anchors,
-                            seed_id=base_seed_id,
-                        )
-                        base_assembled = assemble_seed(
-                            task_world,
-                            hiding,
-                            query_type,
-                            task_head,
-                            anchors=anchors,
-                            seed_id=base_seed_id,
-                            manipulability=manipulability,
-                            observation_bandwidth=observation_bandwidth,
-                        )
-                        answer_modes: tuple[str | None, ...] = (
-                            tuple(sorted(COUNTERFACTUAL_ANSWER_MODES))
-                            if query_type == "counterfactual_transition_bounds"
-                            else (None,)
-                        )
-                        for answer_mode in answer_modes:
-                            seed_id = (
-                                f"{base_seed_id}-mode-{answer_mode}"
-                                if answer_mode is not None
-                                else base_seed_id
-                            )
-                            if answer_mode is None:
-                                assembled = base_assembled
-                            else:
-                                query = {
-                                    **base_assembled["query"],
-                                    "answer_mode": answer_mode,
-                                }
-                                assembled = {
-                                    **base_assembled,
-                                    "seed_id": seed_id,
-                                    "query": query,
-                                    "visible_schema": {
-                                        **base_assembled["visible_schema"],
-                                        "query": query,
-                                    },
-                                }
-                            # Reuse the renderer's action-surface owner. Seeds with
-                            # no legal non-endpoint experiment are not emitted.
-                            render_seed_prompt(assembled)
-                            generated.append((task_world, assembled))
-                    except (ValueError, NotImplementedError):
-                        continue
-    answerability_candidates = tuple(generated)
-    answerability = task_answerability(answerability_candidates) if answerability_candidates else {}
-    return tuple(
-        {
-            **seed,
-            "answerability": answerability[str(seed["seed_id"])],
-            "answerability_scope": "sampled_candidate_family_full_query_surface",
-        }
-        for _, seed in generated
-    )
+            task_world = sample_task_world(grammar, sample_index, query_type)
+            legal_roles = legal_query_anchors(task_world, query_type)
+            role_seed_id = f"SAMPLED-{sample_index}-{query_type}"
+            anchor_index = _axis_rng(role_seed_id, "variable-role").randrange(len(legal_roles))
+            generated.extend(
+                assemble_sampled_anchor_tasks(
+                    grammar,
+                    sample_index,
+                    query_type,
+                    anchor_index,
+                    hiding=hiding,
+                )
+            )
+    return tuple(seed for _, seed in generated)

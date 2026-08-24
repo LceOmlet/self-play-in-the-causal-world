@@ -23,11 +23,13 @@
 \definecolor{cwgold}{HTML}{B7791F}
 \definecolor{cwred}{HTML}{A23B3B}
 \hypersetup{colorlinks=true,citecolor=cwblue,linkcolor=cwblue,urlcolor=cwblue}
-\newcommand{\method}{\textsc{CPT-World}}
+\newcommand{\method}{\textsc{DoLens}}
 \newcommand{\doop}{\operatorname{do}}
 \newcommand{\compat}{\mathcal{C}}
 
-\title{\method: Active Causal Reasoning\\in Hidden Finite Worlds}
+\title{\method: Intervene, Measure, and Reason\\
+about Causes and Counterfactuals\\
+in Hidden Worlds}
 
 \author{Anonymous authors}
 
@@ -43,16 +45,17 @@ intervention to perform, which variables to read, and when the collected evidenc
 supports a causal conclusion. Current language-model evaluations primarily score
 answers to supplied causal descriptions, while broad scientific environments mix
 causal inference with domain scripts and long-horizon control. We introduce
-\method, an executable benchmark substrate for active causal reasoning in hidden,
-finite causal worlds. A model receives opaque variables, a causal query, a legal
+\method, an executable interactive environment for active causal reasoning in
+hidden finite-state causal worlds. A model receives opaque variables, a causal
+query, a legal
 experiment interface, and a structured terminal schema. It gathers selected joint
 counts through passive observation or batched hard interventions. One exact engine
 generates the feedback and verifies five terminal objects: total effects,
 counterfactual transition sets, experimental decisions, minimal adjustment sets,
 and mediator structure. Counterfactual scoring ranges over every cross-world
 coupling compatible with the CPT world, so equally compatible structural causal
-models receive the same legal answer set. Exact variable elimination and ancestral
-sampling preserve a full-joint rational oracle while accelerating a 15-node sparse
+models receive the same legal answer set. Variable elimination and ancestral
+sampling preserve the full-joint reference semantics while accelerating a 15-node sparse
 benchmark by $338.4\times$ for selected marginals and $102.5\times$ for batch
 feedback. The resulting environment isolates a central scientific skill: using a
 controlled experiment budget to recover causal structure and effects from a hidden
@@ -81,13 +84,34 @@ faces a hidden causal mechanism, controls a finite experimental interface, and
 receives an exact verdict on the resulting causal answer.
 
 \method{} realizes this object with finite causal Bayesian networks. The world is
-a DAG and an exact conditional probability table for every node. The prompt
+a DAG and a finite-state conditional probability table for every node. The prompt
 replaces internal variable names with opaque tokens and keeps the graph, CPT
 entries, truth, and scorer sealed. It exposes legal interventions, readable
 variables, a maximum readout width, and the terminal JSON schema. The model can
 request a passive batch or a hard intervention, together with a selected readout.
 The environment returns sparse joint counts for that readout and preserves every
-other variable as hidden state. Figure~\ref{fig:overview} shows the complete loop.
+other variable as hidden state. Figure~\ref{fig:overview} shows the complete
+method: the sealed world, the metered evidence surface, the episode loop, the
+single exact engine, and the compatible-set counterfactual rule.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/overview.pdf}
+  \caption{\textbf{The \method{} engine.} A hidden finite CPT world fixes one
+  exact causal truth before the model acts, and worlds with identical legal laws
+  must share an accepted answer. Rendering seals the mechanism and meters what
+  the model may use: opaque labels, $K$ legal do targets, and readout width $M$,
+  so evidence access varies while the causal truth does not. Inside that surface
+  the episode is a loop in which the model chooses a perturbation and a readout
+  and receives only the requested joint counts. One probability engine
+  generates that feedback and verifies all five terminal objects. For
+  counterfactual transitions, endpoint marginals supply a Fr\'echet outer
+  interval, while the verifier computes the exact interval over complete
+  mechanisms compatible with the DAG and every CPT row. A single SCM picks one
+  point inside that interval, and an added cross-world assumption selects a
+  smaller subset.}
+  \label{fig:overview}
+\end{figure}
 
 This interaction creates a direct test of experimental causal reasoning. Consider
 an ATE query whose treatment and outcome are read-only. The model must use legal
@@ -110,42 +134,34 @@ cross-world coupling open.
 Let $Y_x$ denote the outcome of the same unit under $\doop(X=x)$. Suppose
 $P(Y_0{=}1)=0.2$ and $P(Y_1{=}1)=0.8$. In a population of 100 units, 20 would
 have outcome 1 under $X=0$, while 80 would have outcome 1 under $X=1$. The
-marginals leave the overlap between these groups unspecified. Full overlap gives
+marginals leave the overlap between these groups unspecified. Using only these
+endpoint marginals, full overlap gives
 60 units that change from 0 to 1; zero overlap gives 80. Hence every compatible
 coupling satisfies
 \[
   P(Y_1{=}1,Y_0{=}0)\in[0.6,0.8],
 \]
-and both endpoints are attainable. A cross-world assumption can select a smaller
-subset; monotonicity $Y_1\ge Y_0$ contracts the interval to the point $0.6$.
+and both endpoints are attainable by endpoint-event couplings. Constraints from
+the complete DAG and all CPT rows can tighten this outer interval. A cross-world
+assumption can select a smaller subset; monotonicity $Y_1\ge Y_0$ contracts the
+endpoint interval to the point $0.6$.
 \end{minipage}}
 \end{center}
 
-A generated SCM selects one compatible coupling. Encoding that selection as the
-label also encodes its cross-world preference. \method{} keeps the full compatible
-set and scores either its sharp interval or a submitted compatible value. The task
+A generated SCM selects one complete compatible mechanism. Encoding that selection
+as the label also encodes its cross-world preference. \method{} keeps the full
+compatible mechanism set and scores either its sharp interval or a submitted
+compatible value. The task
 therefore measures counterfactual reasoning supported by the stated causal
 information \citep{balke1997bounds,pearl2009causality}.
 
 The work contributes a unified experimental causal interface, a five-task
 construction pipeline, and an exact scalable verifier. The construction samples a
-world and query first, establishes family-level answerability, then samples the
-legal intervention subset $K$ and observation width $M$. The verifier uses exact
-rational variable elimination for query marginals and action-keyed ancestral
+world and query first, then samples the legal intervention subset $K$ and
+observation width $M$. The verifier uses variable elimination for query marginals
+and action-keyed ancestral
 sampling for feedback. Differential tests match the original full-joint semantics,
 and end-to-end tests exercise every task from prompt through terminal score.
-
-\begin{figure}[t]
-  \centering
-  \resizebox{0.98\linewidth}{!}{\input{figures/overview.tex}}
-  \caption{\textbf{An experimental causal episode.} The model sees an opaque
-  task and a legal experiment surface. It chooses both a perturbation and a
-  readout, then receives only the requested joint counts. The exact verifier
-  evaluates the terminal causal object. The lower strip shows the
-  counterfactual rule: CPT marginals define a compatible interval, while a
-  single SCM selects one coupling inside that interval.}
-  \label{fig:overview}
-\end{figure}
 
 \section{Related work and benchmark position}
 
@@ -227,7 +243,7 @@ legal counterfactual answers to every SCM coupling represented by one CPT world.
 Action-keyed sampling then makes stochastic histories reproducible under symbol
 permutation, batch partition, and interleaved actions.
 
-\section{The CPT-World episode}
+\section{The \method{} episode}
 
 \subsection{A hidden finite causal world}
 
@@ -276,10 +292,9 @@ meaning for every omitted cell.
 \subsection{Sampling the interaction surface}
 
 The construction order separates causal content from evidence access. It samples
-a legal world, a query anchor, and an exact task answer. Family-level
-answerability groups worlds by their complete legal response signatures and
-checks that each group shares an accepted terminal answer. The sampler then
-draws $K$ and $M$. Conditional on the eligible intervention variables, the width
+a legal world, a query anchor, and an exact task answer, then draws $K$ and $M$.
+The optional answerability diagnostic remains separate from generation and does
+not filter or label the five task families. Conditional on the eligible intervention variables, the width
 $K$ is uniform and the subset is uniform at that width. The readout width $M$ is
 sampled independently from $1$ through $n$. A fixed world and query can therefore
 appear with narrow or broad evidence access while retaining the same causal truth.
@@ -292,20 +307,25 @@ world, and the public protocol uses visible labels throughout.
 
 \begin{table}[H]
 \centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{>{\raggedright\arraybackslash}p{2.15cm}>
-                {\raggedright\arraybackslash}p{3.15cm}>
-                {\raggedright\arraybackslash}p{2.55cm}>
-                {\raggedright\arraybackslash}p{3.1cm}}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.55cm}>
+                {\raggedright\arraybackslash}p{2.65cm}>
+                {\raggedright\arraybackslash}p{2.35cm}>
+                {\raggedright\arraybackslash}p{3.05cm}}
 \toprule
 Task & Question & Terminal object & Experimental separation \\
 \midrule
-Total effect & Effect of $X$ on $Y$ & scalar ATE & $X,Y$ read-only; probe legal non-endpoints \\
-Counterfactual transition & Units changing outcome across two treatments & sharp interval or compatible scalar & query endpoints read-only \\
-Experimental decision & Deployment value optimizing an outcome event & target-value intervention & deployment variable read-only during evidence collection \\
-Backdoor adjustment & Covariates that block every backdoor path & all minimal sets & manipulate and read candidate covariates \\
-Mediator structure & Variables and consecutive edges on directed $X\to Y$ paths & mediator set and order & perturb path candidates and read descendants \\
+\textbf{Total effect} & Effect of $X$ on $Y$ & scalar ATE & $X,Y$ read-only; probe legal non-endpoints \\
+\cmidrule(lr){1-4}
+\textbf{Counterfactual transition} & Units changing outcome across two treatments & sharp interval or compatible scalar & query endpoints read-only \\
+\cmidrule(lr){1-4}
+\textbf{Experimental decision} & Deployment value optimizing an outcome event & target-value intervention & deployment variable read-only during evidence collection \\
+\cmidrule(lr){1-4}
+\textbf{Backdoor adjustment} & Covariates that block every backdoor path & all minimal sets & manipulate and read candidate covariates \\
+\cmidrule(lr){1-4}
+\textbf{Mediator structure} & Variables and consecutive edges on directed $X\to Y$ paths & mediator set and order & perturb path candidates and read descendants \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Five tasks share one interaction loop.} The separation column
@@ -334,14 +354,15 @@ verifier computes
   \inf_{\mathcal M\in\compat(W)} q(\mathcal M),
   \sup_{\mathcal M\in\compat(W)} q(\mathcal M)
   \right]
-  \quad\text{\scriptsize(all compatible couplings)}.
+  \quad\text{\scriptsize(all compatible complete mechanisms)}.
   \label{eq:cfset}
 \end{equation}
-For the binary event, these are the sharp Fr\'echet endpoints
-$L=\max(0,p_1-p_0)$ and $U=\min(p_1,1-p_0)$, where
-$p_i=P(Y=y\mid\doop(X=x_i))$. The interval mode scores both endpoints
-continuously. The compatible-value mode accepts any point in the interval and
-reports its distance to the interval.
+The endpoint marginals $p_i=P(Y=y\mid\doop(X=x_i))$ give the Fr\'echet outer
+interval $[\max(0,p_1-p_0),\min(p_1,1-p_0)]$. The exact verifier retains all
+complete mechanisms compatible with the DAG and every CPT row, so its sharp
+interval is contained in that outer interval and can be strictly tighter. The
+interval mode scores both exact endpoints continuously. The compatible-value
+mode accepts any point in the exact interval and reports its distance to it.
 
 \subsection{Decision and structural discovery}
 
@@ -361,8 +382,8 @@ credit while the exact-match fields retain a strict structural verdict.
 
 \subsection{One probability semantics, two execution paths}
 
-Full-joint enumeration remains the reference oracle. Exact selected marginals use
-factor elimination with the same rational CPT rows and mechanism replacement.
+Full-joint enumeration remains the reference oracle. Selected marginals use
+factor elimination with the same CPT rows and mechanism replacement.
 For maximum domain size $d$, induced width $w$, and selected width $m$, its cost
 is $O(nd^{w+1}+d^m)$. The selected law therefore avoids materializing $d^n$
 assignments whenever the graph permits a narrow elimination order.
@@ -386,11 +407,12 @@ contract supports paired model comparisons and exact replay.
 
 Table~\ref{tab:validation} records the validation layers. Exact differential tests
 compare selected variable elimination with full-joint enumeration over random
-multi-valued worlds, natural distributions, and hard interventions. Ancestral
+multi-valued worlds, natural distributions, and hard interventions under the
+shared numerical contract. Ancestral
 sampling tests compare every nonzero assignment interval with the full-joint law.
 Protocol tests cover strict visible labels, selected projection, sparse counts,
-budget updates, tape invariance, and terminal parsing. The complete suite contains
-69 passing tests, and both Ruff checks pass.
+budget updates, tape invariance, and terminal parsing. The complete suite executes
+103 tests: 102 pass and one optional test is skipped; both Ruff checks pass.
 
 \begin{table}[H]
 \centering
@@ -402,11 +424,11 @@ budget updates, tape invariance, and terminal parsing. The complete suite contai
 \toprule
 Layer & Test & Result \\
 \midrule
-Exact inference & 24 random multi-valued worlds under natural and hard-do laws & Fraction-equal to full joint \\
+Selected inference & 24 random multi-valued worlds under natural and hard-do laws & matches full-joint reference \\
 Batch semantics & 12 random DAGs, every nonzero assignment interval & identical categorical mass \\
 Reproducibility & rename, projection, split-batch, and interleaved actions & invariant tape draws \\
 Task loop & prompt, batch feedback, terminal parser, exact scorer & all five modes execute \\
-Repository suite & unit tests, lint, and format & 69 pass; checks clean \\
+Repository suite & unit tests, lint, and format & 102 pass; 1 skipped; checks clean \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Validation targets semantic ownership.} Each accelerated or
@@ -444,7 +466,7 @@ sampled feedback.
 \begin{figure}[H]
   \centering
   \input{figures/speedup.tex}
-  \caption{\textbf{Exact and interactive acceleration.} Median speedup over the
+  \caption{\textbf{Query and interactive acceleration.} Median speedup over the
   full-joint reference on sparse binary chains. The exact marginal curve uses
   variable elimination; the feedback curve generates 64 IID units with ancestral
   sampling.}
@@ -479,8 +501,9 @@ P_W(v\mid\doop(I))=
 \prod_{j\notin I}P_{\Theta_j}(v_j\mid v_{\mathrm{pa}(j)})
 \prod_{j\in I}\mathbf{1}[v_j=x_j].
 \end{equation}
-All probabilities are stored as exact rational numbers. Natural observation is
-the special case $I=\varnothing$.
+Generated worlds store CPT probabilities in float64 after one validity check and
+row normalization. Fixed fixtures may instead use exact rational rows. Natural
+observation is the special case $I=\varnothing$.
 
 The public surface contains a visible permutation $\sigma$ of node labels, a
 manipulability mask, a readability mask, and observation width $M$. Parsing maps
@@ -499,14 +522,16 @@ terminal diagnostics are absolute and squared error.
 \subsection{Counterfactual transition}
 
 Define $A=\mathbf{1}[Y_{x_1}=y]$ and $B=\mathbf{1}[Y_{x_0}=y]$. The CPT world
-fixes $P(A=1)=p_1$ and $P(B=1)=p_0$. The desired event is $A=1,B=0$. Its sharp
-coupling bounds are
+fixes $P(A=1)=p_1$ and $P(B=1)=p_0$. The desired event is $A=1,B=0$. The two
+endpoint marginals alone give the Fr\'echet outer bounds
 \begin{equation}
 \max(0,p_1-p_0)\le P(A=1,B=0)\le\min(p_1,1-p_0).
 \end{equation}
-The interval terminal reports endpoint errors. The compatible-scalar terminal
-reports membership and distance to the interval. Both modes share the same world,
-query anchors, visible labels, $K$, and $M$.
+The truth owner instead optimizes this event over complete mechanisms compatible
+with the DAG and every CPT row. Its exact interval lies inside the displayed
+outer bounds. The interval terminal reports endpoint errors, and the
+compatible-scalar terminal reports membership and distance to the exact interval.
+Both modes share the same world, query anchors, visible labels, $K$, and $M$.
 
 \subsection{Experimental decision}
 
@@ -564,28 +589,27 @@ The implemented generator follows this order:
   \item sample a node count from the configured support;
   \item sample each finite domain size, a topological order, and a forward-edge
         subset;
-  \item sample exact rational CPT parameters;
+  \item sample continuous float64 CPT parameters and finalize each row;
   \item enumerate legal query anchors and construct exact task truth;
-  \item evaluate answerability over the complete query-specific experiment
-        surface;
   \item sample the legal intervention subset $K$ and readout width $M$;
   \item sample opaque labels and render the visible episode.
 \end{enumerate}
-The reference configuration uses node counts $\{2,3,4\}$ and domains of two
-through five states. The probability engine is exercised separately through 15
-binary nodes in the scaling benchmark.
+The reference configuration samples node counts uniformly from every integer in
+$\{3,\ldots,15\}$ and domains of two through five states. The scaling benchmark
+uses sparse binary chains from 10 through 15 nodes.
 
-Family-level answerability uses an exact response signature. Two candidate worlds
-share a signature when every legal passive and hard-do projected distribution is
-equal on the complete family surface. Effect and structural tasks require equal
-answers inside each signature class. Decision tasks require a shared zero-regret
+The optional family-level answerability diagnostic uses an exact response
+signature and is not applied to task generation or admission. Two candidate
+worlds share a signature when every legal passive and hard-do projected
+distribution is equal on the complete family surface. Effect and structural
+tasks require equal answers inside each signature class. Decision tasks require a shared zero-regret
 deployment action. $K$ and $M$ are sampled after this partition.
 
 \section{Model-visible protocol}
 
 The initial message follows a fixed shape:
 \begin{quote}\small\ttfamily\raggedright
-CPT-WORLD HIDDEN-MECHANISM TASK\\
+DOLENS HIDDEN-MECHANISM TASK\\
 Variables and finite states: [opaque labels and state tokens]\\
 Query: [typed causal question]\\
 Legal experimental do targets: [visible labels]\\
@@ -606,9 +630,10 @@ unreadable measurements, target-in-measure requests, and unsupported batch sizes
 
 \section{Validation and benchmark setup}
 
-The exact marginal differential covers 24 random multi-valued worlds, both the
-natural law and hard interventions, and compares every projected cell as a
-\texttt{Fraction}. The ancestral test covers 12 random DAGs and checks the
+The marginal differential covers 24 random multi-valued worlds, both the natural
+law and hard interventions, and compares every projected cell with the full-joint
+reference under the shared numeric representation. Exact \texttt{Fraction}
+fixtures retain equality checks. The ancestral test covers 12 random DAGs and checks the
 cumulative interval assigned to every nonzero full assignment. Runtime tests cover
 selected joint projection, sparse serialization, passive observation, hard-do
 replacement, budget state, terminal dispatch, and all five query modes.
