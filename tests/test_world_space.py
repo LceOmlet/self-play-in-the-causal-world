@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import random
 import re
 import unittest
@@ -37,6 +38,15 @@ from cpt_world import (
     supports_task,
     task_answerability,
     task_difficulty_profile,
+)
+from cpt_world.world_space import (
+    _combine_effect_blocks,
+    _exponential_tilt_rows,
+    _parent_main_projection,
+    _project_higher_order_residual,
+    _project_joint_effect,
+    _project_parent_main_effect,
+    _sample_block_budgeted_effect,
 )
 
 
@@ -330,9 +340,104 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 self.assertTrue(legal_world(world))
                 for rows in world.cpt.values():
                     for row in rows:
-                        self.assertEqual(sum(row), 1)
+                        self.assertAlmostEqual(math.fsum(row), 1.0, places=12)
                 return
         self.fail("no sampled multi-valued world with edges found")
+
+    def test_parent_main_blocks_and_higher_order_residual_are_orthogonal(self) -> None:
+        parent_domains = (2, 3, 2)
+        child_domain = 4
+        rng = random.Random(20260825)
+        mains = tuple(
+            _project_parent_main_effect(parent_domains, position, child_domain, rng)
+            for position in range(len(parent_domains))
+        )
+        residual = _project_higher_order_residual(parent_domains, child_domain, rng)
+
+        def squared_norm(table: tuple[tuple[float, ...], ...]) -> float:
+            return math.fsum(value * value for row in table for value in row)
+
+        for position, main in enumerate(mains):
+            self.assertAlmostEqual(squared_norm(main), 1.0, places=12)
+            own_projection = _parent_main_projection(main, parent_domains, position)
+            self.assertLess(
+                math.sqrt(
+                    math.fsum(
+                        (value - projected) ** 2
+                        for row, projected_row in zip(main, own_projection, strict=True)
+                        for value, projected in zip(row, projected_row, strict=True)
+                    )
+                ),
+                1e-12,
+            )
+            for other_position in range(len(parent_domains)):
+                if other_position == position:
+                    continue
+                other_projection = _parent_main_projection(main, parent_domains, other_position)
+                self.assertLess(squared_norm(other_projection), 1e-24)
+
+        self.assertAlmostEqual(squared_norm(residual), 1.0, places=12)
+        for position in range(len(parent_domains)):
+            projection = _parent_main_projection(residual, parent_domains, position)
+            self.assertLess(squared_norm(projection), 1e-24)
+
+        shares = (0.1, 0.2, 0.3, 0.4)
+        combined = _combine_effect_blocks((*mains, residual), shares)
+        self.assertAlmostEqual(squared_norm(combined), 1.0, places=12)
+        lifted_main_total = [[0.0] * child_domain for _ in combined]
+        for position, expected_share in enumerate(shares[:-1]):
+            projection = _parent_main_projection(combined, parent_domains, position)
+            self.assertAlmostEqual(squared_norm(projection), expected_share, places=12)
+            for row_index, row in enumerate(projection):
+                for child_state, value in enumerate(row):
+                    lifted_main_total[row_index][child_state] += value
+        combined_residual = tuple(
+            tuple(
+                value - lifted_main_total[row_index][child_state]
+                for child_state, value in enumerate(row)
+            )
+            for row_index, row in enumerate(combined)
+        )
+        self.assertAlmostEqual(squared_norm(combined_residual), shares[-1], places=12)
+
+    def test_one_parent_block_sampling_preserves_the_original_direction_law_and_rng(self) -> None:
+        separated_rng = random.Random(314159)
+        original_rng = random.Random(314159)
+        separated = _sample_block_budgeted_effect((5,), 4, separated_rng)
+        original = _project_joint_effect(5, 4, original_rng)
+
+        for separated_row, original_row in zip(separated, original, strict=True):
+            for separated_value, original_value in zip(separated_row, original_row, strict=True):
+                self.assertAlmostEqual(separated_value, original_value, places=14)
+        self.assertEqual(separated_rng.random(), original_rng.random())
+
+    def test_et_v2_is_legal_and_does_not_use_an_additive_zero_wall(self) -> None:
+        base = (0.4995, 0.4995, 0.001)
+        direction = ((1.0, 0.0, -1.0), (-1.0, 0.0, 1.0))
+        rows = _exponential_tilt_rows(base, direction, 1.0)
+
+        for row in rows:
+            self.assertTrue(all(0.0 < value < 1.0 for value in row))
+            self.assertAlmostEqual(math.fsum(row), 1.0, places=12)
+        self.assertGreater(abs(rows[0][0] - rows[1][0]), 0.4)
+
+    def test_et_v2_is_scale_and_row_replication_invariant(self) -> None:
+        base = (0.6, 0.3, 0.1)
+        direction = ((1.0, -0.5, -0.5), (-1.0, 0.5, 0.5))
+        original = _exponential_tilt_rows(base, direction, 0.8)
+        scaled = _exponential_tilt_rows(
+            base,
+            tuple(tuple(7.0 * value for value in row) for row in direction),
+            0.8,
+        )
+        replicated = _exponential_tilt_rows(base, (*direction, *direction), 0.8)
+
+        self.assertEqual(original, scaled)
+        self.assertEqual(replicated, (*original, *original))
+        zero_strength = _exponential_tilt_rows(base, direction, 0.0)
+        for row in zero_strength:
+            for actual, expected in zip(row, base, strict=True):
+                self.assertAlmostEqual(actual, expected, places=15)
 
     def test_task_target_profiling_reports_distribution_without_thresholds(self) -> None:
         for seed in range(50):

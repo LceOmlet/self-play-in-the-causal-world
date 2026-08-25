@@ -7,8 +7,11 @@ The main sampler owns one declared distribution:
 - the node order is a uniform permutation;
 - each node's parent count is uniform over ``0..min(3, predecessor_count)``;
 - the parent subset is uniform conditional on that count;
-- CPTs use a simplex-uniform base distribution and one isotropic joint-effect
-  table over all parent configurations.
+- CPTs use a simplex-uniform base distribution; each direct parent receives a
+  separate categorical main-effect score block, all still-undesigned order-
+  two-and-higher effects remain one residual score block, and a simplex-
+  uniform energy split combines the orthogonal blocks. ET-V2 maps the score
+  table to probabilities by RMS-normalized exponential tilting.
 
 Generated worlds use ``float``/binary64 probabilities. Exact ``Fraction``
 worlds remain valid fixed fixtures and reference inputs.
@@ -161,19 +164,160 @@ def _project_joint_effect(
             return tuple(tuple(value / norm for value in row) for row in projected)
 
 
-def _maximum_legal_effect_scale(
-    base: tuple[float, ...],
-    direction: tuple[tuple[float, ...], ...],
-) -> float:
-    limits = [
-        base[state] / -value for row in direction for state, value in enumerate(row) if value < 0.0
+def _parent_state_at_row(
+    row_index: int,
+    parent_domains: Sequence[int],
+    parent_position: int,
+) -> int:
+    """Decode one parent state from the canonical mixed-radix CPT row index."""
+
+    stride = math.prod(parent_domains[parent_position + 1 :])
+    return (row_index // stride) % parent_domains[parent_position]
+
+
+def _parent_main_projection(
+    table: Sequence[Sequence[float]],
+    parent_domains: Sequence[int],
+    parent_position: int,
+) -> tuple[tuple[float, ...], ...]:
+    """Orthogonally project a centred joint table onto one parent's main-effect block."""
+
+    row_count = math.prod(parent_domains)
+    if len(table) != row_count:
+        raise ValueError("table row count does not match the parent domains")
+    if not table or not table[0]:
+        raise ValueError("table must have at least one row and one child state")
+    domain_size = len(table[0])
+    if any(len(row) != domain_size for row in table):
+        raise ValueError("table rows must have a common child-state count")
+    if not 0 <= parent_position < len(parent_domains):
+        raise ValueError("parent_position is outside the parent domains")
+
+    parent_domain = parent_domains[parent_position]
+    replication_count = row_count // parent_domain
+    marginal = [[0.0] * domain_size for _ in range(parent_domain)]
+    for row_index, row in enumerate(table):
+        parent_state = _parent_state_at_row(row_index, parent_domains, parent_position)
+        for child_state, value in enumerate(row):
+            marginal[parent_state][child_state] += value
+    for parent_state in range(parent_domain):
+        for child_state in range(domain_size):
+            marginal[parent_state][child_state] /= replication_count
+
+    return tuple(
+        tuple(marginal[_parent_state_at_row(row_index, parent_domains, parent_position)])
+        for row_index in range(row_count)
+    )
+
+
+def _project_parent_main_effect(
+    parent_domains: Sequence[int],
+    parent_position: int,
+    domain_size: int,
+    rng: random.Random,
+) -> tuple[tuple[float, ...], ...]:
+    """Draw a unit direction from one categorical parent's pure main-effect block."""
+
+    row_count = math.prod(parent_domains)
+    parent_domain = parent_domains[parent_position]
+    reduced = _project_joint_effect(parent_domain, domain_size, rng)
+    replication_count = row_count // parent_domain
+    lift_scale = 1.0 / math.sqrt(replication_count)
+    return tuple(
+        tuple(
+            lift_scale * value
+            for value in reduced[_parent_state_at_row(row_index, parent_domains, parent_position)]
+        )
+        for row_index in range(row_count)
+    )
+
+
+def _project_higher_order_residual(
+    parent_domains: Sequence[int],
+    domain_size: int,
+    rng: random.Random,
+) -> tuple[tuple[float, ...], ...]:
+    """Draw a unit direction orthogonal to every direct-parent main-effect block.
+
+    This residual deliberately remains the direct sum of every interaction
+    order two and above.  Its internal partition and support are not sampled
+    here because those structural choices have not yet been accepted.
+    """
+
+    if len(parent_domains) < 2:
+        raise ValueError("a higher-order residual requires at least two parents")
+    while True:
+        joint = _project_joint_effect(math.prod(parent_domains), domain_size, rng)
+        main_projections = tuple(
+            _parent_main_projection(joint, parent_domains, parent_position)
+            for parent_position in range(len(parent_domains))
+        )
+        residual = tuple(
+            tuple(
+                joint[row_index][child_state]
+                - math.fsum(projection[row_index][child_state] for projection in main_projections)
+                for child_state in range(domain_size)
+            )
+            for row_index in range(len(joint))
+        )
+        norm = math.sqrt(math.fsum(value * value for row in residual for value in row))
+        if math.isfinite(norm) and norm > 0.0:
+            return tuple(tuple(value / norm for value in row) for row in residual)
+
+
+def _combine_effect_blocks(
+    blocks: Sequence[Sequence[Sequence[float]]],
+    energy_shares: Sequence[float],
+) -> tuple[tuple[float, ...], ...]:
+    """Combine orthonormal effect blocks while conserving their squared-energy budget."""
+
+    if not blocks or len(blocks) != len(energy_shares):
+        raise ValueError("blocks and energy_shares must have the same nonzero length")
+    row_count = len(blocks[0])
+    domain_size = len(blocks[0][0])
+    if any(
+        len(block) != row_count or any(len(row) != domain_size for row in block) for block in blocks
+    ):
+        raise ValueError("effect blocks must have one common shape")
+    if any(not math.isfinite(share) or share < 0.0 for share in energy_shares):
+        raise ValueError("energy shares must be finite and nonnegative")
+    if not math.isclose(math.fsum(energy_shares), 1.0, rel_tol=0.0, abs_tol=1e-12):
+        raise ValueError("energy shares must sum to one")
+
+    amplitudes = tuple(math.sqrt(share) for share in energy_shares)
+    combined = tuple(
+        tuple(
+            math.fsum(
+                amplitude * block[row_index][child_state]
+                for amplitude, block in zip(amplitudes, blocks, strict=True)
+            )
+            for child_state in range(domain_size)
+        )
+        for row_index in range(row_count)
+    )
+    norm = math.sqrt(math.fsum(value * value for row in combined for value in row))
+    if not math.isfinite(norm) or norm <= 0.0:
+        raise RuntimeError("combined effect direction has no finite positive norm")
+    if not math.isclose(norm, 1.0, rel_tol=0.0, abs_tol=1e-10):
+        raise RuntimeError("effect blocks are not orthonormal under the declared geometry")
+    return tuple(tuple(value / norm for value in row) for row in combined)
+
+
+def _sample_block_budgeted_effect(
+    parent_domains: Sequence[int],
+    domain_size: int,
+    rng: random.Random,
+) -> tuple[tuple[float, ...], ...]:
+    """Sample separated parent-main blocks under one conserved effect budget."""
+
+    blocks = [
+        _project_parent_main_effect(parent_domains, parent_position, domain_size, rng)
+        for parent_position in range(len(parent_domains))
     ]
-    if not limits:
-        raise RuntimeError("a nonzero row-centred effect direction must contain a negative entry")
-    scale = min(limits)
-    if not math.isfinite(scale) or scale <= 0.0:
-        raise RuntimeError("joint-effect direction has no positive legal scale")
-    return scale
+    if len(parent_domains) >= 2:
+        blocks.append(_project_higher_order_residual(parent_domains, domain_size, rng))
+    energy_shares = (1.0,) if len(blocks) == 1 else _simplex_uniform(len(blocks), rng)
+    return _combine_effect_blocks(blocks, energy_shares)
 
 
 def _finalize_cpt_row(values: Sequence[float]) -> tuple[float, ...]:
@@ -193,6 +337,49 @@ def _finalize_cpt_row(values: Sequence[float]) -> tuple[float, ...]:
     if total <= 0.0:
         raise ValueError("CPT row has zero mass")
     return tuple(value / total for value in cleaned)
+
+
+def _exponential_tilt_rows(
+    base: Sequence[float],
+    direction: Sequence[Sequence[float]],
+    strength: float,
+) -> tuple[tuple[float, ...], ...]:
+    """Map one effect-score table to legal CPT rows under ET-V2.
+
+    The direction is normalized to unit elementwise RMS before tilting. A rare
+    base state therefore remains positive without imposing one shared additive
+    boundary scale on every row and state.
+    """
+
+    if not base or any(not math.isfinite(value) or value <= 0.0 for value in base):
+        raise ValueError("base probabilities must be finite and strictly positive")
+    if not math.isclose(math.fsum(base), 1.0, rel_tol=0.0, abs_tol=1e-12):
+        raise ValueError("base probabilities must sum to one")
+    if not direction or any(len(row) != len(base) for row in direction):
+        raise ValueError("effect direction must be a nonempty table matching the base")
+    if not math.isfinite(strength) or not 0.0 <= strength <= 1.0:
+        raise ValueError("effect strength must be finite and lie in [0, 1]")
+
+    squared_rms = math.fsum(value * value for row in direction for value in row) / (
+        len(direction) * len(base)
+    )
+    if not math.isfinite(squared_rms) or squared_rms <= 0.0:
+        raise ValueError("effect direction must have finite positive RMS")
+    inverse_rms = 1.0 / math.sqrt(squared_rms)
+
+    cpt_rows: list[tuple[float, ...]] = []
+    for row in direction:
+        log_weights = tuple(
+            math.log(base[state]) + strength * inverse_rms * value
+            for state, value in enumerate(row)
+        )
+        maximum = max(log_weights)
+        weights = tuple(math.exp(value - maximum) for value in log_weights)
+        total = math.fsum(weights)
+        if not math.isfinite(total) or total <= 0.0:
+            raise RuntimeError("exponential tilt produced no finite positive mass")
+        cpt_rows.append(_finalize_cpt_row(tuple(value / total for value in weights)))
+    return tuple(cpt_rows)
 
 
 def _shortest_path_nodes(world: WorldSpec, source: int, target: int) -> tuple[int, ...] | None:
@@ -355,16 +542,9 @@ def _build_world(
         if not node_parents:
             cpt[node] = (_finalize_cpt_row(base),)
         else:
-            row_count = math.prod(structure.domains[parent] for parent in node_parents)
-            direction = _project_joint_effect(row_count, domain_size, rng)
-            maximum_scale = _maximum_legal_effect_scale(base, direction)
-            scale = rng.random() * maximum_scale
-            cpt[node] = tuple(
-                _finalize_cpt_row(
-                    tuple(base[state] + scale * row[state] for state in range(domain_size))
-                )
-                for row in direction
-            )
+            parent_domains = tuple(structure.domains[parent] for parent in node_parents)
+            direction = _sample_block_budgeted_effect(parent_domains, domain_size, rng)
+            cpt[node] = _exponential_tilt_rows(base, direction, rng.random())
     return WorldSpec(
         family="sampled_dag",
         topology=structure.topology,

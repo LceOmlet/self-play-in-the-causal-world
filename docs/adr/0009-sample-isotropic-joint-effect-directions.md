@@ -1,5 +1,6 @@
 ---
-status: accepted
+status: superseded
+superseded_by: 0021-separate-parent-main-effect-blocks
 ---
 
 # Sample isotropic directions in the complete joint-effect space

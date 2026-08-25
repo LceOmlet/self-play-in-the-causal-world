@@ -74,6 +74,12 @@ grid. In the current implementation:
   five states;
 - a topological order is sampled, followed by a forward-edge subset and
   continuous float64 CPT parameters;
+- each conditional CPT separates one categorical main-effect block per direct
+  parent from one still-unsplit higher-order residual, then combines the
+  orthogonal blocks with simplex-uniform shares of one conserved effect budget;
+- ET-V2 maps the combined score direction to probabilities with an
+  RMS-normalized exponential tilt, so an unrelated rare state cannot impose a
+  global additive zero-wall on every effect;
 - legal query anchors are derived from the sampled world;
 - task-family answerability remains an optional diagnostic and is not applied
   as a generation label, filter, or admission check;
