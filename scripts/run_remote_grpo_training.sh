@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_DIR=${1:-/home/chen/projects/self-play-in-the-causal-world}
 MODEL_DIR=${2:-/home/chen/models/Qwen/Qwen3.5-9B}
 ENV_DIR=${3:-/home/chen/.venvs/dolens-rl}
-RUN_DIR=${4:-/home/chen/runs/cpt-world-grpo-etv2-4e760b7}
+RUN_DIR=${4:-/home/chen/runs/cpt-world-grpo-etv2-10k}
 MAX_STEPS=${MAX_STEPS:-10000}
 MAX_MODEL_LENGTH=${MAX_MODEL_LENGTH:-32768}
 MAX_COMPLETION_LENGTH=${MAX_COMPLETION_LENGTH:-31497}
