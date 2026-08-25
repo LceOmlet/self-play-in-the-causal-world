@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run one official TRL/vLLM/LoRA GRPO optimizer step for resource validation."""
+"""Run official TRL/vLLM/LoRA GRPO training or a one-step resource validation."""
 
 from __future__ import annotations
 
@@ -23,6 +23,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-completion-length", type=int, default=7168)
     parser.add_argument("--max-model-length", type=int, default=9216)
     parser.add_argument("--vllm-memory-utilization", type=float, default=0.50)
+    parser.add_argument("--save-steps", type=int, default=50)
+    parser.add_argument("--save-total-limit", type=int, default=5)
+    parser.add_argument("--resume-from-checkpoint")
     parser.add_argument(
         "--use-liger-kernel",
         action=argparse.BooleanOptionalAction,
@@ -75,7 +78,9 @@ def main() -> None:
         remove_unused_columns=False,
         shuffle_dataset=False,
         logging_steps=1,
-        save_strategy="no",
+        save_strategy="steps",
+        save_steps=cli.save_steps,
+        save_total_limit=cli.save_total_limit,
         report_to="none",
         seed=42,
         data_seed=42,
@@ -100,7 +105,9 @@ def main() -> None:
         enable_local_fla_kernels(trainer.model, cli.fla_kernel_dir)
         require_gdn_kernels_active(trainer.model)
     try:
-        trainer.train()
+        trainer.train(resume_from_checkpoint=cli.resume_from_checkpoint)
+        trainer.save_model(str(output_dir / "final-adapter"))
+        trainer.save_state()
     finally:
         if dist.is_initialized():
             dist.destroy_process_group()
