@@ -19,6 +19,9 @@ export CUDA_VISIBLE_DEVICES=0
 export PYTHONUNBUFFERED=1
 export TOKENIZERS_PARALLELISM=false
 export PYTORCH_ALLOC_CONF=expandable_segments:True
+# Keep Liger's chunked loss active while allowing PyTorch to fall back to
+# eager execution for an individual dynamic shape if Dynamo itself fails.
+export TORCHDYNAMO_SUPPRESS_ERRORS=1
 
 nvidia-smi \
   --query-gpu=timestamp,memory.used,memory.free,utilization.gpu,power.draw \
