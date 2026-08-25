@@ -750,6 +750,14 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             observed_pairs.add((baseline, comparison))
             observed_outcome_states.add(outcome_state)
             self.assertEqual(compute_query_truth(world, seed)["type"], "ate")
+            prompt = render_seed_task_prompt(seed)
+            self.assertIn(
+                f"effect = P({seed['query']['outcome']}={seed['query']['outcome_state']} | "
+                f"do({seed['query']['treatment']}={seed['query']['treatment_value']})) - "
+                f"P({seed['query']['outcome']}={seed['query']['outcome_state']} | "
+                f"do({seed['query']['treatment']}={seed['query']['baseline_value']}))",
+                prompt,
+            )
         self.assertGreater(len(observed_pairs), 1)
         self.assertGreater(len(observed_outcome_states), 1)
 
@@ -801,7 +809,8 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             prompt = render_seed_task_prompt(seed)
             self.assertIn("One individual was assigned", prompt)
             self.assertIn("for this same individual", prompt)
-            self.assertIn("one counterfactual probability compatible", prompt)
+            self.assertIn("q may lie in a compatible interval", prompt)
+            self.assertIn("one value in that interval", prompt)
             self.assertNotIn('"lower": <number in [0,1]>', prompt)
             self.assertIn('"value": <number in [0,1]>', prompt)
         self.assertGreater(len(widths), 1)
@@ -826,11 +835,32 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertIn("observation_bandwidth", seed)
             prompt = render_seed_task_prompt(seed)
             self.assertIn("Final deployment decision", prompt)
+            verb = "minimizes" if seed["query"]["objective"] == "minimize" else "maximizes"
+            self.assertIn(
+                f"{verb} P({seed['query']['outcome']}={seed['query']['outcome_state']})",
+                prompt,
+            )
             self.assertIn("Legal experimental do targets", prompt)
             experimental_line = next(
                 line for line in prompt.splitlines() if line.startswith("Legal experimental")
             )
             self.assertNotIn(labels[decision_target], experimental_line)
+
+    def test_discovery_prompts_define_empty_adjustment_and_mediator_endpoints(self) -> None:
+        backdoor, mediator = iter_sampled_seeds(
+            self.grammar,
+            count=1,
+            query_types=("backadj_minimal_sets", "mediator_set"),
+        )
+        backdoor_prompt = render_seed_task_prompt(backdoor)
+        self.assertIn('"adjustment_sets":[[]]', backdoor_prompt)
+
+        mediator_prompt = render_seed_task_prompt(mediator)
+        self.assertIn(
+            f"excluding {mediator['query']['treatment']} and {mediator['query']['outcome']}",
+            mediator_prompt,
+        )
+        self.assertIn("including edges incident to the two endpoints", mediator_prompt)
 
     def test_pinned_seeds_render_without_internal_leaks(self) -> None:
         for seed in load_candidate_seed_manifest():

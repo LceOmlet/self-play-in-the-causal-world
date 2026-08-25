@@ -21,7 +21,7 @@ from .episode import (
 from .registry import HIDING_MODES
 from .world_space import world_state_names
 
-RENDERER_VERSION = "cpt-world-seed-renderer-v2"
+RENDERER_VERSION = "cpt-world-seed-renderer-v3"
 SYSTEM_MESSAGE = (
     "You are evaluated on active causal experimentation. "
     "Return exactly one legal JSON command and no prose."
@@ -274,19 +274,22 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         outcome = ctx.resolve_label(outcome_value)
 
     if query_type == "ate":
-        treatment_states = ctx.states_for_label(treatment)
+        treatment_state = ctx.resolve_state_token(treatment, ctx.query.get("treatment_value", 1))
+        baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("baseline_value", 0))
+        if treatment_state == baseline_state:
+            raise ValueError("ATE treatment and baseline states must differ")
         outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state", 1))
         lines = [
             f"Estimate the average treatment effect of {treatment} on {outcome}:",
             (
-                f"effect = P({outcome}={outcome_state} | do({treatment}={treatment_states[1]}))"
-                f" - P({outcome}={outcome_state} | do({treatment}={treatment_states[0]}))"
+                f"effect = P({outcome}={outcome_state} | do({treatment}={treatment_state}))"
+                f" - P({outcome}={outcome_state} | do({treatment}={baseline_state}))"
             ),
         ]
         if treatment not in ctx.legal_targets() and outcome not in ctx.legal_targets():
             lines.append(
-                "Both query endpoints are readonly. Identify the effect indirectly "
-                "from experiments on the legal do targets."
+                "Both query endpoints are readonly. Use the available passive observations "
+                "and experiments on legal do targets to estimate the effect."
             )
         answer_schema = ['{"type":"answer","effect": <number in [-1,1]>}']
     elif query_type == "individual_counterfactual_probability":
@@ -313,13 +316,17 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
                 f"{target_outcome_state} | {outcome}_do({treatment}={factual_state})="
                 f"{factual_outcome_state}) for this same individual."
             ),
-            "Return one counterfactual probability compatible with the hidden CPT-World.",
+            (
+                "Across all causally sufficient structural mechanisms compatible with the "
+                "hidden CPT-World, q may lie in a compatible interval. Estimate and return "
+                "one value in that interval."
+            ),
         ]
         answer_schema = ['{"type":"answer","value": <number in [0,1]>}']
         if treatment not in ctx.legal_targets() and outcome not in ctx.legal_targets():
             lines.append(
-                "Both query endpoints are readonly. Identify the probability indirectly "
-                "from experiments on the legal do targets."
+                "Both query endpoints are readonly. Use the available passive observations "
+                "and experiments on legal do targets to estimate the probability."
             )
     elif query_type == "backadj_minimal_sets":
         lines = [
@@ -327,14 +334,17 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         ]
         answer_schema = [
             '{"type":"answer","adjustment_sets":[["LAB", ...], ...]}',
-            "Use [] for the empty adjustment set.",
+            (
+                "Encode the singleton family containing the empty adjustment set as "
+                '{"type":"answer","adjustment_sets":[[]]}.'
+            ),
         ]
     elif query_type == "mediator_set":
-        outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state", 1))
         lines = [
-            f"Return every observed variable that lies on a directed path from "
-            f"{treatment} to {outcome}, together with every directed edge that "
-            "occurs consecutively on at least one such path."
+            f"Return every observed intermediate variable, excluding {treatment} and "
+            f"{outcome}, that lies on a directed path from {treatment} to {outcome}. "
+            "Also return every directed edge that occurs consecutively on at least one "
+            "such path, including edges incident to the two endpoints."
         ]
         answer_schema = [
             ('{"type":"answer","mediators":["LAB", ...],"order":[["LAB","LAB"], ...]}')
@@ -350,7 +360,10 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         if decision_target in ctx.legal_targets():
             raise ValueError("decision target must be readonly during experimentation")
         objective = str(ctx.query.get("objective", "minimize"))
-        outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("target_state", 1))
+        outcome_state = ctx.resolve_state_token(
+            outcome,
+            ctx.query.get("target_state", ctx.query.get("outcome_state", 1)),
+        )
         verb = "minimize" if objective == "minimize" else "maximize"
         lines = [
             f"Final deployment decision: choose the value of {decision_target} that "

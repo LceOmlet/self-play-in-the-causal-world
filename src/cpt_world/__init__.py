@@ -74,7 +74,12 @@ from .seeds import (
     validate_candidate_seed_manifest,
 )
 from .task_scoring import parse_terminal_answer, score_terminal_answer
-from .trl_environment import CPTWorldEnvironment, build_balanced_training_rows
+from .trl_environment import (
+    COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS,
+    CPTWorldEnvironment,
+    build_balanced_training_rows,
+    iter_random_balanced_training_rows,
+)
 from .world import OutcomeTape
 from .world_runtime import (
     MAX_FEEDBACK_CELLS,
@@ -121,6 +126,7 @@ __all__ = [
     "CANDIDATE_SEED_MANIFEST_SCHEMA",
     "CandidateSeedSpec",
     "CPTWorldEnvironment",
+    "COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS",
     "CounterfactualBoundsResult",
     "DEFAULT_NODE_COUNTS",
     "HIDING_MODES",
@@ -168,6 +174,7 @@ __all__ = [
     "individual_counterfactual_frechet_outer_bounds",
     "individual_counterfactual_probability_bounds",
     "iter_sampled_seeds",
+    "iter_random_balanced_training_rows",
     "iter_upstream_worlds",
     "iter_world_space",
     "legal_query_anchors",

@@ -4,8 +4,15 @@ import inspect
 import json
 import unittest
 from collections import Counter
+from itertools import islice
+from unittest.mock import patch
 
-from cpt_world import TASK_FAMILY_QUERY_TYPES, CPTWorldEnvironment, build_balanced_training_rows
+from cpt_world import (
+    TASK_FAMILY_QUERY_TYPES,
+    CPTWorldEnvironment,
+    build_balanced_training_rows,
+    iter_random_balanced_training_rows,
+)
 
 
 class TRLEnvironmentAdapterTests(unittest.TestCase):
@@ -55,6 +62,88 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
         self.assertEqual(left_feedback, right_feedback)
         payload = json.loads(left_feedback.splitlines()[0])
         self.assertEqual(payload["type"], "batch_result")
+
+    @patch("cpt_world.trl_environment.compute_query_truth")
+    def test_random_stream_is_balanced_and_uses_fresh_sampler_seeds(self, truth_owner) -> None:
+        truth_owner.return_value = {
+            "type": "individual_counterfactual_probability",
+            "lower": 0.25,
+            "upper": 0.75,
+        }
+
+        rows = list(islice(iter_random_balanced_training_rows(), 10))
+
+        self.assertEqual(
+            Counter(row["query_type"] for row in rows),
+            Counter(dict.fromkeys(TASK_FAMILY_QUERY_TYPES, 2)),
+        )
+        self.assertEqual(len({row["sample_index"] for row in rows}), len(rows))
+        counterfactual_rows = [
+            row
+            for row in rows
+            if row["query_type"] == "individual_counterfactual_probability"
+        ]
+        self.assertTrue(all(row["terminal_truth_json"] for row in counterfactual_rows))
+        self.assertTrue(
+            all(not row["terminal_truth_json"] for row in rows if row not in counterfactual_rows)
+        )
+        self.assertTrue(
+            all(
+                call.kwargs["counterfactual_endpoint_time_limit_seconds"] == 5.0
+                for call in truth_owner.call_args_list
+            )
+        )
+
+    @patch("cpt_world.trl_environment.compute_query_truth")
+    def test_counterfactual_timeout_resamples_without_emitting_unscored_row(
+        self,
+        truth_owner,
+    ) -> None:
+        truth_owner.side_effect = [
+            RuntimeError("simulated endpoint timeout"),
+            {
+                "type": "individual_counterfactual_probability",
+                "lower": 0.1,
+                "upper": 0.9,
+            },
+        ]
+        stream = iter_random_balanced_training_rows()
+
+        ate_row = next(stream)
+        counterfactual_row = next(stream)
+
+        self.assertEqual(ate_row["sample_index"], 0)
+        self.assertEqual(counterfactual_row["sample_index"], 2)
+        self.assertEqual(truth_owner.call_count, 2)
+        self.assertEqual(
+            json.loads(counterfactual_row["terminal_truth_json"])["type"],
+            "individual_counterfactual_probability",
+        )
+
+    def test_cached_counterfactual_truth_scores_without_reopening_solver(self) -> None:
+        row = next(
+            row
+            for row in build_balanced_training_rows(count_per_family=1)
+            if row["query_type"] == "individual_counterfactual_probability"
+        )
+        row["terminal_truth_json"] = json.dumps(
+            {
+                "type": "individual_counterfactual_probability",
+                "lower": 0.25,
+                "upper": 0.75,
+            }
+        )
+        environment = CPTWorldEnvironment()
+        environment.reset(**row)
+
+        with patch(
+            "cpt_world.task_scoring.compute_query_truth",
+            side_effect=AssertionError("cached truth must bypass the solver"),
+        ):
+            feedback = environment.act({"type": "answer", "value": 0.5})
+
+        self.assertIn("Episode complete", feedback)
+        self.assertEqual(environment.get_reward(), 1.0)
 
     def test_only_act_is_exposed_as_an_environment_tool(self) -> None:
         environment = CPTWorldEnvironment()

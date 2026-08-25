@@ -1477,7 +1477,12 @@ def _resolve_seed_node(world: WorldSpec, seed: Mapping[str, Any], value: object)
     return _node_index(world, value)
 
 
-def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, Any]:
+def compute_query_truth(
+    world: WorldSpec,
+    seed: Mapping[str, Any],
+    *,
+    counterfactual_endpoint_time_limit_seconds: float | None = None,
+) -> Mapping[str, Any]:
     """Compute hidden truth for a seed whose query owner is implemented."""
 
     query = seed.get("query")
@@ -1548,6 +1553,7 @@ def compute_query_truth(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[st
                 world, outcome_node, query["factual_outcome_state"], default=0
             ),
             target_outcome_state=_state_index_for_node(world, outcome_node, query["outcome_state"]),
+            time_limit_seconds=counterfactual_endpoint_time_limit_seconds,
         )
         return {
             "type": "individual_counterfactual_probability",

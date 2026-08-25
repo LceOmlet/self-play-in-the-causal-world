@@ -268,11 +268,21 @@ def _pair_f1(
     return precision, recall, f1
 
 
-def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -> Mapping[str, Any]:
+def score_terminal_answer(
+    raw: str,
+    seed: Mapping[str, Any],
+    world: WorldSpec,
+    *,
+    terminal_truth: Mapping[str, Any] | None = None,
+) -> Mapping[str, Any]:
     """Return raw, scalarization-free scoring inputs for one terminal answer."""
 
     parsed = parse_terminal_answer(raw, seed, world)
-    truth = compute_query_truth(world, seed)
+    truth = compute_query_truth(world, seed) if terminal_truth is None else terminal_truth
+    query = seed.get("query")
+    query_type = str(query.get("type")) if isinstance(query, Mapping) else ""
+    if str(truth.get("type")) != query_type:
+        raise ValueError("cached terminal truth does not match the task query type")
 
     if parsed["kind"] == "target_query":
         truth_effect = truth["effect"]

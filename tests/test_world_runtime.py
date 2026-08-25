@@ -604,7 +604,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             measure_max=2,
         )
         self.assertIn(
-            "one counterfactual probability compatible",
+            "q may lie in a compatible interval",
             episode.initial_messages()[1]["content"],
         )
         truth = compute_query_truth(world, seed)

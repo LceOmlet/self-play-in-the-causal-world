@@ -564,6 +564,7 @@ class WorldSpecEpisode:
         *,
         budget: Budget | None = None,
         measure_max: int | None = None,
+        terminal_truth: Mapping[str, Any] | None = None,
     ) -> None:
         if not isinstance(world, WorldSpec):
             raise TypeError("world must be a WorldSpec")
@@ -571,6 +572,8 @@ class WorldSpecEpisode:
             raise TypeError("tape must be an OutcomeTape")
         if budget is not None and not isinstance(budget, Budget):
             raise TypeError("budget must be a Budget")
+        if terminal_truth is not None and not isinstance(terminal_truth, Mapping):
+            raise TypeError("terminal_truth must be a mapping")
         _runtime_view(seed, world)
         resolved_measure_max = resolve_observation_bandwidth(seed, measure_max)
         if budget is None:
@@ -591,6 +594,7 @@ class WorldSpecEpisode:
         self.tape = tape
         self.budget = resolved_budget
         self.measure_max = resolved_measure_max
+        self.terminal_truth = dict(terminal_truth) if terminal_truth is not None else None
         self._queries_used = 0
         self._sample_rows_used = 0
         self._observations_used = 0
@@ -781,7 +785,12 @@ class WorldSpecEpisode:
                 batch=batch,
             )
         if command_type == "answer":
-            score = score_terminal_answer(raw, self.seed, self.world)
+            score = score_terminal_answer(
+                raw,
+                self.seed,
+                self.world,
+                terminal_truth=self.terminal_truth,
+            )
             reward = terminal_quality_reward(score)
             self._terminal_score = score
             self._terminal_reward = reward

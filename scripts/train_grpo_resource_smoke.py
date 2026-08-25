@@ -7,12 +7,12 @@ import argparse
 from pathlib import Path
 
 import torch.distributed as dist
-from datasets import Dataset
+from datasets import IterableDataset
 from grpo_kernel_check import enable_local_fla_kernels, require_gdn_kernels_active
 from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
 
-from cpt_world import CPTWorldEnvironment, build_balanced_training_rows
+from cpt_world import CPTWorldEnvironment, iter_random_balanced_training_rows
 
 
 def parse_args() -> argparse.Namespace:
@@ -38,8 +38,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     cli = parse_args()
     output_dir = Path(cli.output_dir).expanduser().resolve()
-    rows = build_balanced_training_rows(count_per_family=1)
-    dataset = Dataset.from_list(list(rows))
+    dataset = IterableDataset.from_generator(iter_random_balanced_training_rows)
     config = GRPOConfig(
         output_dir=str(output_dir),
         max_steps=cli.max_steps,
