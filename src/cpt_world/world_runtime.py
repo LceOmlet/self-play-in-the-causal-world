@@ -6,6 +6,7 @@ The module composes existing semantic owners:
 - ``world.OutcomeTape`` owns action-keyed reproducible random draws;
 - ``episode.Budget`` owns the public intervention budget;
 - ``rendering`` and ``task_scoring`` own initial prompts and terminal answers.
+- ``rewards`` owns frozen terminal-diagnostic scalarization.
 
 This module only owns command validation, episode state, selected-measure
 projection, and batch feedback for the generic world representation.
@@ -16,14 +17,19 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping
 from dataclasses import dataclass
+from fractions import Fraction
+from math import prod
 from typing import Any
 
 from .episode import Budget, budget_for_observation_bandwidth
 from .query_truth import sample_worldspec_assignment
 from .rendering import render_seed_initial_messages, resolve_observation_bandwidth
+from .rewards import terminal_quality_reward
 from .task_scoring import score_terminal_answer
 from .world import OutcomeTape
 from .world_space import WorldSpec
+
+MAX_FEEDBACK_CELLS = 128
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -237,6 +243,7 @@ class WorldEpisodeStep:
     message: str | None = None
     batch: WorldMeasuredBatch | None = None
     score: Mapping[str, Any] | None = None
+    reward: Fraction | None = None
 
 
 def _parse_visible_measure(
@@ -467,19 +474,18 @@ def render_world_batch_message(
     view = _runtime_view(seed, world)
     measure_names = tuple(world.variables[node] for node in batch.measure)
     measure_labels = tuple(view.labels[name] for name in measure_names)
-    joint_counts: dict[str, int] = {}
-    for assignment, count in zip(batch.assignments, batch.counts, strict=True):
-        key = ",".join(
-            f"{label}=state_{state}"
-            for label, state in zip(measure_labels, assignment, strict=True)
-        )
-        joint_counts[key] = count
+    rows = [
+        [list(assignment), count]
+        for assignment, count in zip(batch.assignments, batch.counts, strict=True)
+    ]
     payload: dict[str, Any] = {
         "type": "batch_result",
         "batch": {
             "n": batch.sample_count,
-            "measure": list(measure_labels),
-            "joint_counts": joint_counts,
+            "joint_histogram": {
+                "columns": list(measure_labels),
+                "rows": rows,
+            },
         },
         "remaining_budget": remaining_budget,
     }
@@ -497,6 +503,22 @@ def render_world_batch_message(
     else:
         instruction = "Return the next legal JSON command."
     return json.dumps(payload, separators=(",", ":")) + "\n" + instruction
+
+
+def _validate_feedback_cell_bound(
+    batch_size: int,
+    measure: tuple[int, ...],
+    world: WorldSpec,
+) -> None:
+    """Reject commands whose lossless sparse histogram could exceed the protocol cap."""
+
+    possible_assignments = prod(world.domains[node] for node in measure)
+    cell_bound = min(batch_size, possible_assignments)
+    if cell_bound > MAX_FEEDBACK_CELLS:
+        raise ValueError(
+            "feedback cell bound exceeds "
+            f"{MAX_FEEDBACK_CELLS}: min(batch_size, product(measure domains))={cell_bound}"
+        )
 
 
 def _render_protocol_error_message(
@@ -576,6 +598,7 @@ class WorldSpecEpisode:
         self._observation_offset = 0
         self._history: list[WorldMeasuredBatch] = []
         self._terminal_score: Mapping[str, Any] | None = None
+        self._terminal_reward: Fraction | None = None
 
     @property
     def queries_used(self) -> int:
@@ -604,6 +627,10 @@ class WorldSpecEpisode:
     @property
     def terminal_score(self) -> Mapping[str, Any] | None:
         return self._terminal_score
+
+    @property
+    def terminal_reward(self) -> Fraction | None:
+        return self._terminal_reward
 
     def initial_messages(self) -> tuple[dict[str, str], dict[str, str]]:
         return render_seed_initial_messages(
@@ -657,6 +684,7 @@ class WorldSpecEpisode:
             raise ValueError("measure exceeds the per-batch variable limit")
         if isinstance(command.batch_size, bool) or command.batch_size <= 0:
             raise ValueError("batch_size must be a positive integer")
+        _validate_feedback_cell_bound(command.batch_size, command.measure, self.world)
         cost = _query_cost(command.batch_size, command.measure)
         if cost > self.remaining_budget:
             raise ValueError("the observation budget is exhausted")
@@ -691,6 +719,7 @@ class WorldSpecEpisode:
             raise ValueError("measure exceeds the per-batch variable limit")
         if isinstance(command.batch_size, bool) or command.batch_size <= 0:
             raise ValueError("batch_size must be a positive integer")
+        _validate_feedback_cell_bound(command.batch_size, command.measure, self.world)
         cost = _query_cost(command.batch_size, command.measure)
         if cost > self.remaining_budget:
             raise ValueError("the observation budget is exhausted")
@@ -753,6 +782,8 @@ class WorldSpecEpisode:
             )
         if command_type == "answer":
             score = score_terminal_answer(raw, self.seed, self.world)
+            reward = terminal_quality_reward(score)
             self._terminal_score = score
-            return WorldEpisodeStep(kind="terminal", score=score)
+            self._terminal_reward = reward
+            return WorldEpisodeStep(kind="terminal", score=score, reward=reward)
         raise ValueError("type must be intervene, observe, or answer")

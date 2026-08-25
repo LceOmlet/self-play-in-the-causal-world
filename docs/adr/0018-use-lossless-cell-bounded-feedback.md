@@ -1,0 +1,3 @@
+# Use lossless compact feedback with a 128-cell ceiling
+
+Selected-measure feedback declares its columns once and encodes every nonzero state-index tuple with its count. A batch command is admitted only when `min(batch_size, product of measured domain cardinalities) <= 128`; an oversized command is rejected without consuming observation budget. This keeps every admitted response lossless and bounded while preserving large batches for low-dimensional readouts. Marginal, pairwise, top-k, and other lossy summaries were rejected because they discard dependence information needed by the causal tasks; the previous repeated-key JSON can make high-dimensional feedback exceed the rollout context.

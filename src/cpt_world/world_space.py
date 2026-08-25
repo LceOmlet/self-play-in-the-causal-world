@@ -31,6 +31,7 @@ from typing import Any
 from .registry import (
     HIDING_MODES,
     QUERY_TYPES,
+    TASK_FAMILY_QUERY_TYPES,
     TASK_HEADS,
     query_task_compatible,
 )
@@ -1688,15 +1689,7 @@ def iter_sampled_seeds(
 
     if count <= 0:
         raise ValueError("count must be positive")
-    admitted_query_types = frozenset(
-        {
-            "ate",
-            "individual_counterfactual_probability",
-            "backadj_minimal_sets",
-            "best_intervention",
-            "mediator_set",
-        }
-    )
+    admitted_query_types = frozenset(TASK_FAMILY_QUERY_TYPES)
     if not query_types:
         raise ValueError("query_types must not be empty")
     if len(set(query_types)) != len(query_types):

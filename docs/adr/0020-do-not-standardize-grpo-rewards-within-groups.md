@@ -1,0 +1,3 @@
+# Do not standardize GRPO rewards within groups
+
+GRPO advantages use each rollout's terminal quality minus its common-randomness group mean, with `scale_rewards="none"`; they are not divided by the group's reward standard deviation. All five terminal-quality functions already share the `[0, 1]` scale, and retaining reward-gap magnitude preserves the distinction between small and large quality improvements. Standard group scaling was rejected because it makes proportionally identical reward patterns produce nearly identical advantages regardless of their absolute quality gaps and can introduce task-difficulty bias.

@@ -5,6 +5,7 @@ import unittest
 from fractions import Fraction
 
 from cpt_world import (
+    TERMINAL_QUALITY_REWARD_VERSION,
     WorldGrammar,
     WorldSpec,
     assemble_seed,
@@ -96,6 +97,7 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["prediction"], Fraction(truth_value))
         self.assertEqual(score["abs_error"], abs(score["prediction"] - score["truth"]))
         self.assertEqual(score["squared_error"], score["abs_error"] ** 2)
+        self.assertEqual(score["reward_scalarization"], TERMINAL_QUALITY_REWARD_VERSION)
 
     def test_target_query_rejects_malformed_answer(self) -> None:
         seed_obj, world = _find_task("ate")

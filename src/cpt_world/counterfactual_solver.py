@@ -1,6 +1,9 @@
 """Exact sparse-response solver for Markovian counterfactual bounds.
 
 Only context pairs that occur in the pruned twin world enter the model.
+One- and two-mediator chains use exact layered elimination: terminal event
+couplings collapse to jointly attainable Frechet costs, after which small
+transport and response linear programs close both endpoints.
 Disconnected context components are coupled independently and then glued;
 forest components use exact edge-transport tables and cyclic components use
 an exact SCIP MAP pricer.  Reverse-topological paired elimination compiles
@@ -34,6 +37,9 @@ _LEGACY_MAX_EXPLICIT_RESPONSE_COLUMNS = 5**5
 # SCIP.  Both paths solve the same deterministic-response MAP problem exactly;
 # this guard only prevents the structure-aware fast path from overusing memory.
 _MAX_EXACT_MIN_SUM_TABLE_ENTRIES = 5_000_000
+_MAX_LAYERED_RESPONSE_COLUMNS = 100_000
+_MAX_LAYERED_UPSTREAM_VERTICES = 4_096
+_MAX_LAYERED_OBJECTIVE_EVALUATIONS = 10_000_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,6 +57,7 @@ class CounterfactualBoundsResult:
     dynamic_response_blocks: int
     max_response_contexts: int
     auxiliary_variables: int
+    backend: str = "sparse_response_branch_price"
 
 
 @dataclass(slots=True)
@@ -115,6 +122,1052 @@ class _PairwiseMapOptimization:
     variables: int
     constraints: int
     backend: str
+
+
+def _exact_transport_bounds(
+    left_marginal: tuple[float, ...],
+    right_marginal: tuple[float, ...],
+    lower_cost: Mapping[tuple[int, int], float],
+    upper_cost: Mapping[tuple[int, int], float],
+    *,
+    time_limit_seconds: float | None,
+) -> tuple[float, float, float, float]:
+    """Optimize two linear costs over one exact transportation polytope."""
+
+    model = Model("exact-one-mediator-counterfactual-transport")
+    model.hideOutput()
+    model.setIntParam("parallel/maxnthreads", 1)
+    model.setIntParam("randomization/randomseedshift", 0)
+    model.setIntParam("randomization/permutationseed", 0)
+    model.setRealParam("limits/gap", 0.0)
+    model.setRealParam("limits/absgap", 0.0)
+    model.setRealParam("numerics/feastol", _SCIP_NUMERICAL_TOLERANCE)
+    if time_limit_seconds is not None:
+        model.setRealParam("limits/time", time_limit_seconds)
+    transport = {
+        (left, right): model.addVar(lb=0.0, ub=min(left_mass, right_marginal[right]))
+        for left, left_mass in enumerate(left_marginal)
+        for right in range(len(right_marginal))
+    }
+    for left, probability in enumerate(left_marginal):
+        model.addCons(
+            quicksum(
+                transport[(left, right)] for right in range(len(right_marginal))
+            )
+            == probability
+        )
+    for right, probability in enumerate(right_marginal):
+        model.addCons(
+            quicksum(
+                transport[(left, right)] for left in range(len(left_marginal))
+            )
+            == probability
+        )
+
+    lower_expression = quicksum(
+        lower_cost[pair] * variable for pair, variable in transport.items()
+    )
+    model.setObjective(lower_expression, "minimize")
+    started = time.perf_counter()
+    model.optimize()
+    lower_seconds = time.perf_counter() - started
+    if str(model.getStatus()) != "optimal":
+        raise RuntimeError("one-mediator lower transport did not certify optimality")
+    lower = float(model.getPrimalbound())
+
+    model.freeTransform()
+    upper_expression = quicksum(
+        upper_cost[pair] * variable for pair, variable in transport.items()
+    )
+    model.setObjective(upper_expression, "maximize")
+    started = time.perf_counter()
+    model.optimize()
+    upper_seconds = time.perf_counter() - started
+    if str(model.getStatus()) != "optimal":
+        raise RuntimeError("one-mediator upper transport did not certify optimality")
+    return lower, float(model.getPrimalbound()), lower_seconds, upper_seconds
+
+
+def _binary_transport_vertices(
+    left_marginal: tuple[float, float],
+    right_marginal: tuple[float, float],
+) -> tuple[dict[tuple[int, int], float], ...]:
+    """Return every vertex of a two-by-two transportation polytope."""
+
+    lower = max(0.0, left_marginal[0] + right_marginal[0] - 1.0)
+    upper = min(left_marginal[0], right_marginal[0])
+    vertices: list[dict[tuple[int, int], float]] = []
+    for top_left in (lower, upper):
+        vertex = {
+            (0, 0): top_left,
+            (0, 1): left_marginal[0] - top_left,
+            (1, 0): right_marginal[0] - top_left,
+            (1, 1): 1.0 - left_marginal[0] - right_marginal[0] + top_left,
+        }
+        if not vertices or any(
+            abs(vertex[pair] - vertices[0][pair]) > _SCIP_NUMERICAL_TOLERANCE
+            for pair in vertex
+        ):
+            vertices.append(vertex)
+    return tuple(vertices)
+
+
+def _comonotone_response_weights(
+    marginals: tuple[tuple[float, ...], ...],
+) -> dict[tuple[int, ...], float]:
+    """Construct one sparse feasible coupling from a shared uniform variable."""
+
+    breakpoints = {0.0, 1.0}
+    for row in marginals:
+        cumulative = 0.0
+        for probability in row[:-1]:
+            cumulative += probability
+            breakpoints.add(min(1.0, max(0.0, cumulative)))
+    ordered = sorted(breakpoints)
+    weights: dict[tuple[int, ...], float] = {}
+    for left, right in pairwise(ordered):
+        weight = right - left
+        if weight <= _SCIP_NUMERICAL_TOLERANCE:
+            continue
+        midpoint = (left + right) / 2.0
+        response: list[int] = []
+        for row in marginals:
+            cumulative = 0.0
+            selected = len(row) - 1
+            for state, probability in enumerate(row):
+                cumulative += probability
+                if midpoint < cumulative:
+                    selected = state
+                    break
+            response.append(selected)
+        response_tuple = tuple(response)
+        weights[response_tuple] = weights.get(response_tuple, 0.0) + weight
+    return weights
+
+
+class _ExactResponseLP:
+    """Reusable exact LP owner for one fixed response-marginal polytope."""
+
+    def __init__(self, marginals: tuple[tuple[float, ...], ...]) -> None:
+        if not marginals:
+            raise ValueError("response LP needs at least one context")
+        domain_size = len(marginals[0])
+        self.responses = tuple(product(range(domain_size), repeat=len(marginals)))
+        self.model = Model("exact-layered-response-lp")
+        self.model.hideOutput()
+        self.model.setIntParam("parallel/maxnthreads", 1)
+        self.model.setIntParam("randomization/randomseedshift", 0)
+        self.model.setIntParam("randomization/permutationseed", 0)
+        self.model.setRealParam("limits/gap", 0.0)
+        self.model.setRealParam("limits/absgap", 0.0)
+        self.model.setRealParam("numerics/feastol", _SCIP_NUMERICAL_TOLERANCE)
+        self.weights = {
+            response: self.model.addVar(lb=0.0, ub=1.0)
+            for response in self.responses
+        }
+        self.model.addCons(quicksum(self.weights.values()) == 1.0)
+        for context, marginal in enumerate(marginals):
+            for state, probability in enumerate(marginal):
+                self.model.addCons(
+                    quicksum(
+                        variable
+                        for response, variable in self.weights.items()
+                        if response[context] == state
+                    )
+                    == probability
+                )
+        self.solved = False
+
+    def optimize(
+        self,
+        objective: Mapping[tuple[int, ...], float],
+        *,
+        sense: str,
+        time_limit_seconds: float | None,
+    ) -> tuple[float, float]:
+        if set(objective) != set(self.responses):
+            raise ValueError("response LP objective does not cover its response space")
+        if self.solved:
+            self.model.freeTransform()
+        if time_limit_seconds is not None:
+            if time_limit_seconds <= 0.0:
+                raise RuntimeError("layered response LP exhausted its endpoint time limit")
+            self.model.setRealParam("limits/time", time_limit_seconds)
+        self.model.setObjective(
+            quicksum(
+                objective[response] * variable
+                for response, variable in self.weights.items()
+            ),
+            sense,
+        )
+        started = time.perf_counter()
+        self.model.optimize()
+        elapsed = time.perf_counter() - started
+        self.solved = True
+        if str(self.model.getStatus()) != "optimal":
+            raise RuntimeError("layered response LP did not certify optimality")
+        return float(self.model.getPrimalbound()), elapsed
+
+
+class _ExactPricedResponseLP:
+    """Exact response LP using dual constraints and the owner's MAP pricer."""
+
+    def __init__(
+        self,
+        marginals: tuple[tuple[float, ...], ...],
+        objective: Mapping[tuple[int, int, int, int], float],
+        *,
+        sense: str,
+    ) -> None:
+        if not marginals:
+            raise ValueError("priced response LP needs at least one context")
+        if sense not in {"minimize", "maximize"}:
+            raise ValueError("priced response LP sense must be minimize or maximize")
+        domain_size = len(marginals[0])
+        if any(len(row) != domain_size for row in marginals):
+            raise ValueError("priced response LP marginals have inconsistent domains")
+        initial_weights = _comonotone_response_weights(marginals)
+
+        self.sense = sense
+        self.multiplier = 1.0 if sense == "maximize" else -1.0
+        self.transformed_objective = {
+            key: self.multiplier * coefficient for key, coefficient in objective.items()
+        }
+        self.domain_size = domain_size
+        self.context_count = len(marginals)
+        self.model = Model("exact-priced-layered-response-dual")
+        self.model.hideOutput()
+        self.model.setPresolve(SCIP_PARAMSETTING.OFF)
+        self.model.setIntParam("parallel/maxnthreads", 1)
+        self.model.setIntParam("randomization/randomseedshift", 0)
+        self.model.setIntParam("randomization/permutationseed", 0)
+        self.model.setRealParam("limits/gap", 0.0)
+        self.model.setRealParam("limits/absgap", 0.0)
+        self.model.setRealParam("numerics/feastol", _SCIP_NUMERICAL_TOLERANCE)
+        infinity = self.model.infinity()
+        self.constant_dual = self.model.addVar(
+            name="dual_normalization", lb=-infinity, ub=infinity
+        )
+        self.marginal_duals = {
+            (context, state): self.model.addVar(
+                name=f"dual_marginal_{context}_{state}",
+                lb=-infinity,
+                ub=infinity,
+            )
+            for context in range(self.context_count)
+            for state in range(domain_size - 1)
+        }
+        self.model.setObjective(
+            self.constant_dual
+            + quicksum(
+                sum(
+                    weight
+                    for response, weight in initial_weights.items()
+                    if response[context] == state
+                )
+                * variable
+                for (context, state), variable in self.marginal_duals.items()
+            ),
+            "minimize",
+        )
+        self.response_constraints: dict[tuple[int, ...], Any] = {}
+        self.solved = False
+        for response in initial_weights:
+            self._add_response_constraint(response)
+
+    def _add_response_constraint(self, response: tuple[int, ...]) -> None:
+        if response in self.response_constraints:
+            return
+        expression = self.constant_dual + quicksum(
+            self.marginal_duals[(context, state)]
+            for context, state in enumerate(response)
+            if state < self.domain_size - 1
+        )
+        constraint = self.model.addCons(
+            expression >= _response_objective_value(
+                self.transformed_objective, response
+            )
+        )
+        self.response_constraints[response] = constraint
+
+    def restart_objective(
+        self,
+        objective: Mapping[tuple[int, int, int, int], float],
+    ) -> None:
+        """Reuse the exact dual and its response pool for a new linear cost."""
+
+        if self.solved:
+            self.model.freeTransform()
+        self.transformed_objective = {
+            key: self.multiplier * coefficient for key, coefficient in objective.items()
+        }
+        for response, constraint in self.response_constraints.items():
+            self.model.chgLhs(
+                constraint,
+                _response_objective_value(self.transformed_objective, response),
+            )
+        self.solved = False
+
+    def _pricing_problem(
+        self,
+        transformed_objective: Mapping[tuple[int, int, int, int], float] | None = None,
+    ) -> tuple[
+        dict[int, tuple[float, ...]],
+        dict[tuple[int, int], tuple[float, ...]],
+        float,
+    ]:
+        constant = float(self.model.getVal(self.constant_dual))
+        unary_values = {
+            context: [
+                (
+                    float(self.model.getVal(self.marginal_duals[(context, state)]))
+                    if state < self.domain_size - 1
+                    else 0.0
+                )
+                for state in range(self.domain_size)
+            ]
+            for context in range(self.context_count)
+        }
+        pairwise_values: dict[tuple[int, int], list[float]] = {}
+        objective = (
+            self.transformed_objective
+            if transformed_objective is None
+            else transformed_objective
+        )
+        for (
+            left,
+            right,
+            left_state,
+            right_state,
+        ), coefficient in objective.items():
+            if abs(coefficient) <= _SCIP_NUMERICAL_TOLERANCE:
+                continue
+            if left == right:
+                if left_state == right_state:
+                    unary_values[left][left_state] -= coefficient
+                continue
+            if left > right:
+                left, right = right, left
+                left_state, right_state = right_state, left_state
+            table = pairwise_values.setdefault(
+                (left, right), [0.0] * self.domain_size**2
+            )
+            table[left_state * self.domain_size + right_state] -= coefficient
+        return (
+            {context: tuple(values) for context, values in unary_values.items()},
+            {edge: tuple(values) for edge, values in pairwise_values.items()},
+            constant,
+        )
+
+    def transformed_upper_bound(
+        self,
+        objective: Mapping[tuple[int, int, int, int], float],
+        *,
+        time_limit_seconds: float | None,
+    ) -> tuple[float, float]:
+        """Bound a new objective from the current exact dual solution.
+
+        Raising the normalization dual by the largest response-constraint
+        violation makes the current dual feasible for the new objective.
+        The resulting value is therefore a rigorous upper bound on the new
+        response LP optimum.
+        """
+
+        if not self.solved:
+            raise RuntimeError("a solved response dual is required for warm bounding")
+        if time_limit_seconds is not None and time_limit_seconds <= 0.0:
+            raise RuntimeError("warm response bound exhausted its endpoint time limit")
+        transformed = {
+            key: self.multiplier * coefficient for key, coefficient in objective.items()
+        }
+        started = time.perf_counter()
+        unary, pairwise_costs, constant = self._pricing_problem(transformed)
+        pricing = _exact_pairwise_map(
+            unary,
+            pairwise_costs,
+            domain_size=self.domain_size,
+            constant=constant,
+            time_limit_seconds=time_limit_seconds,
+        )
+        elapsed = time.perf_counter() - started
+        if pricing.status != "optimal" or pricing.response is None:
+            raise RuntimeError(
+                "warm response bound MAP did not certify optimality: "
+                f"status={pricing.status}"
+            )
+        correction = max(0.0, -pricing.value)
+        return float(self.model.getPrimalbound()) + correction, elapsed
+
+    def optimize(
+        self,
+        *,
+        time_limit_seconds: float | None,
+    ) -> tuple[float, float, int]:
+        deadline: float | None = None
+        if time_limit_seconds is not None:
+            if time_limit_seconds <= 0.0:
+                raise RuntimeError("priced response LP exhausted its endpoint time limit")
+            deadline = time.perf_counter() + time_limit_seconds
+        started = time.perf_counter()
+        initial_responses = len(self.response_constraints)
+        while True:
+            remaining = None if deadline is None else deadline - time.perf_counter()
+            if remaining is not None:
+                if remaining <= 0.0:
+                    raise RuntimeError("priced response LP exhausted its endpoint time limit")
+                self.model.setRealParam("limits/time", remaining)
+            self.model.optimize()
+            self.solved = True
+            status = str(self.model.getStatus())
+            if status != "optimal":
+                raise RuntimeError(
+                    "priced response dual did not certify optimality: "
+                    f"status={status}"
+                )
+            unary, pairwise_costs, constant = self._pricing_problem()
+            pricing = _exact_pairwise_map(
+                unary,
+                pairwise_costs,
+                domain_size=self.domain_size,
+                constant=constant,
+                time_limit_seconds=remaining,
+            )
+            if pricing.status != "optimal" or pricing.response is None:
+                raise RuntimeError(
+                    "priced response dual MAP did not certify optimality: "
+                    f"status={pricing.status}"
+                )
+            if pricing.value >= -10.0 * _SCIP_NUMERICAL_TOLERANCE:
+                break
+            if pricing.response in self.response_constraints:
+                raise RuntimeError(
+                    "priced response dual returned a violated existing constraint"
+                )
+            self.model.freeTransform()
+            self.solved = False
+            self._add_response_constraint(pricing.response)
+
+        elapsed = time.perf_counter() - started
+        transformed_value = float(self.model.getPrimalbound())
+        value = transformed_value if self.sense == "maximize" else -transformed_value
+        return value, elapsed, len(self.response_constraints) - initial_responses
+
+
+def _one_mediator_joint_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    baseline_value: int,
+    treatment_value: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    time_limit_seconds: float | None,
+) -> CounterfactualBoundsResult | None:
+    """Close the exact two-world query with one unconditioned mediator.
+
+    The supported twin graph is ``X -> M -> Y`` with the direct ``X -> Y``
+    edge, no additional parent of ``M``, and arbitrary unaffected parents of
+    ``Y``.  For each shared-parent assignment, all cross-arm outcome-event
+    Frechet endpoints are jointly attainable.  Eliminating the outcome
+    mechanism therefore leaves one exact optimal-transport problem over the
+    mediator's two potential states.
+    """
+
+    ancestors = _ancestors(world, outcome) | {outcome}
+    affected = tuple(
+        node
+        for node in _topological_order(world)
+        if node in (_descendants(world, treatment) & ancestors)
+    )
+    if len(affected) != 2 or affected[-1] != outcome:
+        return None
+    mediator = affected[0]
+    if world.parents[mediator] != (treatment,):
+        return None
+    if treatment not in world.parents[outcome] or mediator not in world.parents[outcome]:
+        return None
+
+    from .query_truth import worldspec_projected_interventional_distribution
+
+    shared_parents = tuple(
+        parent for parent in world.parents[outcome] if parent not in {treatment, mediator}
+    )
+    parent_law = (
+        worldspec_projected_interventional_distribution(world, {}, shared_parents)
+        if shared_parents
+        else (((), 1.0),)
+    )
+    left_event, right_event = outcome_events
+    lower_cost = {
+        (left, right): 0.0
+        for left in range(world.domains[mediator])
+        for right in range(world.domains[mediator])
+    }
+    upper_cost = dict(lower_cost)
+
+    def event_probability(
+        treatment_state: int,
+        mediator_state: int,
+        shared_values: Mapping[int, int],
+        event: tuple[int, ...],
+    ) -> float:
+        context = tuple(
+            treatment_state
+            if parent == treatment
+            else mediator_state
+            if parent == mediator
+            else shared_values[parent]
+            for parent in world.parents[outcome]
+        )
+        row = world.cpt[outcome][_row_index(world, outcome, context)]
+        return sum(float(row[state]) for state in event)
+
+    for assignment, probability in parent_law:
+        shared_values = dict(zip(shared_parents, assignment, strict=True))
+        weight = float(probability)
+        for left in range(world.domains[mediator]):
+            left_probability = event_probability(
+                baseline_value,
+                left,
+                shared_values,
+                left_event,
+            )
+            for right in range(world.domains[mediator]):
+                right_probability = event_probability(
+                    treatment_value,
+                    right,
+                    shared_values,
+                    right_event,
+                )
+                pair = (left, right)
+                lower_cost[pair] += weight * max(
+                    0.0, left_probability + right_probability - 1.0
+                )
+                upper_cost[pair] += weight * min(
+                    left_probability, right_probability
+                )
+
+    left_marginal = tuple(
+        float(value)
+        for value in world.cpt[mediator][
+            _row_index(world, mediator, (baseline_value,))
+        ]
+    )
+    right_marginal = tuple(
+        float(value)
+        for value in world.cpt[mediator][
+            _row_index(world, mediator, (treatment_value,))
+        ]
+    )
+    build_started = time.perf_counter()
+    lower, upper, lower_seconds, upper_seconds = _exact_transport_bounds(
+        left_marginal,
+        right_marginal,
+        lower_cost,
+        upper_cost,
+        time_limit_seconds=time_limit_seconds,
+    )
+    return CounterfactualBoundsResult(
+        lower=lower,
+        upper=upper,
+        build_seconds=time.perf_counter() - build_started - lower_seconds - upper_seconds,
+        solve_seconds=lower_seconds + upper_seconds,
+        affected_nodes=2,
+        pair_kernel_entries=len(lower_cost),
+        generated_columns=0,
+        response_blocks=0,
+        dynamic_response_blocks=0,
+        max_response_contexts=2 * world.domains[mediator],
+        auxiliary_variables=0,
+        backend="one_mediator_transport",
+    )
+
+
+def _two_mediator_joint_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    baseline_value: int,
+    treatment_value: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    time_limit_seconds: float | None,
+) -> CounterfactualBoundsResult | None:
+    """Exactly eliminate a layered two-mediator direct-treatment structure."""
+
+    ancestors = _ancestors(world, outcome) | {outcome}
+    affected = tuple(
+        node
+        for node in _topological_order(world)
+        if node in (_descendants(world, treatment) & ancestors)
+    )
+    if len(affected) != 3 or affected[-1] != outcome:
+        return None
+    first, second, _ = affected
+    if world.domains[first] > 4:
+        return None
+    if treatment not in world.parents[first]:
+        return None
+    if first not in world.parents[second]:
+        return None
+    if treatment not in world.parents[outcome] or second not in world.parents[outcome]:
+        return None
+    if any(parent in affected for parent in world.parents[first]):
+        return None
+    if {parent for parent in world.parents[second] if parent in affected} != {first}:
+        return None
+    outcome_affected = {
+        parent for parent in world.parents[outcome] if parent in affected
+    }
+    if outcome_affected not in ({second}, {first, second}):
+        return None
+
+    first_shared = tuple(
+        parent for parent in world.parents[first] if parent != treatment
+    )
+    second_shared = tuple(
+        parent
+        for parent in world.parents[second]
+        if parent not in {treatment, first}
+    )
+    outcome_shared = tuple(
+        parent
+        for parent in world.parents[outcome]
+        if parent not in {treatment, first, second}
+    )
+    all_shared = tuple(sorted(set(first_shared) | set(second_shared) | set(outcome_shared)))
+    second_context_count = world.domains[first] * (
+        2 if treatment in world.parents[second] else 1
+    )
+    response_count = world.domains[second] ** second_context_count
+    if world.domains[first] > 2 and response_count <= _MAX_LAYERED_RESPONSE_COLUMNS:
+        return None
+
+    from .query_truth import (
+        _response_coupling_vertices,
+        worldspec_projected_interventional_distribution,
+    )
+
+    shared_law = (
+        worldspec_projected_interventional_distribution(world, {}, all_shared)
+        if all_shared
+        else (((), 1.0),)
+    )
+    shared_assignments = tuple(
+        product(*(range(world.domains[parent]) for parent in first_shared))
+    )
+
+    def parent_context(
+        node: int,
+        *,
+        treatment_state: int,
+        affected_state: int | None,
+        affected_parent: int | None,
+        shared_values: Mapping[int, int],
+    ) -> tuple[int, ...]:
+        return tuple(
+            treatment_state
+            if parent == treatment
+            else affected_state
+            if parent == affected_parent
+            else shared_values[parent]
+            for parent in world.parents[node]
+        )
+
+    first_vertices: dict[
+        tuple[int, ...], tuple[dict[tuple[int, int], float], ...]
+    ] = {}
+    for assignment in shared_assignments:
+        shared_values = dict(zip(first_shared, assignment, strict=True))
+        left_row_exact = world.cpt[first][
+            _row_index(
+                world,
+                first,
+                parent_context(
+                    first,
+                    treatment_state=baseline_value,
+                    affected_state=None,
+                    affected_parent=None,
+                    shared_values=shared_values,
+                ),
+            )
+        ]
+        right_row_exact = world.cpt[first][
+            _row_index(
+                world,
+                first,
+                parent_context(
+                    first,
+                    treatment_state=treatment_value,
+                    affected_state=None,
+                    affected_parent=None,
+                    shared_values=shared_values,
+                ),
+            )
+        ]
+        left_row = tuple(float(value) for value in left_row_exact)
+        right_row = tuple(float(value) for value in right_row_exact)
+        if world.domains[first] == 2:
+            vertices = _binary_transport_vertices(left_row, right_row)
+        else:
+            vertices = tuple(
+                {
+                    (response[0], response[1]): float(weight)
+                    for response, weight in vertex
+                }
+                for vertex in _response_coupling_vertices(
+                    (left_row_exact, right_row_exact)
+                )
+            )
+        first_vertices[assignment] = vertices
+
+    selection_count = 1
+    for assignment in shared_assignments:
+        selection_count *= len(first_vertices[assignment])
+    second_assignments = tuple(
+        product(*(range(world.domains[parent]) for parent in second_shared))
+    )
+    estimated_objective_evaluations = (
+        selection_count
+        * max(1, len(second_assignments))
+        * max(1, len(shared_law))
+        * response_count
+        * world.domains[first] ** 2
+    )
+    if selection_count > _MAX_LAYERED_UPSTREAM_VERTICES:
+        return None
+    if (
+        response_count <= _MAX_LAYERED_RESPONSE_COLUMNS
+        and estimated_objective_evaluations > _MAX_LAYERED_OBJECTIVE_EVALUATIONS
+    ):
+        return None
+
+    law_records: list[tuple[dict[int, int], float]] = []
+    for assignment, probability in shared_law:
+        law_records.append(
+            (dict(zip(all_shared, assignment, strict=True)), float(probability))
+        )
+    explicit_responses = response_count <= _MAX_LAYERED_RESPONSE_COLUMNS
+    responses = (
+        tuple(product(range(world.domains[second]), repeat=second_context_count))
+        if explicit_responses
+        else ()
+    )
+    left_event, right_event = outcome_events
+
+    def outcome_event_probability(
+        treatment_state: int,
+        first_state: int,
+        second_state: int,
+        shared_values: Mapping[int, int],
+        event: tuple[int, ...],
+    ) -> float:
+        context = tuple(
+            treatment_state
+            if parent == treatment
+            else first_state
+            if parent == first
+            else second_state
+            if parent == second
+            else shared_values[parent]
+            for parent in world.parents[outcome]
+        )
+        row = world.cpt[outcome][_row_index(world, outcome, context)]
+        return sum(float(row[state]) for state in event)
+
+    terminal_costs: list[
+        tuple[
+            dict[int, int],
+            float,
+            dict[tuple[int, int, int, int], float],
+            dict[tuple[int, int, int, int], float],
+        ]
+    ] = []
+    for shared_values, probability in law_records:
+        lower_cost: dict[tuple[int, int, int, int], float] = {}
+        upper_cost: dict[tuple[int, int, int, int], float] = {}
+        for left_first in range(world.domains[first]):
+            for right_first in range(world.domains[first]):
+                for left_second in range(world.domains[second]):
+                    left_probability = outcome_event_probability(
+                        baseline_value,
+                        left_first,
+                        left_second,
+                        shared_values,
+                        left_event,
+                    )
+                    for right_second in range(world.domains[second]):
+                        right_probability = outcome_event_probability(
+                            treatment_value,
+                            right_first,
+                            right_second,
+                            shared_values,
+                            right_event,
+                        )
+                        states = (
+                            left_first,
+                            right_first,
+                            left_second,
+                            right_second,
+                        )
+                        lower_cost[states] = max(
+                            0.0, left_probability + right_probability - 1.0
+                        )
+                        upper_cost[states] = min(
+                            left_probability, right_probability
+                        )
+        terminal_costs.append((shared_values, probability, lower_cost, upper_cost))
+
+    total_started = time.perf_counter()
+    response_specs: dict[
+        tuple[int, ...],
+        tuple[
+            tuple[tuple[float, ...], ...],
+            tuple[int, ...],
+            tuple[int, ...],
+            _ExactResponseLP | None,
+        ],
+    ] = {}
+    for second_assignment in second_assignments:
+        second_shared_values = dict(zip(second_shared, second_assignment, strict=True))
+        contexts: list[tuple[int, ...]] = []
+        context_indices: dict[tuple[int, int], int] = {}
+        for current_treatment in (baseline_value, treatment_value):
+            for first_state in range(world.domains[first]):
+                context = parent_context(
+                    second,
+                    treatment_state=current_treatment,
+                    affected_state=first_state,
+                    affected_parent=first,
+                    shared_values=second_shared_values,
+                )
+                if context not in contexts:
+                    contexts.append(context)
+                context_indices[(current_treatment, first_state)] = contexts.index(
+                    context
+                )
+        marginals = tuple(
+            tuple(
+                float(value)
+                for value in world.cpt[second][
+                    _row_index(world, second, context)
+                ]
+            )
+            for context in contexts
+        )
+        left_indices = tuple(
+            context_indices[(baseline_value, first_state)]
+            for first_state in range(world.domains[first])
+        )
+        right_indices = tuple(
+            context_indices[(treatment_value, first_state)]
+            for first_state in range(world.domains[first])
+        )
+        response_specs[second_assignment] = (
+            marginals,
+            left_indices,
+            right_indices,
+            _ExactResponseLP(marginals) if explicit_responses else None,
+        )
+    solve_seconds = 0.0
+    generated_columns = 0
+    priced_response_owners: dict[
+        tuple[str, tuple[int, ...]], _ExactPricedResponseLP
+    ] = {}
+
+    def objectives_for_selection(
+        selected: Mapping[tuple[int, ...], Mapping[tuple[int, int], float]],
+        *,
+        sense: str,
+    ) -> dict[tuple[int, ...], dict[tuple[int, int, int, int], float]]:
+        objectives: dict[
+            tuple[int, ...], dict[tuple[int, int, int, int], float]
+        ] = {}
+        for second_assignment in second_assignments:
+            _, left_indices, right_indices, _ = response_specs[second_assignment]
+            direct_objective: dict[tuple[int, int, int, int], float] = {}
+            for shared_values, probability, lower_cost, upper_cost in terminal_costs:
+                current_second_assignment = tuple(
+                    shared_values[parent] for parent in second_shared
+                )
+                if current_second_assignment != second_assignment:
+                    continue
+                first_assignment = tuple(
+                    shared_values[parent] for parent in first_shared
+                )
+                first_transport = selected[first_assignment]
+                terminal = lower_cost if sense == "minimize" else upper_cost
+                for (left_first, right_first), mass in first_transport.items():
+                    left_context = left_indices[left_first]
+                    right_context = right_indices[right_first]
+                    for left_second in range(world.domains[second]):
+                        for right_second in range(world.domains[second]):
+                            key = (
+                                left_context,
+                                right_context,
+                                left_second,
+                                right_second,
+                            )
+                            direct_objective[key] = direct_objective.get(
+                                key, 0.0
+                            ) + probability * mass * terminal[
+                                (
+                                    left_first,
+                                    right_first,
+                                    left_second,
+                                    right_second,
+                                )
+                            ]
+            objectives[second_assignment] = direct_objective
+        return objectives
+
+    def optimize_endpoint(*, sense: str) -> float:
+        nonlocal generated_columns, solve_seconds
+        endpoint_deadline = (
+            None
+            if time_limit_seconds is None
+            else time.perf_counter() + time_limit_seconds
+        )
+        vertex_lists = tuple(first_vertices[assignment] for assignment in shared_assignments)
+        selections = tuple(
+            dict(zip(shared_assignments, selected_vertices, strict=True))
+            for selected_vertices in product(*vertex_lists)
+        )
+        if explicit_responses:
+            best = float("inf") if sense == "minimize" else -float("inf")
+            for selected in selections:
+                total = 0.0
+                direct_objectives = objectives_for_selection(selected, sense=sense)
+                for second_assignment in second_assignments:
+                    _, _, _, owner = response_specs[second_assignment]
+                    if owner is None:
+                        raise RuntimeError("explicit response LP owner is missing")
+                    direct_objective = direct_objectives[second_assignment]
+                    objective = {
+                        response: _response_objective_value(
+                            direct_objective, response
+                        )
+                        for response in responses
+                    }
+                    remaining = (
+                        None
+                        if endpoint_deadline is None
+                        else endpoint_deadline - time.perf_counter()
+                    )
+                    value, elapsed = owner.optimize(
+                        objective,
+                        sense=sense,
+                        time_limit_seconds=remaining,
+                    )
+                    solve_seconds += elapsed
+                    total += value
+                if sense == "minimize":
+                    best = min(best, total)
+                else:
+                    best = max(best, total)
+            return best
+
+        multiplier = 1.0 if sense == "maximize" else -1.0
+        feasible_weights = {
+            second_assignment: _comonotone_response_weights(
+                response_specs[second_assignment][0]
+            )
+            for second_assignment in second_assignments
+        }
+        candidates: list[
+            tuple[
+                float,
+                dict[tuple[int, ...], dict[tuple[int, int, int, int], float]],
+            ]
+        ] = []
+        for selected in selections:
+            direct_objectives = objectives_for_selection(selected, sense=sense)
+            feasible = 0.0
+            for second_assignment, objective in direct_objectives.items():
+                feasible += multiplier * sum(
+                    weight * _response_objective_value(objective, response)
+                    for response, weight in feasible_weights[
+                        second_assignment
+                    ].items()
+                )
+            candidates.append((feasible, direct_objectives))
+        candidates.sort(key=lambda item: item[0], reverse=True)
+
+        best_transformed = -float("inf")
+        for feasible, direct_objectives in candidates:
+            best_transformed = max(best_transformed, feasible)
+            if all(
+                (sense, second_assignment) in priced_response_owners
+                for second_assignment in second_assignments
+            ):
+                upper_bound = 0.0
+                for second_assignment, objective in direct_objectives.items():
+                    remaining = (
+                        None
+                        if endpoint_deadline is None
+                        else endpoint_deadline - time.perf_counter()
+                    )
+                    bound, elapsed = priced_response_owners[
+                        (sense, second_assignment)
+                    ].transformed_upper_bound(
+                        objective,
+                        time_limit_seconds=remaining,
+                    )
+                    solve_seconds += elapsed
+                    upper_bound += bound
+                if (
+                    upper_bound
+                    <= best_transformed + 10.0 * _SCIP_NUMERICAL_TOLERANCE
+                ):
+                    continue
+
+            transformed_total = 0.0
+            for second_assignment, objective in direct_objectives.items():
+                marginals = response_specs[second_assignment][0]
+                owner_key = (sense, second_assignment)
+                priced_owner = priced_response_owners.get(owner_key)
+                if priced_owner is None:
+                    priced_owner = _ExactPricedResponseLP(
+                        marginals,
+                        objective,
+                        sense=sense,
+                    )
+                    priced_response_owners[owner_key] = priced_owner
+                else:
+                    priced_owner.restart_objective(objective)
+                remaining = (
+                    None
+                    if endpoint_deadline is None
+                    else endpoint_deadline - time.perf_counter()
+                )
+                value, elapsed, added = priced_owner.optimize(
+                    time_limit_seconds=remaining
+                )
+                solve_seconds += elapsed
+                generated_columns += added
+                transformed_total += multiplier * value
+            best_transformed = max(best_transformed, transformed_total)
+        return best_transformed if sense == "maximize" else -best_transformed
+
+    lower = optimize_endpoint(sense="minimize")
+    upper = optimize_endpoint(sense="maximize")
+    total_seconds = time.perf_counter() - total_started
+    return CounterfactualBoundsResult(
+        lower=lower,
+        upper=upper,
+        build_seconds=max(0.0, total_seconds - solve_seconds),
+        solve_seconds=solve_seconds,
+        affected_nodes=3,
+        pair_kernel_entries=world.domains[first] ** 2 * world.domains[second] ** 2,
+        generated_columns=generated_columns,
+        response_blocks=len(second_assignments),
+        dynamic_response_blocks=(
+            len(second_assignments) if not explicit_responses else 0
+        ),
+        max_response_contexts=second_context_count,
+        auxiliary_variables=0,
+        backend="two_mediator_layered_elimination",
+    )
 
 
 def _minimum_fill_order(
@@ -839,6 +1892,83 @@ def _message_upper_bound(raw_upper: float, *, probability_bound: bool) -> float:
     return min(1.0, nonnegative_upper) if probability_bound else nonnegative_upper
 
 
+def _resolved_terminal_events(
+    world: WorldSpec,
+    outcome: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None,
+) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    if outcome_events is not None:
+        return outcome_events
+    if outcome_state is None:
+        raise ValueError("outcome_state is required for a transition event")
+    return (
+        tuple(
+            state
+            for state in range(world.domains[outcome])
+            if state != outcome_state
+        ),
+        (outcome_state,),
+    )
+
+
+def _terminal_event_endpoint_is_jointly_attainable(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    endpoint: str,
+    *,
+    baseline_value: int,
+    treatment_value: int,
+) -> bool:
+    """Return whether every pointwise terminal endpoint has one joint owner.
+
+    A direct treatment parent separates the factual and counterfactual context
+    sets, so the usual lower or upper Frechet construction can be shared by
+    every queried context pair. Without that separation, lower endpoints are
+    still jointly attainable for disjoint terminal events: put every left
+    event at the bottom of one common uniform coordinate and every right event
+    at the top. Upper endpoints are jointly attainable for identical events by
+    nesting all event indicators on the same uniform coordinate. Residual
+    categorical states can be refined with additional exogenous coordinates,
+    so neither construction restricts the supplied CPT rows.
+    """
+
+    if endpoint not in {"lower", "upper"}:
+        raise ValueError("terminal endpoint must be lower or upper")
+    if (
+        treatment in world.parents[outcome]
+        and baseline_value != treatment_value
+    ):
+        return True
+    left_event, right_event = map(frozenset, outcome_events)
+    if endpoint == "lower":
+        return left_event.isdisjoint(right_event)
+    return left_event == right_event
+
+
+def _terminal_lower_is_constant_zero(
+    world: WorldSpec,
+    outcome: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+) -> bool:
+    """Certify that the jointly attainable terminal lower cost is zero."""
+
+    left_event, right_event = map(frozenset, outcome_events)
+    if not left_event.isdisjoint(right_event):
+        return False
+    left_maximum = max(
+        sum(float(row[state]) for state in left_event)
+        for row in world.cpt[outcome]
+    )
+    right_maximum = max(
+        sum(float(row[state]) for state in right_event)
+        for row in world.cpt[outcome]
+    )
+    return left_maximum + right_maximum <= 1.0
+
+
 def _eliminate_factor_tokens(
     world: WorldSpec,
     model: Model,
@@ -935,6 +2065,7 @@ class _SparseResponseModel:
         outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None = None,
         probability_message_bounds: bool = True,
         on_demand_response_columns: bool = True,
+        terminal_event_endpoint: str | None = None,
     ) -> None:
         self.world = world
         self.treatment = treatment
@@ -947,6 +2078,27 @@ class _SparseResponseModel:
         self.target_outer_bounds = target_outer_bounds
         self.probability_message_bounds = probability_message_bounds
         self.on_demand_response_columns = on_demand_response_columns
+        if terminal_event_endpoint not in {None, "lower", "upper"}:
+            raise ValueError("terminal_event_endpoint must be lower, upper, or None")
+        resolved_terminal_events = _resolved_terminal_events(
+            world,
+            outcome,
+            outcome_state,
+            outcome_events,
+        )
+        if terminal_event_endpoint is not None and not (
+            _terminal_event_endpoint_is_jointly_attainable(
+                world,
+                treatment,
+                outcome,
+                resolved_terminal_events,
+                terminal_event_endpoint,
+                baseline_value=baseline_value,
+                treatment_value=treatment_value,
+            )
+        ):
+            raise ValueError("terminal event endpoint has no joint response certificate")
+        self.terminal_event_endpoint = terminal_event_endpoint
         self.model = Model(f"cpt-world-counterfactual-{sense}")
         self.model.hideOutput()
         self.model.setPresolve(SCIP_PARAMSETTING.OFF)
@@ -961,6 +2113,11 @@ class _SparseResponseModel:
         affected_set = _descendants(world, treatment) & ancestors
         order = _topological_order(world)
         self.affected = tuple(node for node in order if node in affected_set)
+        self.mechanism_affected = tuple(
+            node
+            for node in self.affected
+            if terminal_event_endpoint is None or node != outcome
+        )
         self.shared = tuple(
             node
             for node in order
@@ -1044,7 +2201,7 @@ class _SparseResponseModel:
         return tuple(sorted(edges))
 
     def _prepare_context_graphs(self) -> None:
-        for node in self.affected:
+        for node in self.mechanism_affected:
             self.contexts[node] = _active_contexts(
                 self.world,
                 node,
@@ -1057,7 +2214,7 @@ class _SparseResponseModel:
             self.context_components[node] = _context_components(len(self.contexts[node]), edges)
 
     def _build_response_couplings(self) -> None:
-        for node in self.affected:
+        for node in self.mechanism_affected:
             contexts = self.contexts[node]
             domain_size = self.world.domains[node]
             for component in self.context_components[node]:
@@ -1186,30 +2343,10 @@ class _SparseResponseModel:
             tuple(float(value) for value in self.world.cpt[node][_row_index(self.world, node, c)])
             for c in contexts
         )
-        breakpoints = {0.0, 1.0}
-        for row in rows:
-            cumulative = 0.0
-            for probability in row[:-1]:
-                cumulative += probability
-                breakpoints.add(min(1.0, max(0.0, cumulative)))
-        ordered = sorted(breakpoints)
-        support: list[tuple[float, tuple[int, ...]]] = []
-        for left, right in pairwise(ordered):
-            weight = right - left
-            if weight <= _SCIP_NUMERICAL_TOLERANCE:
-                continue
-            midpoint = (left + right) / 2.0
-            response: list[int] = []
-            for row in rows:
-                cumulative = 0.0
-                selected = len(row) - 1
-                for state, probability in enumerate(row):
-                    cumulative += probability
-                    if midpoint < cumulative:
-                        selected = state
-                        break
-                response.append(selected)
-            support.append((weight, tuple(response)))
+        support = [
+            (weight, response)
+            for response, weight in _comonotone_response_weights(rows).items()
+        ]
         padding = [(0.0, (0,) * len(contexts))] * (slot_count - len(support))
         slots = [*support, *padding]
         domain_size = self.world.domains[node]
@@ -1359,8 +2496,12 @@ class _SparseResponseModel:
         return _SymbolicFactor(scope, value, upper, initial)
 
     def _build_twin_probability(self) -> tuple[Any, float]:
-        factors: list[_SymbolicFactor] = []
-        relevant = set(self.shared) | set(self.affected)
+        factors = (
+            [self._terminal_event_factor()]
+            if self.terminal_event_endpoint is not None
+            else []
+        )
+        relevant = set(self.shared) | set(self.mechanism_affected)
         for node in reversed(_topological_order(self.world)):
             if node not in relevant:
                 continue
@@ -1389,6 +2530,58 @@ class _SparseResponseModel:
             expression *= factor_values(()) if callable(factor_values) else factor_values[()]
             initial *= _factor_initial(factor, ())
         return expression, initial
+
+    def _terminal_event_factor(self) -> _SymbolicFactor:
+        """Return a pointwise terminal cost with one certified joint owner."""
+
+        if self.terminal_event_endpoint is None:
+            raise RuntimeError("terminal event factor requested on the default path")
+        outcome_events = _resolved_terminal_events(
+            self.world,
+            self.outcome,
+            self.outcome_state,
+            self.outcome_events,
+        )
+        parent_tokens: list[tuple[int, int]] = []
+        for parent in self.world.parents[self.outcome]:
+            if parent == self.treatment:
+                continue
+            if parent in self.affected:
+                parent_tokens.extend(((parent, 0), (parent, 1)))
+            else:
+                parent_tokens.append((parent, -1))
+        scope = tuple(parent_tokens)
+
+        def value(assignment: tuple[int, ...]) -> float:
+            token_values = dict(zip(scope, assignment, strict=True))
+            left_context: list[int] = []
+            right_context: list[int] = []
+            for parent in self.world.parents[self.outcome]:
+                if parent == self.treatment:
+                    left_context.append(self.baseline_value)
+                    right_context.append(self.treatment_value)
+                elif parent in self.affected:
+                    left_context.append(token_values[(parent, 0)])
+                    right_context.append(token_values[(parent, 1)])
+                else:
+                    state = token_values[(parent, -1)]
+                    left_context.append(state)
+                    right_context.append(state)
+            left_row = self.world.cpt[self.outcome][
+                _row_index(self.world, self.outcome, tuple(left_context))
+            ]
+            right_row = self.world.cpt[self.outcome][
+                _row_index(self.world, self.outcome, tuple(right_context))
+            ]
+            left_probability = sum(float(left_row[state]) for state in outcome_events[0])
+            right_probability = sum(
+                float(right_row[state]) for state in outcome_events[1]
+            )
+            if self.terminal_event_endpoint == "lower":
+                return max(0.0, left_probability + right_probability - 1.0)
+            return min(left_probability, right_probability)
+
+        return _SymbolicFactor(scope, value, value, value)
 
     def _initial_kernel_value(
         self,
@@ -1534,6 +2727,355 @@ class _SparseResponseModel:
         return primal_bound, elapsed
 
 
+def _direct_treatment_terminal_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    target_outer_bounds: tuple[float, float],
+    time_limit_seconds: float | None,
+) -> CounterfactualBoundsResult | None:
+    """Eliminate a direct-treatment terminal mechanism and keep exact owners."""
+
+    if (
+        treatment not in world.parents[outcome]
+        or baseline_value == treatment_value
+    ):
+        return None
+    build_started = time.perf_counter()
+    lower_model = _SparseResponseModel(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_state=outcome_state,
+        sense="minimize",
+        target_outer_bounds=target_outer_bounds,
+        outcome_events=outcome_events,
+        terminal_event_endpoint="lower",
+    )
+    lower_build_seconds = time.perf_counter() - build_started
+    lower, lower_seconds = lower_model.optimize(
+        time_limit_seconds=time_limit_seconds
+    )
+
+    build_started = time.perf_counter()
+    upper_model = _SparseResponseModel(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_state=outcome_state,
+        sense="maximize",
+        target_outer_bounds=target_outer_bounds,
+        outcome_events=outcome_events,
+        terminal_event_endpoint="upper",
+    )
+    upper_build_seconds = time.perf_counter() - build_started
+    upper, upper_seconds = upper_model.optimize(
+        time_limit_seconds=time_limit_seconds
+    )
+    return CounterfactualBoundsResult(
+        lower=lower,
+        upper=upper,
+        build_seconds=lower_build_seconds + upper_build_seconds,
+        solve_seconds=lower_seconds + upper_seconds,
+        affected_nodes=len(lower_model.affected),
+        pair_kernel_entries=max(
+            len(lower_model.kernel_cache), len(upper_model.kernel_cache)
+        ),
+        generated_columns=(
+            lower_model.pricer.generated_columns
+            + upper_model.pricer.generated_columns
+        ),
+        response_blocks=max(
+            len(lower_model.pricing_blocks), len(upper_model.pricing_blocks)
+        ),
+        dynamic_response_blocks=max(
+            len(lower_model.dynamic_pricing_blocks),
+            len(upper_model.dynamic_pricing_blocks),
+        ),
+        max_response_contexts=max(
+            (
+                len(block.contexts)
+                for model in (lower_model, upper_model)
+                for block in model.pricing_blocks
+            ),
+            default=0,
+        ),
+        auxiliary_variables=max(
+            len(lower_model.auxiliary_values),
+            len(upper_model.auxiliary_values),
+        ),
+        backend="direct_treatment_terminal_elimination",
+    )
+
+
+def _root_separator(world: WorldSpec, treatment: int, outcome: int) -> int | None:
+    """Find one shared root that separates every affected response context."""
+
+    ancestors = _ancestors(world, outcome) | {outcome}
+    affected = _descendants(world, treatment) & ancestors
+    shared = tuple(
+        node
+        for node in ancestors
+        if node not in affected and node != treatment
+    )
+    if len(shared) != 1:
+        return None
+    separator = shared[0]
+    if world.parents[separator]:
+        return None
+    if any(separator not in world.parents[node] for node in affected):
+        return None
+    return separator
+
+
+def _fix_root_separator(
+    world: WorldSpec,
+    separator: int,
+    state: int,
+) -> WorldSpec:
+    """Slice every child CPT at one fixed root state and remove its arrows."""
+
+    parents: dict[int, tuple[int, ...]] = {}
+    cpt: dict[int, tuple[tuple[Any, ...], ...]] = {}
+    for node in range(len(world.variables)):
+        old_parents = world.parents[node]
+        if separator not in old_parents:
+            parents[node] = old_parents
+            cpt[node] = world.cpt[node]
+            continue
+        new_parents = tuple(parent for parent in old_parents if parent != separator)
+        parents[node] = new_parents
+        rows: list[tuple[Any, ...]] = []
+        for context in product(
+            *(range(world.domains[parent]) for parent in new_parents)
+        ):
+            values = iter(context)
+            old_context = tuple(
+                state if parent == separator else next(values)
+                for parent in old_parents
+            )
+            rows.append(world.cpt[node][_row_index(world, node, old_context)])
+        cpt[node] = tuple(rows)
+    return WorldSpec(
+        family=world.family,
+        topology=f"{world.topology}|root-{separator}={state}",
+        variables=world.variables,
+        domains=world.domains,
+        state_names=world.state_names,
+        edges=tuple(edge for edge in world.edges if edge[0] != separator),
+        parents=parents,
+        cpt=cpt,
+    )
+
+
+def _root_separator_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    time_limit_seconds: float | None,
+) -> CounterfactualBoundsResult | None:
+    """Condition on a shared root and solve its independent response strata."""
+
+    separator = _root_separator(world, treatment, outcome)
+    if separator is None:
+        return None
+    from .query_truth import interventional_probability
+
+    results: list[tuple[float, CounterfactualBoundsResult]] = []
+    for state, probability in enumerate(world.cpt[separator][0]):
+        weight = float(probability)
+        if weight <= 0.0:
+            continue
+        stratum = _fix_root_separator(world, separator, state)
+        left_probability = sum(
+            float(
+                interventional_probability(
+                    stratum,
+                    {treatment: baseline_value},
+                    outcome,
+                    event_state,
+                )
+            )
+            for event_state in outcome_events[0]
+        )
+        right_probability = sum(
+            float(
+                interventional_probability(
+                    stratum,
+                    {treatment: treatment_value},
+                    outcome,
+                    event_state,
+                )
+            )
+            for event_state in outcome_events[1]
+        )
+        result = _solve_sparse_two_world_event_bounds(
+            stratum,
+            treatment,
+            outcome,
+            treatment_value=treatment_value,
+            baseline_value=baseline_value,
+            outcome_state=outcome_state,
+            outcome_events=outcome_events,
+            target_outer_bounds=(
+                max(0.0, left_probability + right_probability - 1.0),
+                min(left_probability, right_probability),
+            ),
+            time_limit_seconds=time_limit_seconds,
+        )
+        results.append((weight, result))
+    if not results:
+        raise ValueError("root separator has no positive-probability state")
+    return CounterfactualBoundsResult(
+        lower=sum(weight * result.lower for weight, result in results),
+        upper=sum(weight * result.upper for weight, result in results),
+        build_seconds=sum(result.build_seconds for _, result in results),
+        solve_seconds=sum(result.solve_seconds for _, result in results),
+        affected_nodes=max(result.affected_nodes for _, result in results),
+        pair_kernel_entries=sum(
+            result.pair_kernel_entries for _, result in results
+        ),
+        generated_columns=sum(result.generated_columns for _, result in results),
+        response_blocks=sum(result.response_blocks for _, result in results),
+        dynamic_response_blocks=sum(
+            result.dynamic_response_blocks for _, result in results
+        ),
+        max_response_contexts=max(
+            result.max_response_contexts for _, result in results
+        ),
+        auxiliary_variables=sum(
+            result.auxiliary_variables for _, result in results
+        ),
+        backend="shared_root_separator_decomposition",
+    )
+
+
+def _partially_attainable_terminal_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    treatment_value: int,
+    baseline_value: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    target_outer_bounds: tuple[float, float],
+    time_limit_seconds: float | None,
+) -> CounterfactualBoundsResult | None:
+    """Solve endpoints separately when a terminal response is removable."""
+
+    lower_terminal = _terminal_event_endpoint_is_jointly_attainable(
+        world,
+        treatment,
+        outcome,
+        outcome_events,
+        "lower",
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+    )
+    upper_terminal = _terminal_event_endpoint_is_jointly_attainable(
+        world,
+        treatment,
+        outcome,
+        outcome_events,
+        "upper",
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+    )
+    if not lower_terminal and not upper_terminal:
+        return None
+
+    models: list[_SparseResponseModel] = []
+    build_seconds = 0.0
+    solve_seconds = 0.0
+    generated_columns = 0
+
+    if lower_terminal and _terminal_lower_is_constant_zero(
+        world,
+        outcome,
+        outcome_events,
+    ):
+        lower = 0.0
+    else:
+        started = time.perf_counter()
+        lower_model = _SparseResponseModel(
+            world,
+            treatment,
+            outcome,
+            baseline_value=baseline_value,
+            treatment_value=treatment_value,
+            outcome_state=outcome_state,
+            outcome_events=outcome_events,
+            sense="minimize",
+            target_outer_bounds=target_outer_bounds,
+            terminal_event_endpoint="lower" if lower_terminal else None,
+        )
+        build_seconds += time.perf_counter() - started
+        lower, elapsed = lower_model.optimize(
+            time_limit_seconds=time_limit_seconds
+        )
+        solve_seconds += elapsed
+        generated_columns += lower_model.pricer.generated_columns
+        models.append(lower_model)
+
+    started = time.perf_counter()
+    upper_model = _SparseResponseModel(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_state=outcome_state,
+        outcome_events=outcome_events,
+        sense="maximize",
+        target_outer_bounds=target_outer_bounds,
+        terminal_event_endpoint="upper" if upper_terminal else None,
+    )
+    build_seconds += time.perf_counter() - started
+    upper, elapsed = upper_model.optimize(time_limit_seconds=time_limit_seconds)
+    solve_seconds += elapsed
+    generated_columns += upper_model.pricer.generated_columns
+    models.append(upper_model)
+
+    return CounterfactualBoundsResult(
+        lower=lower,
+        upper=upper,
+        build_seconds=build_seconds,
+        solve_seconds=solve_seconds,
+        affected_nodes=max(len(model.affected) for model in models),
+        pair_kernel_entries=max(len(model.kernel_cache) for model in models),
+        generated_columns=generated_columns,
+        response_blocks=max(len(model.pricing_blocks) for model in models),
+        dynamic_response_blocks=max(
+            len(model.dynamic_pricing_blocks) for model in models
+        ),
+        max_response_contexts=max(
+            (
+                len(block.contexts)
+                for model in models
+                for block in model.pricing_blocks
+            ),
+            default=0,
+        ),
+        auxiliary_variables=max(len(model.auxiliary_values) for model in models),
+        backend="terminal_event_endpoint_decomposition",
+    )
+
+
 def _solve_sparse_two_world_event_bounds(
     world: WorldSpec,
     treatment: int,
@@ -1546,6 +3088,82 @@ def _solve_sparse_two_world_event_bounds(
     target_outer_bounds: tuple[float, float],
     time_limit_seconds: float | None = None,
 ) -> CounterfactualBoundsResult:
+    resolved_events = outcome_events
+    if resolved_events is None:
+        if outcome_state is None:
+            raise ValueError("outcome_state is required for a transition event")
+        resolved_events = (
+            tuple(
+                state
+                for state in range(world.domains[outcome])
+                if state != outcome_state
+            ),
+            (outcome_state,),
+        )
+    one_mediator = _one_mediator_joint_bounds(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_events=resolved_events,
+        time_limit_seconds=time_limit_seconds,
+    )
+    if one_mediator is not None:
+        return one_mediator
+    two_mediator = _two_mediator_joint_bounds(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_events=resolved_events,
+        time_limit_seconds=time_limit_seconds,
+    )
+    if two_mediator is not None:
+        return two_mediator
+
+    terminal = _direct_treatment_terminal_bounds(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_state=outcome_state,
+        outcome_events=resolved_events,
+        target_outer_bounds=target_outer_bounds,
+        time_limit_seconds=time_limit_seconds,
+    )
+    if terminal is not None:
+        return terminal
+
+    root_separator = _root_separator_bounds(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_state=outcome_state,
+        outcome_events=resolved_events,
+        time_limit_seconds=time_limit_seconds,
+    )
+    if root_separator is not None:
+        return root_separator
+
+    partial_terminal = _partially_attainable_terminal_bounds(
+        world,
+        treatment,
+        outcome,
+        baseline_value=baseline_value,
+        treatment_value=treatment_value,
+        outcome_state=outcome_state,
+        outcome_events=resolved_events,
+        target_outer_bounds=target_outer_bounds,
+        time_limit_seconds=time_limit_seconds,
+    )
+    if partial_terminal is not None:
+        return partial_terminal
+
     build_started = time.perf_counter()
     lower_model = _SparseResponseModel(
         world,
@@ -1696,4 +3314,5 @@ def sparse_individual_counterfactual_probability_bounds(
         dynamic_response_blocks=joint.dynamic_response_blocks,
         max_response_contexts=joint.max_response_contexts,
         auxiliary_variables=joint.auxiliary_variables,
+        backend=joint.backend,
     )

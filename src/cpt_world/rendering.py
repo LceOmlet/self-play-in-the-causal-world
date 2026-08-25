@@ -437,10 +437,17 @@ def _render_prompt(ctx: _RenderContext) -> str:
         "of the same hidden world, with no intervention."
     )
     lines.append(
-        "Feedback reports only the joint counts of the requested measure variables; "
-        "all unrequested values remain hidden."
+        "Feedback reports a lossless compact joint_histogram for only the requested "
+        "measure variables; all unrequested values remain hidden."
     )
-    lines.append("joint_counts is sparse: omitted requested-measure assignments have count zero.")
+    lines.append(
+        "joint_histogram.columns gives the variable order. Each joint_histogram.rows item "
+        "is [[state_index,...],count]; omitted requested-measure assignments have count zero."
+    )
+    lines.append(
+        "Commands are rejected without consuming budget when "
+        "min(batch_size, product of measured domain cardinalities) exceeds 128."
+    )
     if ctx.measure_max is not None:
         noun = "variable" if ctx.measure_max == 1 else "variables"
         lines.append(f"At most {ctx.measure_max} {noun} may be measured per batch.")

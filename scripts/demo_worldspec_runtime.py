@@ -165,6 +165,7 @@ def run_demo(query_type: str) -> Mapping[str, Any]:
         "environment_feedback": batch_step.message,
         "model_terminal_answer": terminal_answer,
         "terminal_diagnostics": _jsonable(terminal.score),
+        "terminal_reward": _jsonable(terminal.reward),
     }
 
 

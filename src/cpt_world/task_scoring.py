@@ -4,7 +4,7 @@ This module is a task-mainline component, not a hidden audit layer. It parses
 the terminal JSON documented by the renderer and reports raw scoring inputs:
 squared/absolute effect error for target queries and exact regret for
 single-intervention decisions. Reward scalarization is intentionally not
-frozen here.
+performed here.
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from .query_truth import (
     compute_query_truth,
     interventional_probability,
 )
+from .rewards import TERMINAL_QUALITY_REWARD_VERSION
 from .world_space import WorldSpec
 
 _NUMERICAL_TOLERANCE = 1e-9
@@ -283,7 +284,7 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "prediction": predicted,
             "abs_error": absolute_error,
             "squared_error": absolute_error**2,
-            "reward_scalarization": "not_frozen",
+            "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
     if parsed["kind"] == "individual_counterfactual_probability":
@@ -298,7 +299,7 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "compatible": float(distance) <= _NUMERICAL_TOLERANCE,
             "distance_to_interval": distance,
             "numerical_tolerance": _NUMERICAL_TOLERANCE,
-            "reward_scalarization": "not_frozen",
+            "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
     if parsed["kind"] == "decision":
@@ -330,7 +331,7 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "optimal_probability": optimal_probability,
             "chosen_probability": chosen_probability,
             "regret": regret,
-            "reward_scalarization": "not_frozen",
+            "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
     if parsed["kind"] == "backadj":
@@ -345,7 +346,7 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "recall": recall,
             "f1": f1,
             "exact_match": truth_sets == predicted_sets,
-            "reward_scalarization": "not_frozen",
+            "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
     if parsed["kind"] == "mediator":
@@ -365,7 +366,7 @@ def score_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
             "order_f1": order_f1,
             "mediators_exact_match": truth_mediators == parsed["mediators"],
             "order_exact_match": truth_order == parsed["order"],
-            "reward_scalarization": "not_frozen",
+            "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
     raise NotImplementedError("scorer not implemented for this parsed answer kind")

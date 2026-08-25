@@ -6,9 +6,10 @@ measurements through passive observation or batched hard interventions, and
 returns one structured terminal answer. The hidden graph, CPT entries, internal
 variable names, task truth, and scorer are never rendered to the model.
 
-The current milestone provides the environment and task-generation pipeline.
-It does **not** yet define a self-play algorithm, a scalar training reward, or a
-final benchmark mixture.
+The current milestone provides the environment, task-generation pipeline, and
+the frozen [Terminal-Quality Reward v1](docs/terminal-quality-reward-v1.md),
+plus the [uniform task-family training mixture](docs/training-mixture-v1.md).
+It does **not** yet define a self-play algorithm or a final benchmark mixture.
 
 ## Paper
 
@@ -153,26 +154,32 @@ step = episode.step(
 Sample all five task types through the main pipeline:
 
 ```python
-from cpt_world import WorldGrammar, iter_sampled_seeds
+from cpt_world import TASK_FAMILY_QUERY_TYPES, WorldGrammar, iter_sampled_seeds
 
 tasks = iter_sampled_seeds(
     WorldGrammar(),
     count=20,
-    query_types=(
-        "ate",
-        "individual_counterfactual_probability",
-        "backadj_minimal_sets",
-        "best_intervention",
-        "mediator_set",
-    ),
+    query_types=TASK_FAMILY_QUERY_TYPES,
 )
 ```
+
+This materializes exactly 20 episodes from each family (100 total). Training
+consumers may deterministically shuffle the episodes; they must not reweight
+the five families.
 
 For prompt-to-feedback examples, run:
 
 ```bash
 python scripts/demo_worldspec_runtime.py
 ```
+
+## Terminal reward
+
+`WorldSpecEpisode.step()` returns both the raw terminal diagnostics and the
+frozen terminal-quality reward when the model submits a legal answer. The
+reward is continuous, lies in `[0, 1]`, and excludes experimental cost, query
+count, trajectory length, and token usage. Trainer adapters should consume the
+returned reward rather than reparse answers or recompute task truth.
 
 ## Ownership boundaries
 
@@ -182,6 +189,7 @@ python scripts/demo_worldspec_runtime.py
 - `world_runtime.py`: command execution, selected measurements, and feedback;
 - `rendering.py`: truth-free model-visible tasks;
 - `task_scoring.py`: strict terminal parsing and task diagnostics;
+- `rewards.py`: frozen scalarization of owner-produced terminal diagnostics;
 - `seeds.py`: pinned validation-seed manifests.
 
 The package deliberately uses concrete functions and immutable data records.

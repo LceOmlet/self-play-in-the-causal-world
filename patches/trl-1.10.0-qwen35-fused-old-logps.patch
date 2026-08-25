@@ -1,0 +1,125 @@
+diff --git a/trl/trainer/grpo_trainer.py b/trl/trainer/grpo_trainer.py
+index 849dd46..660a27e 100644
+--- a/trl/trainer/grpo_trainer.py
++++ b/trl/trainer/grpo_trainer.py
+@@ -103,6 +103,7 @@ from .utils import (
+ 
+ if is_liger_kernel_available():
+     from liger_kernel.chunked_loss import LigerFusedLinearGRPOLoss
++    from liger_kernel.ops.fused_linear_scaled_cross_entropy import LigerFusedLinearScaledCrossEntropyFunction
+ 
+ 
+ if is_peft_available():
+@@ -1444,6 +1445,79 @@ class GRPOTrainer(_BaseTrainer):
+         entropy_mask = masked_entropies >= entropy_threshold
+         return entropy_mask & mask.bool()  # ensure padding tokens are always masked out
+ 
++    def _can_use_liger_fused_logps(
++        self,
++        model,
++        compute_entropy,
++        compute_aux_loss,
++        pixel_values,
++        image_grid_thw,
++        pixel_attention_mask,
++        spatial_shapes,
++        image_sizes,
++        token_type_ids,
++        mm_token_type_ids,
++        image_position_ids,
++    ) -> bool:
++        """Return whether the exact Liger selected-token log-probability path is supported."""
++        if not self.use_liger_kernel or compute_entropy or compute_aux_loss or self.temperature != 1.0:
++            return False
++        if any(
++            value is not None
++            for value in (
++                pixel_values,
++                image_grid_thw,
++                pixel_attention_mask,
++                spatial_shapes,
++                image_sizes,
++                token_type_ids,
++                mm_token_type_ids,
++                image_position_ids,
++            )
++        ):
++            return False
++
++        unwrapped_model = self.accelerator.unwrap_model(model)
++        if unwrapped_model.config.model_type not in {"qwen3_5", "qwen3_5_text"}:
++            return False
++        lm_head = unwrapped_model.get_output_embeddings()
++        return isinstance(lm_head, nn.Linear) and lm_head.bias is None
++
++    def _get_liger_fused_per_token_logps(
++        self,
++        unwrapped_model,
++        input_ids,
++        attention_mask,
++        logits_to_keep,
++        batch_size,
++    ) -> torch.Tensor:
++        """Compute selected-token log-probabilities without materializing full-sequence logits."""
++        batch_size = batch_size or input_ids.size(0)
++        lm_head = unwrapped_model.get_output_embeddings()
++        all_logps = []
++        with maybe_gather_lm_head_ctx(lm_head.weight, lm_head.bias):
++            for start in range(0, input_ids.size(0), batch_size):
++                input_ids_batch = input_ids[start : start + batch_size]
++                attention_mask_batch = attention_mask[start : start + batch_size]
++                last_hidden_state = self._get_last_hidden_state(
++                    unwrapped_model,
++                    input_ids_batch,
++                    attention_mask_batch,
++                    logits_to_keep,
++                )
++                completion_ids = input_ids_batch[:, -logits_to_keep:]
++                nll = LigerFusedLinearScaledCrossEntropyFunction.apply(
++                    last_hidden_state.reshape(-1, last_hidden_state.size(-1)),
++                    lm_head.weight,
++                    completion_ids.reshape(-1),
++                    self.temperature,
++                    -100,
++                    1,
++                    False,
++                )
++                all_logps.append(-nll.view_as(completion_ids))
++        return torch.cat(all_logps, dim=0)
++
+     @profiling_decorator
+     def _get_per_token_logps_and_entropies(
+         self,
+@@ -1466,6 +1540,32 @@ class GRPOTrainer(_BaseTrainer):
+         image_position_ids=None,
+     ) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor | None]:
+         """Compute log-probs, (optionally) entropies, and (optionally) the MoE load-balancing aux loss."""
++        if self._can_use_liger_fused_logps(
++            model,
++            compute_entropy,
++            compute_aux_loss,
++            pixel_values,
++            image_grid_thw,
++            pixel_attention_mask,
++            spatial_shapes,
++            image_sizes,
++            token_type_ids,
++            mm_token_type_ids,
++            image_position_ids,
++        ):
++            unwrapped_model = self.accelerator.unwrap_model(model)
++            logps = self._forward_redirection(
++                model,
++                unwrapped_model,
++                self._get_liger_fused_per_token_logps,
++                unwrapped_model,
++                input_ids,
++                attention_mask,
++                logits_to_keep,
++                batch_size,
++            )
++            return logps, None, None
++
+         batch_size = batch_size or input_ids.size(0)  # Chunk inputs into smaller batches to reduce memory peak
+         all_logps = []
+         all_entropies = []

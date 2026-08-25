@@ -79,6 +79,16 @@ QUERY_TYPES: dict[str, Mapping[str, Any]] = {
     },
 }
 
+# Ordered training admission list. Keep this separate from QUERY_TYPES: adding a
+# registered query must not silently change the frozen training distribution.
+TASK_FAMILY_QUERY_TYPES = (
+    "ate",
+    "individual_counterfactual_probability",
+    "backadj_minimal_sets",
+    "best_intervention",
+    "mediator_set",
+)
+
 TASK_HEADS: dict[str, Mapping[str, Any]] = {
     "target_query": {
         "answer_kind": "numeric_value",

@@ -73,7 +73,20 @@ mediator_set:
   mediator F1；order precision / recall / F1；exact matches
 ```
 
-reward scalarization 未冻结，仍是 raw diagnostics。
+`src/cpt_world/rewards.py` 在这些 raw diagnostics 之上实现冻结的
+`terminal-quality-v1`，不重新解析模型答案或计算 truth：
+
+```text
+ate:                              1 - abs_error / 2
+individual counterfactual:       1 - distance_to_interval
+decision:                         1 - regret
+backadj_minimal_sets:             maximum-matching soft family F1
+mediator_set:                     (mediator_f1 + order_f1) / 2
+unfinished / illegal terminal:    0
+```
+
+实验样本消耗、query 数、轮数与 token 数保持独立诊断，不进入当前训练奖励。
+完整合同见 `docs/terminal-quality-reward-v1.md`。
 
 五个 query type 均由同一个 `iter_sampled_seeds` 主管线发出。ATE、反事实区间与实验决策
 使用既有数值稳定 CPT draw；后门调整与中介路径直接复用同一次结构世界采样，
@@ -83,5 +96,6 @@ reward scalarization 未冻结，仍是 raw diagnostics。
 
 ```text
 - 难度 band 的冻结（当前只有连续难度 profile，无阈值）
+- benchmark mixture 的冻结（训练 mixture 已冻结为五类任务各 20%）
 - 不做 planner / reference policy / 准入门
 ```

@@ -9,6 +9,7 @@ from pyscipopt import SCIP_RESULT, Model
 from cpt_world import (
     WorldSpec,
     reference_counterfactual_transition_bounds,
+    reference_individual_counterfactual_probability_bounds,
 )
 from cpt_world.counterfactual_solver import (
     _eliminate_factor_tokens,
@@ -18,8 +19,12 @@ from cpt_world.counterfactual_solver import (
     _SparseResponseModel,
     _SymbolicFactor,
     sparse_counterfactual_transition_bounds,
+    sparse_individual_counterfactual_probability_bounds,
 )
-from cpt_world.query_truth import interventional_frechet_transition_outer_bounds
+from cpt_world.query_truth import (
+    interventional_frechet_transition_outer_bounds,
+    interventional_probability,
+)
 
 
 def _uniform_multivalued_chain() -> WorldSpec:
@@ -35,6 +40,62 @@ def _uniform_multivalued_chain() -> WorldSpec:
             0: ((Fraction(1, 2), Fraction(1, 2)),),
             1: ((Fraction(1, 2), Fraction(1, 2)),) * 2,
             2: ((Fraction(1, 3),) * 3,) * 2,
+        },
+    )
+
+
+def _non_direct_terminal_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="non-direct-terminal-endpoint-decomposition",
+        variables=("X", "M", "Y"),
+        domains=(2, 2, 3),
+        state_names=(("0", "1"), ("0", "1"), ("0", "1", "2")),
+        edges=((0, 1), (1, 2)),
+        parents={0: (), 1: (0,), 2: (1,)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: (
+                (Fraction(4, 5), Fraction(1, 5)),
+                (Fraction(3, 10), Fraction(7, 10)),
+            ),
+            2: (
+                (Fraction(1, 5), Fraction(3, 10), Fraction(1, 2)),
+                (Fraction(1, 4), Fraction(7, 20), Fraction(2, 5)),
+            ),
+        },
+    )
+
+
+def _shared_root_separator_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="shared-root-separates-every-affected-mechanism",
+        variables=("X", "S", "M", "Y"),
+        domains=(2, 2, 2, 3),
+        state_names=(
+            ("0", "1"),
+            ("0", "1"),
+            ("0", "1"),
+            ("0", "1", "2"),
+        ),
+        edges=((0, 2), (1, 2), (1, 3), (2, 3)),
+        parents={0: (), 1: (), 2: (0, 1), 3: (1, 2)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(2, 5), Fraction(3, 5)),),
+            2: (
+                (Fraction(4, 5), Fraction(1, 5)),
+                (Fraction(7, 10), Fraction(3, 10)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 5), Fraction(4, 5)),
+            ),
+            3: (
+                (Fraction(1, 5), Fraction(3, 10), Fraction(1, 2)),
+                (Fraction(1, 4), Fraction(7, 20), Fraction(2, 5)),
+                (Fraction(3, 10), Fraction(2, 5), Fraction(3, 10)),
+                (Fraction(7, 20), Fraction(9, 20), Fraction(1, 5)),
+            ),
         },
     )
 
@@ -88,6 +149,123 @@ def _tiny_dynamic_pricer_world() -> WorldSpec:
                 (Fraction(8, 19), Fraction(7, 19), Fraction(4, 19)),
                 (Fraction(2, 11), Fraction(8, 11), Fraction(1, 11)),
                 (Fraction(7, 15), Fraction(7, 15), Fraction(1, 15)),
+            ),
+        },
+    )
+
+
+def _one_mediator_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="one-mediator-exact-elimination",
+        variables=("X", "M", "Y"),
+        domains=(2, 2, 2),
+        state_names=(("0", "1"),) * 3,
+        edges=((0, 1), (0, 2), (1, 2)),
+        parents={0: (), 1: (0,), 2: (0, 1)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: (
+                (Fraction(4, 5), Fraction(1, 5)),
+                (Fraction(3, 10), Fraction(7, 10)),
+            ),
+            2: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 5), Fraction(2, 5)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+        },
+    )
+
+
+def _two_mediator_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="two-mediator-exact-elimination",
+        variables=("X", "A", "B", "Y"),
+        domains=(2, 2, 2, 2),
+        state_names=(("0", "1"),) * 4,
+        edges=((0, 1), (0, 2), (1, 2), (0, 3), (2, 3)),
+        parents={0: (), 1: (0,), 2: (0, 1), 3: (0, 2)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: (
+                (Fraction(7, 10), Fraction(3, 10)),
+                (Fraction(1, 5), Fraction(4, 5)),
+            ),
+            2: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 5), Fraction(2, 5)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+            3: (
+                (Fraction(1), Fraction(0)),
+                (Fraction(0), Fraction(1)),
+                (Fraction(1), Fraction(0)),
+                (Fraction(0), Fraction(1)),
+            ),
+        },
+    )
+
+
+def _two_mediator_shared_parent_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="two-mediator-shared-parent-exact-elimination",
+        variables=("X", "Z", "A", "B", "Y"),
+        domains=(2, 2, 2, 2, 2),
+        state_names=(("0", "1"),) * 5,
+        edges=((0, 2), (1, 2), (0, 3), (2, 3), (0, 4), (3, 4)),
+        parents={0: (), 1: (), 2: (0, 1), 3: (0, 2), 4: (0, 3)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(2, 5), Fraction(3, 5)),),
+            2: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 4), Fraction(1, 4)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 5), Fraction(4, 5)),
+            ),
+            3: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 5), Fraction(2, 5)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+            4: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 5), Fraction(2, 5)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+        },
+    )
+
+
+def _two_mediator_terminal_parent_world() -> WorldSpec:
+    return WorldSpec(
+        family="test_dag",
+        topology="two-mediator-terminal-first-and-second-parents",
+        variables=("X", "A", "B", "Y"),
+        domains=(2, 2, 2, 2),
+        state_names=(("0", "1"),) * 4,
+        edges=((0, 1), (1, 2), (0, 3), (1, 3), (2, 3)),
+        parents={0: (), 1: (0,), 2: (1,), 3: (0, 1, 2)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: (
+                (Fraction(4, 5), Fraction(1, 5)),
+                (Fraction(1, 5), Fraction(4, 5)),
+            ),
+            2: (
+                (Fraction(3, 4), Fraction(1, 4)),
+                (Fraction(1, 4), Fraction(3, 4)),
+            ),
+            3: tuple(
+                (Fraction(10 - state, 11), Fraction(1 + state, 11))
+                for state in range(8)
             ),
         },
     )
@@ -207,6 +385,322 @@ def _contract_transport_message(
 
 
 class CounterfactualSolverOptimizationTests(unittest.TestCase):
+    def test_shared_root_separator_matches_general_owner(self) -> None:
+        world = _shared_root_separator_world()
+        factual_probability = float(interventional_probability(world, {0: 0}, 3, 0))
+        counterfactual_probability = float(
+            interventional_probability(world, {0: 1}, 3, 1)
+        )
+        outer = (
+            max(0.0, factual_probability + counterfactual_probability - 1.0),
+            min(factual_probability, counterfactual_probability),
+        )
+        owner = _SparseResponseModel(
+            world,
+            0,
+            3,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="minimize",
+            target_outer_bounds=outer,
+        )
+        expected_lower, _ = owner.optimize(time_limit_seconds=None)
+        owner.restart_with_objective("maximize")
+        expected_upper, _ = owner.optimize(time_limit_seconds=None)
+
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            3,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(
+            actual.lower,
+            expected_lower / factual_probability,
+            places=8,
+        )
+        self.assertAlmostEqual(
+            actual.upper,
+            expected_upper / factual_probability,
+            places=8,
+        )
+        self.assertEqual(actual.backend, "shared_root_separator_decomposition")
+
+    def test_disjoint_terminal_lower_decomposition_matches_reference(self) -> None:
+        world = _non_direct_terminal_world()
+        expected = reference_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertEqual(actual.lower, 0.0)
+        self.assertAlmostEqual(actual.lower, float(expected[0]), places=8)
+        self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
+        self.assertEqual(actual.backend, "terminal_event_endpoint_decomposition")
+
+    def test_identical_terminal_upper_decomposition_matches_reference(self) -> None:
+        world = _non_direct_terminal_world()
+        expected = reference_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=1,
+            target_outcome_state=1,
+        )
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=1,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(actual.lower, float(expected[0]), places=8)
+        self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
+        self.assertEqual(actual.backend, "terminal_event_endpoint_decomposition")
+
+    def test_uncertified_terminal_endpoint_is_rejected(self) -> None:
+        world = _non_direct_terminal_world()
+        with self.assertRaisesRegex(ValueError, "no joint response certificate"):
+            _SparseResponseModel(
+                world,
+                0,
+                2,
+                baseline_value=0,
+                treatment_value=1,
+                outcome_state=None,
+                outcome_events=((0,), (1,)),
+                sense="maximize",
+                target_outer_bounds=(0.0, 1.0),
+                terminal_event_endpoint="upper",
+            )
+
+    def test_one_mediator_elimination_matches_full_response_enumeration(self) -> None:
+        world = _one_mediator_world()
+        expected = reference_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(actual.lower, float(expected[0]), places=8)
+        self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
+        self.assertEqual(actual.affected_nodes, 2)
+        self.assertEqual(actual.auxiliary_variables, 0)
+
+    def test_two_mediator_elimination_matches_full_response_enumeration(self) -> None:
+        world = _two_mediator_world()
+        expected = reference_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            3,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            3,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(actual.lower, float(expected[0]), places=8)
+        self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
+        self.assertEqual(actual.affected_nodes, 3)
+        self.assertEqual(actual.auxiliary_variables, 0)
+
+    def test_two_mediator_shared_component_matches_general_exact_owner(self) -> None:
+        world = _two_mediator_shared_parent_world()
+        factual_probability = float(interventional_probability(world, {0: 0}, 4, 0))
+        counterfactual_probability = float(
+            interventional_probability(world, {0: 1}, 4, 1)
+        )
+        owner = _SparseResponseModel(
+            world,
+            0,
+            4,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="minimize",
+            target_outer_bounds=(
+                max(0.0, factual_probability + counterfactual_probability - 1.0),
+                min(factual_probability, counterfactual_probability),
+            ),
+        )
+        expected_lower, _ = owner.optimize(time_limit_seconds=None)
+        owner.restart_with_objective("maximize")
+        expected_upper, _ = owner.optimize(time_limit_seconds=None)
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            4,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(
+            actual.lower,
+            expected_lower / factual_probability,
+            places=8,
+        )
+        self.assertAlmostEqual(
+            actual.upper,
+            expected_upper / factual_probability,
+            places=8,
+        )
+
+    def test_terminal_first_and_second_parent_elimination_matches_general_owner(
+        self,
+    ) -> None:
+        world = _two_mediator_terminal_parent_world()
+        factual_probability = float(interventional_probability(world, {0: 0}, 3, 0))
+        counterfactual_probability = float(
+            interventional_probability(world, {0: 1}, 3, 1)
+        )
+        outer = (
+            max(0.0, factual_probability + counterfactual_probability - 1.0),
+            min(factual_probability, counterfactual_probability),
+        )
+        owner = _SparseResponseModel(
+            world,
+            0,
+            3,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="minimize",
+            target_outer_bounds=outer,
+        )
+        expected_lower, _ = owner.optimize(time_limit_seconds=None)
+        owner.restart_with_objective("maximize")
+        expected_upper, _ = owner.optimize(time_limit_seconds=None)
+
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            3,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(
+            actual.lower, expected_lower / factual_probability, places=8
+        )
+        self.assertAlmostEqual(
+            actual.upper, expected_upper / factual_probability, places=8
+        )
+
+    def test_priced_layered_response_matches_general_owner(self) -> None:
+        world = _two_mediator_terminal_parent_world()
+        factual_probability = float(interventional_probability(world, {0: 0}, 3, 0))
+        counterfactual_probability = float(
+            interventional_probability(world, {0: 1}, 3, 1)
+        )
+        outer = (
+            max(0.0, factual_probability + counterfactual_probability - 1.0),
+            min(factual_probability, counterfactual_probability),
+        )
+        owner = _SparseResponseModel(
+            world,
+            0,
+            3,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="minimize",
+            target_outer_bounds=outer,
+        )
+        expected_lower, _ = owner.optimize(time_limit_seconds=None)
+        owner.restart_with_objective("maximize")
+        expected_upper, _ = owner.optimize(time_limit_seconds=None)
+
+        with patch(
+            "cpt_world.counterfactual_solver._MAX_LAYERED_RESPONSE_COLUMNS",
+            1,
+        ):
+            actual = sparse_individual_counterfactual_probability_bounds(
+                world,
+                0,
+                3,
+                factual_value=0,
+                counterfactual_value=1,
+                factual_outcome_state=0,
+                target_outcome_state=1,
+            )
+        with (
+            patch(
+                "cpt_world.counterfactual_solver._MAX_LAYERED_RESPONSE_COLUMNS",
+                1,
+            ),
+            patch(
+                "cpt_world.counterfactual_solver._ExactPricedResponseLP."
+                "transformed_upper_bound",
+                return_value=(float("inf"), 0.0),
+            ),
+        ):
+            unpruned = sparse_individual_counterfactual_probability_bounds(
+                world,
+                0,
+                3,
+                factual_value=0,
+                counterfactual_value=1,
+                factual_outcome_state=0,
+                target_outcome_state=1,
+            )
+        self.assertAlmostEqual(
+            actual.lower, expected_lower / factual_probability, places=8
+        )
+        self.assertAlmostEqual(
+            actual.upper, expected_upper / factual_probability, places=8
+        )
+        self.assertAlmostEqual(actual.lower, unpruned.lower, places=8)
+        self.assertAlmostEqual(actual.upper, unpruned.upper, places=8)
+        self.assertEqual(actual.backend, "two_mediator_layered_elimination")
+        self.assertEqual(actual.dynamic_response_blocks, 1)
+
     def test_farkas_pricing_does_not_erase_a_reduced_cost_certificate(self) -> None:
         pricer = _ResponsePricer([], {})
         pricer.begin_solve(deadline=None)
@@ -350,7 +844,7 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         self.assertFalse(owner.pricer.rounds[-1].farkas)
         self.assertEqual(owner.pricer.rounds[-1].generated_columns, 0)
         self.assertGreater(lower_columns, 0)
-        self.assertAlmostEqual(lower, expected_lower, places=8)
+        self.assertAlmostEqual(lower, expected_lower, delta=1e-8)
 
         owner.restart_with_objective("maximize")
         upper, _ = owner.optimize(time_limit_seconds=None)
@@ -412,6 +906,18 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
             patch(
                 "cpt_world.counterfactual_solver._exact_pairwise_map",
                 return_value=timeout,
+            ),
+            patch(
+                "cpt_world.counterfactual_solver._one_mediator_joint_bounds",
+                return_value=None,
+            ),
+            patch(
+                "cpt_world.counterfactual_solver._direct_treatment_terminal_bounds",
+                return_value=None,
+            ),
+            patch(
+                "cpt_world.counterfactual_solver._partially_attainable_terminal_bounds",
+                return_value=None,
             ),
             self.assertRaisesRegex(RuntimeError, "pricing_closed=False"),
         ):

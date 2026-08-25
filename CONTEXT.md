@@ -80,9 +80,69 @@ _Avoid_: measured cell, variable observation
 The selected-measure joint count map contains only assignments observed at least once in the current batch. Every omitted assignment has count zero. This changes only the wire representation, not the sampled data or its probability law.
 _Avoid_: truncated support, approximate feedback, missing observation
 
+**Compact Joint Histogram**:
+A lossless summary of the requested-measure empirical joint counts that declares the measured columns once and represents every observed state-index tuple with its count. Omitted joint assignments still have count zero, so compactness does not remove dependence information.
+_Avoid_: raw sample rows, marginal summary, pairwise summary, lossy sketch
+
+**Feedback Cell Ceiling**:
+The maximum of 128 observed joint assignments that one batch feedback may contain. It bounds one model-visible payload without truncating an admitted batch or limiting how many atomic samples may be aggregated into each joint count.
+_Avoid_: sample cap, observation budget, lossy truncation, top-k cells
+
+**Terminal-Quality Reward**:
+The scalar used by the current RL milestone is a continuous measure of the quality of the structured terminal answer, preserving the ordering carried by numerical error, interval distance, regret, and partial structural correctness. Experimental observations consumed, query count, turn count, and token count remain separate diagnostics and do not alter this reward; binary success indicators remain evaluation diagnostics rather than training rewards.
+_Avoid_: binary-only reward, cost-adjusted reward, experimental-efficiency reward, trajectory-length reward
+
+**ATE Terminal Quality**:
+The terminal quality of a reported total effect is one minus half of its absolute error, mapping the complete legal error range to `[0, 1]`. Every equal reduction in absolute error receives the same reward improvement.
+_Avoid_: squared-error reward, thresholded effect accuracy
+
+**Individual-Counterfactual Terminal Quality**:
+The terminal quality of a reported individual counterfactual probability is one minus its absolute distance to the hidden sharp compatible interval. Every value inside the interval receives full quality, and distances are measured on the original probability scale without interval-width normalization.
+_Avoid_: preferred interval midpoint, hidden-SCM point target, interval-width-normalized reward
+
+**Experimental-Decision Terminal Quality**:
+The terminal quality of a deployment intervention is one minus its exact probability regret under the seed's minimize or maximize objective. Every intervention state attaining the optimal outcome probability receives full quality, including noncanonical tied optima.
+_Avoid_: canonical-action accuracy, decision-gap-normalized reward, experiment-cost-adjusted regret
+
+**Backdoor Task Success**:
+A backdoor-adjustment answer succeeds only when it reports all and only the inclusion-minimal valid adjustment sets. Missing a set, adding a set, or changing the membership of any set is not a successful answer.
+_Avoid_: any-valid-set success, partial-family success
+
+**Backdoor Terminal Quality**:
+The training quality of a backdoor-adjustment answer is a soft family F1 obtained by maximum-weight one-to-one matching between predicted and true adjustment sets, using set-level Dice overlap as the matching weight. It reaches one exactly when Backdoor Task Success holds; exact family match remains the task-success metric.
+_Avoid_: atomic-family F1 as training reward, exact-match-only training reward
+
+**Mediator Task Success**:
+A mediator answer succeeds only when both its mediator-variable set and its consecutive directed-path-edge set exactly match their truths.
+_Avoid_: mediator-only success, order-only success, partial-structure success
+
+**Mediator Terminal Quality**:
+The training quality of a mediator answer is the equal-weight arithmetic mean of mediator-set F1 and consecutive-path-edge F1. The two components remain separate diagnostics, and their joint exact match remains the task-success metric.
+_Avoid_: product-combined mediator reward, harmonic-combined mediator reward, pooled node-edge micro-F1
+
+**Unfinished Terminal Quality**:
+A model-caused trajectory that ends without a legal terminal answer has terminal quality zero. Recoverable protocol errors do not alter a later legal answer's quality, while environment or verifier failures produce no model-training sample.
+_Avoid_: negative protocol penalty, dropping model-caused unfinished trajectories, scoring infrastructure failures
+
 **Task Family**:
 The query types admitted by the main seed-generation pipeline. Registration or fixture-only execution does not by itself make a query type part of the task family.
 _Avoid_: query registry, fixture collection
+
+**Uniform Task-Family Training Mixture**:
+The current RL training distribution assigns equal mass to the five admitted task families, so each family contributes one fifth of episodes. This balancing does not alter a family's node-count, role, K, M, state-anchor, or mechanism distribution.
+_Avoid_: uniform query-registry mixture, difficulty-balanced mixture, adaptive curriculum
+
+**RL Training Closure Smoke**:
+A bounded run that succeeds only when a real policy completes an interactive task, receives the owner-produced terminal reward, updates trainable parameters, and saves and resumes a checkpoint. It validates the training integration rather than task performance or learning quality.
+_Avoid_: inference smoke, environment smoke, performance experiment
+
+**Common-Randomness GRPO Group**:
+A comparison group whose policy rollouts share one hidden world, task, interaction surface, budget, and action-keyed outcome tape while sampling their policy decisions independently. Different groups use different task and tape seeds, so shared randomness removes within-group environment noise without making all trajectories identical.
+_Avoid_: shared transcript, independently resampled group tasks, identical rollout copies
+
+**Unscaled Group-Relative Advantage**:
+The policy signal obtained by subtracting the common-randomness group's mean terminal quality from each rollout's terminal quality without dividing by the group's standard deviation. It retains the magnitude of quality differences on the shared `[0, 1]` scale while remaining relative within each task instance.
+_Avoid_: raw terminal quality as advantage, group-standardized advantage, cross-task reward normalization
 
 **Individual Counterfactual Probability**:
 The probability of a named outcome for the same individual under a counterfactual assigned treatment, conditional on that individual's assigned factual treatment and observed factual outcome. The model returns one scalar. The verifier accepts it only when it lies in the hidden sharp interval over every finite nonparametric mechanism completion compatible with the complete DAG, all CPT rows, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Endpoint interventional marginals provide only a Fréchet outer interval in the generic case.

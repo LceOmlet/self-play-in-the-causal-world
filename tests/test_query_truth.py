@@ -596,14 +596,29 @@ class QueryTruthOwnerTests(unittest.TestCase):
                     baseline_value=baseline,
                     outcome_state=outcome_state,
                 )
-                result = sparse_counterfactual_transition_bounds(
-                    world,
-                    0,
-                    2,
-                    treatment_value=treatment,
-                    baseline_value=baseline,
-                    outcome_state=outcome_state,
-                )
+                with (
+                    patch(
+                        "cpt_world.counterfactual_solver._one_mediator_joint_bounds",
+                        return_value=None,
+                    ),
+                    patch(
+                        "cpt_world.counterfactual_solver._direct_treatment_terminal_bounds",
+                        return_value=None,
+                    ),
+                    patch(
+                        "cpt_world.counterfactual_solver."
+                        "_partially_attainable_terminal_bounds",
+                        return_value=None,
+                    ),
+                ):
+                    result = sparse_counterfactual_transition_bounds(
+                        world,
+                        0,
+                        2,
+                        treatment_value=treatment,
+                        baseline_value=baseline,
+                        outcome_state=outcome_state,
+                    )
                 self.assertEqual(reference, expected)
                 self.assertAlmostEqual(result.lower, float(reference[0]), places=8)
                 self.assertAlmostEqual(result.upper, float(reference[1]), places=8)

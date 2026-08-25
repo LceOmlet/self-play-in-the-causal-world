@@ -1,0 +1,3 @@
+# Use common environment randomness within GRPO groups
+
+All policy rollouts in one GRPO comparison group receive the same hidden world, query, K, M, state anchors, observation budget, and action-keyed outcome tape; only policy generation is sampled independently. Different groups receive different task and tape seeds. This makes relative advantages compare policy choices rather than confounding them with task or finite-sample environment noise, while the action-keyed tape still lets distinct trajectories choose distinct experiments. Independently resampling a world or tape for every group member was rejected because it adds avoidable variance to the group baseline.

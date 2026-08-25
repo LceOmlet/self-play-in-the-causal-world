@@ -302,9 +302,9 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(step.batch.counts, (4,))
         self.assertEqual(step.batch.count((0, 0)), 0)
         payload = json.loads(str(step.message).splitlines()[0])
-        self.assertEqual(payload["batch"]["measure"], [labels["M"], labels["Y"]])
-        self.assertEqual(len(payload["batch"]["joint_counts"]), 1)
-        self.assertEqual(next(iter(payload["batch"]["joint_counts"].values())), 4)
+        histogram = payload["batch"]["joint_histogram"]
+        self.assertEqual(histogram["columns"], [labels["M"], labels["Y"]])
+        self.assertEqual(histogram["rows"], [[[1, 2], 4]])
         self.assertEqual(payload["remaining_budget"], 0)
         self.assertIn("Return a terminal answer now", str(step.message))
 
@@ -319,6 +319,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         terminal = episode.step(answer)
         self.assertEqual(terminal.score["mediator_f1"], 1)
         self.assertEqual(terminal.score["order_f1"], 1)
+        self.assertEqual(terminal.reward, 1)
 
     def test_action_keyed_stream_is_split_interleave_and_measure_invariant(self) -> None:
         seed, world = _sampled_task("ate", preferred_seed=64)
@@ -450,8 +451,9 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         payload = json.loads(str(step.message).splitlines()[0])
         self.assertEqual(payload["experiment"], {"type": "observe"})
         self.assertNotIn("intervention", payload)
-        self.assertEqual(payload["batch"]["measure"], [labels["T"], labels["Y"]])
-        self.assertEqual(sum(payload["batch"]["joint_counts"].values()), 4)
+        histogram = payload["batch"]["joint_histogram"]
+        self.assertEqual(histogram["columns"], [labels["T"], labels["Y"]])
+        self.assertEqual(sum(row[1] for row in histogram["rows"]), 4)
         self.assertEqual(episode.queries_used, 1)
         self.assertEqual(episode.sample_rows_used, 4)
         self.assertEqual(episode.observations_used, 8)
@@ -471,19 +473,55 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(step.kind, "batch")
         self.assertIsNotNone(step.message)
         payload = json.loads(str(step.message).splitlines()[0])
-        self.assertEqual(payload["batch"]["measure"], raw["measure"])
+        histogram = payload["batch"]["joint_histogram"]
+        self.assertEqual(histogram["columns"], raw["measure"])
         self.assertEqual(payload["batch"]["n"], 8)
-        self.assertEqual(sum(payload["batch"]["joint_counts"].values()), 8)
+        self.assertEqual(sum(row[1] for row in histogram["rows"]), 8)
         unselected = {
             label
             for label in seed["visible_schema"]["variable_labels"].values()
             if label not in raw["measure"]
         }
-        for key in payload["batch"]["joint_counts"]:
-            self.assertTrue(all(label not in key for label in unselected))
+        self.assertTrue(all(label not in histogram["columns"] for label in unselected))
         for internal_name in world.variables:
             self.assertNotIn(internal_name, step.message)
         self.assertEqual(payload["remaining_budget"], 8)
+
+    def test_feedback_cell_ceiling_rejects_before_sampling_or_budget_use(self) -> None:
+        world = sample_task_world(
+            WorldGrammar(node_counts=(8,), max_domain_size=2),
+            0,
+            "ate",
+        )
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            "ate",
+            "target_query",
+            anchors=legal_query_anchors(world, "ate")[0],
+            seed_id="RUNTIME-FEEDBACK-CELL-CEILING",
+        )
+        labels = seed["visible_schema"]["variable_labels"]
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-feedback-cell-ceiling"),
+            budget=Budget(max_observations=2048),
+        )
+        command = {
+            "type": "observe",
+            "measure": [labels[name] for name in world.variables],
+            "batch_size": 129,
+        }
+
+        with self.assertRaisesRegex(ValueError, "feedback cell bound exceeds 128"):
+            episode.step(json.dumps(command))
+
+        self.assertEqual(episode.queries_used, 0)
+        self.assertEqual(episode.sample_rows_used, 0)
+        self.assertEqual(episode.observations_used, 0)
+        self.assertEqual(episode.remaining_budget, 2048)
+        self.assertEqual(episode.history, ())
 
     def test_numeric_and_decision_tasks_run_from_prompt_to_terminal_score(self) -> None:
         for query_type in ("ate", "individual_counterfactual_probability", "best_intervention"):
@@ -543,6 +581,10 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             terminal_step = episode.step(raw_answer)
             self.assertEqual(terminal_step.kind, "terminal")
             self.assertTrue(episode.completed)
+            from cpt_world import terminal_quality_reward
+
+            self.assertEqual(terminal_step.reward, terminal_quality_reward(terminal_step.score))
+            self.assertEqual(episode.terminal_reward, terminal_step.reward)
             if query_type == "best_intervention":
                 self.assertEqual(terminal_step.score["regret"], 0)
             elif query_type == "ate":
@@ -616,6 +658,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         )
         self.assertEqual(terminal.score["f1"], 1)
         self.assertTrue(terminal.score["exact_match"])
+        self.assertEqual(terminal.reward, 1)
 
     def test_episode_rejects_an_action_surface_with_no_target_measure_pair(self) -> None:
         seed, world = _sampled_task("ate", preferred_seed=64)

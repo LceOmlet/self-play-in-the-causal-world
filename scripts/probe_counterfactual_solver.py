@@ -163,7 +163,7 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
                     "seed": sample_index,
                     "nodes": len(world.variables),
                     **individual,
-                    "path": "on_demand_columns",
+                    "path": "sparse_response_branch_price",
                     "closed": False,
                     "frechet_lower": float(outer_lower),
                     "frechet_upper": float(outer_upper),
@@ -174,7 +174,7 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
                     "seed": sample_index,
                     "nodes": len(world.variables),
                     **individual,
-                    "path": "on_demand_columns",
+                    "path": result.backend,
                     "closed": True,
                     "lower": result.lower,
                     "upper": result.upper,
@@ -195,7 +195,9 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
     times = sorted(float(record["wall_seconds"]) for record in records)
     closed = sum(bool(record["closed"]) for record in records)
     direct_records = [record for record in records if record["path"] == "direct_closed_form"]
-    on_demand_records = [record for record in records if record["path"] == "on_demand_columns"]
+    on_demand_records = [
+        record for record in records if record["path"] != "direct_closed_form"
+    ]
     on_demand_closed = sum(bool(record["closed"]) for record in on_demand_records)
     p95_index = max(0, min(len(times) - 1, int(0.95 * len(times) + 0.999999) - 1))
     return {

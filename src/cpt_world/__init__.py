@@ -37,6 +37,7 @@ from .registry import (
     OWNER_STATUS_IMPLEMENTED,
     OWNER_STATUS_REGISTERED,
     QUERY_TYPES,
+    TASK_FAMILY_QUERY_TYPES,
     TASK_HEADS,
     WORLD_SOURCE_TYPES,
     check_seed_legality,
@@ -56,6 +57,12 @@ from .rendering import (
     rendered_decision_query_surface,
     rendered_discovery_query_surface,
 )
+from .rewards import (
+    TERMINAL_QUALITY_REWARD_VERSION,
+    UNFINISHED_TERMINAL_QUALITY,
+    soft_adjustment_family_f1,
+    terminal_quality_reward,
+)
 from .seeds import (
     ALLOWED_CANDIDATE_QUERY_TYPES,
     ALLOWED_CANDIDATE_TASK_HEADS,
@@ -67,8 +74,10 @@ from .seeds import (
     validate_candidate_seed_manifest,
 )
 from .task_scoring import parse_terminal_answer, score_terminal_answer
+from .trl_environment import CPTWorldEnvironment, build_balanced_training_rows
 from .world import OutcomeTape
 from .world_runtime import (
+    MAX_FEEDBACK_CELLS,
     WorldEpisodeStep,
     WorldIntervention,
     WorldInterventionCommand,
@@ -111,9 +120,11 @@ __all__ = [
     "Budget",
     "CANDIDATE_SEED_MANIFEST_SCHEMA",
     "CandidateSeedSpec",
+    "CPTWorldEnvironment",
     "CounterfactualBoundsResult",
     "DEFAULT_NODE_COUNTS",
     "HIDING_MODES",
+    "MAX_FEEDBACK_CELLS",
     "OWNER_STATUS_DIAGNOSTIC_ONLY",
     "OWNER_STATUS_IMPLEMENTED",
     "OWNER_STATUS_REGISTERED",
@@ -124,6 +135,9 @@ __all__ = [
     "RenderedDecisionQuerySurface",
     "RenderedDiscoveryQuerySurface",
     "TASK_HEADS",
+    "TASK_FAMILY_QUERY_TYPES",
+    "TERMINAL_QUALITY_REWARD_VERSION",
+    "UNFINISHED_TERMINAL_QUALITY",
     "WORLD_SOURCE_TYPES",
     "WorldEpisodeStep",
     "WorldGrammar",
@@ -140,6 +154,7 @@ __all__ = [
     "best_intervention_truth",
     "best_intervention_states",
     "budget_for_observation_bandwidth",
+    "build_balanced_training_rows",
     "candidate_seed_manifest_path",
     "check_seed_legality",
     "cladder_ate_is_degenerate",
@@ -185,11 +200,13 @@ __all__ = [
     "seed_triple_is_registered",
     "sparse_counterfactual_transition_bounds",
     "sparse_individual_counterfactual_probability_bounds",
+    "soft_adjustment_family_f1",
     "supports_hiding",
     "supports_query",
     "supports_task",
     "task_answerability",
     "task_difficulty_profile",
+    "terminal_quality_reward",
     "task_scorer_owner_status",
     "validate_candidate_seed_manifest",
     "validate_individual_counterfactual_probability",

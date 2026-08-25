@@ -13,6 +13,7 @@ from pathlib import Path
 
 from cpt_world import (
     QUERY_TYPES,
+    TASK_FAMILY_QUERY_TYPES,
     Budget,
     WorldGrammar,
     WorldSpec,
@@ -812,6 +813,31 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             len({tuple(tuple(edge) for edge in seed["world_source"]["edges"]) for seed in seeds}),
             1,
         )
+
+    def test_uniform_training_mixture_is_exactly_balanced(self) -> None:
+        count = 3
+        seeds = iter_sampled_seeds(
+            self.grammar,
+            start_seed=0,
+            count=count,
+            query_types=TASK_FAMILY_QUERY_TYPES,
+        )
+        family_counts = {
+            query_type: sum(seed["query"]["type"] == query_type for seed in seeds)
+            for query_type in TASK_FAMILY_QUERY_TYPES
+        }
+        self.assertEqual(
+            TASK_FAMILY_QUERY_TYPES,
+            (
+                "ate",
+                "individual_counterfactual_probability",
+                "backadj_minimal_sets",
+                "best_intervention",
+                "mediator_set",
+            ),
+        )
+        self.assertEqual(family_counts, dict.fromkeys(TASK_FAMILY_QUERY_TYPES, count))
+        self.assertEqual(len(seeds), count * len(TASK_FAMILY_QUERY_TYPES))
 
     def test_sampler_produces_more_tasks_than_pinned_seeds(self) -> None:
         seeds = []
