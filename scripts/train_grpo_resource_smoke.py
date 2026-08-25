@@ -8,6 +8,7 @@ from pathlib import Path
 
 import torch.distributed as dist
 from datasets import Dataset
+from grpo_kernel_check import enable_local_fla_kernels, require_gdn_kernels_active
 from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
 
@@ -21,12 +22,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-steps", type=int, default=1)
     parser.add_argument("--max-completion-length", type=int, default=7168)
     parser.add_argument("--max-model-length", type=int, default=9216)
-    parser.add_argument("--vllm-memory-utilization", type=float, default=0.48)
+    parser.add_argument("--vllm-memory-utilization", type=float, default=0.50)
     parser.add_argument(
         "--use-liger-kernel",
         action=argparse.BooleanOptionalAction,
         default=True,
     )
+    parser.add_argument("--fla-kernel-dir", type=Path)
     return parser.parse_args()
 
 
@@ -94,6 +96,9 @@ def main() -> None:
         peft_config=peft_config,
         environment_factory=CPTWorldEnvironment,
     )
+    if cli.fla_kernel_dir is not None:
+        enable_local_fla_kernels(trainer.model, cli.fla_kernel_dir)
+        require_gdn_kernels_active(trainer.model)
     try:
         trainer.train()
     finally:

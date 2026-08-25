@@ -7,11 +7,10 @@ The main sampler owns one declared distribution:
 - the node order is a uniform permutation;
 - each node's parent count is uniform over ``0..min(3, predecessor_count)``;
 - the parent subset is uniform conditional on that count;
-- CPTs use a simplex-uniform base distribution; each direct parent receives a
-  separate categorical main-effect score block, all still-undesigned order-
-  two-and-higher effects remain one residual score block, and a simplex-
-  uniform energy split combines the orthogonal blocks. ET-V2 maps the score
-  table to probabilities by RMS-normalized exponential tilting.
+- CPTs use a simplex-uniform base distribution; categorical functional-ANOVA
+  score blocks separate every interaction order, and a simplex-uniform energy
+  split gives every order the same expected squared energy. ET-V2 maps the
+  score table to probabilities by RMS-normalized exponential tilting.
 
 Generated worlds use ``float``/binary64 probabilities. Exact ``Fraction``
 worlds remain valid fixed fixtures and reference inputs.
@@ -175,12 +174,12 @@ def _parent_state_at_row(
     return (row_index // stride) % parent_domains[parent_position]
 
 
-def _parent_main_projection(
+def _parent_subset_marginal_projection(
     table: Sequence[Sequence[float]],
     parent_domains: Sequence[int],
-    parent_position: int,
+    parent_positions: Sequence[int],
 ) -> tuple[tuple[float, ...], ...]:
-    """Orthogonally project a centred joint table onto one parent's main-effect block."""
+    """Project a table onto functions of one declared parent subset."""
 
     row_count = math.prod(parent_domains)
     if len(table) != row_count:
@@ -190,79 +189,90 @@ def _parent_main_projection(
     domain_size = len(table[0])
     if any(len(row) != domain_size for row in table):
         raise ValueError("table rows must have a common child-state count")
-    if not 0 <= parent_position < len(parent_domains):
-        raise ValueError("parent_position is outside the parent domains")
+    positions = tuple(parent_positions)
+    if tuple(sorted(set(positions))) != positions:
+        raise ValueError("parent_positions must be strictly increasing")
+    if any(position < 0 or position >= len(parent_domains) for position in positions):
+        raise ValueError("parent_positions contains an invalid parent position")
 
-    parent_domain = parent_domains[parent_position]
-    replication_count = row_count // parent_domain
-    marginal = [[0.0] * domain_size for _ in range(parent_domain)]
+    totals: dict[tuple[int, ...], list[float]] = {}
+    counts: dict[tuple[int, ...], int] = {}
     for row_index, row in enumerate(table):
-        parent_state = _parent_state_at_row(row_index, parent_domains, parent_position)
+        key = tuple(
+            _parent_state_at_row(row_index, parent_domains, position) for position in positions
+        )
+        target = totals.setdefault(key, [0.0] * domain_size)
+        counts[key] = counts.get(key, 0) + 1
         for child_state, value in enumerate(row):
-            marginal[parent_state][child_state] += value
-    for parent_state in range(parent_domain):
-        for child_state in range(domain_size):
-            marginal[parent_state][child_state] /= replication_count
+            target[child_state] += value
 
+    means = {key: tuple(value / counts[key] for value in values) for key, values in totals.items()}
     return tuple(
-        tuple(marginal[_parent_state_at_row(row_index, parent_domains, parent_position)])
+        means[
+            tuple(
+                _parent_state_at_row(row_index, parent_domains, position) for position in positions
+            )
+        ]
         for row_index in range(row_count)
     )
 
 
-def _project_parent_main_effect(
+def _parent_interaction_projection(
+    table: Sequence[Sequence[float]],
     parent_domains: Sequence[int],
-    parent_position: int,
-    domain_size: int,
-    rng: random.Random,
+    parent_positions: Sequence[int],
 ) -> tuple[tuple[float, ...], ...]:
-    """Draw a unit direction from one categorical parent's pure main-effect block."""
+    """Return one pure categorical ANOVA interaction component."""
 
-    row_count = math.prod(parent_domains)
-    parent_domain = parent_domains[parent_position]
-    reduced = _project_joint_effect(parent_domain, domain_size, rng)
-    replication_count = row_count // parent_domain
-    lift_scale = 1.0 / math.sqrt(replication_count)
+    positions = tuple(parent_positions)
+    if not positions:
+        raise ValueError("an interaction requires at least one parent")
+    if tuple(sorted(set(positions))) != positions:
+        raise ValueError("parent_positions must be strictly increasing")
+
+    marginals: list[tuple[int, tuple[tuple[float, ...], ...]]] = []
+    for subset_size in range(len(positions) + 1):
+        sign = -1 if (len(positions) - subset_size) % 2 else 1
+        for subset in combinations(positions, subset_size):
+            marginals.append(
+                (sign, _parent_subset_marginal_projection(table, parent_domains, subset))
+            )
+
     return tuple(
         tuple(
-            lift_scale * value
-            for value in reduced[_parent_state_at_row(row_index, parent_domains, parent_position)]
+            math.fsum(sign * marginal[row_index][child_state] for sign, marginal in marginals)
+            for child_state in range(len(table[0]))
         )
-        for row_index in range(row_count)
+        for row_index in range(len(table))
     )
 
 
-def _project_higher_order_residual(
+def _project_interaction_order_effect(
     parent_domains: Sequence[int],
+    order: int,
     domain_size: int,
     rng: random.Random,
 ) -> tuple[tuple[float, ...], ...]:
-    """Draw a unit direction orthogonal to every direct-parent main-effect block.
+    """Draw an isotropic unit direction in one exact interaction-order subspace."""
 
-    This residual deliberately remains the direct sum of every interaction
-    order two and above.  Its internal partition and support are not sampled
-    here because those structural choices have not yet been accepted.
-    """
-
-    if len(parent_domains) < 2:
-        raise ValueError("a higher-order residual requires at least two parents")
+    if not 1 <= order <= len(parent_domains):
+        raise ValueError("interaction order must lie between one and the parent count")
     while True:
         joint = _project_joint_effect(math.prod(parent_domains), domain_size, rng)
-        main_projections = tuple(
-            _parent_main_projection(joint, parent_domains, parent_position)
-            for parent_position in range(len(parent_domains))
+        components = tuple(
+            _parent_interaction_projection(joint, parent_domains, positions)
+            for positions in combinations(range(len(parent_domains)), order)
         )
-        residual = tuple(
+        order_projection = tuple(
             tuple(
-                joint[row_index][child_state]
-                - math.fsum(projection[row_index][child_state] for projection in main_projections)
+                math.fsum(component[row_index][child_state] for component in components)
                 for child_state in range(domain_size)
             )
             for row_index in range(len(joint))
         )
-        norm = math.sqrt(math.fsum(value * value for row in residual for value in row))
+        norm = math.sqrt(math.fsum(value * value for row in order_projection for value in row))
         if math.isfinite(norm) and norm > 0.0:
-            return tuple(tuple(value / norm for value in row) for row in residual)
+            return tuple(tuple(value / norm for value in row) for row in order_projection)
 
 
 def _combine_effect_blocks(
@@ -303,19 +313,17 @@ def _combine_effect_blocks(
     return tuple(tuple(value / norm for value in row) for row in combined)
 
 
-def _sample_block_budgeted_effect(
+def _sample_order_balanced_effect(
     parent_domains: Sequence[int],
     domain_size: int,
     rng: random.Random,
 ) -> tuple[tuple[float, ...], ...]:
-    """Sample separated parent-main blocks under one conserved effect budget."""
+    """Sample all interaction orders with equal expected conserved energy."""
 
     blocks = [
-        _project_parent_main_effect(parent_domains, parent_position, domain_size, rng)
-        for parent_position in range(len(parent_domains))
+        _project_interaction_order_effect(parent_domains, order, domain_size, rng)
+        for order in range(1, len(parent_domains) + 1)
     ]
-    if len(parent_domains) >= 2:
-        blocks.append(_project_higher_order_residual(parent_domains, domain_size, rng))
     energy_shares = (1.0,) if len(blocks) == 1 else _simplex_uniform(len(blocks), rng)
     return _combine_effect_blocks(blocks, energy_shares)
 
@@ -543,7 +551,7 @@ def _build_world(
             cpt[node] = (_finalize_cpt_row(base),)
         else:
             parent_domains = tuple(structure.domains[parent] for parent in node_parents)
-            direction = _sample_block_budgeted_effect(parent_domains, domain_size, rng)
+            direction = _sample_order_balanced_effect(parent_domains, domain_size, rng)
             cpt[node] = _exponential_tilt_rows(base, direction, rng.random())
     return WorldSpec(
         family="sampled_dag",

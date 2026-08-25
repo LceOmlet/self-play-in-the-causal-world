@@ -7,7 +7,8 @@ ENV_DIR=${3:-/home/chen/.venvs/dolens-rl}
 RUN_DIR=${4:-/home/chen/runs/cpt-world-grpo-resource-smoke}
 MAX_MODEL_LENGTH=${MAX_MODEL_LENGTH:-9216}
 MAX_COMPLETION_LENGTH=${MAX_COMPLETION_LENGTH:-7168}
-VLLM_MEMORY_UTILIZATION=${VLLM_MEMORY_UTILIZATION:-0.48}
+VLLM_MEMORY_UTILIZATION=${VLLM_MEMORY_UTILIZATION:-0.50}
+FLA_KERNEL_DIR=${FLA_KERNEL_DIR:-/home/chen/kernels/fla-v1-398dfa8c}
 
 mkdir -p "$RUN_DIR"
 export CUDA_VISIBLE_DEVICES=0
@@ -35,5 +36,6 @@ cd "$PROJECT_DIR"
   --max-completion-length "$MAX_COMPLETION_LENGTH" \
   --max-model-length "$MAX_MODEL_LENGTH" \
   --vllm-memory-utilization "$VLLM_MEMORY_UTILIZATION" \
+  --fla-kernel-dir "$FLA_KERNEL_DIR" \
   --use-liger-kernel \
   2>&1 | tee "$RUN_DIR/train.log"

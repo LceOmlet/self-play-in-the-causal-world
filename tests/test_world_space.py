@@ -9,7 +9,7 @@ import unittest
 from collections.abc import Mapping
 from dataclasses import asdict, replace
 from fractions import Fraction
-from itertools import product
+from itertools import combinations, product
 from pathlib import Path
 
 from cpt_world import (
@@ -42,11 +42,10 @@ from cpt_world import (
 from cpt_world.world_space import (
     _combine_effect_blocks,
     _exponential_tilt_rows,
-    _parent_main_projection,
-    _project_higher_order_residual,
+    _parent_interaction_projection,
+    _project_interaction_order_effect,
     _project_joint_effect,
-    _project_parent_main_effect,
-    _sample_block_budgeted_effect,
+    _sample_order_balanced_effect,
 )
 
 
@@ -344,66 +343,68 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 return
         self.fail("no sampled multi-valued world with edges found")
 
-    def test_parent_main_blocks_and_higher_order_residual_are_orthogonal(self) -> None:
+    def test_interaction_order_blocks_are_orthogonal_and_pure(self) -> None:
         parent_domains = (2, 3, 2)
         child_domain = 4
         rng = random.Random(20260825)
-        mains = tuple(
-            _project_parent_main_effect(parent_domains, position, child_domain, rng)
-            for position in range(len(parent_domains))
+        blocks = tuple(
+            _project_interaction_order_effect(parent_domains, order, child_domain, rng)
+            for order in range(1, len(parent_domains) + 1)
         )
-        residual = _project_higher_order_residual(parent_domains, child_domain, rng)
 
         def squared_norm(table: tuple[tuple[float, ...], ...]) -> float:
             return math.fsum(value * value for row in table for value in row)
 
-        for position, main in enumerate(mains):
-            self.assertAlmostEqual(squared_norm(main), 1.0, places=12)
-            own_projection = _parent_main_projection(main, parent_domains, position)
-            self.assertLess(
-                math.sqrt(
-                    math.fsum(
-                        (value - projected) ** 2
-                        for row, projected_row in zip(main, own_projection, strict=True)
-                        for value, projected in zip(row, projected_row, strict=True)
+        for order, block in enumerate(blocks, start=1):
+            self.assertAlmostEqual(squared_norm(block), 1.0, places=12)
+            for other_order in range(1, len(parent_domains) + 1):
+                components = tuple(
+                    _parent_interaction_projection(block, parent_domains, positions)
+                    for positions in combinations(range(len(parent_domains)), other_order)
+                )
+                projected = tuple(
+                    tuple(
+                        math.fsum(component[row][state] for component in components)
+                        for state in range(child_domain)
                     )
-                ),
-                1e-12,
-            )
-            for other_position in range(len(parent_domains)):
-                if other_position == position:
-                    continue
-                other_projection = _parent_main_projection(main, parent_domains, other_position)
-                self.assertLess(squared_norm(other_projection), 1e-24)
+                    for row in range(len(block))
+                )
+                self.assertAlmostEqual(
+                    squared_norm(projected),
+                    1.0 if other_order == order else 0.0,
+                    places=11,
+                )
 
-        self.assertAlmostEqual(squared_norm(residual), 1.0, places=12)
-        for position in range(len(parent_domains)):
-            projection = _parent_main_projection(residual, parent_domains, position)
-            self.assertLess(squared_norm(projection), 1e-24)
+        for left in range(len(blocks)):
+            for right in range(left + 1, len(blocks)):
+                inner = math.fsum(
+                    a * b
+                    for left_row, right_row in zip(blocks[left], blocks[right], strict=True)
+                    for a, b in zip(left_row, right_row, strict=True)
+                )
+                self.assertAlmostEqual(inner, 0.0, places=12)
 
-        shares = (0.1, 0.2, 0.3, 0.4)
-        combined = _combine_effect_blocks((*mains, residual), shares)
+        shares = (0.2, 0.3, 0.5)
+        combined = _combine_effect_blocks(blocks, shares)
         self.assertAlmostEqual(squared_norm(combined), 1.0, places=12)
-        lifted_main_total = [[0.0] * child_domain for _ in combined]
-        for position, expected_share in enumerate(shares[:-1]):
-            projection = _parent_main_projection(combined, parent_domains, position)
-            self.assertAlmostEqual(squared_norm(projection), expected_share, places=12)
-            for row_index, row in enumerate(projection):
-                for child_state, value in enumerate(row):
-                    lifted_main_total[row_index][child_state] += value
-        combined_residual = tuple(
-            tuple(
-                value - lifted_main_total[row_index][child_state]
-                for child_state, value in enumerate(row)
+        for order, expected_share in enumerate(shares, start=1):
+            components = tuple(
+                _parent_interaction_projection(combined, parent_domains, positions)
+                for positions in combinations(range(len(parent_domains)), order)
             )
-            for row_index, row in enumerate(combined)
-        )
-        self.assertAlmostEqual(squared_norm(combined_residual), shares[-1], places=12)
+            projection = tuple(
+                tuple(
+                    math.fsum(component[row][state] for component in components)
+                    for state in range(child_domain)
+                )
+                for row in range(len(combined))
+            )
+            self.assertAlmostEqual(squared_norm(projection), expected_share, places=11)
 
     def test_one_parent_block_sampling_preserves_the_original_direction_law_and_rng(self) -> None:
         separated_rng = random.Random(314159)
         original_rng = random.Random(314159)
-        separated = _sample_block_budgeted_effect((5,), 4, separated_rng)
+        separated = _sample_order_balanced_effect((5,), 4, separated_rng)
         original = _project_joint_effect(5, 4, original_rng)
 
         for separated_row, original_row in zip(separated, original, strict=True):
