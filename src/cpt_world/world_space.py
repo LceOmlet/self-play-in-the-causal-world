@@ -10,8 +10,10 @@ The main sampler owns one declared distribution:
 - CPTs use a simplex-uniform base distribution; categorical functional-ANOVA
   score blocks separate every nonempty parent subset, and a simplex-uniform
   energy split gives every subset the same expected squared energy. ET-V2 maps
-  the score table to probabilities by RMS-normalized exponential tilting. Its
-  uniform amplitude has one unit of expected squared score energy.
+  the score table to probabilities by RMS-normalized exponential tilting.
+  Single-parent tables receive the binary-preserving pairwise-contrast
+  correction declared by ADR 0026. The uniform amplitude has one unit of
+  expected squared score energy before that geometric correction.
 
 Generated worlds use ``float``/binary64 probabilities. Exact ``Fraction``
 worlds remain valid fixed fixtures and reference inputs.
@@ -271,9 +273,7 @@ def _project_parent_subset_effect(
             parent_domains,
             positions,
         )
-        norm = math.sqrt(
-            math.fsum(value * value for row in subset_projection for value in row)
-        )
+        norm = math.sqrt(math.fsum(value * value for row in subset_projection for value in row))
         if math.isfinite(norm) and norm > 0.0:
             return tuple(tuple(value / norm for value in row) for row in subset_projection)
 
@@ -364,6 +364,8 @@ def _exponential_tilt_rows(
     base: Sequence[float],
     direction: Sequence[Sequence[float]],
     strength: float,
+    *,
+    score_scale: float = 1.0,
 ) -> tuple[tuple[float, ...], ...]:
     """Map one effect-score table to legal CPT rows under ET-V2.
 
@@ -380,9 +382,10 @@ def _exponential_tilt_rows(
         raise ValueError("effect direction must be a nonempty table matching the base")
     if not math.isfinite(strength) or not 0.0 <= strength <= _ET_V2_STRENGTH_CEILING:
         raise ValueError(
-            "effect strength must be finite and lie in "
-            f"[0, {_ET_V2_STRENGTH_CEILING}]"
+            f"effect strength must be finite and lie in [0, {_ET_V2_STRENGTH_CEILING}]"
         )
+    if not math.isfinite(score_scale) or score_scale <= 0.0:
+        raise ValueError("score_scale must be finite and positive")
 
     squared_rms = math.fsum(value * value for row in direction for value in row) / (
         len(direction) * len(base)
@@ -394,7 +397,7 @@ def _exponential_tilt_rows(
     cpt_rows: list[tuple[float, ...]] = []
     for row in direction:
         log_weights = tuple(
-            math.log(base[state]) + strength * inverse_rms * value
+            math.log(base[state]) + strength * score_scale * inverse_rms * value
             for state, value in enumerate(row)
         )
         maximum = max(log_weights)
@@ -410,6 +413,24 @@ def _sample_et_v2_strength(rng: random.Random) -> float:
     """Draw uniform amplitude with one unit of expected squared score energy."""
 
     return _ET_V2_STRENGTH_CEILING * rng.random()
+
+
+def _single_parent_pairwise_score_scale(parent_domain_size: int) -> float:
+    """Preserve the binary ET-V2 mean pairwise score contrast for ``k`` states.
+
+    An RMS-normalized, parent-state-centred score table has mean squared
+    elementwise row-pair contrast ``2k / (k - 1)``. The binary value is four,
+    so this label-exchangeable correction is one for ``k=2`` and removes only
+    the geometric attenuation introduced by additional parent states.
+    """
+
+    if (
+        isinstance(parent_domain_size, bool)
+        or not isinstance(parent_domain_size, int)
+        or parent_domain_size < 2
+    ):
+        raise ValueError("parent_domain_size must be an integer >= 2")
+    return math.sqrt(2.0 * (parent_domain_size - 1) / parent_domain_size)
 
 
 def _shortest_path_nodes(world: WorldSpec, source: int, target: int) -> tuple[int, ...] | None:
@@ -574,10 +595,16 @@ def _build_world(
         else:
             parent_domains = tuple(structure.domains[parent] for parent in node_parents)
             direction = _sample_parent_subset_balanced_effect(parent_domains, domain_size, rng)
+            score_scale = (
+                _single_parent_pairwise_score_scale(parent_domains[0])
+                if len(parent_domains) == 1
+                else 1.0
+            )
             cpt[node] = _exponential_tilt_rows(
                 base,
                 direction,
                 _sample_et_v2_strength(rng),
+                score_scale=score_scale,
             )
     return WorldSpec(
         family="sampled_dag",

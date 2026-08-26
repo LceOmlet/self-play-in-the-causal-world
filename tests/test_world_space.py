@@ -48,6 +48,7 @@ from cpt_world.world_space import (
     _project_parent_subset_effect,
     _sample_et_v2_strength,
     _sample_parent_subset_balanced_effect,
+    _single_parent_pairwise_score_scale,
 )
 
 
@@ -496,6 +497,50 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 direction,
                 math.nextafter(_ET_V2_STRENGTH_CEILING, math.inf),
             )
+
+    def test_single_parent_pairwise_score_scale_preserves_binary_contrast(self) -> None:
+        rng = random.Random(141421)
+        for parent_domain_size in range(2, 6):
+            child_domain_size = 4
+            direction = _sample_parent_subset_balanced_effect(
+                (parent_domain_size,),
+                child_domain_size,
+                rng,
+            )
+            squared_rms = math.fsum(value * value for row in direction for value in row) / (
+                parent_domain_size * child_domain_size
+            )
+            score_scale = _single_parent_pairwise_score_scale(parent_domain_size)
+            normalized = tuple(
+                tuple(score_scale * value / math.sqrt(squared_rms) for value in row)
+                for row in direction
+            )
+            mean_pairwise_squared_contrast = math.fsum(
+                (normalized[left][state] - normalized[right][state]) ** 2
+                for left in range(parent_domain_size)
+                for right in range(left + 1, parent_domain_size)
+                for state in range(child_domain_size)
+            ) / (math.comb(parent_domain_size, 2) * child_domain_size)
+            self.assertAlmostEqual(mean_pairwise_squared_contrast, 4.0, places=11)
+
+        self.assertEqual(_single_parent_pairwise_score_scale(2), 1.0)
+        with self.assertRaises(ValueError):
+            _single_parent_pairwise_score_scale(1)
+
+    def test_et_v2_score_scale_changes_only_the_declared_radial_coordinate(self) -> None:
+        base = (0.6, 0.3, 0.1)
+        direction = ((1.0, -0.5, -0.5), (-1.0, 0.5, 0.5))
+        scale = _single_parent_pairwise_score_scale(5)
+        scaled = _exponential_tilt_rows(
+            base,
+            direction,
+            0.8,
+            score_scale=scale,
+        )
+        equivalent = _exponential_tilt_rows(base, direction, 0.8 * scale)
+        self.assertEqual(scaled, equivalent)
+        with self.assertRaises(ValueError):
+            _exponential_tilt_rows(base, direction, 0.8, score_scale=0.0)
 
     def test_task_target_profiling_reports_distribution_without_thresholds(self) -> None:
         for seed in range(50):

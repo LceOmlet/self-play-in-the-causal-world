@@ -80,7 +80,10 @@ grid. In the current implementation:
 - ET-V2 maps the combined score direction to probabilities with an
   RMS-normalized exponential tilt, so an unrelated rare state cannot impose a
   global additive zero-wall on every effect; its bounded uniform amplitude has
-  one unit of expected squared score energy;
+  one unit of expected squared score energy; for a single-parent CPT, a
+  binary-preserving pairwise-contrast scale removes the geometric attenuation
+  caused only by adding parent states without selecting any distinguished
+  state pair;
 - legal query anchors are derived from the sampled world;
 - task-family answerability remains an optional diagnostic and is not applied
   as a generation label, filter, or admission check;
