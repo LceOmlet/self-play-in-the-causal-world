@@ -1,0 +1,192 @@
+diff --git a/trl/generation/vllm_generation.py b/trl/generation/vllm_generation.py
+index 46da584..dad1d90 100644
+--- a/trl/generation/vllm_generation.py
++++ b/trl/generation/vllm_generation.py
+@@ -17,7 +17,7 @@
+ import logging
+ import math
+ import os
+-from contextlib import nullcontext
++from contextlib import contextmanager, nullcontext
+ from typing import TYPE_CHECKING
+ 
+ import torch
+@@ -241,6 +241,10 @@ class VLLMGeneration:
+         max_model_length: int | None = None,
+         max_num_seqs: int | None = None,
+         enable_sleep_mode: bool = False,
++        rollout_residency: bool = False,
++        enable_prefix_caching: bool | None = None,
++        speculative_config: dict | None = None,
++        sleep_level: int = 2,
+         model_impl: str = "auto",
+         trust_remote_code: bool = False,
+         # Generation configuration
+@@ -275,6 +279,13 @@ class VLLMGeneration:
+         self.max_model_length = max_model_length
+         self.max_num_seqs = max_num_seqs
+         self.enable_sleep_mode = enable_sleep_mode
++        self.rollout_residency = rollout_residency
++        self.enable_prefix_caching = enable_prefix_caching
++        self.speculative_config = speculative_config
++        if sleep_level not in (1, 2):
++            raise ValueError(f"sleep_level must be 1 or 2, got {sleep_level}.")
++        self.sleep_level = sleep_level
++        self._rollout_session_depth = 0
+         self.model_impl = model_impl
+         self.trust_remote_code = trust_remote_code
+ 
+@@ -355,6 +366,8 @@ class VLLMGeneration:
+                 max_model_len=self.max_model_length,
+                 max_num_seqs=self.max_num_seqs,
+                 enable_sleep_mode=self.enable_sleep_mode,
++                enable_prefix_caching=self.enable_prefix_caching,
++                speculative_config=self.speculative_config,
+                 model_impl=self.model_impl,
+                 distributed_executor_backend="external_launcher",
+                 # Feed identical seed for tp groups to ensure sampling results are the same across workers
+@@ -367,9 +380,10 @@ class VLLMGeneration:
+                 trust_remote_code=self.trust_remote_code,
+             )
+             if self.enable_sleep_mode:
+-                self.llm.sleep(level=2)
+-            # Sleep level 2 discards the weights; track it so that generate() knows it must re-push them
++                self.llm.sleep(level=self.sleep_level)
++            # Track sleeping weights so generate() can restore them before pushing the current training weights.
+             self._llm_weights_sleeping = self.enable_sleep_mode
++            self._llm_kv_cache_sleeping = self.enable_sleep_mode
+         else:
+             raise ValueError(f"vllm_mode must be either 'server' or 'colocate', got '{self.mode}'.")
+ 
+@@ -451,7 +465,7 @@ class VLLMGeneration:
+         # Wake up vLLM weights before loading to ensure device memory is mapped. Without this, load_weights() writes to
+         # freed/unmapped memory when sleep mode is active, which crashes on backends with strict physical memory
+         # management (e.g., Ascend NPU). See https://github.com/huggingface/trl/issues/5142
+-        if self.mode == "colocate" and self.enable_sleep_mode:
++        if self.mode == "colocate" and self.enable_sleep_mode and self._llm_weights_sleeping:
+             empty_cache()  # required to avoid OOM in some cases
+             self.llm.wake_up(tags=["weights"])
+             self._llm_weights_sleeping = False
+@@ -503,6 +517,39 @@ class VLLMGeneration:
+         elif self.mode == "colocate":
+             self.llm.reset_prefix_cache()
+ 
++    def _wake_kv_cache(self):
++        """Restore the KV-cache memory once before colocated generation."""
++        if self.enable_sleep_mode and self._llm_kv_cache_sleeping:
++            self.llm.wake_up(tags=["kv_cache"])
++            self._llm_kv_cache_sleeping = False
++
++    def _sleep_llm(self):
++        """Release colocated inference memory at the configured vLLM sleep level."""
++        if self.enable_sleep_mode:
++            self.llm.sleep(level=self.sleep_level)
++            self._llm_weights_sleeping = True
++            self._llm_kv_cache_sleeping = True
++
++    @contextmanager
++    def rollout_session(self):
++        """Keep colocated vLLM awake across all turns of one tool-using rollout.
++
++        With rollout residency disabled this context is inert and generate() retains
++        the upstream per-call wake/sleep lifecycle. Nested sessions sleep only when
++        the outermost session exits, including on generation or tool exceptions.
++        """
++        if self.mode != "colocate" or not self.enable_sleep_mode or not self.rollout_residency:
++            yield
++            return
++
++        self._rollout_session_depth += 1
++        try:
++            yield
++        finally:
++            self._rollout_session_depth -= 1
++            if self._rollout_session_depth == 0:
++                self._sleep_llm()
++
+     def generate(
+         self,
+         prompts: list[list[int]],
+@@ -650,8 +697,7 @@ class VLLMGeneration:
+                 all_prompts = prompts
+                 all_images = images
+ 
+-            if self.enable_sleep_mode:
+-                self.llm.wake_up(tags=["kv_cache"])
++            self._wake_kv_cache()
+ 
+             # Build vLLM-compatible prompt inputs with token IDs and optional multi-modal data
+             vllm_prompts = []
+@@ -696,8 +742,7 @@ class VLLMGeneration:
+                 logprobs = all_logprobs
+                 logprob_token_ids = all_logprob_token_ids
+ 
+-            if self.enable_sleep_mode:
+-                self.llm.sleep(level=2)
+-                self._llm_weights_sleeping = True
++            if self.enable_sleep_mode and self._rollout_session_depth == 0:
++                self._sleep_llm()
+ 
+         return prompt_ids, completion_ids, logprobs, logprob_token_ids
+diff --git a/trl/trainer/grpo_config.py b/trl/trainer/grpo_config.py
+index 96bf944..7817b84 100644
+--- a/trl/trainer/grpo_config.py
++++ b/trl/trainer/grpo_config.py
+@@ -609,6 +609,29 @@ class GRPOConfig(_BaseConfig):
+             "usage low, but waking the engine adds host–device transfer latency."
+         },
+     )
++    vllm_rollout_residency: bool = field(
++        default=False,
++        metadata={
++            "help": "Keep colocated vLLM weights and KV cache awake across all tool turns in one rollout, then "
++            "sleep once before training. Only applies when vllm_enable_sleep_mode=True."
++        },
++    )
++    vllm_enable_prefix_caching: bool | None = field(
++        default=None,
++        metadata={
++            "help": "Enable vLLM automatic prefix caching in colocate mode. None preserves the vLLM default."
++        },
++    )
++    vllm_speculative_config: dict | None = field(
++        default=None,
++        metadata={"help": "Optional vLLM speculative decoding configuration passed to the colocated LLM."},
++    )
++    vllm_sleep_level: int = field(
++        default=2,
++        metadata={
++            "help": "vLLM sleep level used between rollout generation and training. Must be 1 or 2."
++        },
++    )
+     vllm_structured_outputs_regex: str | None = field(
+         default=None,
+         metadata={"help": "Regex for vLLM structured outputs. If `None` (default), structured outputs is disabled."},
+diff --git a/trl/trainer/grpo_trainer.py b/trl/trainer/grpo_trainer.py
+index 660a27e..cb7e5da 100644
+--- a/trl/trainer/grpo_trainer.py
++++ b/trl/trainer/grpo_trainer.py
+@@ -1106,6 +1106,10 @@ class GRPOTrainer(_BaseTrainer):
+                 * args.vllm_tensor_parallel_size
+                 * args.steps_per_generation,
+                 enable_sleep_mode=args.vllm_enable_sleep_mode,
++                rollout_residency=args.vllm_rollout_residency,
++                enable_prefix_caching=args.vllm_enable_prefix_caching,
++                speculative_config=args.vllm_speculative_config,
++                sleep_level=args.vllm_sleep_level,
+                 model_impl=args.vllm_model_impl,
+                 trust_remote_code=args.trust_remote_code,
+                 # Generation configuration
+@@ -2311,6 +2315,12 @@ class GRPOTrainer(_BaseTrainer):
+         return tool_mask, completions, completion_ids, logprobs, tool_call_count, tool_failure_count, tool_images
+ 
+     def _generate(self, prompts: list):
++        if self.use_vllm and self.args.vllm_rollout_residency:
++            with self.vllm_generation.rollout_session():
++                return self._generate_impl(prompts)
++        return self._generate_impl(prompts)
++
++    def _generate_impl(self, prompts: list):
+         device = self.accelerator.device
+         mode = "train" if self.model.training else "eval"
+ 

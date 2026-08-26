@@ -9,7 +9,12 @@ MAX_STEPS=${MAX_STEPS:-10000}
 MAX_MODEL_LENGTH=${MAX_MODEL_LENGTH:-32768}
 MAX_COMPLETION_LENGTH=${MAX_COMPLETION_LENGTH:-31497}
 VLLM_MEMORY_UTILIZATION=${VLLM_MEMORY_UTILIZATION:-0.50}
-SAVE_STEPS=${SAVE_STEPS:-50}
+VLLM_ROLLOUT_RESIDENCY=${VLLM_ROLLOUT_RESIDENCY:-1}
+VLLM_ENABLE_PREFIX_CACHING=${VLLM_ENABLE_PREFIX_CACHING:-1}
+VLLM_MTP_SPECULATIVE_TOKENS=${VLLM_MTP_SPECULATIVE_TOKENS:-1}
+VLLM_SLEEP_LEVEL=${VLLM_SLEEP_LEVEL:-1}
+CAPTURE_ROLLOUTS=${CAPTURE_ROLLOUTS:-0}
+SAVE_STEPS=${SAVE_STEPS:-10000}
 SAVE_TOTAL_LIMIT=${SAVE_TOTAL_LIMIT:-5}
 REWARD_UTILITY_EPSILON=${REWARD_UTILITY_EPSILON:-0.02}
 FLA_KERNEL_DIR=${FLA_KERNEL_DIR:-/home/chen/kernels/fla-v1-398dfa8c}
@@ -25,7 +30,7 @@ export PYTORCH_ALLOC_CONF=expandable_segments:True
 export TORCHDYNAMO_SUPPRESS_ERRORS=1
 
 nvidia-smi \
-  --query-gpu=timestamp,memory.used,memory.free,utilization.gpu,power.draw \
+  --query-gpu=timestamp,temperature.gpu,memory.used,memory.free,utilization.gpu,power.draw \
   --format=csv,noheader,nounits \
   --loop=1 >"$RUN_DIR/gpu-telemetry.csv" &
 MONITOR_PID=$!
@@ -41,6 +46,25 @@ if [[ -n "$RESUME_FROM_CHECKPOINT" ]]; then
   resume_args+=(--resume-from-checkpoint "$RESUME_FROM_CHECKPOINT")
 fi
 
+rollout_acceleration_args=(--vllm-sleep-level "$VLLM_SLEEP_LEVEL")
+if [[ "$VLLM_ROLLOUT_RESIDENCY" == "1" ]]; then
+  rollout_acceleration_args+=(--vllm-rollout-residency)
+fi
+if [[ "$VLLM_ENABLE_PREFIX_CACHING" == "1" ]]; then
+  rollout_acceleration_args+=(--vllm-enable-prefix-caching)
+elif [[ "$VLLM_ENABLE_PREFIX_CACHING" == "0" ]]; then
+  rollout_acceleration_args+=(--no-vllm-enable-prefix-caching)
+elif [[ "$VLLM_ENABLE_PREFIX_CACHING" != "default" ]]; then
+  echo "VLLM_ENABLE_PREFIX_CACHING must be default, 0, or 1" >&2
+  exit 2
+fi
+if [[ "$VLLM_MTP_SPECULATIVE_TOKENS" != "0" ]]; then
+  rollout_acceleration_args+=(--vllm-mtp-speculative-tokens "$VLLM_MTP_SPECULATIVE_TOKENS")
+fi
+if [[ "$CAPTURE_ROLLOUTS" == "1" ]]; then
+  rollout_acceleration_args+=(--capture-rollouts)
+fi
+
 cd "$PROJECT_DIR"
 "$ENV_DIR/bin/python" scripts/train_grpo_resource_smoke.py \
   --model "$MODEL_DIR" \
@@ -49,6 +73,7 @@ cd "$PROJECT_DIR"
   --max-completion-length "$MAX_COMPLETION_LENGTH" \
   --max-model-length "$MAX_MODEL_LENGTH" \
   --vllm-memory-utilization "$VLLM_MEMORY_UTILIZATION" \
+  "${rollout_acceleration_args[@]}" \
   --save-steps "$SAVE_STEPS" \
   --save-total-limit "$SAVE_TOTAL_LIMIT" \
   --reward-utility-epsilon "$REWARD_UTILITY_EPSILON" \
