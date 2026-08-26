@@ -204,7 +204,7 @@ def run_probe(start_seed: int, count: int, endpoint_seconds: float) -> dict[str,
         "contract": {
             "query": "individual_counterfactual_probability",
             "conditioning": "assigned factual treatment and observed factual outcome",
-            "node_counts": [3, 15],
+            "node_counts": [8, 16],
             "start_seed": start_seed,
             "count": count,
             "requested_scip_endpoint_seconds": endpoint_seconds,

@@ -4,7 +4,7 @@ status: accepted
 
 # Preserve node count under task eligibility sampling
 
-Each episode first samples its node count uniformly from 3 through 15. That
+Each episode first samples its node count uniformly from 8 through 16. That
 count remains fixed while DAGs of the same size are resampled until the chosen
 task's structural eligibility condition is satisfied.
 

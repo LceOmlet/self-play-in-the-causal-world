@@ -16,7 +16,7 @@ from math import fsum, isfinite, prod
 from typing import Any
 
 from .registry import OWNER_STATUS_IMPLEMENTED, query_truth_owner_status
-from .world_space import Probability, WorldSpec
+from .world_space import Probability, WorldSpec, _backdoor_separated_structure
 
 _PROBABILITY_TOLERANCE = 1e-12
 
@@ -1285,44 +1285,13 @@ def _backdoor_separated(
     remaining polynomial in the graph size for each candidate set.
     """
 
-    backdoor_edges = tuple(edge for edge in world.edges if edge[0] != treatment)
-    parents: dict[int, set[int]] = {node: set() for node in range(len(world.variables))}
-    for parent, child in backdoor_edges:
-        parents[child].add(parent)
-
-    ancestors = {treatment, outcome, *condition}
-    stack = list(ancestors)
-    while stack:
-        child = stack.pop()
-        for parent in parents[child]:
-            if parent not in ancestors:
-                ancestors.add(parent)
-                stack.append(parent)
-
-    moral_neighbors = {node: set() for node in ancestors}
-    for parent, child in backdoor_edges:
-        if parent in ancestors and child in ancestors:
-            moral_neighbors[parent].add(child)
-            moral_neighbors[child].add(parent)
-    for child in ancestors:
-        relevant_parents = sorted(parents[child] & ancestors)
-        for left_index, left in enumerate(relevant_parents):
-            for right in relevant_parents[left_index + 1 :]:
-                moral_neighbors[left].add(right)
-                moral_neighbors[right].add(left)
-
-    reachable = {treatment}
-    stack = [treatment]
-    while stack:
-        current = stack.pop()
-        for neighbor in moral_neighbors[current]:
-            if neighbor in condition or neighbor in reachable:
-                continue
-            if neighbor == outcome:
-                return False
-            reachable.add(neighbor)
-            stack.append(neighbor)
-    return outcome not in reachable
+    return _backdoor_separated_structure(
+        len(world.variables),
+        world.edges,
+        treatment,
+        outcome,
+        condition,
+    )
 
 
 def backdoor_adjustment_sets(

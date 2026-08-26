@@ -2,7 +2,7 @@
 
 The main sampler owns one declared distribution:
 
-- node count is uniform over ``node_counts``;
+- node count is uniform over ``node_counts`` (8 through 16 by default);
 - node cardinalities are independent and uniform over ``2..max_domain_size``;
 - the node order is a uniform permutation;
 - each node's parent count is uniform over ``0..min(3, predecessor_count)``;
@@ -11,9 +11,10 @@ The main sampler owns one declared distribution:
   score blocks separate every nonempty parent subset, and a simplex-uniform
   energy split gives every subset the same expected squared energy. ET-V2 maps
   the score table to probabilities by RMS-normalized exponential tilting.
-  Single-parent tables receive the binary-preserving pairwise-contrast
-  correction declared by ADR 0026. The uniform amplitude has one unit of
-  expected squared score energy before that geometric correction.
+  Every parent-bearing table receives the binary-preserving contextual
+  parent-pair contrast correction declared by ADR 0026. The uniform amplitude
+  has one unit of expected squared score energy before that geometric
+  correction.
 
 Generated worlds use ``float``/binary64 probabilities. Exact ``Fraction``
 worlds remain valid fixed fixtures and reference inputs.
@@ -43,9 +44,11 @@ from .registry import (
 
 _LABEL_POOL = "DEFGHIJKLMNOPQRSTUVW"
 
-DEFAULT_NODE_COUNTS = tuple(range(3, 16))
-_MAX_GRAMMAR_NODES = 15
+DEFAULT_NODE_COUNTS = tuple(range(8, 17))
+_MAX_GRAMMAR_NODES = 16
 _MAX_PARENT_COUNT = 3
+_BACKDOOR_COMPLEXITIES = (0, 1, 2, 3)
+_BACKDOOR_STRATIFIED_QUERY_TYPES = frozenset({"ate", "backadj_minimal_sets"})
 _CPT_VALIDITY_TOLERANCE = 1e-12
 _ET_V2_STRENGTH_CEILING = math.sqrt(3.0)
 
@@ -433,6 +436,71 @@ def _single_parent_pairwise_score_scale(parent_domain_size: int) -> float:
     return math.sqrt(2.0 * (parent_domain_size - 1) / parent_domain_size)
 
 
+def _contextual_parent_pair_score_scale(
+    direction: Sequence[Sequence[float]],
+    parent_domains: Sequence[int],
+) -> float:
+    """Normalize one-parent score changes to the binary ET-V2 reference.
+
+    For each parent, compare every pair of its states while holding all other
+    parents fixed. The mean squared elementwise score contrast is averaged
+    symmetrically over parents, contexts, state pairs, and child states. The
+    returned ``score_scale`` makes that contrast exactly four after ET-V2's
+    elementwise RMS normalization. With one parent this is exactly the
+    correction returned by :func:`_single_parent_pairwise_score_scale`.
+    """
+
+    domains = tuple(parent_domains)
+    if not domains or any(
+        isinstance(domain, bool) or not isinstance(domain, int) or domain < 2
+        for domain in domains
+    ):
+        raise ValueError("parent_domains must contain integers >= 2")
+    row_count = math.prod(domains)
+    if len(direction) != row_count or not direction or not direction[0]:
+        raise ValueError("effect direction row count must match parent_domains")
+    child_domain = len(direction[0])
+    if any(
+        len(row) != child_domain or any(not math.isfinite(value) for value in row)
+        for row in direction
+    ):
+        raise ValueError("effect direction must be a finite rectangular table")
+
+    parent_contrasts: list[float] = []
+    for position, parent_domain in enumerate(domains):
+        suffix_count = math.prod(domains[position + 1 :])
+        prefix_count = math.prod(domains[:position])
+        squared_contrast = math.fsum(
+            (
+                direction[(prefix * parent_domain + left) * suffix_count + suffix][state]
+                - direction[(prefix * parent_domain + right) * suffix_count + suffix][state]
+            )
+            ** 2
+            for prefix in range(prefix_count)
+            for suffix in range(suffix_count)
+            for left in range(parent_domain)
+            for right in range(left + 1, parent_domain)
+            for state in range(child_domain)
+        )
+        comparison_count = (
+            prefix_count
+            * suffix_count
+            * math.comb(parent_domain, 2)
+            * child_domain
+        )
+        parent_contrasts.append(squared_contrast / comparison_count)
+
+    mean_squared_contrast = math.fsum(parent_contrasts) / len(parent_contrasts)
+    squared_rms = math.fsum(value * value for row in direction for value in row) / (
+        row_count * child_domain
+    )
+    if not math.isfinite(mean_squared_contrast) or mean_squared_contrast <= 0.0:
+        raise ValueError("effect direction has no finite positive parent-state contrast")
+    if not math.isfinite(squared_rms) or squared_rms <= 0.0:
+        raise ValueError("effect direction must have finite positive RMS")
+    return 2.0 * math.sqrt(squared_rms / mean_squared_contrast)
+
+
 def _shortest_path_nodes(world: WorldSpec, source: int, target: int) -> tuple[int, ...] | None:
     """Return one shortest directed path from source to target, or None."""
 
@@ -598,7 +666,10 @@ def _build_world(
             score_scale = (
                 _single_parent_pairwise_score_scale(parent_domains[0])
                 if len(parent_domains) == 1
-                else 1.0
+                else _contextual_parent_pair_score_scale(
+                    direction,
+                    parent_domains,
+                )
             )
             cpt[node] = _exponential_tilt_rows(
                 base,
@@ -645,7 +716,6 @@ def _task_target_metrics(
     from .query_truth import (
         ate_effect,
         best_intervention_truth,
-        individual_counterfactual_frechet_outer_bounds,
         interventional_probability,
     )
 
@@ -662,32 +732,11 @@ def _task_target_metrics(
             "baseline": baseline,
         }
     if query_type == "individual_counterfactual_probability":
-        treatment = int(anchors["treatment"])
-        factual_value = int(anchors.get("factual_value", 0))
-        counterfactual_value = int(anchors.get("counterfactual_value", 1))
-        factual_outcome_state = int(anchors.get("factual_outcome_state", 0))
-        target_outcome_state = int(anchors.get("outcome_state", 1))
-        lower, upper = individual_counterfactual_frechet_outer_bounds(
-            world,
-            treatment,
-            outcome,
-            factual_value=factual_value,
-            counterfactual_value=counterfactual_value,
-            factual_outcome_state=factual_outcome_state,
-            target_outcome_state=target_outcome_state,
+        raise NotImplementedError(
+            "generic target profiling cannot substitute Frechet outer bounds "
+            "for the exact individual-counterfactual target; use the exact "
+            "counterfactual solver probe, which records timeouts as unresolved"
         )
-        factual_probability = interventional_probability(
-            world,
-            {treatment: factual_value},
-            outcome,
-            factual_outcome_state,
-        )
-        return {
-            # This cheap diagnostic measures marginal ambiguity only. The task
-            # truth owner still computes the exact compatible interval.
-            "target": upper - lower,
-            "baseline": factual_probability,
-        }
     if query_type == "best_intervention":
         objective = str(anchors.get("objective", "minimize"))
         _, _, best_probability = best_intervention_truth(
@@ -774,7 +823,7 @@ def sample_task_world(
     node_count = rng.choice(grammar.node_counts)
     while True:
         structure = _sample_structure_at_size(grammar, node_count, rng)
-        roles = _legal_role_assignments(node_count, structure.edges, query_type)
+        roles = _sampled_role_assignments(node_count, structure.edges, query_type, seed)
         if roles:
             break
     world = _build_world(structure, rng)
@@ -1443,6 +1492,146 @@ def _legal_role_assignments(
     return ()
 
 
+def _descendant_nodes(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    node: int,
+) -> frozenset[int]:
+    adjacency: list[list[int]] = [[] for _ in range(node_count)]
+    for parent, child in edges:
+        adjacency[parent].append(child)
+    seen: set[int] = set()
+    stack = [node]
+    while stack:
+        current = stack.pop()
+        for child in adjacency[current]:
+            if child not in seen:
+                seen.add(child)
+                stack.append(child)
+    return frozenset(seen)
+
+
+def _backdoor_separated_structure(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    treatment: int,
+    outcome: int,
+    condition: frozenset[int],
+) -> bool:
+    """Test back-door separation from graph structure alone."""
+
+    backdoor_edges = tuple(edge for edge in edges if edge[0] != treatment)
+    parents: list[set[int]] = [set() for _ in range(node_count)]
+    for parent, child in backdoor_edges:
+        parents[child].add(parent)
+
+    ancestors = {treatment, outcome, *condition}
+    stack = list(ancestors)
+    while stack:
+        child = stack.pop()
+        for parent in parents[child]:
+            if parent not in ancestors:
+                ancestors.add(parent)
+                stack.append(parent)
+
+    moral_neighbors = {node: set() for node in ancestors}
+    for parent, child in backdoor_edges:
+        if parent in ancestors and child in ancestors:
+            moral_neighbors[parent].add(child)
+            moral_neighbors[child].add(parent)
+    for child in ancestors:
+        relevant_parents = sorted(parents[child] & ancestors)
+        for left_index, left in enumerate(relevant_parents):
+            for right in relevant_parents[left_index + 1 :]:
+                moral_neighbors[left].add(right)
+                moral_neighbors[right].add(left)
+
+    reachable = {treatment}
+    stack = [treatment]
+    while stack:
+        current = stack.pop()
+        for neighbor in moral_neighbors[current]:
+            if neighbor in condition or neighbor in reachable:
+                continue
+            if neighbor == outcome:
+                return False
+            reachable.add(neighbor)
+            stack.append(neighbor)
+    return outcome not in reachable
+
+
+def _minimum_backdoor_adjustment_size(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    treatment: int,
+    outcome: int,
+) -> int:
+    """Return the exact minimum back-door set size for one ordered pair.
+
+    The treatment's parents always form a valid set. Since the graph grammar
+    caps their count at three, exact search only needs subsets smaller than
+    that known upper bound.
+    """
+
+    treatment_parents = tuple(parent for parent, child in edges if child == treatment)
+    upper_bound = len(treatment_parents)
+    if upper_bound > _MAX_PARENT_COUNT:
+        raise ValueError("graph exceeds the declared parent-count bound")
+    descendants = _descendant_nodes(node_count, edges, treatment)
+    allowed = tuple(
+        node
+        for node in range(node_count)
+        if node not in {treatment, outcome} and node not in descendants
+    )
+    for size in range(upper_bound):
+        for subset in combinations(allowed, size):
+            if _backdoor_separated_structure(
+                node_count,
+                edges,
+                treatment,
+                outcome,
+                frozenset(subset),
+            ):
+                return size
+    return upper_bound
+
+
+def _sampled_backdoor_complexity(seed: int, query_type: str) -> int:
+    seed_id = f"SAMPLED-{seed}-{query_type}"
+    return _axis_rng(seed_id, "backdoor-complexity").choice(_BACKDOOR_COMPLEXITIES)
+
+
+def _sampled_role_assignments(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    query_type: str,
+    seed: int,
+) -> tuple[dict[str, int], ...]:
+    """Return the role population used by the formal task sampler.
+
+    The official 8--16-node ATE and back-door families first draw one of the
+    four possible minimum adjustment-set sizes uniformly, then condition only
+    on structural roles having that size. Smaller custom grammars retain the
+    unstratified role population used by unit tests and explicit diagnostics.
+    """
+
+    roles = _legal_role_assignments(node_count, edges, query_type)
+    if query_type not in _BACKDOOR_STRATIFIED_QUERY_TYPES or node_count < 8:
+        return roles
+    target = _sampled_backdoor_complexity(seed, query_type)
+    return tuple(
+        role
+        for role in roles
+        if _minimum_backdoor_adjustment_size(
+            node_count,
+            edges,
+            role["treatment"],
+            role["outcome"],
+        )
+        == target
+    )
+
+
 def legal_query_anchors(world: WorldSpec, query_type: str) -> tuple[dict[str, int], ...]:
     """Return every structurally legal variable-role assignment for a query.
 
@@ -1870,7 +2059,12 @@ def assemble_sampled_anchor_tasks(
         raise ValueError(f"generic sampler does not admit query type: {query_type}")
 
     task_world = sample_task_world(grammar, sample_index, query_type)
-    legal_anchors = legal_query_anchors(task_world, query_type)
+    legal_anchors = _sampled_role_assignments(
+        len(task_world.variables),
+        task_world.edges,
+        query_type,
+        sample_index,
+    )
     if anchor_index >= len(legal_anchors):
         raise ValueError("anchor_index is outside the legal query anchors")
     roles = legal_anchors[anchor_index]
@@ -1944,7 +2138,12 @@ def iter_sampled_seeds(
     for sample_index in range(start_seed, start_seed + count):
         for query_type in query_types:
             task_world = sample_task_world(grammar, sample_index, query_type)
-            legal_roles = legal_query_anchors(task_world, query_type)
+            legal_roles = _sampled_role_assignments(
+                len(task_world.variables),
+                task_world.edges,
+                query_type,
+                sample_index,
+            )
             role_seed_id = f"SAMPLED-{sample_index}-{query_type}"
             anchor_index = _axis_rng(role_seed_id, "variable-role").randrange(len(legal_roles))
             generated.extend(

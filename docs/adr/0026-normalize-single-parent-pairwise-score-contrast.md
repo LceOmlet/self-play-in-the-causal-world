@@ -4,7 +4,7 @@ implementation: implemented
 amends: 0022-use-et-v2-exponential-tilting
 ---
 
-# Normalize single-parent scores by mean pairwise contrast
+# Normalize scores by contextual parent-pair contrast
 
 For a single-parent CPT with parent cardinality (k), retain the
 simplex-uniform base, the isotropic pure-main-effect score direction, the
@@ -35,9 +35,26 @@ parent-cardinality attenuation. It treats every parent-state pair
 symmetrically, changes neither the sampled direction nor child-state transfer
 direction, and introduces no task-answer or realized-effect filtering.
 
-The correction is intentionally limited to single-parent CPTs. Multi-parent
-tables retain ADR 0024 and ADR 0025 unchanged until their conditional
-main-effect and interaction geometry is reviewed separately.
+For a multi-parent score table, extend the same geometry without changing its
+sampled ANOVA direction. For each parent, compare every pair of its states
+while holding all other parents fixed. Average the squared elementwise score
+contrast symmetrically over parents, fixed contexts, parent-state pairs, and
+child states:
+
+\[
+\sigma_{\rm tr}^2(D)
+=
+\operatorname{Avg}_{j,a_j<a'_j,a_{-j},y}
+\left[D(a_j,a_{-j},y)-D(a'_j,a_{-j},y)\right]^2.
+\]
+
+Render the ET-V2 score as \(2D/\sigma_{\rm tr}\). This changes only the radial
+coordinate. Parent-subset directions and their realized energy shares from
+ADR 0024 remain identical. High-order interactions count as transmission when
+changing a participating parent changes the child distribution in a fixed
+context; they are not suppressed because their marginal effect may cancel.
+The single-parent branch continues to use the analytic scale above and is
+bit-for-bit unchanged.
 
 In a paired, fixed-seed 2,000-world prototype, the correction left binary
 single-route CPTs unchanged. For parent cardinalities three, four, and five,
@@ -46,3 +63,14 @@ the median realized row-pair TV changed from 0.380/0.323/0.297 to
 changed from 0.125/0.185/0.209 to 0.078/0.122/0.144. For five-state parents,
 the share of generated rows with maximum probability above 0.99 changed from
 about 2.9% to 4.8%.
+
+In a paired 1,000-seed probe of the 8--16-node task sampler, the contextual
+extension changed the median conditional row-pair TV for two- and three-parent
+CPTs from 0.259/0.251 to 0.333/0.332. The corresponding Kolmogorov--Smirnov
+distances to a uniform TV law changed from 0.337/0.415 to 0.234/0.310. Median
+absolute ATE changed from 0.0230 to 0.0364 and its below-0.01 share from 38.1%
+to 29.5%. Median decision gap changed from 0.0289 to 0.0372 and its below-0.01
+share from 32.8% to 28.4%. The share of CPT rows with maximum probability above
+0.99 changed from 2.83% to 6.72%; 93.28% of rows remain outside that near-
+deterministic tail. Graphs, roles, energy directions, and all structural task
+truths were paired identically.

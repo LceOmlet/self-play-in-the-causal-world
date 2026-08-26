@@ -6,11 +6,13 @@ import math
 import random
 import re
 import unittest
+from collections import Counter
 from collections.abc import Mapping
 from dataclasses import asdict, replace
 from fractions import Fraction
 from itertools import combinations, product
 from pathlib import Path
+from unittest.mock import patch
 
 from cpt_world import (
     QUERY_TYPES,
@@ -41,13 +43,19 @@ from cpt_world import (
 )
 from cpt_world.world_space import (
     _ET_V2_STRENGTH_CEILING,
+    _build_world,
     _combine_effect_blocks,
+    _contextual_parent_pair_score_scale,
     _exponential_tilt_rows,
+    _minimum_backdoor_adjustment_size,
     _parent_interaction_projection,
     _project_joint_effect,
     _project_parent_subset_effect,
     _sample_et_v2_strength,
     _sample_parent_subset_balanced_effect,
+    _sampled_backdoor_complexity,
+    _sampled_role_assignments,
+    _SampledStructure,
     _single_parent_pairwise_score_scale,
 )
 
@@ -170,8 +178,8 @@ class WorldSpaceSamplerTests(unittest.TestCase):
     def setUp(self) -> None:
         self.grammar = WorldGrammar(node_counts=(3, 4))
 
-    def test_default_node_count_support_is_three_through_fifteen(self) -> None:
-        self.assertEqual(WorldGrammar().node_counts, tuple(range(3, 16)))
+    def test_default_node_count_support_is_eight_through_sixteen(self) -> None:
+        self.assertEqual(WorldGrammar().node_counts, tuple(range(8, 17)))
 
     def test_upstream_worlds_load_as_legal_worldspecs(self) -> None:
         upstream = iter_upstream_worlds()
@@ -256,23 +264,64 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertTrue(legal_world(world))
             self.assertEqual(world, sample_world(self.grammar, seed))
 
-    def test_three_to_fifteen_node_sampling_is_reproducible(self) -> None:
-        grammar = WorldGrammar(node_counts=tuple(range(3, 16)), max_domain_size=2)
+    def test_eight_to_sixteen_node_sampling_is_reproducible(self) -> None:
+        grammar = WorldGrammar(node_counts=tuple(range(8, 17)), max_domain_size=2)
         first = tuple(sample_world(grammar, seed) for seed in range(30))
         second = tuple(sample_world(grammar, seed) for seed in range(30))
 
         self.assertEqual(first, second)
-        self.assertTrue(all(3 <= len(world.variables) <= 15 for world in first))
+        self.assertTrue(all(8 <= len(world.variables) <= 16 for world in first))
         self.assertTrue(all(legal_world(world) for world in first))
 
     def test_task_world_holds_the_first_sampled_node_count_fixed(self) -> None:
-        grammar = WorldGrammar(node_counts=tuple(range(3, 16)), max_domain_size=2)
+        grammar = WorldGrammar(node_counts=tuple(range(8, 17)), max_domain_size=2)
         for query_type in QUERY_TYPES:
             for sample_index in range(30):
                 expected_count = random.Random(sample_index).choice(grammar.node_counts)
                 world = sample_task_world(grammar, sample_index, query_type)
                 self.assertEqual(len(world.variables), expected_count)
                 self.assertTrue(supports_query(world, query_type))
+
+    def test_formal_ate_and_backdoor_samplers_stratify_minimum_adjustment_size(self) -> None:
+        grammar = WorldGrammar(max_domain_size=2)
+        for query_type in ("ate", "backadj_minimal_sets"):
+            for sample_index in range(80):
+                world = sample_task_world(grammar, sample_index, query_type)
+                target = _sampled_backdoor_complexity(sample_index, query_type)
+                roles = _sampled_role_assignments(
+                    len(world.variables),
+                    world.edges,
+                    query_type,
+                    sample_index,
+                )
+                self.assertTrue(roles)
+                self.assertTrue(
+                    all(
+                        _minimum_backdoor_adjustment_size(
+                            len(world.variables),
+                            world.edges,
+                            role["treatment"],
+                            role["outcome"],
+                        )
+                        == target
+                        for role in roles
+                    )
+                )
+
+    def test_backdoor_complexity_axis_is_uniform_and_seed_fixed(self) -> None:
+        for query_type in ("ate", "backadj_minimal_sets"):
+            first = tuple(
+                _sampled_backdoor_complexity(sample_index, query_type)
+                for sample_index in range(4000)
+            )
+            second = tuple(
+                _sampled_backdoor_complexity(sample_index, query_type)
+                for sample_index in range(4000)
+            )
+            self.assertEqual(first, second)
+            counts = Counter(first)
+            self.assertEqual(set(counts), {0, 1, 2, 3})
+            self.assertTrue(all(900 <= counts[value] <= 1100 for value in range(4)))
 
     def test_world_first_sampler_selects_one_role_and_uses_shared_composition(self) -> None:
         grammar = WorldGrammar(node_counts=(3,), max_domain_size=2)
@@ -527,6 +576,82 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             _single_parent_pairwise_score_scale(1)
 
+    def test_contextual_parent_pair_scale_matches_single_parent_correction(self) -> None:
+        rng = random.Random(173205)
+        for parent_domain in range(2, 6):
+            for child_domain in range(2, 6):
+                direction = _sample_parent_subset_balanced_effect(
+                    (parent_domain,),
+                    child_domain,
+                    rng,
+                )
+                self.assertAlmostEqual(
+                    _contextual_parent_pair_score_scale(direction, (parent_domain,)),
+                    _single_parent_pairwise_score_scale(parent_domain),
+                    places=12,
+                )
+
+    def test_contextual_parent_pair_scale_fixes_multi_parent_contrast_at_four(self) -> None:
+        rng = random.Random(223607)
+        for parent_domains in ((2, 2), (2, 3), (5, 2, 4)):
+            child_domain = 4
+            direction = _sample_parent_subset_balanced_effect(
+                parent_domains,
+                child_domain,
+                rng,
+            )
+            squared_rms = math.fsum(
+                value * value for row in direction for value in row
+            ) / (math.prod(parent_domains) * child_domain)
+            scale = _contextual_parent_pair_score_scale(direction, parent_domains)
+            normalized = tuple(
+                tuple(scale * value / math.sqrt(squared_rms) for value in row)
+                for row in direction
+            )
+            parent_means: list[float] = []
+            for position, parent_domain in enumerate(parent_domains):
+                suffix_count = math.prod(parent_domains[position + 1 :])
+                prefix_count = math.prod(parent_domains[:position])
+                contrasts = [
+                    (
+                        normalized[(prefix * parent_domain + left) * suffix_count + suffix][state]
+                        - normalized[
+                            (prefix * parent_domain + right) * suffix_count + suffix
+                        ][state]
+                    )
+                    ** 2
+                    for prefix in range(prefix_count)
+                    for suffix in range(suffix_count)
+                    for left in range(parent_domain)
+                    for right in range(left + 1, parent_domain)
+                    for state in range(child_domain)
+                ]
+                parent_means.append(math.fsum(contrasts) / len(contrasts))
+            self.assertAlmostEqual(
+                math.fsum(parent_means) / len(parent_means),
+                4.0,
+                places=11,
+            )
+
+        with self.assertRaises(ValueError):
+            _contextual_parent_pair_score_scale(((1.0, -1.0),), ())
+
+    def test_contextual_multi_parent_correction_does_not_touch_single_parent_chain(self) -> None:
+        structure = _SampledStructure(
+            node_count=5,
+            domains=(2, 5, 3, 4, 2),
+            variables=("V0", "V1", "V2", "V3", "V4"),
+            edges=((0, 1), (1, 2), (2, 3), (3, 4)),
+            parents=((), (0,), (1,), (2,), (3,)),
+            topology="single-parent-chain",
+        )
+        with patch(
+            "cpt_world.world_space._contextual_parent_pair_score_scale",
+            side_effect=AssertionError("multi-parent normalization must not run"),
+        ):
+            world = _build_world(structure, random.Random(244949))
+        self.assertTrue(legal_world(world))
+
     def test_et_v2_score_scale_changes_only_the_declared_radial_coordinate(self) -> None:
         base = (0.6, 0.3, 0.1)
         direction = ((1.0, -0.5, -0.5), (-1.0, 0.5, 0.5))
@@ -556,6 +681,24 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 self.assertLessEqual(profile["target_min"], profile["target_max"])
                 return
         self.fail("no profileable ATE world found")
+
+    def test_counterfactual_target_profile_never_substitutes_frechet_outer_bounds(self) -> None:
+        for seed in range(50):
+            world = sample_world(self.grammar, seed)
+            anchors = legal_query_anchors(world, "individual_counterfactual_probability")
+            if anchors:
+                with self.assertRaisesRegex(
+                    NotImplementedError,
+                    "cannot substitute Frechet outer bounds",
+                ):
+                    profile_task_targets(
+                        self.grammar,
+                        seed,
+                        "individual_counterfactual_probability",
+                        anchors[0],
+                    )
+                return
+        self.fail("no profileable individual-counterfactual world found")
 
     def test_task_answerability_includes_passive_observation_laws(self) -> None:
         first = _indirect_ate_world(mediator_given_treatment=(Fraction(1, 4), Fraction(3, 4)))

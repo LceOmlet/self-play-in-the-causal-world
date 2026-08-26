@@ -69,7 +69,7 @@ normalize to a CPT row
 
 `sample_task_world` 对数值型 query 做 acceptance-rejection：只接受数值稳定且 causal target 非零的 CPT draw，不设 goodness 阈值；无稳定 draw 时 fail closed。
 
-`profile_task_targets` 只采样并报告 target 分布与每条边的正负效应计数，不做过滤。
+`profile_task_targets` 只采样并报告可廉价精确计算的 target 分布与每条边的正负效应计数，不做过滤。个体反事实不走该通用入口；它必须使用精确求解探针，超时明确记为 `unresolved`，Fréchet 外界不得替代任务 target。
 
 ---
 
@@ -186,7 +186,7 @@ DONE:
   - signed multiplicative multi-parent CPT mechanism
   - seed 仅作为 random.Random 种子，无坐标展开
   - sample_world 从声明分布采样结构 + CPT
-  - profile_task_targets 报告 target 分布与每条边正负效应计数
+  - profile_task_targets 报告可廉价精确计算的 target 分布与每条边正负效应计数；个体反事实由精确求解探针单独统计
   - sample_task_world acceptance-rejection 只取数值稳定且 target 非零实例
   - 当前 sampled seeds 包含 ate / backadj_minimal_sets / best_intervention / mediator_set
   - 数值任务使用 sample_task_world；结构 discovery 任务直接复用 sample_world

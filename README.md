@@ -69,22 +69,26 @@ omitted requested-variable assignments have count exactly zero.
 grid. In the current implementation:
 
 - node count is uniform over the configured `node_counts` support; the default
-  support is every integer from 3 through 15;
+  support is every integer from 8 through 16;
 - every node's domain size is uniform over `2..max_domain_size`, currently up to
   five states;
-- a topological order is sampled, followed by a forward-edge subset and
-  continuous float64 CPT parameters;
+- a topological order is sampled uniformly; each node then draws its parent
+  count uniformly from zero through the smaller of three and its predecessor
+  count, followed by a uniform parent subset and continuous float64 CPT
+  parameters;
 - each conditional CPT separates one pure categorical interaction block for
   every nonempty parent subset, then combines the orthogonal blocks with
   simplex-uniform shares so every subset has the same expected score energy;
-- ET-V2 maps the combined score direction to probabilities with an
-  RMS-normalized exponential tilt, so an unrelated rare state cannot impose a
-  global additive zero-wall on every effect; its bounded uniform amplitude has
-  one unit of expected squared score energy; for a single-parent CPT, a
-  binary-preserving pairwise-contrast scale removes the geometric attenuation
-  caused only by adding parent states without selecting any distinguished
-  state pair;
+- ET-V2 maps the combined score direction to probabilities with an exponential
+  tilt, so an unrelated rare state cannot impose a global additive zero-wall
+  on every effect; its bounded uniform amplitude has one unit of expected
+  squared score energy; a binary-preserving contextual parent-pair scale
+  removes geometric attenuation caused by additional parent states, parent
+  configurations, or parents without selecting a distinguished contrast;
 - legal query anchors are derived from the sampled world;
+- ATE and back-door adjustment tasks draw the minimum adjustment-set size
+  uniformly from `{0, 1, 2, 3}` and resample same-size structures until a role
+  with that value exists;
 - task-family answerability remains an optional diagnostic and is not applied
   as a generation label, filter, or admission check;
 - conditional on the eligible non-anchor intervention variables, the legal

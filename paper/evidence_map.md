@@ -43,7 +43,7 @@ returns a structured causal answer checked by an exact oracle.
 
 - No claim of state-of-the-art LLM performance.
 - No claim that current K/M sampling yields a final uniform difficulty mixture.
-- The default generated world-size support is 3--15; experimental profiles
+- The default generated world-size support is 8--16; experimental profiles
   must report their domain-size setting separately.
 - No claim that the repository implements a self-play optimization algorithm.
 - No claim that compatible intervals identify a unique individual-level
