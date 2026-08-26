@@ -8,9 +8,10 @@ The main sampler owns one declared distribution:
 - each node's parent count is uniform over ``0..min(3, predecessor_count)``;
 - the parent subset is uniform conditional on that count;
 - CPTs use a simplex-uniform base distribution; categorical functional-ANOVA
-  score blocks separate every interaction order, and a simplex-uniform energy
-  split gives every order the same expected squared energy. ET-V2 maps the
-  score table to probabilities by RMS-normalized exponential tilting.
+  score blocks separate every nonempty parent subset, and a simplex-uniform
+  energy split gives every subset the same expected squared energy. ET-V2 maps
+  the score table to probabilities by RMS-normalized exponential tilting. Its
+  uniform amplitude has one unit of expected squared score energy.
 
 Generated worlds use ``float``/binary64 probabilities. Exact ``Fraction``
 worlds remain valid fixed fixtures and reference inputs.
@@ -44,6 +45,7 @@ DEFAULT_NODE_COUNTS = tuple(range(3, 16))
 _MAX_GRAMMAR_NODES = 15
 _MAX_PARENT_COUNT = 3
 _CPT_VALIDITY_TOLERANCE = 1e-12
+_ET_V2_STRENGTH_CEILING = math.sqrt(3.0)
 
 Probability = float | Fraction
 
@@ -247,32 +249,33 @@ def _parent_interaction_projection(
     )
 
 
-def _project_interaction_order_effect(
+def _project_parent_subset_effect(
     parent_domains: Sequence[int],
-    order: int,
+    parent_positions: Sequence[int],
     domain_size: int,
     rng: random.Random,
 ) -> tuple[tuple[float, ...], ...]:
-    """Draw an isotropic unit direction in one exact interaction-order subspace."""
+    """Draw an isotropic unit direction for one pure parent-subset interaction."""
 
-    if not 1 <= order <= len(parent_domains):
-        raise ValueError("interaction order must lie between one and the parent count")
+    positions = tuple(parent_positions)
+    if not positions:
+        raise ValueError("an interaction requires at least one parent")
+    if tuple(sorted(set(positions))) != positions:
+        raise ValueError("parent_positions must be strictly increasing")
+    if any(position < 0 or position >= len(parent_domains) for position in positions):
+        raise ValueError("parent_positions contains an invalid parent position")
     while True:
         joint = _project_joint_effect(math.prod(parent_domains), domain_size, rng)
-        components = tuple(
-            _parent_interaction_projection(joint, parent_domains, positions)
-            for positions in combinations(range(len(parent_domains)), order)
+        subset_projection = _parent_interaction_projection(
+            joint,
+            parent_domains,
+            positions,
         )
-        order_projection = tuple(
-            tuple(
-                math.fsum(component[row_index][child_state] for component in components)
-                for child_state in range(domain_size)
-            )
-            for row_index in range(len(joint))
+        norm = math.sqrt(
+            math.fsum(value * value for row in subset_projection for value in row)
         )
-        norm = math.sqrt(math.fsum(value * value for row in order_projection for value in row))
         if math.isfinite(norm) and norm > 0.0:
-            return tuple(tuple(value / norm for value in row) for row in order_projection)
+            return tuple(tuple(value / norm for value in row) for row in subset_projection)
 
 
 def _combine_effect_blocks(
@@ -313,16 +316,26 @@ def _combine_effect_blocks(
     return tuple(tuple(value / norm for value in row) for row in combined)
 
 
-def _sample_order_balanced_effect(
+def _sample_parent_subset_balanced_effect(
     parent_domains: Sequence[int],
     domain_size: int,
     rng: random.Random,
 ) -> tuple[tuple[float, ...], ...]:
-    """Sample all interaction orders with equal expected conserved energy."""
+    """Sample all parent-subset interactions with equal expected conserved energy.
 
+    The realized shares are not fixed averages. They are one draw from the
+    symmetric simplex distribution, so every nonempty parent subset has the
+    same expected share while individual worlds retain heterogeneous effects.
+    """
+
+    parent_subsets = tuple(
+        positions
+        for subset_size in range(1, len(parent_domains) + 1)
+        for positions in combinations(range(len(parent_domains)), subset_size)
+    )
     blocks = [
-        _project_interaction_order_effect(parent_domains, order, domain_size, rng)
-        for order in range(1, len(parent_domains) + 1)
+        _project_parent_subset_effect(parent_domains, positions, domain_size, rng)
+        for positions in parent_subsets
     ]
     energy_shares = (1.0,) if len(blocks) == 1 else _simplex_uniform(len(blocks), rng)
     return _combine_effect_blocks(blocks, energy_shares)
@@ -365,8 +378,11 @@ def _exponential_tilt_rows(
         raise ValueError("base probabilities must sum to one")
     if not direction or any(len(row) != len(base) for row in direction):
         raise ValueError("effect direction must be a nonempty table matching the base")
-    if not math.isfinite(strength) or not 0.0 <= strength <= 1.0:
-        raise ValueError("effect strength must be finite and lie in [0, 1]")
+    if not math.isfinite(strength) or not 0.0 <= strength <= _ET_V2_STRENGTH_CEILING:
+        raise ValueError(
+            "effect strength must be finite and lie in "
+            f"[0, {_ET_V2_STRENGTH_CEILING}]"
+        )
 
     squared_rms = math.fsum(value * value for row in direction for value in row) / (
         len(direction) * len(base)
@@ -388,6 +404,12 @@ def _exponential_tilt_rows(
             raise RuntimeError("exponential tilt produced no finite positive mass")
         cpt_rows.append(_finalize_cpt_row(tuple(value / total for value in weights)))
     return tuple(cpt_rows)
+
+
+def _sample_et_v2_strength(rng: random.Random) -> float:
+    """Draw uniform amplitude with one unit of expected squared score energy."""
+
+    return _ET_V2_STRENGTH_CEILING * rng.random()
 
 
 def _shortest_path_nodes(world: WorldSpec, source: int, target: int) -> tuple[int, ...] | None:
@@ -551,8 +573,12 @@ def _build_world(
             cpt[node] = (_finalize_cpt_row(base),)
         else:
             parent_domains = tuple(structure.domains[parent] for parent in node_parents)
-            direction = _sample_order_balanced_effect(parent_domains, domain_size, rng)
-            cpt[node] = _exponential_tilt_rows(base, direction, rng.random())
+            direction = _sample_parent_subset_balanced_effect(parent_domains, domain_size, rng)
+            cpt[node] = _exponential_tilt_rows(
+                base,
+                direction,
+                _sample_et_v2_strength(rng),
+            )
     return WorldSpec(
         family="sampled_dag",
         topology=structure.topology,

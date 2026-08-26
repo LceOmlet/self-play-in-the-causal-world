@@ -40,12 +40,14 @@ from cpt_world import (
     task_difficulty_profile,
 )
 from cpt_world.world_space import (
+    _ET_V2_STRENGTH_CEILING,
     _combine_effect_blocks,
     _exponential_tilt_rows,
     _parent_interaction_projection,
-    _project_interaction_order_effect,
     _project_joint_effect,
-    _sample_order_balanced_effect,
+    _project_parent_subset_effect,
+    _sample_et_v2_strength,
+    _sample_parent_subset_balanced_effect,
 )
 
 
@@ -343,35 +345,34 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 return
         self.fail("no sampled multi-valued world with edges found")
 
-    def test_interaction_order_blocks_are_orthogonal_and_pure(self) -> None:
+    def test_parent_subset_blocks_are_orthogonal_and_pure(self) -> None:
         parent_domains = (2, 3, 2)
         child_domain = 4
         rng = random.Random(20260825)
+        parent_subsets = tuple(
+            positions
+            for subset_size in range(1, len(parent_domains) + 1)
+            for positions in combinations(range(len(parent_domains)), subset_size)
+        )
         blocks = tuple(
-            _project_interaction_order_effect(parent_domains, order, child_domain, rng)
-            for order in range(1, len(parent_domains) + 1)
+            _project_parent_subset_effect(parent_domains, positions, child_domain, rng)
+            for positions in parent_subsets
         )
 
         def squared_norm(table: tuple[tuple[float, ...], ...]) -> float:
             return math.fsum(value * value for row in table for value in row)
 
-        for order, block in enumerate(blocks, start=1):
+        for positions, block in zip(parent_subsets, blocks, strict=True):
             self.assertAlmostEqual(squared_norm(block), 1.0, places=12)
-            for other_order in range(1, len(parent_domains) + 1):
-                components = tuple(
-                    _parent_interaction_projection(block, parent_domains, positions)
-                    for positions in combinations(range(len(parent_domains)), other_order)
-                )
-                projected = tuple(
-                    tuple(
-                        math.fsum(component[row][state] for component in components)
-                        for state in range(child_domain)
-                    )
-                    for row in range(len(block))
+            for other_positions in parent_subsets:
+                projection = _parent_interaction_projection(
+                    block,
+                    parent_domains,
+                    other_positions,
                 )
                 self.assertAlmostEqual(
-                    squared_norm(projected),
-                    1.0 if other_order == order else 0.0,
+                    squared_norm(projection),
+                    1.0 if other_positions == positions else 0.0,
                     places=11,
                 )
 
@@ -384,27 +385,57 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 )
                 self.assertAlmostEqual(inner, 0.0, places=12)
 
-        shares = (0.2, 0.3, 0.5)
+        shares = (0.04, 0.08, 0.12, 0.16, 0.20, 0.18, 0.22)
         combined = _combine_effect_blocks(blocks, shares)
         self.assertAlmostEqual(squared_norm(combined), 1.0, places=12)
-        for order, expected_share in enumerate(shares, start=1):
-            components = tuple(
-                _parent_interaction_projection(combined, parent_domains, positions)
-                for positions in combinations(range(len(parent_domains)), order)
-            )
-            projection = tuple(
-                tuple(
-                    math.fsum(component[row][state] for component in components)
-                    for state in range(child_domain)
-                )
-                for row in range(len(combined))
+        for positions, expected_share in zip(parent_subsets, shares, strict=True):
+            projection = _parent_interaction_projection(
+                combined,
+                parent_domains,
+                positions,
             )
             self.assertAlmostEqual(squared_norm(projection), expected_share, places=11)
 
-    def test_one_parent_block_sampling_preserves_the_original_direction_law_and_rng(self) -> None:
+    def test_parent_subset_energy_is_random_with_equal_expectation(self) -> None:
+        parent_domains = (2, 2, 2)
+        parent_subsets = tuple(
+            positions
+            for subset_size in range(1, len(parent_domains) + 1)
+            for positions in combinations(range(len(parent_domains)), subset_size)
+        )
+        totals = [0.0] * len(parent_subsets)
+        first_shares: tuple[float, ...] | None = None
+        sample_count = 1000
+        rng = random.Random(271828)
+        for _ in range(sample_count):
+            effect = _sample_parent_subset_balanced_effect(parent_domains, 3, rng)
+            shares = tuple(
+                math.fsum(
+                    value * value
+                    for row in _parent_interaction_projection(
+                        effect,
+                        parent_domains,
+                        positions,
+                    )
+                    for value in row
+                )
+                for positions in parent_subsets
+            )
+            if first_shares is None:
+                first_shares = shares
+            for index, share in enumerate(shares):
+                totals[index] += share
+
+        self.assertIsNotNone(first_shares)
+        self.assertGreater(max(first_shares) - min(first_shares), 0.05)
+        expected = 1.0 / len(parent_subsets)
+        for total in totals:
+            self.assertAlmostEqual(total / sample_count, expected, delta=0.015)
+
+    def test_one_parent_subset_sampling_preserves_the_original_direction_law_and_rng(self) -> None:
         separated_rng = random.Random(314159)
         original_rng = random.Random(314159)
-        separated = _sample_order_balanced_effect((5,), 4, separated_rng)
+        separated = _sample_parent_subset_balanced_effect((5,), 4, separated_rng)
         original = _project_joint_effect(5, 4, original_rng)
 
         for separated_row, original_row in zip(separated, original, strict=True):
@@ -439,6 +470,32 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         for row in zero_strength:
             for actual, expected in zip(row, base, strict=True):
                 self.assertAlmostEqual(actual, expected, places=15)
+
+    def test_et_v2_strength_has_unit_expected_squared_score_energy(self) -> None:
+        self.assertAlmostEqual(_ET_V2_STRENGTH_CEILING**2 / 3.0, 1.0, places=15)
+        rng = random.Random(161803)
+        strengths = tuple(_sample_et_v2_strength(rng) for _ in range(10000))
+        self.assertTrue(all(0.0 <= value < _ET_V2_STRENGTH_CEILING for value in strengths))
+        self.assertAlmostEqual(
+            math.fsum(value * value for value in strengths) / len(strengths),
+            1.0,
+            delta=0.02,
+        )
+
+        base = (0.6, 0.3, 0.1)
+        direction = ((1.0, -0.5, -0.5), (-1.0, 0.5, 0.5))
+        rows = _exponential_tilt_rows(
+            base,
+            direction,
+            _ET_V2_STRENGTH_CEILING,
+        )
+        self.assertTrue(all(value > 0.0 for row in rows for value in row))
+        with self.assertRaises(ValueError):
+            _exponential_tilt_rows(
+                base,
+                direction,
+                math.nextafter(_ET_V2_STRENGTH_CEILING, math.inf),
+            )
 
     def test_task_target_profiling_reports_distribution_without_thresholds(self) -> None:
         for seed in range(50):

@@ -1,5 +1,6 @@
 ---
-status: accepted
+status: superseded
+superseded_by: 0022-use-et-v2-exponential-tilting
 ---
 
 # Parameterize each CPT by a base distribution and a joint parent-effect table

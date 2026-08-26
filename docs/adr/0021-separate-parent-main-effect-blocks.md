@@ -1,7 +1,7 @@
 ---
-status: accepted
+status: superseded
 implementation: implemented
-amended_by: 0022-use-et-v2-exponential-tilting
+superseded_by: 0024-balance-energy-by-parent-subset
 ---
 
 # Separate parent main-effect blocks under one conserved energy budget

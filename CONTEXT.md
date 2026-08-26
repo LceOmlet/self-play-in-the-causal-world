@@ -28,17 +28,21 @@ _Avoid_: resampling node count after eligibility failure, accepted-size distribu
 Each node independently draws its number of states uniformly from two through five. Together with the three-parent bound, this limits one conditional table to at most 125 rows and 625 probability entries while giving every fixed-size cardinality vector equal probability.
 _Avoid_: binary-only world, task-conditioned cardinality
 
-**Base-and-Joint-Effect CPT Parameterization**:
-For a node with \(R\) joint parent configurations and \(d\) child states, represent its CPT as \(P(Y\mid c)=b_Y+\Delta_Y(c)\). Every effect row sums to zero, and every child-state column averages to zero across parent configurations. Roots use \(b_Y\) directly. Every legal CPT has a unique representation of this form, so this is a parameterization rather than a restricted mechanism family.
-_Avoid_: independent conditional-row priors, a privileged reference parent state, separate main/pair/triple interaction families
+**Base-and-Score CPT Parameterization**:
+For a non-root node, draw one state-exchangeable base distribution \(b_Y\) and one row- and column-centred categorical score table \(D_Y(c,y)\). ET-V2 maps the base and score to every conditional row by RMS-normalized exponential tilting. Roots use \(b_Y\) directly. Parent configurations and child states have no privileged reference value.
+_Avoid_: independent conditional-row priors, a privileged reference parent state, describing the score as an additive probability displacement
 
 **State-Exchangeable Base Distribution**:
 For a \(d\)-state node, draw \(b_Y\sim\mathrm{Dirichlet}(1,\ldots,1)\). This is uniform on the \(d\)-state probability simplex, invariant to state relabelling, and reduces to \(p\sim\mathrm{Uniform}(0,1)\) for a binary node.
 _Avoid_: entropy-targeted hierarchy, preferred state, radial base-distribution construction
 
-**Radially Uniform Joint-Effect Strength**:
-Draw an isotropic Gaussian table, project it onto the subspace whose rows sum to zero and whose columns average to zero, and normalize it to obtain \(D_Y\). This samples directions isotropically in the complete legal joint-effect space and is invariant to parent-configuration and child-state relabelling. Find the largest positive scale \(a_{\max}\) for which \(b_Y+aD_Y(c)\) remains a probability distribution for every parent configuration, draw \(s_Y\sim\mathrm{Uniform}(0,1)\), and set \(\Delta_Y=s_Ya_{\max}D_Y\). The sampler does not separately balance interaction orders: aggregate higher-order variation grows naturally with the number and cardinalities of the parents because those interaction subspaces have more dimensions.
-_Avoid_: treating a multistate effect as one signed scalar, separate strength parameters by interaction order, conditioning effects on task answers, claiming that every individual edge effect or interaction order is uniformly distributed
+**Parent-Subset-Exchangeable Score Energy**:
+For every nonempty subset of a node's parents, draw an independent isotropic unit direction in that subset's pure categorical functional-ANOVA subspace. Draw their squared-energy shares jointly from \(\mathrm{Dirichlet}(1,\ldots,1)\), then combine directions using the square roots of those shares. Every parent subset has the same expected energy; shares remain random and are almost never equal within one world. This balances actual parent interactions rather than interaction orders or subspace dimensions, preserves parent/state relabelling symmetry, and keeps all interaction subsets active without answer filtering.
+_Avoid_: fixed equal shares, equal expected energy per interaction order, dimension-proportional energy, interaction sparsity, claiming that realized shares are equal
+
+**Unit-Expected ET-V2 Score Strength**:
+After ET-V2 normalizes the combined score table to unit elementwise RMS, draw its nonnegative amplitude uniformly on \([0,\sqrt{3}]\). The resulting squared log-score perturbation has expectation one because \(\mathbb E[s_Y^2]=1\). The bound is derived from the conserved score-energy unit; it is not tuned from task answers. The distribution remains bounded, includes weak through strong mechanisms, and preserves strictly positive generated CPT rows.
+_Avoid_: uniform amplitude on \([0,1]\), unbounded strength tails, calibrating strength from final ATE or decision gaps, claiming that probability-scale effects are uniform
 
 **Truth-Unfiltered Mechanism Sampling**:
 Once a world has a legal CPT and the selected task is structurally eligible, its mechanisms are retained without inspecting the numerical task answer. Exact zero effects and tied optimal actions remain part of the task distribution and are measured as distribution statistics.
