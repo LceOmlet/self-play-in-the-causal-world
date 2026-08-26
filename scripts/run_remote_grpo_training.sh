@@ -11,6 +11,7 @@ MAX_COMPLETION_LENGTH=${MAX_COMPLETION_LENGTH:-31497}
 VLLM_MEMORY_UTILIZATION=${VLLM_MEMORY_UTILIZATION:-0.50}
 SAVE_STEPS=${SAVE_STEPS:-50}
 SAVE_TOTAL_LIMIT=${SAVE_TOTAL_LIMIT:-5}
+REWARD_UTILITY_EPSILON=${REWARD_UTILITY_EPSILON:-0.02}
 FLA_KERNEL_DIR=${FLA_KERNEL_DIR:-/home/chen/kernels/fla-v1-398dfa8c}
 RESUME_FROM_CHECKPOINT=${RESUME_FROM_CHECKPOINT:-}
 
@@ -50,6 +51,7 @@ cd "$PROJECT_DIR"
   --vllm-memory-utilization "$VLLM_MEMORY_UTILIZATION" \
   --save-steps "$SAVE_STEPS" \
   --save-total-limit "$SAVE_TOTAL_LIMIT" \
+  --reward-utility-epsilon "$REWARD_UTILITY_EPSILON" \
   --fla-kernel-dir "$FLA_KERNEL_DIR" \
   --use-liger-kernel \
   "${resume_args[@]}" \

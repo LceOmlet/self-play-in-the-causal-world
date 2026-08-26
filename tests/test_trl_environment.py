@@ -8,14 +8,65 @@ from itertools import islice
 from unittest.mock import patch
 
 from cpt_world import (
+    CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES,
+    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
     TASK_FAMILY_QUERY_TYPES,
     CPTWorldEnvironment,
+    bounded_negative_log_residual_utility,
     build_balanced_training_rows,
+    build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
+    task_advantage_utility,
 )
 
 
 class TRLEnvironmentAdapterTests(unittest.TestCase):
+    def test_bounded_log_residual_utility_preserves_endpoints_and_expands_ceiling(self) -> None:
+        epsilon = DEFAULT_ADVANTAGE_UTILITY_EPSILON
+
+        self.assertEqual(bounded_negative_log_residual_utility(0.0), 0.0)
+        self.assertEqual(bounded_negative_log_residual_utility(1.0), 1.0)
+        self.assertLess(
+            bounded_negative_log_residual_utility(0.95),
+            bounded_negative_log_residual_utility(0.99),
+        )
+        self.assertGreater(
+            bounded_negative_log_residual_utility(0.99, epsilon=epsilon)
+            - bounded_negative_log_residual_utility(0.95, epsilon=epsilon),
+            0.99 - 0.95,
+        )
+
+    def test_mediator_uses_raw_quality_while_other_families_use_ceiling_utility(self) -> None:
+        raw = 0.95
+
+        self.assertEqual(task_advantage_utility(raw, "mediator_set"), raw)
+        for query_type in CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES:
+            with self.subTest(query_type=query_type):
+                self.assertNotEqual(task_advantage_utility(raw, query_type), raw)
+
+    def test_trl_advantage_utility_reads_owner_rewards_and_logs_both_values(self) -> None:
+        class RewardOwner:
+            def __init__(self, reward: float) -> None:
+                self.reward = reward
+
+            def get_reward(self) -> float:
+                return self.reward
+
+        logged: list[tuple[str, float]] = []
+        reward_func = build_cpt_world_advantage_utility(epsilon=0.02)
+
+        utilities = reward_func(
+            environments=[RewardOwner(0.95), RewardOwner(0.95)],
+            query_type=["ate", "mediator_set"],
+            log_metric=lambda name, value: logged.append((name, value)),
+        )
+
+        self.assertEqual(reward_func.__name__, "CPTWorldAdvantageUtility")
+        self.assertEqual(utilities[1], 0.95)
+        self.assertNotEqual(utilities[0], 0.95)
+        self.assertIn(("task/ate/reward_raw", 0.95), logged)
+        self.assertIn(("task/mediator_set/reward_utility", 0.95), logged)
+
     def test_rows_are_exactly_balanced_and_carry_conversational_prompts(self) -> None:
         rows = build_balanced_training_rows(count_per_family=2, start_seed=7)
 

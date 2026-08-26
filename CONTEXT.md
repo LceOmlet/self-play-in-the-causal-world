@@ -141,8 +141,12 @@ A comparison group whose policy rollouts share one hidden world, task, interacti
 _Avoid_: shared transcript, independently resampled group tasks, identical rollout copies
 
 **Unscaled Group-Relative Advantage**:
-The policy signal obtained by subtracting the common-randomness group's mean terminal quality from each rollout's terminal quality without dividing by the group's standard deviation. It retains the magnitude of quality differences on the shared `[0, 1]` scale while remaining relative within each task instance.
+The policy signal obtained by subtracting the common-randomness group's mean training utility from each rollout's training utility without dividing by the group's standard deviation. Terminal quality remains the semantic reward and evaluation value. For ATE, individual counterfactual, backdoor, and decision tasks, training utility is the bounded negative-log residual transform with frozen epsilon `0.02`; for mediator tasks it is the identity. The transform preserves endpoints and ordering while expanding distinctions near full quality.
 _Avoid_: raw terminal quality as advantage, group-standardized advantage, cross-task reward normalization
+
+**Ceiling-Sensitive Advantage Utility**:
+The trainer-only monotone utility `log1p(Q / (1 - Q + epsilon)) / log1p(1 / epsilon)` with frozen `epsilon = 0.02`. It is applied to owner-produced terminal quality for ATE, individual-counterfactual, backdoor, and decision groups before group-mean subtraction. Mediator quality passes through unchanged. Raw terminal quality and transformed utility are logged separately, and neither exact task success nor terminal scoring semantics are redefined.
+_Avoid_: unbounded negative-log residual, log-likelihood claim, transforming mediator quality, changing terminal-quality-v1
 
 **Individual Counterfactual Probability**:
 The probability of a named outcome for the same individual under a counterfactual assigned treatment, conditional on that individual's assigned factual treatment and observed factual outcome. The model returns one scalar. The verifier accepts it only when it lies in the hidden sharp interval over every finite nonparametric mechanism completion compatible with the complete DAG, all CPT rows, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Endpoint interventional marginals provide only a Fréchet outer interval in the generic case.

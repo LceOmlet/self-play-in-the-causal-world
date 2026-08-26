@@ -75,10 +75,15 @@ from .seeds import (
 )
 from .task_scoring import parse_terminal_answer, score_terminal_answer
 from .trl_environment import (
+    CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES,
     COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS,
+    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
     CPTWorldEnvironment,
+    bounded_negative_log_residual_utility,
     build_balanced_training_rows,
+    build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
+    task_advantage_utility,
 )
 from .world import OutcomeTape
 from .world_runtime import (
@@ -126,9 +131,11 @@ __all__ = [
     "CANDIDATE_SEED_MANIFEST_SCHEMA",
     "CandidateSeedSpec",
     "CPTWorldEnvironment",
+    "CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES",
     "COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS",
     "CounterfactualBoundsResult",
     "DEFAULT_NODE_COUNTS",
+    "DEFAULT_ADVANTAGE_UTILITY_EPSILON",
     "HIDING_MODES",
     "MAX_FEEDBACK_CELLS",
     "OWNER_STATUS_DIAGNOSTIC_ONLY",
@@ -160,7 +167,9 @@ __all__ = [
     "best_intervention_truth",
     "best_intervention_states",
     "budget_for_observation_bandwidth",
+    "bounded_negative_log_residual_utility",
     "build_balanced_training_rows",
+    "build_cpt_world_advantage_utility",
     "candidate_seed_manifest_path",
     "check_seed_legality",
     "cladder_ate_is_degenerate",
@@ -212,6 +221,7 @@ __all__ = [
     "supports_query",
     "supports_task",
     "task_answerability",
+    "task_advantage_utility",
     "task_difficulty_profile",
     "terminal_quality_reward",
     "task_scorer_owner_status",

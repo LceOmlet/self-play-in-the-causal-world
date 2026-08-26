@@ -12,7 +12,12 @@ from grpo_kernel_check import enable_local_fla_kernels, require_gdn_kernels_acti
 from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
 
-from cpt_world import CPTWorldEnvironment, iter_random_balanced_training_rows
+from cpt_world import (
+    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
+    CPTWorldEnvironment,
+    build_cpt_world_advantage_utility,
+    iter_random_balanced_training_rows,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,6 +30,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--vllm-memory-utilization", type=float, default=0.50)
     parser.add_argument("--save-steps", type=int, default=50)
     parser.add_argument("--save-total-limit", type=int, default=5)
+    parser.add_argument(
+        "--reward-utility-epsilon",
+        type=float,
+        default=DEFAULT_ADVANTAGE_UTILITY_EPSILON,
+    )
     parser.add_argument("--resume-from-checkpoint")
     parser.add_argument(
         "--use-liger-kernel",
@@ -97,9 +107,18 @@ def main() -> None:
         model=cli.model,
         args=config,
         train_dataset=dataset,
+        reward_funcs=build_cpt_world_advantage_utility(
+            epsilon=cli.reward_utility_epsilon,
+        ),
         peft_config=peft_config,
         environment_factory=CPTWorldEnvironment,
     )
+    if trainer.reward_func_names != ["CPTWorldAdvantageUtility", "CPTWorldEnvironment"]:
+        raise RuntimeError(
+            "TRL reward-source order changed; refusing to guess advantage utility weights"
+        )
+    trainer.reward_weights[0] = 1.0
+    trainer.reward_weights[1] = 0.0
     if cli.fla_kernel_dir is not None:
         enable_local_fla_kernels(trainer.model, cli.fla_kernel_dir)
         require_gdn_kernels_active(trainer.model)
