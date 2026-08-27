@@ -179,7 +179,7 @@ world_space.py: IMPLEMENTED（声明分布 + 稳定数值 query 采样）
   - 两者 rationalize 为 exact Fraction；精度由 rational_denominator_bound 控制
   - seed 只作为 random.Random 种子，不做坐标展开
   - sample_world：从声明分布采样结构 + CPT
-  - profile_task_targets：报告可廉价精确计算的 target 分布与每条边正负效应计数；个体反事实必须使用精确求解探针，超时记为 unresolved，禁止用 Fréchet 外界替代 target
+  - profile_task_targets：报告可廉价精确计算的 target 分布与每条边正负效应计数；个体反事实必须使用 exact / epsilon-sharp 求解探针，超出最终概率端点容差 `0.002` 记为 unresolved，禁止用 Fréchet 外界替代 target
   - sample_task_world：acceptance-rejection 只取数值稳定且 target 非零实例
   - legal_world
   - load_bnlearn_world（cancer / earthquake / asia / survey）

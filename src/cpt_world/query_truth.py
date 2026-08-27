@@ -19,6 +19,17 @@ from .registry import OWNER_STATUS_IMPLEMENTED, query_truth_owner_status
 from .world_space import Probability, WorldSpec, _backdoor_separated_structure
 
 _PROBABILITY_TOLERANCE = 1e-12
+INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE = 2e-3
+
+
+@dataclass(frozen=True, slots=True)
+class CounterfactualIntervalCertificate:
+    """Certified interval plus its maximum endpoint approximation error."""
+
+    lower: Probability
+    upper: Probability
+    certification: str
+    endpoint_error: float
 
 
 def _uses_exact_probabilities(world: WorldSpec) -> bool:
@@ -496,7 +507,7 @@ def counterfactual_transition_bounds(
     return result.lower, result.upper
 
 
-def individual_counterfactual_probability_bounds(
+def _individual_counterfactual_probability_certificate(
     world: WorldSpec,
     treatment: object,
     outcome: object,
@@ -506,8 +517,9 @@ def individual_counterfactual_probability_bounds(
     factual_outcome_state: int,
     target_outcome_state: int,
     time_limit_seconds: float | None = None,
-) -> tuple[Probability, Probability]:
-    """Return sharp bounds for an endpoint-aligned individual query.
+    endpoint_tolerance: float = 0.0,
+) -> CounterfactualIntervalCertificate:
+    """Return exact or epsilon-sharp bounds for an individual query.
 
     The query is
 
@@ -536,6 +548,8 @@ def individual_counterfactual_probability_bounds(
         raise ValueError("target outcome state out of range")
     if time_limit_seconds is not None and time_limit_seconds <= 0:
         raise ValueError("time_limit_seconds must be positive")
+    if not isfinite(endpoint_tolerance) or endpoint_tolerance < 0.0:
+        raise ValueError("endpoint_tolerance must be finite and nonnegative")
 
     factual_probability = interventional_probability(
         world,
@@ -550,7 +564,12 @@ def individual_counterfactual_probability_bounds(
     if outcome_node not in descendants:
         one = _one(world)
         zero = _zero(world)
-        return (one, one) if factual_outcome_state == target_outcome_state else (zero, zero)
+        lower, upper = (
+            (one, one)
+            if factual_outcome_state == target_outcome_state
+            else (zero, zero)
+        )
+        return CounterfactualIntervalCertificate(lower, upper, "exact", 0.0)
 
     other_outcome_parents = tuple(
         parent for parent in world.parents[outcome_node] if parent != treatment_node
@@ -568,7 +587,12 @@ def individual_counterfactual_probability_bounds(
             baseline_outcome_states=(factual_outcome_state,),
             treatment_outcome_states=(target_outcome_state,),
         )
-        return joint_lower / factual_probability, joint_upper / factual_probability
+        return CounterfactualIntervalCertificate(
+            joint_lower / factual_probability,
+            joint_upper / factual_probability,
+            "exact",
+            0.0,
+        )
 
     from .counterfactual_solver import sparse_individual_counterfactual_probability_bounds
 
@@ -581,8 +605,41 @@ def individual_counterfactual_probability_bounds(
         factual_outcome_state=factual_outcome_state,
         target_outcome_state=target_outcome_state,
         time_limit_seconds=time_limit_seconds,
+        conditional_endpoint_tolerance=endpoint_tolerance,
     )
-    return result.lower, result.upper
+    return CounterfactualIntervalCertificate(
+        result.lower,
+        result.upper,
+        result.certification,
+        result.endpoint_error,
+    )
+
+
+def individual_counterfactual_probability_bounds(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    factual_value: int,
+    counterfactual_value: int,
+    factual_outcome_state: int,
+    target_outcome_state: int,
+    time_limit_seconds: float | None = None,
+) -> tuple[Probability, Probability]:
+    """Return sharp bounds, preserving the exact public calculation contract."""
+
+    certificate = _individual_counterfactual_probability_certificate(
+        world,
+        treatment,
+        outcome,
+        factual_value=factual_value,
+        counterfactual_value=counterfactual_value,
+        factual_outcome_state=factual_outcome_state,
+        target_outcome_state=target_outcome_state,
+        time_limit_seconds=time_limit_seconds,
+        endpoint_tolerance=0.0,
+    )
+    return certificate.lower, certificate.upper
 
 
 def validate_individual_counterfactual_probability(
@@ -597,19 +654,21 @@ def validate_individual_counterfactual_probability(
     target_outcome_state: int,
     time_limit_seconds: float | None = None,
     numerical_tolerance: float = 1e-9,
+    endpoint_tolerance: float = INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE,
 ) -> Mapping[str, Any]:
-    """Validate one scalar, failing closed when exact optimization times out.
+    """Validate one scalar against an exact or epsilon-sharp certificate.
 
-    A completed exact interval decides compatibility.  On solver timeout, the
-    marginal Frechet interval may still reject a value outside that necessary
-    outer range; a value inside it remains unresolved and is never accepted as
-    correct without the exact interval.
+    Exact completion returns the sharp interval.  Epsilon completion returns a
+    safe outer interval whose two endpoints are each within ``endpoint_tolerance``
+    of the sharp endpoints.  A larger unresolved gap still fails closed.
     """
 
     if not isfinite(prediction) or not 0.0 <= prediction <= 1.0:
         raise ValueError("prediction must be a finite probability in [0, 1]")
     if not isfinite(numerical_tolerance) or numerical_tolerance < 0.0:
         raise ValueError("numerical_tolerance must be finite and nonnegative")
+    if not isfinite(endpoint_tolerance) or endpoint_tolerance < 0.0:
+        raise ValueError("endpoint_tolerance must be finite and nonnegative")
     arguments = {
         "factual_value": factual_value,
         "counterfactual_value": counterfactual_value,
@@ -623,11 +682,12 @@ def validate_individual_counterfactual_probability(
         **arguments,
     )
     try:
-        lower, upper = individual_counterfactual_probability_bounds(
+        certificate = _individual_counterfactual_probability_certificate(
             world,
             treatment,
             outcome,
             time_limit_seconds=time_limit_seconds,
+            endpoint_tolerance=endpoint_tolerance,
             **arguments,
         )
     except RuntimeError as error:
@@ -644,13 +704,21 @@ def validate_individual_counterfactual_probability(
             "numerical_tolerance": numerical_tolerance,
             "solver_error": str(error),
         }
+    lower = certificate.lower
+    upper = certificate.upper
     distance = max(float(lower) - prediction, 0.0, prediction - float(upper))
     return {
         "compatible": distance <= numerical_tolerance,
-        "status": "exact",
-        "interval_source": "exact_markovian",
+        "status": certificate.certification,
+        "interval_source": (
+            "exact_markovian"
+            if certificate.certification == "exact"
+            else "epsilon_sharp_markovian_outer"
+        ),
         "lower": lower,
         "upper": upper,
+        "endpoint_error": certificate.endpoint_error,
+        "endpoint_tolerance": endpoint_tolerance,
         "distance_to_interval": distance,
         "numerical_tolerance": numerical_tolerance,
     }
@@ -1508,7 +1576,7 @@ def compute_query_truth(
             raise ValueError(
                 "individual counterfactual query missing fields: " + ", ".join(missing)
             )
-        lower, upper = individual_counterfactual_probability_bounds(
+        certificate = _individual_counterfactual_probability_certificate(
             world,
             treatment_node,
             outcome_node,
@@ -1523,11 +1591,20 @@ def compute_query_truth(
             ),
             target_outcome_state=_state_index_for_node(world, outcome_node, query["outcome_state"]),
             time_limit_seconds=counterfactual_endpoint_time_limit_seconds,
+            endpoint_tolerance=INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE,
         )
         return {
             "type": "individual_counterfactual_probability",
-            "lower": lower,
-            "upper": upper,
+            "lower": certificate.lower,
+            "upper": certificate.upper,
+            "certification": certificate.certification,
+            "interval_source": (
+                "exact_markovian"
+                if certificate.certification == "exact"
+                else "epsilon_sharp_markovian_outer"
+            ),
+            "endpoint_error": certificate.endpoint_error,
+            "endpoint_tolerance": INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE,
         }
     if query_type == "backadj_minimal_sets":
         treatment = query.get("treatment")

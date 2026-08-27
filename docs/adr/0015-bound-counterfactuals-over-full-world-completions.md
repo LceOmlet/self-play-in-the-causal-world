@@ -49,7 +49,9 @@ truth only where a separate argument proves it sharp for the complete world.
 An implementation may change coordinates, decompose the twin world, and
 generate response columns on demand. It may not change \(\mathcal C(W)\),
 select one completion, or add a functional family. The production truth owner
-returns only the exact pair \([L(W),U(W)]\). It checks global closure internally
-and fails closed on a timeout or incomplete solve; partial endpoints never
-become task truth. The Fréchet interval remains a separate diagnostic outer
-bound.
+returns either the exact pair \([L(W),U(W)]\), or a safe outer pair whose lower
+and upper endpoints are each within `0.002` of the corresponding sharp endpoint
+on the final conditional-probability scale. The latter is recorded as
+`epsilon_sharp` together with the certified endpoint error. A larger gap or
+incomplete response pricing fails closed. The Fréchet interval remains a
+separate diagnostic outer bound.

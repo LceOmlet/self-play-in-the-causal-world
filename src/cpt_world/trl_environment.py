@@ -192,9 +192,9 @@ def iter_random_balanced_training_rows(
     """Yield an infinite reproducible stream with exact-uniform task-family mixing.
 
     Each yielded row owns a fresh sampler seed. Counterfactual truth is solved
-    before rollout and cached in the row. A fail-closed endpoint timeout rejects
-    that candidate and advances to another sampled task, so no unresolved truth
-    is converted into a training reward.
+    before rollout and cached in the row. Exact and epsilon-sharp certificates
+    are accepted; a larger unresolved endpoint gap rejects that candidate and
+    advances to another sampled task.
     """
 
     if start_seed < 0:
@@ -227,7 +227,7 @@ def iter_random_balanced_training_rows(
                 except RuntimeError as error:
                     if attempts >= _MAX_COUNTERFACTUAL_RESAMPLES:
                         raise RuntimeError(
-                            "could not sample a counterfactual task with exact bounded truth"
+                            "could not sample a counterfactual task with certified bounded truth"
                         ) from error
                     continue
                 row["terminal_truth_json"] = json.dumps(

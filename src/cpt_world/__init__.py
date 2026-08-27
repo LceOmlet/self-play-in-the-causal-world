@@ -11,6 +11,8 @@ from .episode import (
     budget_for_observation_bandwidth,
 )
 from .query_truth import (
+    INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE,
+    CounterfactualIntervalCertificate,
     ate_effect,
     backdoor_adjustment_sets,
     best_intervention_states,
@@ -131,12 +133,14 @@ __all__ = [
     "CANDIDATE_SEED_MANIFEST_SCHEMA",
     "CandidateSeedSpec",
     "CPTWorldEnvironment",
+    "CounterfactualIntervalCertificate",
     "CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES",
     "COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS",
     "CounterfactualBoundsResult",
     "DEFAULT_NODE_COUNTS",
     "DEFAULT_ADVANTAGE_UTILITY_EPSILON",
     "HIDING_MODES",
+    "INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE",
     "MAX_FEEDBACK_CELLS",
     "OWNER_STATUS_DIAGNOSTIC_ONLY",
     "OWNER_STATUS_IMPLEMENTED",

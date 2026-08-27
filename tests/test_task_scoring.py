@@ -123,6 +123,8 @@ class TaskScoringTests(unittest.TestCase):
 
         point_seed, world = _find_task("individual_counterfactual_probability")
         truth = compute_query_truth(world, point_seed)
+        self.assertIn(truth["certification"], {"exact", "epsilon_sharp"})
+        self.assertLessEqual(truth["endpoint_error"], truth["endpoint_tolerance"])
         midpoint = (truth["lower"] + truth["upper"]) / 2
         inside = score_terminal_answer(
             json.dumps({"type": "answer", "value": float(midpoint)}),
@@ -132,6 +134,25 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(inside["kind"], "individual_counterfactual_probability")
         self.assertTrue(inside["compatible"])
         self.assertEqual(inside["distance_to_interval"], 0)
+
+        epsilon_truth = {
+            "type": "individual_counterfactual_probability",
+            "lower": Fraction(1, 5),
+            "upper": Fraction(4, 5),
+            "certification": "epsilon_sharp",
+            "endpoint_error": 0.0015,
+        }
+        epsilon_score = score_terminal_answer(
+            json.dumps({"type": "answer", "value": 0.5}),
+            point_seed,
+            world,
+            terminal_truth=epsilon_truth,
+        )
+        self.assertEqual(epsilon_score["certification"], "epsilon_sharp")
+        self.assertEqual(epsilon_score["endpoint_error"], 0.0015)
+        self.assertEqual(
+            epsilon_score["truth"]["certification"], "epsilon_sharp"
+        )
 
         if truth["lower"] > 0:
             outside_value = 0.0

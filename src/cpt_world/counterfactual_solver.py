@@ -1,6 +1,9 @@
 """Exact sparse-response solver for Markovian counterfactual bounds.
 
 Only context pairs that occur in the pruned twin world enter the model.
+Terminal states are first quotiented by their two queried event-membership
+bits; when that makes every local response domain explicit, SCIP presolve is
+re-enabled instead of retaining an unnecessary branch-and-price interface.
 One- and two-mediator chains use exact layered elimination: terminal event
 couplings collapse to jointly attainable Frechet costs, after which small
 transport and response linear programs close both endpoints.
@@ -42,9 +45,18 @@ _MAX_LAYERED_UPSTREAM_VERTICES = 4_096
 _MAX_LAYERED_OBJECTIVE_EVALUATIONS = 10_000_000
 
 
+def _global_bounds_numerically_closed(primal: float, dual: float) -> bool:
+    """Return whether SCIP's rigorous bracket is below numerical precision."""
+
+    if not np.isfinite(primal) or not np.isfinite(dual):
+        return False
+    scale = max(1.0, abs(primal), abs(dual))
+    return abs(primal - dual) <= 10.0 * _SCIP_NUMERICAL_TOLERANCE * scale
+
+
 @dataclass(frozen=True, slots=True)
 class CounterfactualBoundsResult:
-    """Exact sharp endpoints plus non-semantic performance statistics."""
+    """Certified endpoints plus non-semantic performance statistics."""
 
     lower: float
     upper: float
@@ -57,6 +69,8 @@ class CounterfactualBoundsResult:
     dynamic_response_blocks: int
     max_response_contexts: int
     auxiliary_variables: int
+    certification: str = "exact"
+    endpoint_error: float = 0.0
     backend: str = "sparse_response_branch_price"
 
 
@@ -692,8 +706,18 @@ def _two_mediator_joint_bounds(
     treatment_value: int,
     outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
     time_limit_seconds: float | None,
+    endpoint_only: str | None = None,
 ) -> CounterfactualBoundsResult | None:
-    """Exactly eliminate a layered two-mediator direct-treatment structure."""
+    """Exactly eliminate a layered two-mediator treatment structure.
+
+    Without a direct treatment-to-outcome edge, the elimination remains exact
+    for one endpoint only when the terminal response has a shared Frechet
+    construction for that endpoint.  ``endpoint_only`` exposes precisely that
+    certified composition to the terminal-endpoint dispatcher.
+    """
+
+    if endpoint_only not in {None, "lower", "upper"}:
+        raise ValueError("endpoint_only must be lower, upper, or None")
 
     ancestors = _ancestors(world, outcome) | {outcome}
     affected = tuple(
@@ -710,7 +734,22 @@ def _two_mediator_joint_bounds(
         return None
     if first not in world.parents[second]:
         return None
-    if treatment not in world.parents[outcome] or second not in world.parents[outcome]:
+    if second not in world.parents[outcome]:
+        return None
+    direct_terminal = treatment in world.parents[outcome]
+    if endpoint_only is None and not direct_terminal:
+        return None
+    if endpoint_only is not None and not (
+        _terminal_event_endpoint_is_jointly_attainable(
+            world,
+            treatment,
+            outcome,
+            outcome_events,
+            endpoint_only,
+            baseline_value=baseline_value,
+            treatment_value=treatment_value,
+        )
+    ):
         return None
     if any(parent in affected for parent in world.parents[first]):
         return None
@@ -740,8 +779,6 @@ def _two_mediator_joint_bounds(
         2 if treatment in world.parents[second] else 1
     )
     response_count = world.domains[second] ** second_context_count
-    if world.domains[first] > 2 and response_count <= _MAX_LAYERED_RESPONSE_COLUMNS:
-        return None
 
     from .query_truth import (
         _response_coupling_vertices,
@@ -753,8 +790,16 @@ def _two_mediator_joint_bounds(
         if all_shared
         else (((), 1.0),)
     )
+    law_records: list[tuple[dict[int, int], float]] = [
+        (dict(zip(all_shared, assignment, strict=True)), float(probability))
+        for assignment, probability in shared_law
+        if float(probability) > 0.0
+    ]
     shared_assignments = tuple(
         product(*(range(world.domains[parent]) for parent in first_shared))
+    )
+    second_assignments = tuple(
+        product(*(range(world.domains[parent]) for parent in second_shared))
     )
 
     def parent_context(
@@ -821,32 +866,71 @@ def _two_mediator_joint_bounds(
             )
         first_vertices[assignment] = vertices
 
-    selection_count = 1
-    for assignment in shared_assignments:
-        selection_count *= len(first_vertices[assignment])
-    second_assignments = tuple(
-        product(*(range(world.domains[parent]) for parent in second_shared))
-    )
-    estimated_objective_evaluations = (
-        selection_count
-        * max(1, len(second_assignments))
-        * max(1, len(shared_law))
-        * response_count
-        * world.domains[first] ** 2
-    )
-    if selection_count > _MAX_LAYERED_UPSTREAM_VERTICES:
-        return None
+    # The upstream transport choices and downstream response owners form a
+    # bipartite dependency graph.  Disconnected components have Cartesian
+    # feasible sets and additive objectives, so their extrema can be solved
+    # independently.  Enumerating one global Cartesian product is exact but
+    # needlessly exponential in the number of independent shared contexts.
+    dependencies: dict[
+        tuple[str, tuple[int, ...]], set[tuple[str, tuple[int, ...]]]
+    ] = {}
+    for shared_values, _ in law_records:
+        first_assignment = tuple(shared_values[parent] for parent in first_shared)
+        second_assignment = tuple(shared_values[parent] for parent in second_shared)
+        first_key = ("first", first_assignment)
+        second_key = ("second", second_assignment)
+        dependencies.setdefault(first_key, set()).add(second_key)
+        dependencies.setdefault(second_key, set()).add(first_key)
+    components: list[tuple[tuple[tuple[int, ...], ...], tuple[tuple[int, ...], ...]]] = []
+    unseen = set(dependencies)
+    while unseen:
+        start = min(unseen)
+        stack = [start]
+        component: set[tuple[str, tuple[int, ...]]] = set()
+        while stack:
+            current = stack.pop()
+            if current in component:
+                continue
+            component.add(current)
+            unseen.discard(current)
+            stack.extend(dependencies[current] - component)
+        component_first = tuple(
+            sorted(assignment for kind, assignment in component if kind == "first")
+        )
+        component_second = tuple(
+            sorted(assignment for kind, assignment in component if kind == "second")
+        )
+        if component_first and component_second:
+            components.append((component_first, component_second))
+    if not components:
+        raise ValueError("shared-parent law has no positive-probability assignment")
+
+    estimated_objective_evaluations = 0
+    for component_first, component_second in components:
+        selection_count = 1
+        for assignment in component_first:
+            selection_count *= len(first_vertices[assignment])
+        if selection_count > _MAX_LAYERED_UPSTREAM_VERTICES:
+            return None
+        component_law_count = sum(
+            1
+            for shared_values, _ in law_records
+            if tuple(shared_values[parent] for parent in second_shared)
+            in component_second
+        )
+        estimated_objective_evaluations += (
+            selection_count
+            * len(component_second)
+            * max(1, component_law_count)
+            * response_count
+            * world.domains[first] ** 2
+        )
     if (
         response_count <= _MAX_LAYERED_RESPONSE_COLUMNS
         and estimated_objective_evaluations > _MAX_LAYERED_OBJECTIVE_EVALUATIONS
     ):
         return None
 
-    law_records: list[tuple[dict[int, int], float]] = []
-    for assignment, probability in shared_law:
-        law_records.append(
-            (dict(zip(all_shared, assignment, strict=True)), float(probability))
-        )
     explicit_responses = response_count <= _MAX_LAYERED_RESPONSE_COLUMNS
     responses = (
         tuple(product(range(world.domains[second]), repeat=second_context_count))
@@ -979,23 +1063,28 @@ def _two_mediator_joint_bounds(
         selected: Mapping[tuple[int, ...], Mapping[tuple[int, int], float]],
         *,
         sense: str,
+        second_scope: tuple[tuple[int, ...], ...],
     ) -> dict[tuple[int, ...], dict[tuple[int, int, int, int], float]]:
         objectives: dict[
             tuple[int, ...], dict[tuple[int, int, int, int], float]
-        ] = {}
-        for second_assignment in second_assignments:
+        ] = {assignment: {} for assignment in second_scope}
+        second_scope_set = set(second_scope)
+        for second_assignment in second_scope:
             _, left_indices, right_indices, _ = response_specs[second_assignment]
-            direct_objective: dict[tuple[int, int, int, int], float] = {}
             for shared_values, probability, lower_cost, upper_cost in terminal_costs:
                 current_second_assignment = tuple(
                     shared_values[parent] for parent in second_shared
                 )
-                if current_second_assignment != second_assignment:
+                if (
+                    current_second_assignment != second_assignment
+                    or current_second_assignment not in second_scope_set
+                ):
                     continue
                 first_assignment = tuple(
                     shared_values[parent] for parent in first_shared
                 )
                 first_transport = selected[first_assignment]
+                direct_objective = objectives[second_assignment]
                 terminal = lower_cost if sense == "minimize" else upper_cost
                 for (left_first, right_first), mass in first_transport.items():
                     left_context = left_indices[left_first]
@@ -1018,7 +1107,6 @@ def _two_mediator_joint_bounds(
                                     right_second,
                                 )
                             ]
-            objectives[second_assignment] = direct_objective
         return objectives
 
     def optimize_endpoint(*, sense: str) -> float:
@@ -1028,44 +1116,52 @@ def _two_mediator_joint_bounds(
             if time_limit_seconds is None
             else time.perf_counter() + time_limit_seconds
         )
-        vertex_lists = tuple(first_vertices[assignment] for assignment in shared_assignments)
-        selections = tuple(
-            dict(zip(shared_assignments, selected_vertices, strict=True))
-            for selected_vertices in product(*vertex_lists)
-        )
         if explicit_responses:
-            best = float("inf") if sense == "minimize" else -float("inf")
-            for selected in selections:
-                total = 0.0
-                direct_objectives = objectives_for_selection(selected, sense=sense)
-                for second_assignment in second_assignments:
-                    _, _, _, owner = response_specs[second_assignment]
-                    if owner is None:
-                        raise RuntimeError("explicit response LP owner is missing")
-                    direct_objective = direct_objectives[second_assignment]
-                    objective = {
-                        response: _response_objective_value(
-                            direct_objective, response
-                        )
-                        for response in responses
-                    }
-                    remaining = (
-                        None
-                        if endpoint_deadline is None
-                        else endpoint_deadline - time.perf_counter()
+            endpoint_total = 0.0
+            for component_first, component_second in components:
+                best = float("inf") if sense == "minimize" else -float("inf")
+                vertex_lists = tuple(
+                    first_vertices[assignment] for assignment in component_first
+                )
+                for selected_vertices in product(*vertex_lists):
+                    selected = dict(
+                        zip(component_first, selected_vertices, strict=True)
                     )
-                    value, elapsed = owner.optimize(
-                        objective,
+                    total = 0.0
+                    direct_objectives = objectives_for_selection(
+                        selected,
                         sense=sense,
-                        time_limit_seconds=remaining,
+                        second_scope=component_second,
                     )
-                    solve_seconds += elapsed
-                    total += value
-                if sense == "minimize":
-                    best = min(best, total)
-                else:
-                    best = max(best, total)
-            return best
+                    for second_assignment in component_second:
+                        _, _, _, owner = response_specs[second_assignment]
+                        if owner is None:
+                            raise RuntimeError("explicit response LP owner is missing")
+                        direct_objective = direct_objectives[second_assignment]
+                        objective = {
+                            response: _response_objective_value(
+                                direct_objective, response
+                            )
+                            for response in responses
+                        }
+                        remaining = (
+                            None
+                            if endpoint_deadline is None
+                            else endpoint_deadline - time.perf_counter()
+                        )
+                        value, elapsed = owner.optimize(
+                            objective,
+                            sense=sense,
+                            time_limit_seconds=remaining,
+                        )
+                        solve_seconds += elapsed
+                        total += value
+                    if sense == "minimize":
+                        best = min(best, total)
+                    else:
+                        best = max(best, total)
+                endpoint_total += best
+            return endpoint_total
 
         multiplier = 1.0 if sense == "maximize" else -1.0
         feasible_weights = {
@@ -1074,83 +1170,105 @@ def _two_mediator_joint_bounds(
             )
             for second_assignment in second_assignments
         }
-        candidates: list[
-            tuple[
-                float,
-                dict[tuple[int, ...], dict[tuple[int, int, int, int], float]],
-            ]
-        ] = []
-        for selected in selections:
-            direct_objectives = objectives_for_selection(selected, sense=sense)
-            feasible = 0.0
-            for second_assignment, objective in direct_objectives.items():
-                feasible += multiplier * sum(
-                    weight * _response_objective_value(objective, response)
-                    for response, weight in feasible_weights[
-                        second_assignment
-                    ].items()
+        endpoint_transformed_total = 0.0
+        for component_first, component_second in components:
+            candidates: list[
+                tuple[
+                    float,
+                    dict[tuple[int, ...], dict[tuple[int, int, int, int], float]],
+                ]
+            ] = []
+            vertex_lists = tuple(
+                first_vertices[assignment] for assignment in component_first
+            )
+            for selected_vertices in product(*vertex_lists):
+                selected = dict(zip(component_first, selected_vertices, strict=True))
+                direct_objectives = objectives_for_selection(
+                    selected,
+                    sense=sense,
+                    second_scope=component_second,
                 )
-            candidates.append((feasible, direct_objectives))
-        candidates.sort(key=lambda item: item[0], reverse=True)
-
-        best_transformed = -float("inf")
-        for feasible, direct_objectives in candidates:
-            best_transformed = max(best_transformed, feasible)
-            if all(
-                (sense, second_assignment) in priced_response_owners
-                for second_assignment in second_assignments
-            ):
-                upper_bound = 0.0
+                feasible = 0.0
                 for second_assignment, objective in direct_objectives.items():
+                    feasible += multiplier * sum(
+                        weight * _response_objective_value(objective, response)
+                        for response, weight in feasible_weights[
+                            second_assignment
+                        ].items()
+                    )
+                candidates.append((feasible, direct_objectives))
+            candidates.sort(key=lambda item: item[0], reverse=True)
+
+            best_transformed = -float("inf")
+            for feasible, direct_objectives in candidates:
+                best_transformed = max(best_transformed, feasible)
+                if all(
+                    (sense, second_assignment) in priced_response_owners
+                    for second_assignment in component_second
+                ):
+                    upper_bound = 0.0
+                    for second_assignment, objective in direct_objectives.items():
+                        remaining = (
+                            None
+                            if endpoint_deadline is None
+                            else endpoint_deadline - time.perf_counter()
+                        )
+                        bound, elapsed = priced_response_owners[
+                            (sense, second_assignment)
+                        ].transformed_upper_bound(
+                            objective,
+                            time_limit_seconds=remaining,
+                        )
+                        solve_seconds += elapsed
+                        upper_bound += bound
+                    if (
+                        upper_bound
+                        <= best_transformed + 10.0 * _SCIP_NUMERICAL_TOLERANCE
+                    ):
+                        continue
+
+                transformed_total = 0.0
+                for second_assignment, objective in direct_objectives.items():
+                    marginals = response_specs[second_assignment][0]
+                    owner_key = (sense, second_assignment)
+                    priced_owner = priced_response_owners.get(owner_key)
+                    if priced_owner is None:
+                        priced_owner = _ExactPricedResponseLP(
+                            marginals,
+                            objective,
+                            sense=sense,
+                        )
+                        priced_response_owners[owner_key] = priced_owner
+                    else:
+                        priced_owner.restart_objective(objective)
                     remaining = (
                         None
                         if endpoint_deadline is None
                         else endpoint_deadline - time.perf_counter()
                     )
-                    bound, elapsed = priced_response_owners[
-                        (sense, second_assignment)
-                    ].transformed_upper_bound(
-                        objective,
-                        time_limit_seconds=remaining,
+                    value, elapsed, added = priced_owner.optimize(
+                        time_limit_seconds=remaining
                     )
                     solve_seconds += elapsed
-                    upper_bound += bound
-                if (
-                    upper_bound
-                    <= best_transformed + 10.0 * _SCIP_NUMERICAL_TOLERANCE
-                ):
-                    continue
+                    generated_columns += added
+                    transformed_total += multiplier * value
+                best_transformed = max(best_transformed, transformed_total)
+            endpoint_transformed_total += best_transformed
+        return (
+            endpoint_transformed_total
+            if sense == "maximize"
+            else -endpoint_transformed_total
+        )
 
-            transformed_total = 0.0
-            for second_assignment, objective in direct_objectives.items():
-                marginals = response_specs[second_assignment][0]
-                owner_key = (sense, second_assignment)
-                priced_owner = priced_response_owners.get(owner_key)
-                if priced_owner is None:
-                    priced_owner = _ExactPricedResponseLP(
-                        marginals,
-                        objective,
-                        sense=sense,
-                    )
-                    priced_response_owners[owner_key] = priced_owner
-                else:
-                    priced_owner.restart_objective(objective)
-                remaining = (
-                    None
-                    if endpoint_deadline is None
-                    else endpoint_deadline - time.perf_counter()
-                )
-                value, elapsed, added = priced_owner.optimize(
-                    time_limit_seconds=remaining
-                )
-                solve_seconds += elapsed
-                generated_columns += added
-                transformed_total += multiplier * value
-            best_transformed = max(best_transformed, transformed_total)
-        return best_transformed if sense == "maximize" else -best_transformed
-
-    lower = optimize_endpoint(sense="minimize")
-    upper = optimize_endpoint(sense="maximize")
+    if endpoint_only == "lower":
+        lower = optimize_endpoint(sense="minimize")
+        upper = lower
+    elif endpoint_only == "upper":
+        upper = optimize_endpoint(sense="maximize")
+        lower = upper
+    else:
+        lower = optimize_endpoint(sense="minimize")
+        upper = optimize_endpoint(sense="maximize")
     total_seconds = time.perf_counter() - total_started
     return CounterfactualBoundsResult(
         lower=lower,
@@ -1166,7 +1284,11 @@ def _two_mediator_joint_bounds(
         ),
         max_response_contexts=second_context_count,
         auxiliary_variables=0,
-        backend="two_mediator_layered_elimination",
+        backend=(
+            "two_mediator_layered_elimination"
+            if endpoint_only is None
+            else f"two_mediator_layered_{endpoint_only}_endpoint"
+        ),
     )
 
 
@@ -1912,6 +2034,61 @@ def _resolved_terminal_events(
     )
 
 
+def _coarsen_terminal_event_outcome(
+    world: WorldSpec,
+    outcome: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+) -> tuple[WorldSpec, tuple[tuple[int, ...], tuple[int, ...]]] | None:
+    """Quotient terminal states by the two event-membership bits.
+
+    The two-world objective can observe an outcome state only through whether
+    it belongs to the left and right terminal events.  Aggregating states with
+    the same two membership bits is exact: every original response mechanism
+    projects to the quotient, and every quotient response mechanism can be
+    refined within each group to recover every original CPT row.
+    """
+
+    left_event, right_event = map(frozenset, outcome_events)
+    signatures: list[tuple[bool, bool]] = []
+    groups: list[list[int]] = []
+    for state in range(world.domains[outcome]):
+        signature = (state in left_event, state in right_event)
+        if signature not in signatures:
+            signatures.append(signature)
+            groups.append([])
+        groups[signatures.index(signature)].append(state)
+    if len(groups) < 2 or len(groups) >= world.domains[outcome]:
+        return None
+
+    cpt = dict(world.cpt)
+    cpt[outcome] = tuple(
+        tuple(sum(row[state] for state in group) for group in groups)
+        for row in world.cpt[outcome]
+    )
+    domains = list(world.domains)
+    domains[outcome] = len(groups)
+    state_names = list(world.state_names)
+    state_names[outcome] = tuple(
+        "{" + ",".join(world.state_names[outcome][state] for state in group) + "}"
+        for group in groups
+    )
+    quotient = WorldSpec(
+        family=world.family,
+        topology=f"{world.topology}|terminal-event-quotient",
+        variables=world.variables,
+        domains=tuple(domains),
+        state_names=tuple(state_names),
+        edges=world.edges,
+        parents=world.parents,
+        cpt=cpt,
+    )
+    quotient_events = (
+        tuple(index for index, signature in enumerate(signatures) if signature[0]),
+        tuple(index for index, signature in enumerate(signatures) if signature[1]),
+    )
+    return quotient, quotient_events
+
+
 def _terminal_event_endpoint_is_jointly_attainable(
     world: WorldSpec,
     treatment: int,
@@ -2164,6 +2341,14 @@ class _SparseResponseModel:
             for block in self.pricing_blocks
         }
         self._add_initial_completion()
+        self.last_certification = "exact"
+        self.last_endpoint_error = 0.0
+
+    def _enable_static_presolve(self) -> None:
+        """Enable owner presolve only after every response column is explicit."""
+
+        if not self.dynamic_pricing_blocks:
+            self.model.setPresolve(SCIP_PARAMSETTING.DEFAULT)
 
     def _required_context_edges(self, node: int) -> tuple[tuple[int, int], ...]:
         contexts = self.contexts[node]
@@ -2704,7 +2889,10 @@ class _SparseResponseModel:
         self,
         *,
         time_limit_seconds: float | None,
+        accepted_absolute_gap: float = 0.0,
     ) -> tuple[float, float]:
+        if not np.isfinite(accepted_absolute_gap) or accepted_absolute_gap < 0.0:
+            raise ValueError("accepted absolute gap must be finite and nonnegative")
         deadline: float | None = None
         if time_limit_seconds is not None:
             self.model.setRealParam("limits/time", time_limit_seconds)
@@ -2716,15 +2904,36 @@ class _SparseResponseModel:
         scip_status = str(self.model.getStatus())
         pricing_closed = self.pricer.closed and not self.pricer.timed_out
         primal_bound = float(self.model.getPrimalbound())
-        certified_optimal = scip_status == "optimal" and pricing_closed
-        if not certified_optimal:
+        dual_bound = float(self.model.getDualbound())
+        endpoint_error = abs(primal_bound - dual_bound)
+        numerical_closure = scip_status == "timelimit" and (
+            _global_bounds_numerically_closed(primal_bound, dual_bound)
+        )
+        certified_exact = pricing_closed and (
+            scip_status == "optimal" or numerical_closure
+        )
+        certified_epsilon = (
+            not certified_exact
+            and accepted_absolute_gap > 0.0
+            and pricing_closed
+            and scip_status in {"gaplimit", "timelimit"}
+            and np.isfinite(endpoint_error)
+            and endpoint_error
+            <= accepted_absolute_gap + 10.0 * _SCIP_NUMERICAL_TOLERANCE
+        )
+        if not certified_exact and not certified_epsilon:
             raise RuntimeError(
                 "SCIP did not certify an optimal counterfactual bound: "
                 f"status={scip_status}, pricing_closed={self.pricer.closed}, "
                 f"pricing_timed_out={self.pricer.timed_out}, "
-                f"sense={self.sense}, primal={primal_bound}"
+                f"sense={self.sense}, primal={primal_bound}, dual={dual_bound}"
             )
-        return primal_bound, elapsed
+        self.last_certification = "epsilon_sharp" if certified_epsilon else "exact"
+        self.last_endpoint_error = endpoint_error if certified_epsilon else 0.0
+        # For epsilon-sharp termination the dual bound is the safe outer
+        # endpoint: it lies below the true minimum or above the true maximum.
+        endpoint = dual_bound if certified_epsilon else primal_bound
+        return endpoint, elapsed
 
 
 def _direct_treatment_terminal_bounds(
@@ -2738,6 +2947,7 @@ def _direct_treatment_terminal_bounds(
     outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
     target_outer_bounds: tuple[float, float],
     time_limit_seconds: float | None,
+    accepted_absolute_gap: float = 0.0,
 ) -> CounterfactualBoundsResult | None:
     """Eliminate a direct-treatment terminal mechanism and keep exact owners."""
 
@@ -2761,8 +2971,11 @@ def _direct_treatment_terminal_bounds(
     )
     lower_build_seconds = time.perf_counter() - build_started
     lower, lower_seconds = lower_model.optimize(
-        time_limit_seconds=time_limit_seconds
+        time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=accepted_absolute_gap,
     )
+    lower_error = lower_model.last_endpoint_error
+    lower_certification = lower_model.last_certification
 
     build_started = time.perf_counter()
     upper_model = _SparseResponseModel(
@@ -2779,7 +2992,8 @@ def _direct_treatment_terminal_bounds(
     )
     upper_build_seconds = time.perf_counter() - build_started
     upper, upper_seconds = upper_model.optimize(
-        time_limit_seconds=time_limit_seconds
+        time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=accepted_absolute_gap,
     )
     return CounterfactualBoundsResult(
         lower=lower,
@@ -2813,6 +3027,13 @@ def _direct_treatment_terminal_bounds(
             len(lower_model.auxiliary_values),
             len(upper_model.auxiliary_values),
         ),
+        certification=(
+            "epsilon_sharp"
+            if "epsilon_sharp"
+            in {lower_certification, upper_model.last_certification}
+            else "exact"
+        ),
+        endpoint_error=max(lower_error, upper_model.last_endpoint_error),
         backend="direct_treatment_terminal_elimination",
     )
 
@@ -2887,6 +3108,7 @@ def _root_separator_bounds(
     outcome_state: int | None,
     outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
     time_limit_seconds: float | None,
+    accepted_absolute_gap: float = 0.0,
 ) -> CounterfactualBoundsResult | None:
     """Condition on a shared root and solve its independent response strata."""
 
@@ -2936,6 +3158,7 @@ def _root_separator_bounds(
                 min(left_probability, right_probability),
             ),
             time_limit_seconds=time_limit_seconds,
+            accepted_absolute_gap=accepted_absolute_gap,
         )
         results.append((weight, result))
     if not results:
@@ -2960,6 +3183,14 @@ def _root_separator_bounds(
         auxiliary_variables=sum(
             result.auxiliary_variables for _, result in results
         ),
+        certification=(
+            "epsilon_sharp"
+            if any(result.certification == "epsilon_sharp" for _, result in results)
+            else "exact"
+        ),
+        endpoint_error=sum(
+            weight * result.endpoint_error for weight, result in results
+        ),
         backend="shared_root_separator_decomposition",
     )
 
@@ -2975,6 +3206,8 @@ def _partially_attainable_terminal_bounds(
     outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
     target_outer_bounds: tuple[float, float],
     time_limit_seconds: float | None,
+    on_demand_response_columns: bool = True,
+    accepted_absolute_gap: float = 0.0,
 ) -> CounterfactualBoundsResult | None:
     """Solve endpoints separately when a terminal response is removable."""
 
@@ -3000,9 +3233,12 @@ def _partially_attainable_terminal_bounds(
         return None
 
     models: list[_SparseResponseModel] = []
+    layered_results: list[CounterfactualBoundsResult] = []
     build_seconds = 0.0
     solve_seconds = 0.0
     generated_columns = 0
+    endpoint_errors: list[float] = []
+    certifications: list[str] = []
 
     if lower_terminal and _terminal_lower_is_constant_zero(
         world,
@@ -3011,8 +3247,81 @@ def _partially_attainable_terminal_bounds(
     ):
         lower = 0.0
     else:
+        layered_lower = (
+            _two_mediator_joint_bounds(
+                world,
+                treatment,
+                outcome,
+                baseline_value=baseline_value,
+                treatment_value=treatment_value,
+                outcome_events=outcome_events,
+                time_limit_seconds=time_limit_seconds,
+                endpoint_only="lower",
+            )
+            if lower_terminal
+            else None
+        )
+        if layered_lower is not None:
+            lower = layered_lower.lower
+            build_seconds += layered_lower.build_seconds
+            solve_seconds += layered_lower.solve_seconds
+            generated_columns += layered_lower.generated_columns
+            layered_results.append(layered_lower)
+            endpoint_errors.append(layered_lower.endpoint_error)
+            certifications.append(layered_lower.certification)
+        else:
+            started = time.perf_counter()
+            lower_model = _SparseResponseModel(
+                world,
+                treatment,
+                outcome,
+                baseline_value=baseline_value,
+                treatment_value=treatment_value,
+                outcome_state=outcome_state,
+                outcome_events=outcome_events,
+                sense="minimize",
+                target_outer_bounds=target_outer_bounds,
+                terminal_event_endpoint="lower" if lower_terminal else None,
+                on_demand_response_columns=on_demand_response_columns,
+            )
+            if not on_demand_response_columns:
+                lower_model._enable_static_presolve()
+            build_seconds += time.perf_counter() - started
+            lower, elapsed = lower_model.optimize(
+                time_limit_seconds=time_limit_seconds,
+                accepted_absolute_gap=accepted_absolute_gap,
+            )
+            solve_seconds += elapsed
+            generated_columns += lower_model.pricer.generated_columns
+            models.append(lower_model)
+            endpoint_errors.append(lower_model.last_endpoint_error)
+            certifications.append(lower_model.last_certification)
+
+    layered_upper = (
+        _two_mediator_joint_bounds(
+            world,
+            treatment,
+            outcome,
+            baseline_value=baseline_value,
+            treatment_value=treatment_value,
+            outcome_events=outcome_events,
+            time_limit_seconds=time_limit_seconds,
+            endpoint_only="upper",
+        )
+        if upper_terminal
+        else None
+    )
+    if layered_upper is not None:
+        upper = layered_upper.upper
+        build_seconds += layered_upper.build_seconds
+        solve_seconds += layered_upper.solve_seconds
+        generated_columns += layered_upper.generated_columns
+        layered_results.append(layered_upper)
+        endpoint_errors.append(layered_upper.endpoint_error)
+        certifications.append(layered_upper.certification)
+    else:
         started = time.perf_counter()
-        lower_model = _SparseResponseModel(
+        upper_model = _SparseResponseModel(
             world,
             treatment,
             outcome,
@@ -3020,59 +3329,73 @@ def _partially_attainable_terminal_bounds(
             treatment_value=treatment_value,
             outcome_state=outcome_state,
             outcome_events=outcome_events,
-            sense="minimize",
+            sense="maximize",
             target_outer_bounds=target_outer_bounds,
-            terminal_event_endpoint="lower" if lower_terminal else None,
+            terminal_event_endpoint="upper" if upper_terminal else None,
+            on_demand_response_columns=on_demand_response_columns,
         )
+        if not on_demand_response_columns:
+            upper_model._enable_static_presolve()
         build_seconds += time.perf_counter() - started
-        lower, elapsed = lower_model.optimize(
-            time_limit_seconds=time_limit_seconds
+        upper, elapsed = upper_model.optimize(
+            time_limit_seconds=time_limit_seconds,
+            accepted_absolute_gap=accepted_absolute_gap,
         )
         solve_seconds += elapsed
-        generated_columns += lower_model.pricer.generated_columns
-        models.append(lower_model)
-
-    started = time.perf_counter()
-    upper_model = _SparseResponseModel(
-        world,
-        treatment,
-        outcome,
-        baseline_value=baseline_value,
-        treatment_value=treatment_value,
-        outcome_state=outcome_state,
-        outcome_events=outcome_events,
-        sense="maximize",
-        target_outer_bounds=target_outer_bounds,
-        terminal_event_endpoint="upper" if upper_terminal else None,
-    )
-    build_seconds += time.perf_counter() - started
-    upper, elapsed = upper_model.optimize(time_limit_seconds=time_limit_seconds)
-    solve_seconds += elapsed
-    generated_columns += upper_model.pricer.generated_columns
-    models.append(upper_model)
+        generated_columns += upper_model.pricer.generated_columns
+        models.append(upper_model)
+        endpoint_errors.append(upper_model.last_endpoint_error)
+        certifications.append(upper_model.last_certification)
 
     return CounterfactualBoundsResult(
         lower=lower,
         upper=upper,
         build_seconds=build_seconds,
         solve_seconds=solve_seconds,
-        affected_nodes=max(len(model.affected) for model in models),
-        pair_kernel_entries=max(len(model.kernel_cache) for model in models),
+        affected_nodes=max(
+            [len(model.affected) for model in models]
+            + [result.affected_nodes for result in layered_results],
+            default=0,
+        ),
+        pair_kernel_entries=max(
+            [len(model.kernel_cache) for model in models]
+            + [result.pair_kernel_entries for result in layered_results],
+            default=0,
+        ),
         generated_columns=generated_columns,
-        response_blocks=max(len(model.pricing_blocks) for model in models),
+        response_blocks=max(
+            [len(model.pricing_blocks) for model in models]
+            + [result.response_blocks for result in layered_results],
+            default=0,
+        ),
         dynamic_response_blocks=max(
-            len(model.dynamic_pricing_blocks) for model in models
+            [len(model.dynamic_pricing_blocks) for model in models]
+            + [result.dynamic_response_blocks for result in layered_results],
+            default=0,
         ),
         max_response_contexts=max(
-            (
+            [
                 len(block.contexts)
                 for model in models
                 for block in model.pricing_blocks
-            ),
+            ]
+            + [result.max_response_contexts for result in layered_results],
             default=0,
         ),
-        auxiliary_variables=max(len(model.auxiliary_values) for model in models),
-        backend="terminal_event_endpoint_decomposition",
+        auxiliary_variables=max(
+            [len(model.auxiliary_values) for model in models]
+            + [result.auxiliary_variables for result in layered_results],
+            default=0,
+        ),
+        certification=(
+            "epsilon_sharp" if "epsilon_sharp" in certifications else "exact"
+        ),
+        endpoint_error=max(endpoint_errors, default=0.0),
+        backend=(
+            "terminal_event_endpoint_decomposition+layered_endpoint"
+            if layered_results
+            else "terminal_event_endpoint_decomposition"
+        ),
     )
 
 
@@ -3087,6 +3410,8 @@ def _solve_sparse_two_world_event_bounds(
     outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None,
     target_outer_bounds: tuple[float, float],
     time_limit_seconds: float | None = None,
+    prefer_static_response_columns: bool = False,
+    accepted_absolute_gap: float = 0.0,
 ) -> CounterfactualBoundsResult:
     resolved_events = outcome_events
     if resolved_events is None:
@@ -3133,6 +3458,7 @@ def _solve_sparse_two_world_event_bounds(
         outcome_events=resolved_events,
         target_outer_bounds=target_outer_bounds,
         time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=accepted_absolute_gap,
     )
     if terminal is not None:
         return terminal
@@ -3146,9 +3472,31 @@ def _solve_sparse_two_world_event_bounds(
         outcome_state=outcome_state,
         outcome_events=resolved_events,
         time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=accepted_absolute_gap,
     )
     if root_separator is not None:
         return root_separator
+
+    quotient = _coarsen_terminal_event_outcome(
+        world,
+        outcome,
+        resolved_events,
+    )
+    if quotient is not None:
+        quotient_world, quotient_events = quotient
+        return _solve_sparse_two_world_event_bounds(
+            quotient_world,
+            treatment,
+            outcome,
+            treatment_value=treatment_value,
+            baseline_value=baseline_value,
+            outcome_state=None,
+            outcome_events=quotient_events,
+            target_outer_bounds=target_outer_bounds,
+            time_limit_seconds=time_limit_seconds,
+            prefer_static_response_columns=True,
+            accepted_absolute_gap=accepted_absolute_gap,
+        )
 
     partial_terminal = _partially_attainable_terminal_bounds(
         world,
@@ -3160,6 +3508,8 @@ def _solve_sparse_two_world_event_bounds(
         outcome_events=resolved_events,
         target_outer_bounds=target_outer_bounds,
         time_limit_seconds=time_limit_seconds,
+        on_demand_response_columns=not prefer_static_response_columns,
+        accepted_absolute_gap=accepted_absolute_gap,
     )
     if partial_terminal is not None:
         return partial_terminal
@@ -3175,13 +3525,24 @@ def _solve_sparse_two_world_event_bounds(
         sense="minimize",
         target_outer_bounds=target_outer_bounds,
         outcome_events=outcome_events,
+        on_demand_response_columns=not prefer_static_response_columns,
     )
+    if prefer_static_response_columns:
+        lower_model._enable_static_presolve()
     lower_build_seconds = time.perf_counter() - build_started
-    lower, lower_seconds = lower_model.optimize(time_limit_seconds=time_limit_seconds)
+    lower, lower_seconds = lower_model.optimize(
+        time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=accepted_absolute_gap,
+    )
+    lower_error = lower_model.last_endpoint_error
+    lower_certification = lower_model.last_certification
     restart_started = time.perf_counter()
     lower_model.restart_with_objective("maximize")
     restart_seconds = time.perf_counter() - restart_started
-    upper, upper_seconds = lower_model.optimize(time_limit_seconds=time_limit_seconds)
+    upper, upper_seconds = lower_model.optimize(
+        time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=accepted_absolute_gap,
+    )
     return CounterfactualBoundsResult(
         lower=lower,
         upper=upper,
@@ -3197,6 +3558,13 @@ def _solve_sparse_two_world_event_bounds(
             default=0,
         ),
         auxiliary_variables=len(lower_model.auxiliary_values),
+        certification=(
+            "epsilon_sharp"
+            if "epsilon_sharp"
+            in {lower_certification, lower_model.last_certification}
+            else "exact"
+        ),
+        endpoint_error=max(lower_error, lower_model.last_endpoint_error),
     )
 
 
@@ -3251,8 +3619,9 @@ def sparse_individual_counterfactual_probability_bounds(
     factual_outcome_state: int,
     target_outcome_state: int,
     time_limit_seconds: float | None = None,
+    conditional_endpoint_tolerance: float = 0.0,
 ) -> CounterfactualBoundsResult:
-    """Return sharp bounds for one endpoint-aligned individual prediction.
+    """Return exact or epsilon-sharp bounds for one individual prediction.
 
     The target is
 
@@ -3267,6 +3636,13 @@ def sparse_individual_counterfactual_probability_bounds(
 
     if time_limit_seconds is not None and time_limit_seconds <= 0:
         raise ValueError("time_limit_seconds must be positive")
+    if (
+        not np.isfinite(conditional_endpoint_tolerance)
+        or conditional_endpoint_tolerance < 0.0
+    ):
+        raise ValueError(
+            "conditional endpoint tolerance must be finite and nonnegative"
+        )
     from .query_truth import interventional_probability
 
     factual_probability = float(
@@ -3301,6 +3677,9 @@ def sparse_individual_counterfactual_probability_bounds(
         outcome_events=((factual_outcome_state,), (target_outcome_state,)),
         target_outer_bounds=joint_outer_bounds,
         time_limit_seconds=time_limit_seconds,
+        accepted_absolute_gap=(
+            conditional_endpoint_tolerance * factual_probability
+        ),
     )
     return CounterfactualBoundsResult(
         lower=joint.lower / factual_probability,
@@ -3314,5 +3693,7 @@ def sparse_individual_counterfactual_probability_bounds(
         dynamic_response_blocks=joint.dynamic_response_blocks,
         max_response_contexts=joint.max_response_contexts,
         auxiliary_variables=joint.auxiliary_variables,
+        certification=joint.certification,
+        endpoint_error=joint.endpoint_error / factual_probability,
         backend=joint.backend,
     )

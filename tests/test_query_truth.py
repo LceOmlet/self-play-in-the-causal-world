@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from cpt_world import (
     OWNER_STATUS_IMPLEMENTED,
+    CounterfactualIntervalCertificate,
     WorldGrammar,
     WorldSpec,
     ate_effect,
@@ -470,7 +471,7 @@ class QueryTruthOwnerTests(unittest.TestCase):
             (Fraction(0), Fraction(0)),
         )
 
-    def test_individual_scalar_verifier_is_exact_or_fail_closed(self) -> None:
+    def test_individual_scalar_verifier_is_certified_or_fail_closed(self) -> None:
         world = _binary_chain_world()
         arguments = {
             "factual_value": 0,
@@ -483,7 +484,26 @@ class QueryTruthOwnerTests(unittest.TestCase):
         self.assertTrue(exact["compatible"])
 
         with patch(
-            "cpt_world.query_truth.individual_counterfactual_probability_bounds",
+            "cpt_world.query_truth._individual_counterfactual_probability_certificate",
+            return_value=CounterfactualIntervalCertificate(
+                lower=0.2,
+                upper=0.8,
+                certification="epsilon_sharp",
+                endpoint_error=0.0015,
+            ),
+        ):
+            approximate = validate_individual_counterfactual_probability(
+                world, "X", "Y", 0.5, **arguments
+            )
+        self.assertEqual(approximate["status"], "epsilon_sharp")
+        self.assertEqual(
+            approximate["interval_source"], "epsilon_sharp_markovian_outer"
+        )
+        self.assertEqual(approximate["endpoint_error"], 0.0015)
+        self.assertTrue(approximate["compatible"])
+
+        with patch(
+            "cpt_world.query_truth._individual_counterfactual_probability_certificate",
             side_effect=RuntimeError("time limit reached"),
         ):
             rejected = validate_individual_counterfactual_probability(

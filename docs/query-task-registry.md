@@ -8,7 +8,7 @@
 | query_type | anchors | answer_kind | 兼容 task_heads | truth owner |
 |---|---|---|---|---|
 | `ate` | treatment, outcome | single_effect | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
-| `individual_counterfactual_probability` | treatment, outcome | individual probability | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界精确界） |
+| `individual_counterfactual_probability` | treatment, outcome | individual probability | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界 exact / epsilon-sharp 认证界） |
 | `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
 | `best_intervention` | decision_target, outcome | intervention | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
@@ -43,8 +43,9 @@ compute_query_truth(world, seed)
 - exact `Fraction`；
 - `ate` 默认 `state_1` vs `state_0`，可由显式状态索引覆盖；
 - `individual_counterfactual_probability` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率；
-- 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率的 sharp interval，不选择隐藏 SCM；模型只返回一个 scalar，落在精确区间内即兼容；
-- 求解超时时，Fréchet 外界只能排除落在外界之外的 scalar；外界以内保持 unresolved，不会被当作正确答案；
+- 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率区间，不选择隐藏 SCM；模型只返回一个 scalar；
+- 精确闭合时返回 `exact`；否则仅在最终条件概率尺度上两个端点误差都不超过 `0.002` 时返回安全外括的 `epsilon_sharp`；
+- 超过该容差时，Fréchet 外界只能排除落在外界之外的 scalar；外界以内保持 unresolved；
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；
 - `mediator_set` 返回所有 X→Y 有向路径上的中间变量与路径边偏序；

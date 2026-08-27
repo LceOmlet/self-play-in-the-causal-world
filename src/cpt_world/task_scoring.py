@@ -300,14 +300,23 @@ def score_terminal_answer(
     if parsed["kind"] == "individual_counterfactual_probability":
         truth_lower = truth["lower"]
         truth_upper = truth["upper"]
+        certification = str(truth.get("certification", "exact"))
+        endpoint_error = float(truth.get("endpoint_error", 0.0))
         prediction = Fraction(parsed["value"])
         distance = max(truth_lower - prediction, Fraction(0), prediction - truth_upper)
         return {
             "kind": "individual_counterfactual_probability",
-            "truth": {"lower": truth_lower, "upper": truth_upper},
+            "truth": {
+                "lower": truth_lower,
+                "upper": truth_upper,
+                "certification": certification,
+                "endpoint_error": endpoint_error,
+            },
             "prediction": prediction,
             "compatible": float(distance) <= _NUMERICAL_TOLERANCE,
             "distance_to_interval": distance,
+            "certification": certification,
+            "endpoint_error": endpoint_error,
             "numerical_tolerance": _NUMERICAL_TOLERANCE,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
