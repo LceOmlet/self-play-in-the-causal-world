@@ -482,6 +482,43 @@ def _contract_transport_message(
     )
 
 
+def _binary_five_context_response_world() -> WorldSpec:
+    """A complete five-context binary block with exactly 32 responses."""
+
+    return WorldSpec(
+        family="test_dag",
+        topology="X2-to-M5-to-Y2",
+        variables=("X", "M", "Y"),
+        domains=(2, 5, 2),
+        state_names=(("0", "1"), tuple(str(state) for state in range(5)), ("0", "1")),
+        edges=((0, 1), (1, 2)),
+        parents={0: (), 1: (0,), 2: (1,)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: (
+                (
+                    Fraction(1, 20),
+                    Fraction(2, 20),
+                    Fraction(3, 20),
+                    Fraction(4, 20),
+                    Fraction(10, 20),
+                ),
+                (
+                    Fraction(8, 20),
+                    Fraction(1, 20),
+                    Fraction(5, 20),
+                    Fraction(2, 20),
+                    Fraction(4, 20),
+                ),
+            ),
+            2: tuple(
+                (Fraction(state + 1, 7), Fraction(6 - state, 7))
+                for state in range(5)
+            ),
+        },
+    )
+
+
 class CounterfactualSolverOptimizationTests(unittest.TestCase):
     def test_epsilon_sharp_termination_returns_the_safe_dual_endpoint(self) -> None:
         for sense, primal, dual in (
@@ -507,6 +544,26 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
                 self.assertEqual(endpoint, dual)
                 self.assertEqual(owner.last_certification, "epsilon_sharp")
                 self.assertAlmostEqual(owner.last_endpoint_error, 0.001)
+
+    def test_auto_columns_materialize_a_complete_32_response_block(self) -> None:
+        world = _binary_five_context_response_world()
+        owner = _SparseResponseModel(
+            world,
+            0,
+            2,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="maximize",
+            target_outer_bounds=(0.0, 1.0),
+            on_demand_response_columns=True,
+        )
+
+        outcome_blocks = [block for block in owner.pricing_blocks if block.node == 2]
+        self.assertEqual(len(outcome_blocks), 1)
+        self.assertFalse(outcome_blocks[0].dynamic)
+        self.assertEqual(len(outcome_blocks[0].columns), 32)
 
     def test_epsilon_sharp_never_accepts_incomplete_pricing(self) -> None:
         owner = object.__new__(_SparseResponseModel)

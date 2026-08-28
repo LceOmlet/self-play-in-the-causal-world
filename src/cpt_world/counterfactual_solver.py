@@ -36,6 +36,10 @@ _SCIP_NUMERICAL_TOLERANCE = 1e-9
 # Retained only by the private legacy path used for implementation parity.
 _LEGACY_MAX_EXPLICIT_RESPONSE_CONTEXTS = 5
 _LEGACY_MAX_EXPLICIT_RESPONSE_COLUMNS = 5**5
+# The smallest complete response tables are cheaper to hand to SCIP than to
+# manage through a pricing lifecycle.  This is the complete binary table at
+# the already supported five-context boundary, not a task-distribution knob.
+_MAX_AUTO_EXPLICIT_RESPONSE_COLUMNS = 2**_LEGACY_MAX_EXPLICIT_RESPONSE_CONTEXTS
 # Above this many entries in one induced min-sum table, pricing falls back to
 # SCIP.  Both paths solve the same deterministic-response MAP problem exactly;
 # this guard only prevents the structure-aware fast path from overusing memory.
@@ -80,6 +84,7 @@ class _SymbolicFactor:
     values: Any
     upper_bounds: Any
     initial_values: Any
+    joint_evaluator: Any | None = None
 
 
 @dataclass(slots=True)
@@ -87,6 +92,7 @@ class _PricingBlock:
     block_id: int
     node: int
     contexts: tuple[tuple[int, ...], ...]
+    context_indices: dict[tuple[int, ...], int]
     columns: list[tuple[tuple[int, ...], Any]]
     initial_weights: dict[tuple[int, ...], float]
     normalization: Any
@@ -2195,14 +2201,28 @@ def _eliminate_factor_tokens(
             term_initial = 1.0
             for factor, positions in zip(involving, projection_positions, strict=True):
                 projected = tuple(full_assignment[position] for position in positions)
-                factor_values = factor.values
-                term *= (
-                    factor_values(projected)
-                    if callable(factor_values)
-                    else factor_values[projected]
-                )
-                term_upper *= _factor_upper(factor, projected)
-                term_initial *= _factor_initial(factor, projected)
+                if factor.joint_evaluator is not None:
+                    factor_value, factor_upper, factor_initial = factor.joint_evaluator(
+                        projected
+                    )
+                else:
+                    factor_values = factor.values
+                    factor_value = (
+                        factor_values(projected)
+                        if callable(factor_values)
+                        else factor_values[projected]
+                    )
+                    if (
+                        factor_values is factor.upper_bounds
+                        and factor_values is factor.initial_values
+                    ):
+                        factor_upper = factor_initial = float(factor_value)
+                    else:
+                        factor_upper = _factor_upper(factor, projected)
+                        factor_initial = _factor_initial(factor, projected)
+                term *= factor_value
+                term_upper *= factor_upper
+                term_initial *= factor_initial
             terms.append(term)
             upper += term_upper
             initial += term_initial
@@ -2301,6 +2321,8 @@ class _SparseResponseModel:
             if node in ancestors and node not in affected_set and node != treatment
         )
         self.contexts: dict[int, tuple[tuple[int, ...], ...]] = {}
+        self.context_indices: dict[int, dict[tuple[int, ...], int]] = {}
+        self.context_rows: dict[int, dict[tuple[int, ...], tuple[Any, ...]]] = {}
         self.forest_edges: dict[int, tuple[tuple[int, int], ...]] = {}
         self.context_components: dict[int, tuple[_ContextComponent, ...]] = {}
         self.forest_edge_set: set[tuple[int, int, int]] = set()
@@ -2347,7 +2369,7 @@ class _SparseResponseModel:
     def _enable_static_presolve(self) -> None:
         """Enable owner presolve only after every response column is explicit."""
 
-        if not self.dynamic_pricing_blocks:
+        if not getattr(self, "dynamic_pricing_blocks", ()):
             self.model.setPresolve(SCIP_PARAMSETTING.DEFAULT)
 
     def _required_context_edges(self, node: int) -> tuple[tuple[int, int], ...]:
@@ -2394,6 +2416,13 @@ class _SparseResponseModel:
                 self.baseline_value,
                 self.treatment_value,
             )
+            self.context_indices[node] = {
+                context: index for index, context in enumerate(self.contexts[node])
+            }
+            self.context_rows[node] = {
+                context: self.world.cpt[node][_row_index(self.world, node, context)]
+                for context in self.contexts[node]
+            }
             edges = self._required_context_edges(node)
             self.forest_edges[node] = edges
             self.context_components[node] = _context_components(len(self.contexts[node]), edges)
@@ -2406,12 +2435,8 @@ class _SparseResponseModel:
                 if component.forest:
                     for left_index, right_index in component.edges:
                         self.forest_edge_set.add((node, left_index, right_index))
-                        left_row = self.world.cpt[node][
-                            _row_index(self.world, node, contexts[left_index])
-                        ]
-                        right_row = self.world.cpt[node][
-                            _row_index(self.world, node, contexts[right_index])
-                        ]
+                        left_row = self.context_rows[node][contexts[left_index]]
+                        right_row = self.context_rows[node][contexts[right_index]]
                         entries: dict[tuple[int, int], Any] = {}
                         for left_state in range(domain_size):
                             for right_state in range(domain_size):
@@ -2459,9 +2484,13 @@ class _SparseResponseModel:
                     if weight > _SCIP_NUMERICAL_TOLERANCE:
                         initial_weights[response] = initial_weights.get(response, 0.0) + weight
                 response_count = domain_size ** len(component_contexts)
-                dynamic = self.on_demand_response_columns or (
-                    len(component_contexts) > _LEGACY_MAX_EXPLICIT_RESPONSE_CONTEXTS
-                    or response_count > _LEGACY_MAX_EXPLICIT_RESPONSE_COLUMNS
+                dynamic = (
+                    response_count > _LEGACY_MAX_EXPLICIT_RESPONSE_COLUMNS
+                    or len(component_contexts) > _LEGACY_MAX_EXPLICIT_RESPONSE_CONTEXTS
+                    or (
+                        self.on_demand_response_columns
+                        and response_count > _MAX_AUTO_EXPLICIT_RESPONSE_COLUMNS
+                    )
                 )
                 responses = (
                     tuple(initial_weights)
@@ -2485,7 +2514,7 @@ class _SparseResponseModel:
                 )
                 marginals: dict[tuple[int, int], Any] = {}
                 for context_index, context in enumerate(component_contexts):
-                    cpt_row = self.world.cpt[node][_row_index(self.world, node, context)]
+                    cpt_row = self.context_rows[node][context]
                     for state, probability in enumerate(cpt_row):
                         constraint = self.model.addCons(
                             quicksum(
@@ -2502,6 +2531,10 @@ class _SparseResponseModel:
                     block_id=block_id,
                     node=node,
                     contexts=component_contexts,
+                    context_indices={
+                        context: index
+                        for index, context in enumerate(component_contexts)
+                    },
                     columns=columns,
                     initial_weights=initial_weights,
                     normalization=normalization,
@@ -2525,7 +2558,7 @@ class _SparseResponseModel:
         """Construct one sparse feasible response coupling from common uniforms."""
 
         rows = tuple(
-            tuple(float(value) for value in self.world.cpt[node][_row_index(self.world, node, c)])
+            tuple(float(value) for value in self.context_rows[node][c])
             for c in contexts
         )
         support = [
@@ -2553,11 +2586,12 @@ class _SparseResponseModel:
         if left_context == right_context:
             if left_state != right_state:
                 return 0.0
-            row = self.world.cpt[node][_row_index(self.world, node, left_context)]
+            row = self.context_rows[node][left_context]
             return float(row[left_state])
         contexts = self.contexts[node]
-        left_index = contexts.index(left_context)
-        right_index = contexts.index(right_context)
+        context_indices = self.context_indices[node]
+        left_index = context_indices[left_context]
+        right_index = context_indices[right_context]
         if left_index > right_index:
             left_index, right_index = right_index, left_index
             left_state, right_state = right_state, left_state
@@ -2575,17 +2609,13 @@ class _SparseResponseModel:
                 lb=0.0,
                 ub=float(
                     min(
-                        self.world.cpt[node][_row_index(self.world, node, contexts[left_index])][
-                            left_state
-                        ],
-                        self.world.cpt[node][_row_index(self.world, node, contexts[right_index])][
-                            right_state
-                        ],
+                        self.context_rows[node][contexts[left_index]][left_state],
+                        self.context_rows[node][contexts[right_index]][right_state],
                     )
                 ),
             )
-            local_left = block.contexts.index(contexts[left_index])
-            local_right = block.contexts.index(contexts[right_index])
+            local_left = block.context_indices[contexts[left_index]]
+            local_right = block.context_indices[contexts[right_index]]
             constraint = self.model.addCons(
                 kernel
                 - quicksum(
@@ -2624,29 +2654,40 @@ class _SparseResponseModel:
                 parent_tokens.append((parent, -1))
         scope = (*parent_tokens, (node, 0), (node, 1))
         parent_specs = self.world.parents[node]
+        scope_positions = {token: index for index, token in enumerate(scope)}
+        left_sources: list[tuple[bool, int]] = []
+        right_sources: list[tuple[bool, int]] = []
+        for parent in parent_specs:
+            if parent == self.treatment:
+                left_sources.append((True, self.baseline_value))
+                right_sources.append((True, self.treatment_value))
+            elif parent in self.affected:
+                left_sources.append((False, scope_positions[(parent, 0)]))
+                right_sources.append((False, scope_positions[(parent, 1)]))
+            else:
+                position = scope_positions[(parent, -1)]
+                left_sources.append((False, position))
+                right_sources.append((False, position))
+        left_state_position = scope_positions[(node, 0)]
+        right_state_position = scope_positions[(node, 1)]
 
         def decode(
             assignment: tuple[int, ...],
         ) -> tuple[tuple[int, ...], tuple[int, ...], int, int]:
-            token_values = dict(zip(scope, assignment, strict=True))
-            left_context: list[int] = []
-            right_context: list[int] = []
-            for parent in parent_specs:
-                if parent == self.treatment:
-                    left_context.append(self.baseline_value)
-                    right_context.append(self.treatment_value)
-                elif parent in self.affected:
-                    left_context.append(token_values[(parent, 0)])
-                    right_context.append(token_values[(parent, 1)])
-                else:
-                    state = token_values[(parent, -1)]
-                    left_context.append(state)
-                    right_context.append(state)
-            left_context_tuple = tuple(left_context)
-            right_context_tuple = tuple(right_context)
-            left_state = token_values[(node, 0)]
-            right_state = token_values[(node, 1)]
-            return left_context_tuple, right_context_tuple, left_state, right_state
+            left_context = tuple(
+                source if constant else assignment[source]
+                for constant, source in left_sources
+            )
+            right_context = tuple(
+                source if constant else assignment[source]
+                for constant, source in right_sources
+            )
+            return (
+                left_context,
+                right_context,
+                assignment[left_state_position],
+                assignment[right_state_position],
+            )
 
         def value(assignment: tuple[int, ...]) -> Any:
             left_context, right_context, left_state, right_state = decode(assignment)
@@ -2678,7 +2719,29 @@ class _SparseResponseModel:
                 right_state,
             )
 
-        return _SymbolicFactor(scope, value, upper, initial)
+        def evaluate(assignment: tuple[int, ...]) -> tuple[Any, float, float]:
+            left_context, right_context, left_state, right_state = decode(assignment)
+            left_row = self.context_rows[node][left_context]
+            right_row = self.context_rows[node][right_context]
+            return (
+                self._kernel_entry(
+                    node,
+                    left_context,
+                    right_context,
+                    left_state,
+                    right_state,
+                ),
+                float(min(left_row[left_state], right_row[right_state])),
+                self._initial_kernel_value(
+                    node,
+                    left_context,
+                    right_context,
+                    left_state,
+                    right_state,
+                ),
+            )
+
+        return _SymbolicFactor(scope, value, upper, initial, evaluate)
 
     def _build_twin_probability(self) -> tuple[Any, float]:
         factors = (
@@ -2780,27 +2843,22 @@ class _SparseResponseModel:
             if left_state != right_state:
                 return 0.0
             return float(
-                self.world.cpt[node][_row_index(self.world, node, left_context)][left_state]
+                self.context_rows[node][left_context][left_state]
             )
         contexts = self.contexts[node]
-        left_index = contexts.index(left_context)
-        right_index = contexts.index(right_context)
+        context_indices = self.context_indices[node]
+        left_index = context_indices[left_context]
+        right_index = context_indices[right_context]
         if left_index > right_index:
             left_index, right_index = right_index, left_index
             left_state, right_state = right_state, left_state
         edge_key = (node, left_index, right_index)
         if edge_key in self.forest_edge_set:
             left_row = tuple(
-                float(value)
-                for value in self.world.cpt[node][
-                    _row_index(self.world, node, contexts[left_index])
-                ]
+                float(value) for value in self.context_rows[node][contexts[left_index]]
             )
             right_row = tuple(
-                float(value)
-                for value in self.world.cpt[node][
-                    _row_index(self.world, node, contexts[right_index])
-                ]
+                float(value) for value in self.context_rows[node][contexts[right_index]]
             )
             left_start = sum(left_row[:left_state])
             left_end = left_start + left_row[left_state]
@@ -2808,8 +2866,8 @@ class _SparseResponseModel:
             right_end = right_start + right_row[right_state]
             return max(0.0, min(left_end, right_end) - max(left_start, right_start))
         block = self.pricing_block_by_edge[edge_key]
-        local_left = block.contexts.index(contexts[left_index])
-        local_right = block.contexts.index(contexts[right_index])
+        local_left = block.context_indices[contexts[left_index]]
+        local_right = block.context_indices[contexts[right_index]]
         return sum(
             weight
             for weight, response in self.initial_slots[block.block_id]
@@ -2893,6 +2951,7 @@ class _SparseResponseModel:
     ) -> tuple[float, float]:
         if not np.isfinite(accepted_absolute_gap) or accepted_absolute_gap < 0.0:
             raise ValueError("accepted absolute gap must be finite and nonnegative")
+        self._enable_static_presolve()
         deadline: float | None = None
         if time_limit_seconds is not None:
             self.model.setRealParam("limits/time", time_limit_seconds)
@@ -3494,7 +3553,7 @@ def _solve_sparse_two_world_event_bounds(
             outcome_events=quotient_events,
             target_outer_bounds=target_outer_bounds,
             time_limit_seconds=time_limit_seconds,
-            prefer_static_response_columns=True,
+            prefer_static_response_columns=False,
             accepted_absolute_gap=accepted_absolute_gap,
         )
 

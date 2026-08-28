@@ -5,7 +5,9 @@ The main sampler owns one declared distribution:
 - node count is uniform over ``node_counts`` (8 through 16 by default);
 - node cardinalities are independent and uniform over ``2..max_domain_size``;
 - the node order is a uniform permutation;
-- each node's parent count is uniform over ``0..min(3, predecessor_count)``;
+- in the official 8--16-node distribution, each node's parent count is uniform
+  over ``0..min(floor(node_count / 3), predecessor_count)``; smaller custom
+  grammars retain the legacy ceiling of three;
 - the parent subset is uniform conditional on that count;
 - CPTs use a simplex-uniform base distribution.  A uniform undirected graph on
   each node's parents activates exactly the categorical functional-ANOVA score
@@ -47,9 +49,7 @@ _LABEL_POOL = "DEFGHIJKLMNOPQRSTUVW"
 
 DEFAULT_NODE_COUNTS = tuple(range(8, 17))
 _MAX_GRAMMAR_NODES = 16
-_MAX_PARENT_COUNT = 3
-_BACKDOOR_COMPLEXITIES = (0, 1, 2, 3)
-_BACKDOOR_STRATIFIED_QUERY_TYPES = frozenset({"ate", "backadj_minimal_sets"})
+_BACKDOOR_STRATIFIED_QUERY_TYPES = frozenset(TASK_FAMILY_QUERY_TYPES)
 _CPT_VALIDITY_TOLERANCE = 1e-12
 _ET_V2_STRENGTH_CEILING = math.sqrt(3.0)
 
@@ -649,8 +649,9 @@ def _sample_structure_at_size(
     order = list(range(node_count))
     rng.shuffle(order)
     parents_list: list[tuple[int, ...]] = [() for _ in range(node_count)]
+    parent_count_ceiling = node_count // 3 if node_count >= 8 else 3
     for position, child in enumerate(order):
-        parent_count = rng.randint(0, min(_MAX_PARENT_COUNT, position))
+        parent_count = rng.randint(0, min(parent_count_ceiling, position))
         parents_list[child] = tuple(sorted(rng.sample(order[:position], parent_count)))
     edges = tuple(
         sorted((parent, child) for child, parents in enumerate(parents_list) for parent in parents)
@@ -1600,15 +1601,12 @@ def _minimum_backdoor_adjustment_size(
 ) -> int:
     """Return the exact minimum back-door set size for one ordered pair.
 
-    The treatment's parents always form a valid set. Since the graph grammar
-    caps their count at three, exact search only needs subsets smaller than
-    that known upper bound.
+    The treatment's parents always form a valid set, so exact search only needs
+    subsets smaller than that instance-specific upper bound.
     """
 
     treatment_parents = tuple(parent for parent, child in edges if child == treatment)
     upper_bound = len(treatment_parents)
-    if upper_bound > _MAX_PARENT_COUNT:
-        raise ValueError("graph exceeds the declared parent-count bound")
     descendants = _descendant_nodes(node_count, edges, treatment)
     allowed = tuple(
         node
@@ -1628,9 +1626,23 @@ def _minimum_backdoor_adjustment_size(
     return upper_bound
 
 
-def _sampled_backdoor_complexity(seed: int, query_type: str) -> int:
+def _sampled_backdoor_complexity(node_count: int, seed: int, query_type: str) -> int:
+    """Draw the task's minimum adjustment-set size uniformly over ``0..floor(n/3)``."""
+
+    if isinstance(node_count, bool) or not isinstance(node_count, int) or node_count < 2:
+        raise ValueError("node_count must be an integer >= 2")
     seed_id = f"SAMPLED-{seed}-{query_type}"
-    return _axis_rng(seed_id, "backdoor-complexity").choice(_BACKDOOR_COMPLEXITIES)
+    return _axis_rng(seed_id, "backdoor-complexity").randrange(node_count // 3 + 1)
+
+
+def _backdoor_role_endpoints(
+    query_type: str,
+    role: Mapping[str, int],
+) -> tuple[int, int]:
+    """Return the ordered intervention/outcome endpoints for one task role."""
+
+    treatment_key = "decision_target" if query_type == "best_intervention" else "treatment"
+    return role[treatment_key], role["outcome"]
 
 
 def _sampled_role_assignments(
@@ -1641,24 +1653,23 @@ def _sampled_role_assignments(
 ) -> tuple[dict[str, int], ...]:
     """Return the role population used by the formal task sampler.
 
-    The official 8--16-node ATE and back-door families first draw one of the
-    four possible minimum adjustment-set sizes uniformly, then condition only
-    on structural roles having that size. Smaller custom grammars retain the
+    Every official 8--16-node task family first draws its minimum adjustment-set
+    size uniformly from ``0..floor(node_count / 3)``, then conditions only on
+    structural roles having that size. Smaller custom grammars retain the
     unstratified role population used by unit tests and explicit diagnostics.
     """
 
     roles = _legal_role_assignments(node_count, edges, query_type)
     if query_type not in _BACKDOOR_STRATIFIED_QUERY_TYPES or node_count < 8:
         return roles
-    target = _sampled_backdoor_complexity(seed, query_type)
+    target = _sampled_backdoor_complexity(node_count, seed, query_type)
     return tuple(
         role
         for role in roles
         if _minimum_backdoor_adjustment_size(
             node_count,
             edges,
-            role["treatment"],
-            role["outcome"],
+            *_backdoor_role_endpoints(query_type, role),
         )
         == target
     )

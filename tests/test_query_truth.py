@@ -571,7 +571,7 @@ class QueryTruthOwnerTests(unittest.TestCase):
             reference_counterfactual_transition_bounds(world, "X", "Y"),
         )
 
-    def test_on_demand_counterfactual_solver_matches_reference_on_a_cyclic_context_graph(
+    def test_adaptive_counterfactual_solver_matches_reference_on_a_small_cyclic_context_graph(
         self,
     ) -> None:
         world = WorldSpec(
@@ -642,7 +642,8 @@ class QueryTruthOwnerTests(unittest.TestCase):
                 self.assertAlmostEqual(result.lower, float(reference[0]), places=8)
                 self.assertAlmostEqual(result.upper, float(reference[1]), places=8)
                 self.assertGreater(result.pair_kernel_entries, 0)
-                self.assertGreater(result.dynamic_response_blocks, 0)
+                self.assertEqual(result.dynamic_response_blocks, 0)
+                self.assertEqual(result.generated_columns, 0)
                 produced = counterfactual_transition_bounds(
                     world,
                     "X",

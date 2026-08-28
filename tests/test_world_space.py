@@ -283,12 +283,14 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 self.assertEqual(len(world.variables), expected_count)
                 self.assertTrue(supports_query(world, query_type))
 
-    def test_formal_ate_and_backdoor_samplers_stratify_minimum_adjustment_size(self) -> None:
+    def test_all_formal_task_samplers_stratify_minimum_adjustment_size(self) -> None:
         grammar = WorldGrammar(max_domain_size=2)
-        for query_type in ("ate", "backadj_minimal_sets"):
+        for query_type in TASK_FAMILY_QUERY_TYPES:
             for sample_index in range(80):
                 world = sample_task_world(grammar, sample_index, query_type)
-                target = _sampled_backdoor_complexity(sample_index, query_type)
+                target = _sampled_backdoor_complexity(
+                    len(world.variables), sample_index, query_type
+                )
                 roles = _sampled_role_assignments(
                     len(world.variables),
                     world.edges,
@@ -296,12 +298,15 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                     sample_index,
                 )
                 self.assertTrue(roles)
+                treatment_key = (
+                    "decision_target" if query_type == "best_intervention" else "treatment"
+                )
                 self.assertTrue(
                     all(
                         _minimum_backdoor_adjustment_size(
                             len(world.variables),
                             world.edges,
-                            role["treatment"],
+                            role[treatment_key],
                             role["outcome"],
                         )
                         == target
@@ -310,19 +315,24 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 )
 
     def test_backdoor_complexity_axis_is_uniform_and_seed_fixed(self) -> None:
-        for query_type in ("ate", "backadj_minimal_sets"):
-            first = tuple(
-                _sampled_backdoor_complexity(sample_index, query_type)
-                for sample_index in range(4000)
-            )
-            second = tuple(
-                _sampled_backdoor_complexity(sample_index, query_type)
-                for sample_index in range(4000)
-            )
-            self.assertEqual(first, second)
-            counts = Counter(first)
-            self.assertEqual(set(counts), {0, 1, 2, 3})
-            self.assertTrue(all(900 <= counts[value] <= 1100 for value in range(4)))
+        for node_count in (8, 11, 12, 15, 16):
+            support = set(range(node_count // 3 + 1))
+            for query_type in TASK_FAMILY_QUERY_TYPES:
+                first = tuple(
+                    _sampled_backdoor_complexity(node_count, sample_index, query_type)
+                    for sample_index in range(4000)
+                )
+                second = tuple(
+                    _sampled_backdoor_complexity(node_count, sample_index, query_type)
+                    for sample_index in range(4000)
+                )
+                self.assertEqual(first, second)
+                counts = Counter(first)
+                self.assertEqual(set(counts), support)
+                expected = len(first) / len(support)
+                self.assertTrue(
+                    all(abs(counts[value] - expected) <= 0.15 * expected for value in support)
+                )
 
     def test_world_first_sampler_selects_one_role_and_uses_shared_composition(self) -> None:
         grammar = WorldGrammar(node_counts=(3,), max_domain_size=2)

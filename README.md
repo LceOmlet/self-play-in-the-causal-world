@@ -73,9 +73,10 @@ grid. In the current implementation:
 - every node's domain size is uniform over `2..max_domain_size`, currently up to
   five states;
 - a topological order is sampled uniformly; each node then draws its parent
-  count uniformly from zero through the smaller of three and its predecessor
-  count, followed by a uniform parent subset and continuous float64 CPT
-  parameters;
+  count uniformly from zero through the smaller of `floor(n / 3)` and its
+  predecessor count, followed by a uniform parent subset and continuous
+  float64 CPT parameters; custom grammars below eight nodes retain the legacy
+  maximum parent count of three;
 - each conditional CPT samples a uniform undirected interaction graph on its
   parents, activates the pure categorical interaction blocks indexed by that
   graph's nonempty cliques, and combines the active orthogonal blocks with
@@ -87,9 +88,9 @@ grid. In the current implementation:
   removes geometric attenuation caused by additional parent states, parent
   configurations, or parents without selecting a distinguished contrast;
 - legal query anchors are derived from the sampled world;
-- ATE and back-door adjustment tasks draw the minimum adjustment-set size
-  uniformly from `{0, 1, 2, 3}` and resample same-size structures until a role
-  with that value exists;
+- all five task families draw the minimum adjustment-set size uniformly from
+  `{0, ..., floor(n / 3)}` and resample same-size structures until a role with
+  that value exists;
 - task-family answerability remains an optional diagnostic and is not applied
   as a generation label, filter, or admission check;
 - conditional on the eligible non-anchor intervention variables, the legal

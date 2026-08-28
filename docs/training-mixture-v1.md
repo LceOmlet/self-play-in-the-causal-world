@@ -30,8 +30,8 @@ samplers:
 
 - node count is `n ~ Uniform{8, ..., 16}` under the default grammar;
 - structural-eligibility retries keep the sampled node count fixed;
-- ATE and back-door adjustment draw their minimum adjustment-set size
-  uniformly from `{0, 1, 2, 3}` before same-size structural retries;
+- all five task families draw their minimum adjustment-set size uniformly from
+  `{0, ..., floor(n / 3)}` before same-size structural retries;
 - all current families have two readonly query anchors, leaving `n - 2`
   non-anchor variables eligible for hard intervention;
 - conditional on `n`, `K ~ Uniform{1, ..., n - 2}`, followed by a uniform
