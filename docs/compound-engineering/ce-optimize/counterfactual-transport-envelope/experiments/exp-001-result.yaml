@@ -1,0 +1,29 @@
+iteration: 1
+hypothesis: exact-local-transport-message-envelope
+mode: enabled
+status: rejected
+reason: >
+  The candidate passed every semantic and implementation gate but produced no
+  primary or formal-regression closure gain on the complete frozen cohorts.
+  The local tightening therefore does not hit the current end-to-end closure
+  bottleneck and will not be merged.
+gates:
+  focused_tests_passed: 1
+  semantic_parity_passed: 1
+  immutable_contract_passed: 1
+  anti_case_specific_scan_passed: 1
+metrics:
+  distribution_closed_rate: 0.7666666666666667
+  distribution_exact_count: 22
+  distribution_epsilon_sharp_count: 1
+  distribution_unresolved_count: 7
+  distribution_p50_wall_seconds: 0.13769740000134334
+  distribution_p95_wall_seconds: 164.53831069997977
+  distribution_total_wall_seconds: 453.7914724998409
+  formal_regression_closed_rate: 0.6666666666666666
+  formal_exact_count: 17
+  formal_epsilon_sharp_count: 3
+  formal_unresolved_count: 10
+  formal_p50_wall_seconds: 0.7386453500075731
+  formal_p95_wall_seconds: 16.43026820005616
+

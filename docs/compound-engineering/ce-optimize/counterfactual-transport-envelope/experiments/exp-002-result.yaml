@@ -1,0 +1,20 @@
+iteration: 2
+hypothesis: partial-shared-root-independent-strata
+status: degenerate
+reason: >
+  Independent root-state strata are not exact when the selected shared root
+  enters only some affected mechanisms. Mechanisms that do not depend on the
+  root must retain one common response distribution across all strata; the
+  candidate incorrectly allowed a different distribution in each stratum.
+semantic_parity:
+  compared_instances: 20
+  maximum_absolute_endpoint_error: 0.004582925593189957
+  tolerance: 1.0e-8
+  passed: 0
+comparison:
+  baseline_backends:
+    terminal_event_endpoint_decomposition: 18
+    terminal_event_endpoint_decomposition+layered_endpoint: 2
+  baseline_unclosed_skips: 6
+decision: reject-before-cohort-measurement
+

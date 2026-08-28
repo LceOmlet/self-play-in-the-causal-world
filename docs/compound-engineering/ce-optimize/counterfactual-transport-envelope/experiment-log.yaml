@@ -1,0 +1,124 @@
+spec: counterfactual-transport-envelope
+run_id: "20260829T023632+0800-59b0e7f"
+started_at: "2026-08-29T02:36:32.0129567+08:00"
+
+baseline:
+  timestamp: "2026-08-29T02:36:32.0129567+08:00"
+  provenance: >
+    Reused the previously repeated frozen-cohort baseline after verifying that
+    the current solver, WorldGrammar source, and measurement harness hashes are
+    unchanged. The intervening query-truth diff affects best_intervention only.
+    Two current aggregate profiler runs independently reproduced 23/30 primary
+    closure.
+  hashes:
+    world_space: 4b652291f6d25c60624d7f1bdf1e39edcf4bc43d
+    counterfactual_solver: 43fa7b91e6ac13c6554659de4ba7be339b6734d6
+    measurement_harness: 2bbc928e53d07c3fa57f82dc5e3b96dcbd1e1bca
+  gates:
+    focused_tests_passed: 1
+    semantic_parity_passed: 1
+    immutable_contract_passed: 1
+    anti_case_specific_scan_passed: 1
+  metrics:
+    distribution_closed_rate:
+      aggregate: 0.7666666666666667
+      samples: [0.7666666666666667, 0.7666666666666667, 0.7666666666666667]
+      variance: 0.0
+    formal_regression_closed_rate:
+      aggregate: 0.6666666666666666
+      samples: [0.6666666666666666, 0.6666666666666666, 0.6666666666666666]
+      variance: 0.0
+
+experiments:
+  - iteration: 1
+    hypothesis: exact-local-transport-message-envelope
+    mode: shadow
+    status: promising
+    result_file: experiments/exp-001-shadow.yaml
+    summary: >
+      Without changing public bounds, the exact local transport envelope
+      strictly tightened 106402 of 111672 elimination messages in the seven
+      unresolved frozen-distribution instances (95.3% coverage); the median
+      new/old bound ratio among strict improvements was 0.8651.
+  - iteration: 1
+    hypothesis: exact-local-transport-message-envelope
+    mode: enabled
+    status: rejected
+    result_file: experiments/exp-001-result.yaml
+    summary: >
+      All gates passed, but the full frozen distribution remained 23/30 and
+      the formal regression cohort remained 20/30. The candidate was not
+      merged because it did not improve the optimization objective.
+  - iteration: 2
+    hypothesis: partial-shared-root-independent-strata
+    mode: semantic-parity
+    status: degenerate
+    result_file: experiments/exp-002-result.yaml
+    summary: >
+      Rejected before cohort measurement. Across 20 small-to-medium exact
+      comparisons, independently solving partial-root strata changed an
+      endpoint by as much as 0.004583. Root-independent affected mechanisms
+      must remain shared across strata, so the proposed split enlarged the
+      compatible SCM set.
+  - iteration: 3
+    hypothesis: exact-min-message-cell-elimination-order
+    mode: full-cohort
+    status: promising
+    result_file: experiments/exp-003-result-1.yaml
+    summary: >
+      Repeat 1 kept the primary distribution at 23/30 and improved the formal
+      regression cohort from 20/30 to 21/30, with all gates passing. Two
+      confirmation repeats are required before retention.
+  - iteration: 3
+    hypothesis: exact-min-message-cell-elimination-order
+    mode: confirmation
+    status: retained
+    result_files:
+      - experiments/exp-003-result-1.yaml
+      - experiments/exp-003-result-2.yaml
+      - experiments/exp-003-result-3.yaml
+    summary: >
+      All three repeats held the primary distribution at 23/30 and the formal
+      regression cohort at 21/30 versus the stable 20/30 baseline. Every gate
+      passed on every repeat. Runtime varied with system load and is not used
+      as the retention claim.
+
+best:
+  iteration: 0
+  metrics:
+    distribution_closed_rate:
+      aggregate: 0.7666666666666667
+      samples: [0.7666666666666667, 0.7666666666666667, 0.7666666666666667]
+      variance: 0.0
+    formal_regression_closed_rate:
+      aggregate: 0.6666666666666666
+      samples: [0.6666666666666666, 0.6666666666666666, 0.6666666666666666]
+      variance: 0.0
+  total_judge_cost_usd: 0.0
+
+hypothesis_backlog:
+  - description: >
+      Replace entrywise-summed affected-message bounds by the exact maximum of
+      the downstream upper-cost matrix over the local transportation polytope
+      with fixed CPT row and column marginals.
+    category: relaxation
+    priority: high
+    dep_status: approved
+    required_deps: []
+  - description: >
+      Replace low-treewidth cyclic response-column blocks by an exact
+      junction-tree clique-marginal owner after aggregate clique-cell coverage
+      proves the representation is smaller than response columns.
+    category: formulation
+    priority: medium
+    dep_status: approved
+    required_deps: []
+  - description: >
+      Prebuild the unchanged twin-network factors and select paired variables
+      by exact min-fill message size instead of fixed reverse-topological order.
+      Aggregate profiling predicts at least a fourfold total-cell reduction on
+      three of seven unresolved instances and a tenfold reduction on two.
+    category: formulation
+    priority: high
+    dep_status: approved
+    required_deps: []

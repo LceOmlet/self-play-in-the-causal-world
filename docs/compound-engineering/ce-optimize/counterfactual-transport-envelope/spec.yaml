@@ -1,0 +1,104 @@
+name: counterfactual-transport-envelope
+description: >
+  Improve exact or epsilon-sharp individual-counterfactual closure by replacing
+  loose variable-elimination message bounds with mathematically exact local
+  transport envelopes. Preserve all CPT-World, query, reward, compatible-SCM,
+  tolerance, fallback, and endpoint-budget semantics.
+
+metric:
+  primary:
+    type: hard
+    name: distribution_closed_rate
+    direction: maximize
+    target: 1.0
+  objectives:
+    - name: distribution_closed_rate
+      direction: maximize
+      role: required
+      target: 1.0
+      max_regression:
+        type: absolute
+        value: 0.0
+    - name: formal_regression_closed_rate
+      direction: maximize
+      role: required
+      target: 1.0
+      max_regression:
+        type: absolute
+        value: 0.0
+  degenerate_gates:
+    - name: focused_tests_passed
+      check: "== 1"
+    - name: semantic_parity_passed
+      check: "== 1"
+    - name: immutable_contract_passed
+      check: "== 1"
+    - name: anti_case_specific_scan_passed
+      check: "== 1"
+
+measurement:
+  command: "python scripts/measure_counterfactual_optimizer.py"
+  timeout_seconds: 1200
+  working_directory: "."
+  stability:
+    mode: ladder
+    repeat_count: 3
+    aggregation: median
+    noise_threshold: 0.01
+    comparison:
+      method: paired
+      relative_threshold: 0.01
+    ladder:
+      smoke_command: "python -m unittest tests.test_counterfactual_solver"
+      exploratory_pairs: 1
+      confirmation_repeats: 3
+
+scope:
+  mutable:
+    - "src/cpt_world/counterfactual_solver.py"
+  immutable:
+    - "scripts/measure_counterfactual_optimizer.py"
+    - "src/cpt_world/world_space.py"
+    - "src/cpt_world/query_truth.py"
+    - "src/cpt_world/registry.py"
+    - "src/cpt_world/rendering.py"
+    - "src/cpt_world/rewards.py"
+    - "tests/"
+    - "pyproject.toml"
+
+execution:
+  mode: serial
+  backend: worktree
+  max_concurrent: 1
+
+dependencies:
+  approved: []
+
+constraints:
+  - >
+    Freeze the distribution cohort at indices 10000 through 10029 and the
+    formal regression cohort at indices 0 through 29. Keep five seconds per
+    endpoint and conditional endpoint tolerance 0.002.
+  - >
+    No seed, sample index, variable/state label, topology string, CPT
+    fingerprint, enumerated graph shape, or finite failure list may influence
+    implementation, dispatch, or thresholds.
+  - >
+    The transport envelope must be a safe bound for every compatible local
+    response coupling and must use the unchanged CPT marginals. It may tighten
+    relaxation bounds only; it may not remove any feasible SCM.
+  - >
+    First shadow-measure old versus transport-envelope message bounds. Implement
+    the model-bound change only if aggregate strict-tightening coverage is
+    nonzero and material.
+  - >
+    Preserve the original exact owner for small and medium endpoint parity.
+  - "No new dependencies and no numerical-threshold tuning."
+
+stopping:
+  max_iterations: 3
+  max_hours: 3
+  plateau_iterations: 2
+  target_reached: true
+
+max_runner_up_merges_per_batch: 0

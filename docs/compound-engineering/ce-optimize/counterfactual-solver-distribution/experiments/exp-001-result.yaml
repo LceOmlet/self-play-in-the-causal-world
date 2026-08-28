@@ -1,0 +1,23 @@
+iteration: 1
+hypothesis: exact direct-outcome shared-parent Frechet mixture
+decision: inconclusive
+reason: No aggregate closure gain after confirmation.
+gates:
+  focused_tests_passed: 1
+  semantic_parity_passed: 1
+  immutable_contract_passed: 1
+  anti_case_specific_scan_passed: 1
+metrics:
+  distribution_closed_rate:
+    baseline: 0.7666666666666667
+    samples: [0.7666666666666667, 0.7666666666666667]
+    aggregate: 0.7666666666666667
+  formal_regression_closed_rate:
+    baseline: 0.6666666666666666
+    samples: [0.7, 0.6333333333333333]
+    aggregate: 0.6666666666666666
+learning: >
+  Exact analytic closure of the direct-only structural class is semantically
+  valid but does not close additional instances in either frozen cohort. Its
+  runtime savings are spent on cases that were already closed, so it does not
+  advance the closure-rate goal.

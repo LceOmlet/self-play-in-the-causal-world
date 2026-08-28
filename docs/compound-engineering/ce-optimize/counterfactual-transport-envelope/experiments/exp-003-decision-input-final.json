@@ -1,0 +1,42 @@
+{
+  "spec": {
+    "primary": {"name": "distribution_closed_rate", "direction": "maximize", "type": "hard"},
+    "objectives": [
+      {
+        "name": "formal_regression_closed_rate",
+        "direction": "maximize",
+        "role": "required",
+        "type": "hard",
+        "max_regression": {"type": "absolute", "value": 0.0}
+      }
+    ],
+    "comparison": {"method": "absolute", "noise_threshold": 0.0},
+    "stability_mode": "ladder",
+    "ladder": {"enabled": true, "exploratory_pairs": 1, "confirmation_repeats": 3},
+    "degenerate_gates": [
+      {"name": "focused_tests_passed", "check": ">= 1"},
+      {"name": "semantic_parity_passed", "check": ">= 1"},
+      {"name": "immutable_contract_passed", "check": ">= 1"},
+      {"name": "anti_case_specific_scan_passed", "check": ">= 1"}
+    ]
+  },
+  "baseline": {
+    "metrics": {
+      "distribution_closed_rate": {"aggregate": 0.7666666666666667, "samples": [0.7666666666666667, 0.7666666666666667, 0.7666666666666667]},
+      "formal_regression_closed_rate": {"aggregate": 0.6666666666666666, "samples": [0.6666666666666666, 0.6666666666666666, 0.6666666666666666]}
+    }
+  },
+  "candidate": {
+    "metrics": {
+      "distribution_closed_rate": {"aggregate": 0.7666666666666667, "samples": [0.7666666666666667, 0.7666666666666667, 0.7666666666666667]},
+      "formal_regression_closed_rate": {"aggregate": 0.7, "samples": [0.7, 0.7, 0.7]}
+    },
+    "gates": {
+      "focused_tests_passed": 1,
+      "semantic_parity_passed": 1,
+      "immutable_contract_passed": 1,
+      "anti_case_specific_scan_passed": 1
+    }
+  }
+}
+

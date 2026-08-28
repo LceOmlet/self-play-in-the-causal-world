@@ -1,0 +1,35 @@
+iteration: 1
+hypothesis: exact-local-transport-message-envelope
+mode: shadow
+public_solver_changed: false
+cohort:
+  name: distribution
+  seeds: 10000-10029
+  endpoint_time_limit_seconds: 5.0
+  conditional_endpoint_tolerance: 0.002
+result:
+  closed_instances: 23
+  unresolved_instances: 7
+  closed_messages: 1680
+  closed_strict: 936
+  unresolved_messages: 111672
+  unresolved_strict: 106402
+  unresolved_strict_fraction: 0.9528081989997493
+  strict_ratio_summary:
+    closed:
+      minimum: 0.0
+      median: 0.6108008042225237
+      p90: 0.9666926883613318
+    unresolved:
+      minimum: 0.0
+      median: 0.8650631633716823
+      p90: 0.9946062648907258
+interpretation: >
+  The exact local transportation-polytope envelope is materially active on the
+  unresolved class: it strictly tightens 95.3% of affected elimination
+  messages. This supports enabling it for a gated closure experiment. It does
+  not yet establish an end-to-end closure gain.
+measurement_notes:
+  - Aggregate-only output; no seed-level records or case-specific branches.
+  - Public declared bounds remained the old bounds throughout this run.
+  - Each model was summarized and released before the next frozen instance.

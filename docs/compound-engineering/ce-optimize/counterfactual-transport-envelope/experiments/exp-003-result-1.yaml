@@ -1,0 +1,23 @@
+iteration: 3
+hypothesis: exact-min-message-cell-elimination-order
+repeat: 1
+gates:
+  focused_tests_passed: 1
+  semantic_parity_passed: 1
+  immutable_contract_passed: 1
+  anti_case_specific_scan_passed: 1
+metrics:
+  distribution_closed_rate: 0.7666666666666667
+  distribution_exact_count: 22
+  distribution_epsilon_sharp_count: 1
+  distribution_unresolved_count: 7
+  distribution_p50_wall_seconds: 0.1208462500362657
+  distribution_p95_wall_seconds: 156.20786059997045
+  distribution_total_wall_seconds: 435.70221110025886
+  formal_regression_closed_rate: 0.7
+  formal_exact_count: 19
+  formal_epsilon_sharp_count: 2
+  formal_unresolved_count: 9
+  formal_p50_wall_seconds: 0.6643324500182644
+  formal_p95_wall_seconds: 18.67882999998983
+

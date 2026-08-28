@@ -1,0 +1,34 @@
+iteration: 4
+hypothesis: exact globally affine and one-sided terminal endpoint certificates
+decision: reverted
+reason: Neither frozen cohort closed an additional instance.
+gates:
+  focused_tests_passed: 1
+  semantic_parity_passed: 1
+  immutable_contract_passed: 1
+  anti_case_specific_scan_passed: 1
+metrics:
+  distribution_closed_rate:
+    baseline: 0.7666666666666667
+    samples: [0.7666666666666667]
+    aggregate: 0.7666666666666667
+  formal_regression_closed_rate:
+    baseline: 0.6666666666666666
+    samples: [0.6666666666666666]
+    aggregate: 0.6666666666666666
+diagnostics:
+  distribution_exact_count: 22
+  distribution_epsilon_sharp_count: 1
+  distribution_unresolved_count: 7
+  distribution_p50_wall_seconds: 0.1425355999963358
+  distribution_p95_wall_seconds: 160.5668634000467
+  distribution_total_wall_seconds: 447.29436420009006
+  formal_exact_count: 18
+  formal_epsilon_sharp_count: 2
+  formal_unresolved_count: 10
+  formal_p50_wall_seconds: 0.8779071499884594
+  formal_p95_wall_seconds: 17.319876800000202
+learning: >
+  The exact terminal endpoint certificate family has nonzero structural
+  coverage, but it covers already-closed instances rather than the endpoints
+  responsible for unresolved results.

@@ -1,0 +1,26 @@
+{
+  "decision": "inconclusive",
+  "eligible": false,
+  "next_measurement": "none",
+  "target_reached": false,
+  "improved_objectives": [],
+  "violated_objectives": [],
+  "comparisons": {
+    "distribution_closed_rate": {
+      "verdict": "inconclusive",
+      "delta": 0,
+      "relative": 0,
+      "violated": false
+    },
+    "formal_regression_closed_rate": {
+      "verdict": "inconclusive",
+      "delta": 0,
+      "relative": 0,
+      "violated": false
+    }
+  },
+  "primary_delta": 0,
+  "rank_score": 0,
+  "reason": "delta inside the comparison threshold",
+  "project_policy": "reject because the candidate is ineligible and has zero closure gain"
+}

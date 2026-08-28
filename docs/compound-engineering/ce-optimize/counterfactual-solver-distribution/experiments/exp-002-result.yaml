@@ -1,0 +1,29 @@
+iteration: 2
+hypothesis: pre-model exact constant-zero direct lower endpoint
+decision: reverted
+reason: Primary closure was unchanged and the required formal closure regressed.
+gates:
+  focused_tests_passed: 1
+  semantic_parity_passed: 1
+  immutable_contract_passed: 1
+  anti_case_specific_scan_passed: 1
+metrics:
+  distribution_closed_rate:
+    baseline: 0.7666666666666667
+    samples: [0.7666666666666667]
+    aggregate: 0.7666666666666667
+  formal_regression_closed_rate:
+    baseline: 0.6666666666666666
+    samples: [0.6333333333333333]
+    aggregate: 0.6333333333333333
+diagnostics:
+  distribution_exact_count: 21
+  distribution_epsilon_sharp_count: 2
+  distribution_unresolved_count: 7
+  formal_exact_count: 17
+  formal_epsilon_sharp_count: 2
+  formal_unresolved_count: 11
+learning: >
+  Moving the existing exact zero-lower certificate before direct-terminal model
+  construction did not reduce unresolved counts. The certificate does not
+  cover the closure-limiting endpoints in the frozen distribution.

@@ -1,0 +1,358 @@
+spec: counterfactual-solver-distribution
+run_id: "20260828T234230+0800-7ebc9a84bc1f"
+started_at: "2026-08-28T23:42:30.9218115+08:00"
+
+baseline:
+  timestamp: "2026-08-28T23:42:30.9218115+08:00"
+  gates:
+    focused_tests_passed: 1
+    semantic_parity_passed: 1
+    immutable_contract_passed: 1
+    anti_case_specific_scan_passed: 1
+  metrics:
+    distribution_closed_rate:
+      aggregate: 0.7666666666666667
+      samples:
+        - 0.7666666666666667
+        - 0.7666666666666667
+        - 0.7666666666666667
+      variance: 0.0
+    formal_regression_closed_rate:
+      aggregate: 0.6666666666666666
+      samples:
+        - 0.6666666666666666
+        - 0.6666666666666666
+        - 0.6666666666666666
+      variance: 0.0
+  diagnostics:
+    distribution_exact_count:
+      aggregate: 22
+      samples: [22, 22, 22]
+    distribution_epsilon_sharp_count:
+      aggregate: 1
+      samples: [1, 1, 1]
+    distribution_unresolved_count:
+      aggregate: 7
+      samples: [7, 7, 7]
+    distribution_p50_wall_seconds:
+      aggregate: 0.1598291000118479
+      samples:
+        - 0.1598291000118479
+        - 0.15480949997436255
+        - 0.17150549998041242
+      variance: 0.00004892123521824818
+    distribution_p95_wall_seconds:
+      aggregate: 26.14815510000335
+      samples:
+        - 24.225874900002964
+        - 29.308887200022582
+        - 26.14815510000335
+      variance: 4.391378068617359
+    distribution_total_wall_seconds:
+      aggregate: 355.4911098999437
+      samples:
+        - 321.8210646000225
+        - 355.4911098999437
+        - 405.6830646999879
+      variance: 1187.3043708794462
+    formal_exact_count:
+      aggregate: 17
+      samples: [17, 17, 18]
+    formal_epsilon_sharp_count:
+      aggregate: 3
+      samples: [3, 3, 2]
+    formal_unresolved_count:
+      aggregate: 10
+      samples: [10, 10, 10]
+    formal_p50_wall_seconds:
+      aggregate: 1.6676657000207342
+      samples:
+        - 1.6676657000207342
+        - 2.5978271000203677
+        - 1.0409177000401542
+      variance: 0.40910890725285376
+    formal_p95_wall_seconds:
+      aggregate: 30.267710699990857
+      samples:
+        - 30.81540479999967
+        - 26.95670490001794
+        - 30.267710699990857
+      variance: 2.9058103503064197
+
+experiments:
+  - iteration: 1
+    batch: 1
+    hypothesis: >
+      Replace the generic direct-terminal owner when the treatment-affected
+      ancestor set is exactly {outcome} by the exact shared-parent mixture of
+      contextwise Frechet endpoints.
+    category: exact-fast-path
+    outcome: inconclusive
+    changes:
+      - file: src/cpt_world/counterfactual_solver.py
+        summary: Added a graph-invariant exact direct-outcome analytic owner.
+    gates:
+      focused_tests_passed: 1
+      semantic_parity_passed: 1
+      immutable_contract_passed: 1
+      anti_case_specific_scan_passed: 1
+    gates_passed: true
+    metrics:
+      distribution_closed_rate:
+        aggregate: 0.7666666666666667
+        samples: [0.7666666666666667, 0.7666666666666667]
+      formal_regression_closed_rate:
+        aggregate: 0.6666666666666666
+        samples: [0.7, 0.6333333333333333]
+    diagnostics:
+      distribution_exact_count: 22
+      distribution_epsilon_sharp_count: 1
+      distribution_unresolved_count: 7
+      distribution_p50_wall_seconds: 0.1937534000026062
+      distribution_p95_wall_seconds: 23.383221900032368
+      distribution_total_wall_seconds: 379.56491310009733
+      formal_exact_count: 19
+      formal_epsilon_sharp_count: 2
+      formal_unresolved_count: 9
+      formal_p50_wall_seconds: 0.7299655500100926
+      formal_p95_wall_seconds: 18.50895369995851
+    sample_count: 2
+    next_measurement: none
+    primary_delta: "0.0"
+    objective_results:
+      distribution_closed_rate:
+        verdict: inconclusive
+        delta: 0.0
+      formal_regression_closed_rate:
+        verdict: inconclusive
+        delta: 0.0
+    learnings: >
+      The exact direct-only analytic owner passed semantic parity, but two
+      measurements left both aggregate closure objectives exactly at baseline.
+      It accelerates an already-closed structural class and does not advance
+      the closure-rate goal, so the solver change was reverted.
+  - iteration: 2
+    batch: 2
+    hypothesis: >
+      Move the existing strict terminal-lower constant-zero certificate before
+      direct-terminal lower-model construction and solve.
+    category: exact-fast-path
+    outcome: reverted
+    changes:
+      - file: src/cpt_world/counterfactual_solver.py
+        summary: Skipped lower owner construction only under the existing exact zero certificate.
+    gates:
+      focused_tests_passed: 1
+      semantic_parity_passed: 1
+      immutable_contract_passed: 1
+      anti_case_specific_scan_passed: 1
+    gates_passed: true
+    metrics:
+      distribution_closed_rate:
+        aggregate: 0.7666666666666667
+        samples: [0.7666666666666667]
+      formal_regression_closed_rate:
+        aggregate: 0.6333333333333333
+        samples: [0.6333333333333333]
+    diagnostics:
+      distribution_exact_count: 21
+      distribution_epsilon_sharp_count: 2
+      distribution_unresolved_count: 7
+      distribution_p50_wall_seconds: 0.2318261000327766
+      distribution_p95_wall_seconds: 27.56090789998416
+      distribution_total_wall_seconds: 517.1336020000163
+      formal_exact_count: 17
+      formal_epsilon_sharp_count: 2
+      formal_unresolved_count: 11
+      formal_p50_wall_seconds: 2.165583149995655
+      formal_p95_wall_seconds: 30.679475900018588
+    sample_count: 1
+    next_measurement: none
+    primary_delta: "0.0"
+    objective_results:
+      distribution_closed_rate:
+        verdict: inconclusive
+        delta: 0.0
+      formal_regression_closed_rate:
+        verdict: regressed
+        delta: -0.033333333333333326
+    learnings: >
+      The existing zero-lower certificate did not close any additional primary
+      instance; unresolved stayed 7/30. Formal closure was below baseline in
+      this sample, so the change is ineligible and was reverted.
+  - iteration: 3
+    batch: 3
+    hypothesis: >
+      Route layered cases whose full response count fits but whose explicit
+      objective-evaluation estimate is excessive to the existing exact priced
+      owner instead of rejecting the layered owner.
+    category: formulation
+    outcome: inconclusive
+    changes:
+      - file: src/cpt_world/counterfactual_solver.py
+        summary: Made the existing objective-work estimate choose exact priced columns rather than generic fallback.
+    gates:
+      focused_tests_passed: 1
+      semantic_parity_passed: 1
+      immutable_contract_passed: 1
+      anti_case_specific_scan_passed: 1
+    gates_passed: true
+    metrics:
+      distribution_closed_rate:
+        aggregate: 0.7666666666666667
+        samples: [0.7666666666666667, 0.7666666666666667]
+      formal_regression_closed_rate:
+        aggregate: 0.6833333333333333
+        samples: [0.7, 0.6666666666666666]
+    diagnostics:
+      distribution_exact_count: 22
+      distribution_epsilon_sharp_count: 1
+      distribution_unresolved_count: 7
+      distribution_p50_wall_seconds: 0.14224185002967715
+      distribution_p95_wall_seconds: 27.843281199980993
+      distribution_total_wall_seconds: 349.4353417000966
+      formal_exact_count: 18
+      formal_epsilon_sharp_count: 3
+      formal_unresolved_count: 9
+      formal_p50_wall_seconds: 0.8793642499949783
+      formal_p95_wall_seconds: 20.657238200015854
+    sample_count: 2
+    next_measurement: confirm
+    primary_delta: "0.0"
+    objective_results:
+      distribution_closed_rate:
+        verdict: inconclusive
+        delta: 0.0
+      formal_regression_closed_rate:
+        verdict: inconclusive
+        delta: 0.01666666666666672
+    learnings: >
+      Exact priced routing passed parity, but primary unresolved remained 7/30
+      in both samples. Formal samples were 21/30 and 20/30, which the fixed
+      paired comparison classified as inconclusive. The change was reverted.
+  - iteration: 4
+    batch: 4
+    hypothesis: >
+      Replace terminal endpoint optimization by the existing single-world
+      outer endpoint when every possible terminal context lies in the same
+      affine Frechet branch or the same one-sided minimum branch.
+    category: exact-fast-path
+    outcome: reverted
+    changes:
+      - file: src/cpt_world/counterfactual_solver.py
+        summary: Added strict terminal endpoint certificates and optional per-endpoint model construction.
+    gates:
+      focused_tests_passed: 1
+      semantic_parity_passed: 1
+      immutable_contract_passed: 1
+      anti_case_specific_scan_passed: 1
+    gates_passed: true
+    metrics:
+      distribution_closed_rate:
+        aggregate: 0.7666666666666667
+        samples: [0.7666666666666667]
+      formal_regression_closed_rate:
+        aggregate: 0.6666666666666666
+        samples: [0.6666666666666666]
+    diagnostics:
+      distribution_exact_count: 22
+      distribution_epsilon_sharp_count: 1
+      distribution_unresolved_count: 7
+      distribution_p50_wall_seconds: 0.1425355999963358
+      distribution_p95_wall_seconds: 160.5668634000467
+      distribution_total_wall_seconds: 447.29436420009006
+      formal_exact_count: 18
+      formal_epsilon_sharp_count: 2
+      formal_unresolved_count: 10
+      formal_p50_wall_seconds: 0.8779071499884594
+      formal_p95_wall_seconds: 17.319876800000202
+    sample_count: 1
+    next_measurement: none
+    primary_delta: "0.0"
+    objective_results:
+      distribution_closed_rate:
+        verdict: inconclusive
+        delta: 0.0
+      formal_regression_closed_rate:
+        verdict: inconclusive
+        delta: 0.0
+    learnings: >
+      Strict affine and one-sided endpoint certificates passed all semantic
+      gates but did not change unresolved counts in either cohort. Their
+      structural coverage lies among already-closed instances, so the change
+      was reverted.
+
+best:
+  iteration: 0
+  metrics:
+    distribution_closed_rate:
+      aggregate: 0.7666666666666667
+      samples:
+        - 0.7666666666666667
+        - 0.7666666666666667
+        - 0.7666666666666667
+      variance: 0.0
+    formal_regression_closed_rate:
+      aggregate: 0.6666666666666666
+      samples:
+        - 0.6666666666666666
+        - 0.6666666666666666
+        - 0.6666666666666666
+      variance: 0.0
+  total_judge_cost_usd: 0.0
+
+hypothesis_backlog:
+  - description: >
+      Extend the exact one-mediator transport class to arbitrary unaffected
+      mediator parents by conditioning on their shared configuration and
+      solving independent exact transports. The current dispatcher was called
+      39 times and accepted only one instance because it requires parents[M]=(X,).
+    category: exact-decomposition
+    priority: medium
+    dep_status: approved
+    required_deps: []
+  - description: >
+      For the complete non-direct two-mediator class, enumerate the bounded
+      terminal response-coupling vertices and solve the existing exact layered
+      owner for each vertex instead of falling back to the generic polynomial
+      model. Apply only where the finite vertex set is explicitly enumerable.
+    category: exact-decomposition
+    priority: medium
+    dep_status: approved
+    required_deps: []
+  - description: >
+      Decompose a two-mediator response LP whose nonzero pairwise interaction
+      graph is a forest into edge transportation problems with consistent
+      unary marginals. Tree-consistent pairwise marginals admit a joint owner,
+      so the reduction is exact. Measure forest coverage before implementation.
+    category: exact-decomposition
+    priority: medium
+    dep_status: approved
+    required_deps: []
+  - description: >
+      Reuse one upstream response-coupling owner for both direct-terminal
+      endpoints while keeping separate terminal arithmetic circuits. This
+      removes duplicated context graphs, kernels, columns, and pricing state;
+      retain only if the larger shared model improves certified closure.
+    category: formulation
+    priority: low
+    dep_status: approved
+    required_deps: []
+  - description: >
+      Restrict response choices and transport entries to positive CPT support.
+      Zero-marginal response states have exactly zero feasible mixture weight,
+      so removal is semantics-preserving. Measure effective-support reduction
+      before implementation because the current generator is usually dense.
+    category: formulation
+    priority: low
+    dep_status: approved
+    required_deps: []
+  - description: >
+      Reduce zero coefficient insertions, add unary-only MAP dispatch, and cache
+      min-fill orders by pairwise edge signature. Pricing callbacks consume only
+      2.8 aggregate seconds, so this remains a low-priority scaling safeguard
+      and cannot displace structural closure work.
+    category: algorithm
+    priority: low
+    dep_status: approved
+    required_deps: []

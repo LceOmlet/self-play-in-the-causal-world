@@ -1,0 +1,25 @@
+{
+  "decision": "keep",
+  "eligible": true,
+  "next_measurement": "none",
+  "target_reached": false,
+  "improved_objectives": ["formal_regression_closed_rate"],
+  "violated_objectives": [],
+  "comparisons": {
+    "distribution_closed_rate": {
+      "verdict": "inconclusive",
+      "delta": 0,
+      "relative": 0,
+      "violated": false
+    },
+    "formal_regression_closed_rate": {
+      "verdict": "improved",
+      "delta": 0.033333333333333326,
+      "relative": 0.04999999999999999,
+      "violated": false
+    }
+  },
+  "primary_delta": 0,
+  "rank_score": 0.04999999999999999,
+  "reason": "improved formal_regression_closed_rate without violating other required objectives"
+}
