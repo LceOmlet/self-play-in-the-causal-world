@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import json
 import math
+import threading
 import unittest
 from collections import Counter
 from itertools import islice
@@ -242,6 +243,27 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             json.loads(counterfactual_row["terminal_truth_json"])["type"],
             "individual_counterfactual_probability",
         )
+
+    @patch("cpt_world.trl_environment.compute_query_truth")
+    def test_random_stream_prepares_counterfactual_truth_on_one_producer_thread(
+        self,
+        truth_owner,
+    ) -> None:
+        producer_threads: list[str] = []
+
+        def truth(*_args, **_kwargs):
+            producer_threads.append(threading.current_thread().name)
+            return {
+                "type": "individual_counterfactual_probability",
+                "lower": 0.25,
+                "upper": 0.75,
+            }
+
+        truth_owner.side_effect = truth
+        rows = list(islice(iter_random_balanced_training_rows(), 2))
+
+        self.assertEqual(rows[1]["query_type"], "individual_counterfactual_probability")
+        self.assertEqual(producer_threads, ["cpt-world-row_0"])
 
     def test_cached_counterfactual_truth_scores_without_reopening_solver(self) -> None:
         row = next(

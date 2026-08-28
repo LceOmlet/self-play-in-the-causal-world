@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import math
 from collections.abc import Callable, Iterator, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from fractions import Fraction
 from typing import Any
 
@@ -271,7 +272,7 @@ def build_balanced_training_rows(
     return tuple(rows)
 
 
-def iter_random_balanced_training_rows(
+def _iter_random_balanced_training_rows(
     *,
     start_seed: int = 0,
     grammar: WorldGrammar | None = None,
@@ -326,6 +327,34 @@ def iter_random_balanced_training_rows(
                     separators=(",", ":"),
                 )
                 break
+            yield row
+
+
+def iter_random_balanced_training_rows(
+    *,
+    start_seed: int = 0,
+    grammar: WorldGrammar | None = None,
+    counterfactual_endpoint_time_limit_seconds: float = (
+        COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS
+    ),
+) -> Iterator[dict[str, Any]]:
+    """Yield the deterministic training stream while preparing one row ahead.
+
+    The single producer thread preserves the exact row order and prompt
+    grouping expected by TRL.  It only overlaps CPU task construction and
+    counterfactual certification with consumption of the preceding row.
+    """
+
+    source = _iter_random_balanced_training_rows(
+        start_seed=start_seed,
+        grammar=grammar,
+        counterfactual_endpoint_time_limit_seconds=(counterfactual_endpoint_time_limit_seconds),
+    )
+    with ThreadPoolExecutor(max_workers=1, thread_name_prefix="cpt-world-row") as executor:
+        pending = executor.submit(next, source)
+        while True:
+            row = pending.result()
+            pending = executor.submit(next, source)
             yield row
 
 

@@ -113,10 +113,6 @@ def main() -> None:
         gradient_accumulation_steps=4,
         generation_batch_size=4,
         num_generations=4,
-        # One producer preserves the deterministic sampler stream while
-        # overlapping CPU counterfactual certification with GPU rollouts.
-        dataloader_num_workers=1,
-        dataloader_persistent_workers=True,
         max_completion_length=cli.max_completion_length,
         max_tool_calling_iterations=None,
         use_vllm=True,
