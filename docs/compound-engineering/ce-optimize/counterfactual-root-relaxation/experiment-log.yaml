@@ -1,0 +1,68 @@
+baseline:
+  distribution:
+    closed: 23
+    exact: 22
+    epsilon_sharp: 1
+    unresolved: 7
+
+aggregate_diagnosis:
+  unresolved_root_nodes_at_most_one: 6
+  unresolved_dual_lagging: 7
+  unresolved_dual_progress_at_most_one_percent: 5
+  unresolved_models_over_5000_variables: 5
+  unresolved_all_dynamic_blocks_within_existing_3125_column_limit: 2
+  interpretation: >
+    The dominant failures stall while processing the root nonlinear master.
+    Branch selection, local response pricing, and a single enormous local
+    response table are not the common bottleneck.
+
+experiments:
+  - id: upstream-rlt-filter-release
+    change: >
+      Allow SCIP RLT to use relaxation auxiliaries and rows with unknown
+      bilinear terms.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 418.7679405999952
+    p95_seconds: 147.27141230000416
+    decision: reject
+    reason: no closure gain and additional separation work
+
+  - id: single-shared-variable-stratified-frechet
+    shadow:
+      strictly_tightened: 20
+      old_width_median: 0.17454655148076442
+      new_width_median: 0.10189874866137845
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 681.8287285001134
+    p95_seconds: 159.43156080000335
+    decision: reject
+    reason: mathematically tighter outer bounds did not improve certification
+
+  - id: scip-quadratic-intersection-cuts
+    change: enable the official quadratic intersection-cut handler at the root
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 418.88430470001185
+    p95_seconds: 147.11745979997795
+    decision: reject
+    reason: no closure gain
+
+  - id: materialize-small-wide-response-blocks
+    change: >
+      Materialize response blocks with more than five contexts when their
+      complete response count remains within the existing 3125-column limit.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 455.5496765002026
+    p95_seconds: 180.97469050000655
+    decision: reject
+    reason: no closure gain and worse tail latency
+
+  - id: opposite-endpoint-reoptimization
+    change: >
+      Use official SCIP reoptimization only for a reused joint model when its
+      objective flips from the lower to the upper endpoint.
+    distribution: {closed: 23, exact: 21, epsilon_sharp: 2, unresolved: 7}
+    total_seconds: 304.68441509990953
+    p95_seconds: 42.61363809998147
+    decision: reject_for_closure_goal
+    reason: substantial runtime improvement but no additional certificate
+

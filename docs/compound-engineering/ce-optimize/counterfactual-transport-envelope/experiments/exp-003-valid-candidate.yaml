@@ -1,0 +1,21 @@
+iteration: 3
+hypothesis: exact-min-message-cell-elimination-order
+measurement_import: explicit_candidate_worktree_src
+status: rejected
+metrics:
+  distribution_closed_rate: 0.7666666666666667
+  distribution_exact_count: 22
+  distribution_epsilon_sharp_count: 1
+  formal_regression_closed_rate: 0.7
+  formal_exact_count: 19
+  formal_epsilon_sharp_count: 2
+gates:
+  focused_tests_passed: 1
+  semantic_parity_passed: 1
+  immutable_contract_passed: 1
+  anti_case_specific_scan_passed: 1
+reason: >
+  A contemporaneous explicitly imported baseline produced exactly the same
+  closure counts and certification composition. No closure gain is
+  attributable to the candidate.
+

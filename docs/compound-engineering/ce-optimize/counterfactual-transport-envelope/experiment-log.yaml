@@ -72,16 +72,26 @@ experiments:
   - iteration: 3
     hypothesis: exact-min-message-cell-elimination-order
     mode: confirmation
-    status: retained
+    status: invalid
     result_files:
       - experiments/exp-003-result-1.yaml
       - experiments/exp-003-result-2.yaml
       - experiments/exp-003-result-3.yaml
     summary: >
-      All three repeats held the primary distribution at 23/30 and the formal
-      regression cohort at 21/30 versus the stable 20/30 baseline. Every gate
-      passed on every repeat. Runtime varied with system load and is not used
-      as the retention claim.
+      These three runs imported the main editable source instead of the
+      candidate worktree source and are invalid as candidate measurements.
+  - iteration: 3
+    hypothesis: exact-min-message-cell-elimination-order
+    mode: explicit-import-contemporaneous-pair
+    status: rejected
+    result_files:
+      - experiments/exp-003-valid-candidate.yaml
+      - experiments/exp-003-contemporaneous-baseline.yaml
+    summary: >
+      After forcing each PYTHONPATH explicitly, candidate and baseline both
+      returned 23/30 on the distribution cohort and 21/30 on the formal
+      cohort, with identical exact/epsilon composition. The candidate has no
+      attributable closure gain and was reverted.
 
 best:
   iteration: 0

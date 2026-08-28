@@ -17,11 +17,11 @@ solver branch.
 2. **Independent partial-root strata — rejected before measurement.** Exact
    parity failed by up to 0.004583 because root-independent affected mechanisms
    were allowed to vary across strata. No candidate code was retained.
-3. **Exact minimum-message-cell elimination order — retained.** Across three
-   complete repeats, the distribution cohort remained 23/30 and the formal
-   cohort improved stably from 20/30 to 21/30. All gates passed. The change
-   prebuilds the unchanged factor set and selects an exact paired elimination
-   order by smallest induced message table.
+3. **Exact minimum-message-cell elimination order — rejected.** The first
+   three runs accidentally imported the main editable source and are invalid.
+   With candidate and baseline imports forced explicitly, both returned 23/30
+   on the distribution cohort and 21/30 on the formal cohort, with identical
+   exact/epsilon composition. The candidate had no attributable closure gain.
 
 ## Remaining bottleneck
 
@@ -32,4 +32,3 @@ bounds or order alone do not close the remaining global primal-dual gaps. A
 future run must preserve response-mechanism consistency while exploiting the
 block-angular structure across shared-root strata; independent strata are not
 semantically valid.
-

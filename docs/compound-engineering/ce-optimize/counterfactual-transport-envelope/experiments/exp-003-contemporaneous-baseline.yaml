@@ -1,0 +1,11 @@
+iteration: 3
+measurement_import: explicit_main_src
+metrics:
+  distribution_closed_rate: 0.7666666666666667
+  distribution_exact_count: 22
+  distribution_epsilon_sharp_count: 1
+  formal_regression_closed_rate: 0.7
+  formal_exact_count: 19
+  formal_epsilon_sharp_count: 2
+comparison: identical-to-valid-candidate
+

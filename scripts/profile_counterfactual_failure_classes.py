@@ -14,7 +14,10 @@ import re
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
+from itertools import combinations
 from typing import Any
+
+from pyscipopt import SCIP_BRANCHDIR
 
 from cpt_world import (
     WorldGrammar,
@@ -192,6 +195,33 @@ def _structure_record(
             for root in ancestors
         )
     )
+    generalized_one_mediator = False
+    indirect_layered_one_mediator = False
+    two_mechanism_signature = "not_two_mechanisms"
+    if len(affected) == 2 and affected[-1] == outcome:
+        mediator = affected[0]
+        two_mechanism_signature = (
+            f"direct_{str(treatment in world.parents[outcome]).lower()}"
+            f"_x_to_m_{str(treatment in world.parents[mediator]).lower()}"
+            f"_m_to_y_{str(mediator in world.parents[outcome]).lower()}"
+            f"_shared_m_parents_{sum(parent != treatment for parent in world.parents[mediator])}"
+            f"_m_domain_{world.domains[mediator]}"
+        )
+        generalized_one_mediator = bool(
+            treatment in world.parents[mediator]
+            and treatment in world.parents[outcome]
+            and mediator in world.parents[outcome]
+            and all(
+                parent == treatment or parent not in affected_set
+                for parent in world.parents[mediator]
+            )
+        )
+        indirect_layered_one_mediator = bool(
+            world.parents[mediator] == (treatment,)
+            and treatment not in world.parents[outcome]
+            and mediator in world.parents[outcome]
+            and world.domains[mediator] <= 4
+        )
     return {
         "affected_mechanisms": len(affected),
         "direct_terminal": treatment in world.parents[outcome],
@@ -225,6 +255,9 @@ def _structure_record(
         ),
         "both_terminal_endpoints": both_terminal_endpoints,
         "terminal_reduced_root_separator": terminal_reduced_root_separator,
+        "generalized_one_mediator": generalized_one_mediator,
+        "indirect_layered_one_mediator": indirect_layered_one_mediator,
+        "two_mechanism_signature": two_mechanism_signature,
     }
 
 
@@ -338,6 +371,18 @@ def _ratio_bucket(value: float) -> str:
     return "gt_1.0"
 
 
+def _progress_bucket(value: float) -> str:
+    if value <= 0.01:
+        return "le_0.01"
+    if value <= 0.1:
+        return "le_0.1"
+    if value <= 0.5:
+        return "le_0.5"
+    if value <= 0.9:
+        return "le_0.9"
+    return "gt_0.9"
+
+
 def _error_fields(message: str) -> tuple[str, str, str, float | None, float | None]:
     status = re.search(r"status=([^, )]+)", message)
     pricing_closed = re.search(r"pricing_closed=([^, )]+)", message)
@@ -369,6 +414,16 @@ def _trace_sparse_optimization(
     original = solver._SparseResponseModel.optimize
 
     def traced(self: Any, *args: Any, **kwargs: Any) -> tuple[float, float]:
+        static_column_counts = tuple(
+            len(block.columns) for block in self.pricing_blocks if not block.dynamic
+        )
+        kernel_entries_by_node = Counter(
+            key[0] for key in self.kernel_cache
+        )
+        dynamic_complete_column_counts = tuple(
+            self.world.domains[block.node] ** len(block.contexts)
+            for block in self.dynamic_pricing_blocks
+        )
         record = {
             "sense": self.sense,
             "terminal_endpoint": self.terminal_event_endpoint or "joint",
@@ -378,6 +433,30 @@ def _trace_sparse_optimization(
             "max_response_contexts": max(
                 (len(block.contexts) for block in self.pricing_blocks),
                 default=0,
+            ),
+            "static_response_columns": sum(static_column_counts),
+            "max_static_response_columns": max(static_column_counts, default=0),
+            "pairwise_static_column_cells": sum(
+                left * right
+                for left, right in combinations(static_column_counts, 2)
+            ),
+            "pairwise_kernel_cells": sum(
+                left * right
+                for left, right in combinations(
+                    tuple(kernel_entries_by_node.values()), 2
+                )
+            ),
+            "small_dynamic_blocks": sum(
+                count <= solver._LEGACY_MAX_EXPLICIT_RESPONSE_COLUMNS
+                for count in dynamic_complete_column_counts
+            ),
+            "all_dynamic_blocks_small": bool(dynamic_complete_column_counts)
+            and all(
+                count <= solver._LEGACY_MAX_EXPLICIT_RESPONSE_COLUMNS
+                for count in dynamic_complete_column_counts
+            ),
+            "max_dynamic_complete_columns": max(
+                dynamic_complete_column_counts, default=0
             ),
         }
         try:
@@ -398,6 +477,8 @@ def _trace_sparse_optimization(
                         0.0,
                         self.target_outer_bounds[1] - self.target_outer_bounds[0],
                     ),
+                    "outer_lower": self.target_outer_bounds[0],
+                    "outer_upper": self.target_outer_bounds[1],
                     "auxiliary_variables": len(self.auxiliary_values),
                     "master_variables": self.model.getNVars(),
                     "master_constraints": self.model.getNConss(),
@@ -409,6 +490,37 @@ def _trace_sparse_optimization(
                     "min_sum_calls": self.pricer.min_sum_calls,
                     "max_min_sum_width": self.pricer.max_min_sum_width,
                     "pricing_scip_fallback_calls": self.pricer.scip_fallback_calls,
+                    "solving_nodes": self.model.getNNodes(),
+                    "lp_iterations": self.model.getNLPIterations(),
+                    "lp_solves": self.model.getNLPs(),
+                    "cuts_found": self.model.getNCuts(),
+                    "cuts_applied": self.model.getNCutsApplied(),
+                    "presolving_seconds": self.model.getPresolvingTime(),
+                    "solving_seconds": self.model.getSolvingTime(),
+                    "branchings_by_role": dict(
+                        Counter(
+                            (
+                                "response_kernel"
+                                if variable.name.startswith("k_")
+                                else "elimination_message"
+                                if variable.name.startswith("ve_")
+                                else "response_column"
+                                if variable.name.startswith("lambda_")
+                                else "target"
+                                if variable.name == "counterfactual_target"
+                                else "other"
+                            )
+                            for variable in self.model.getVars(transformed=True)
+                            for _ in range(
+                                variable.getNBranchingsCurrentRun(
+                                    SCIP_BRANCHDIR.DOWNWARDS
+                                )
+                                + variable.getNBranchingsCurrentRun(
+                                    SCIP_BRANCHDIR.UPWARDS
+                                )
+                            )
+                        )
+                    ),
                 }
             )
             calls.append(record)
@@ -501,6 +613,15 @@ def _increment_histograms(
     histograms[f"{prefix}_terminal_reduced_root_separator"][
         str(structure["terminal_reduced_root_separator"]).lower()
     ] += 1
+    histograms[f"{prefix}_generalized_one_mediator"][
+        str(structure["generalized_one_mediator"]).lower()
+    ] += 1
+    histograms[f"{prefix}_indirect_layered_one_mediator"][
+        str(structure["indirect_layered_one_mediator"]).lower()
+    ] += 1
+    histograms[f"{prefix}_two_mechanism_signature"][
+        structure["two_mechanism_signature"]
+    ] += 1
 
 
 def main() -> None:
@@ -525,6 +646,9 @@ def main() -> None:
             f"{prefix}_best_single_root_log10_reduction",
             f"{prefix}_both_terminal_endpoints",
             f"{prefix}_terminal_reduced_root_separator",
+            f"{prefix}_generalized_one_mediator",
+            f"{prefix}_indirect_layered_one_mediator",
+            f"{prefix}_two_mechanism_signature",
         )
     }
     failure_owner = Counter[str]()
@@ -539,6 +663,20 @@ def main() -> None:
     failure_normalized_gap = Counter[str]()
     failure_min_fill_total_ratio = Counter[str]()
     failure_min_fill_peak_ratio = Counter[str]()
+    failure_static_response_columns = Counter[str]()
+    failure_pairwise_static_column_cells = Counter[str]()
+    failure_pairwise_kernel_cells = Counter[str]()
+    failure_primal_progress = Counter[str]()
+    failure_dual_progress = Counter[str]()
+    failure_lagging_side = Counter[str]()
+    failure_solving_nodes = Counter[str]()
+    failure_lp_iterations = Counter[str]()
+    failure_branchings_by_role = Counter[str]()
+    failure_lp_solves = Counter[str]()
+    failure_cuts_applied = Counter[str]()
+    failure_small_dynamic_blocks = Counter[str]()
+    failure_all_dynamic_blocks_small = Counter[str]()
+    failure_max_dynamic_complete_columns = Counter[str]()
 
     for sample_index in range(
         DISTRIBUTION_START_SEED,
@@ -628,6 +766,24 @@ def main() -> None:
                     else "no_pricing_map"
                 )
                 failure_pricing_backend[pricing_backend] += 1
+                failure_static_response_columns[
+                    _bucket(
+                        failed["static_response_columns"],
+                        (0, 32, 128, 512, 2048),
+                    )
+                ] += 1
+                failure_pairwise_static_column_cells[
+                    _bucket(
+                        failed["pairwise_static_column_cells"],
+                        (0, 1_000, 10_000, 100_000, 1_000_000),
+                    )
+                ] += 1
+                failure_pairwise_kernel_cells[
+                    _bucket(
+                        failed["pairwise_kernel_cells"],
+                        (0, 1_000, 10_000, 100_000, 1_000_000),
+                    )
+                ] += 1
                 current_total, current_peak = _elimination_profile(
                     world,
                     treatment,
@@ -650,10 +806,55 @@ def main() -> None:
                 ] += 1
                 primal = failed["primal"]
                 dual = failed["dual"]
+                failure_solving_nodes[
+                    _bucket(failed["solving_nodes"], (1, 10, 100, 1_000, 10_000))
+                ] += 1
+                failure_lp_iterations[
+                    _bucket(
+                        failed["lp_iterations"],
+                        (100, 1_000, 10_000, 100_000, 1_000_000),
+                    )
+                ] += 1
+                failure_branchings_by_role.update(failed["branchings_by_role"])
+                failure_lp_solves[
+                    _bucket(failed["lp_solves"], (1, 5, 10, 25, 50, 100))
+                ] += 1
+                failure_cuts_applied[
+                    _bucket(failed["cuts_applied"], (0, 10, 100, 1_000, 10_000))
+                ] += 1
+                failure_small_dynamic_blocks[
+                    _bucket(failed["small_dynamic_blocks"], (0, 1, 2, 3))
+                ] += 1
+                failure_all_dynamic_blocks_small[
+                    str(failed["all_dynamic_blocks_small"]).lower()
+                ] += 1
+                failure_max_dynamic_complete_columns[
+                    _bucket(
+                        failed["max_dynamic_complete_columns"],
+                        (32, 256, 3_125, 65_536, 1_000_000),
+                    )
+                ] += 1
                 if primal is None or dual is None:
                     failure_normalized_gap["unreported"] += 1
                 else:
                     width = max(failed["outer_width"], 1e-15)
+                    outer_lower, outer_upper = (
+                        failed.get("outer_lower"), failed.get("outer_upper")
+                    )
+                    if outer_lower is None or outer_upper is None:
+                        outer_lower = 0.0
+                        outer_upper = width
+                    if failed["sense"] == "maximize":
+                        primal_progress = (primal - outer_lower) / width
+                        dual_progress = (outer_upper - dual) / width
+                    else:
+                        primal_progress = (outer_upper - primal) / width
+                        dual_progress = (dual - outer_lower) / width
+                    failure_primal_progress[_progress_bucket(primal_progress)] += 1
+                    failure_dual_progress[_progress_bucket(dual_progress)] += 1
+                    failure_lagging_side[
+                        "primal" if primal_progress < dual_progress else "dual"
+                    ] += 1
                     normalized_gap = abs(primal - dual) / width
                     if normalized_gap <= 0.002:
                         gap_bucket = "le_0.002"
@@ -693,6 +894,34 @@ def main() -> None:
         ),
         "unresolved_min_fill_peak_ratio": dict(
             sorted(failure_min_fill_peak_ratio.items())
+        ),
+        "unresolved_static_response_columns": dict(
+            sorted(failure_static_response_columns.items())
+        ),
+        "unresolved_pairwise_static_column_cells": dict(
+            sorted(failure_pairwise_static_column_cells.items())
+        ),
+        "unresolved_pairwise_kernel_cells": dict(
+            sorted(failure_pairwise_kernel_cells.items())
+        ),
+        "unresolved_primal_progress": dict(sorted(failure_primal_progress.items())),
+        "unresolved_dual_progress": dict(sorted(failure_dual_progress.items())),
+        "unresolved_lagging_side": dict(sorted(failure_lagging_side.items())),
+        "unresolved_solving_nodes": dict(sorted(failure_solving_nodes.items())),
+        "unresolved_lp_iterations": dict(sorted(failure_lp_iterations.items())),
+        "unresolved_branchings_by_role": dict(
+            sorted(failure_branchings_by_role.items())
+        ),
+        "unresolved_lp_solves": dict(sorted(failure_lp_solves.items())),
+        "unresolved_cuts_applied": dict(sorted(failure_cuts_applied.items())),
+        "unresolved_small_dynamic_blocks": dict(
+            sorted(failure_small_dynamic_blocks.items())
+        ),
+        "unresolved_all_dynamic_blocks_small": dict(
+            sorted(failure_all_dynamic_blocks_small.items())
+        ),
+        "unresolved_max_dynamic_complete_columns": dict(
+            sorted(failure_max_dynamic_complete_columns.items())
         ),
     }
     print(json.dumps(payload, sort_keys=True))

@@ -1,0 +1,33 @@
+name: counterfactual-root-relaxation
+description: >
+  Increase certified individual-counterfactual closure by locating and
+  removing the aggregate root-relaxation bottleneck without changing any
+  mathematical or benchmark contract.
+
+metric:
+  primary:
+    name: distribution_closed_rate
+    direction: maximize
+    baseline: 0.7666666666666667
+  required:
+    - name: formal_regression_closed_rate
+      direction: nondecreasing
+    - name: focused_tests_passed
+      check: "== 1"
+    - name: exact_owner_parity_passed
+      check: "== 1"
+
+measurement:
+  distribution_seeds: [10000, 10029]
+  formal_seeds: [0, 29]
+  endpoint_seconds: 5.0
+  conditional_endpoint_tolerance: 0.002
+  command: python scripts/measure_counterfactual_optimizer.py
+
+constraints:
+  - Preserve CPT-World generation and all task, query, reward, and fallback semantics.
+  - Preserve the complete compatible Markovian SCM set.
+  - Do not tune or dispatch on finite sample identities or representations.
+  - Reject a candidate before formal measurement when distribution closure does not increase.
+  - Keep the original exact owner for small- and medium-scale parity.
+

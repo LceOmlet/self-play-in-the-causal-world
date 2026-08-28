@@ -1,6 +1,6 @@
 {
-  "decision": "keep",
-  "eligible": true,
+  "decision": "invalid",
+  "eligible": false,
   "next_measurement": "none",
   "target_reached": false,
   "improved_objectives": ["formal_regression_closed_rate"],
@@ -21,5 +21,5 @@
   },
   "primary_delta": 0,
   "rank_score": 0.04999999999999999,
-  "reason": "improved formal_regression_closed_rate without violating other required objectives"
+  "reason": "superseded because the three candidate runs imported the main editable source"
 }
