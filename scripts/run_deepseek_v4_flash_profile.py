@@ -26,6 +26,7 @@ from typing import Any
 from cpt_world import (
     DEFAULT_NODE_COUNTS,
     OBSERVATIONS_PER_BANDWIDTH_UNIT,
+    TERMINAL_QUALITY_REWARD_VERSION,
     Budget,
     OutcomeTape,
     WorldGrammar,
@@ -40,7 +41,7 @@ from cpt_world import (
 
 API_URL = "https://api.ponderera.com/v1/chat/completions"
 MODEL = "deepseek-v4-flash"
-RESULT_SCHEMA = "dolens-ponderera-profile-v5"
+RESULT_SCHEMA = "dolens-ponderera-profile-v6"
 SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v4"
 MASTER_SEED = 2026082201
 QUERY_TYPES = (
@@ -620,6 +621,7 @@ def _config(master_seed: int, repeats: int, timeout_seconds: float) -> Mapping[s
         "node_counts": DEFAULT_NODE_COUNTS,
         "node_count_distribution": "discrete_uniform",
         "max_domain_size": 2,
+        "terminal_quality_reward": TERMINAL_QUALITY_REWARD_VERSION,
         "budget": _budget_contract(),
         "timeout_seconds": timeout_seconds,
         "automatic_output_repairs": 0,
@@ -703,22 +705,21 @@ def summarize(document: Mapping[str, Any]) -> Mapping[str, Any]:
             continue
         kind = score.get("kind")
         if kind in {"effect", "target_query"}:
-            metrics[query_type]["abs_error"].append(_as_float(score["abs_error"]))
+            metrics[query_type]["l1_error"].append(_as_float(score["l1_error"]))
+            metrics[query_type]["total_variation_error"].append(
+                _as_float(score["total_variation_error"])
+            )
             metrics[query_type]["squared_error"].append(_as_float(score["squared_error"]))
-        elif kind == "counterfactual_interval":
+        elif kind == "counterfactual_roi":
             metrics[query_type]["mean_absolute_endpoint_error"].append(
                 _as_float(score["mean_absolute_endpoint_error"])
             )
             metrics[query_type]["mean_squared_endpoint_error"].append(
                 _as_float(score["mean_squared_endpoint_error"])
             )
-        elif kind == "individual_counterfactual_probability":
-            metrics[query_type]["compatible"].append(1.0 if score["compatible"] else 0.0)
-            metrics[query_type]["distance_to_interval"].append(
-                _as_float(score["distance_to_interval"])
-            )
         elif kind == "decision":
             metrics[query_type]["regret"].append(_as_float(score["regret"]))
+            metrics[query_type]["normalized_regret"].append(_as_float(score["normalized_regret"]))
         elif kind == "backadj":
             metrics[query_type]["f1"].append(_as_float(score["f1"]))
             metrics[query_type]["exact_match"].append(1.0 if score["exact_match"] else 0.0)

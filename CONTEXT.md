@@ -93,20 +93,20 @@ The maximum of 128 observed joint assignments that one batch feedback may contai
 _Avoid_: sample cap, observation budget, lossy truncation, top-k cells
 
 **Terminal-Quality Reward**:
-The scalar used by the current RL milestone is a continuous measure of the quality of the structured terminal answer, preserving the ordering carried by numerical error, interval distance, regret, and partial structural correctness. Experimental observations consumed, query count, turn count, and token count remain separate diagnostics and do not alter this reward; binary success indicators remain evaluation diagnostics rather than training rewards.
+The scalar used by the current RL milestone is a continuous measure of the quality of the structured terminal answer, preserving the ordering carried by numerical error, identified-region endpoint error, normalized decision regret, and partial structural correctness. Experimental observations consumed, query count, turn count, and token count remain separate diagnostics and do not alter this reward; binary success indicators remain evaluation diagnostics rather than training rewards.
 _Avoid_: binary-only reward, cost-adjusted reward, experimental-efficiency reward, trajectory-length reward
 
 **ATE Terminal Quality**:
-The terminal quality of a reported total effect is one minus half of its absolute error, mapping the complete legal error range to `[0, 1]`. Every equal reduction in absolute error receives the same reward improvement.
-_Avoid_: squared-error reward, thresholded effect accuracy
+The terminal quality of the complete categorical total-effect vector is one minus one quarter of its L1 error. It uses every outcome-state component, reduces exactly to the previous scalar definition for binary outcomes, and maps the complete legal vector-error range to `[0, 1]`.
+_Avoid_: single-outcome projection, squared-error reward, thresholded effect accuracy
 
 **Individual-Counterfactual Terminal Quality**:
-The terminal quality of a reported individual counterfactual probability is one minus its absolute distance to the hidden sharp compatible interval. Every value inside the interval receives full quality, and distances are measured on the original probability scale without interval-width normalization.
-_Avoid_: preferred interval midpoint, hidden-SCM point target, interval-width-normalized reward
+The terminal quality of a reported individual-counterfactual identified region is one minus the mean absolute error of its lower and upper endpoints. Exact truth compares directly with the sharp endpoints; epsilon-sharp truth measures distance to each endpoint's certified range.
+_Avoid_: compatible-point terminal, preferred interval midpoint, hidden-SCM point target, confidence field
 
 **Experimental-Decision Terminal Quality**:
-The terminal quality of a deployment intervention is one minus its exact probability regret under the seed's minimize or maximize objective. Every intervention state attaining the optimal outcome probability receives full quality, including noncanonical tied optima.
-_Avoid_: canonical-action accuracy, decision-gap-normalized reward, experiment-cost-adjusted regret
+For the fixed deployment variable, let the candidate-state outcome probabilities span `[p_min, p_max]`. Terminal quality is one minus exact probability regret divided by `p_max - p_min`; if the span is zero, every state is tied and receives one. Raw regret and optimal-action accuracy remain separate diagnostics.
+_Avoid_: canonical-action-only reward, unnormalized-regret reward, best-second-gap normalization, experiment-cost-adjusted regret
 
 **Backdoor Task Success**:
 A backdoor-adjustment answer succeeds only when it reports all and only the inclusion-minimal valid adjustment sets. Missing a set, adding a set, or changing the membership of any set is not a successful answer.
@@ -145,16 +145,16 @@ A comparison group whose policy rollouts share one hidden world, task, interacti
 _Avoid_: shared transcript, independently resampled group tasks, identical rollout copies
 
 **Unscaled Group-Relative Advantage**:
-The policy signal obtained by subtracting the common-randomness group's mean training utility from each rollout's training utility without dividing by the group's standard deviation. Terminal quality remains the semantic reward and evaluation value. For ATE, individual counterfactual, backdoor, and decision tasks, training utility is the bounded negative-log residual transform with frozen epsilon `0.02`; for mediator tasks it is the identity. The transform preserves endpoints and ordering while expanding distinctions near full quality.
-_Avoid_: raw terminal quality as advantage, group-standardized advantage, cross-task reward normalization
+The policy signal obtained by subtracting the common-randomness group's mean training utility from each rollout's training utility without dividing by the group's standard deviation. Terminal quality remains the semantic reward and evaluation value. For ATE, individual counterfactual, and backdoor tasks, training utility is the bounded negative-log residual transform with frozen epsilon `0.02`; for decision and mediator tasks it is the identity. The transform preserves endpoints and ordering while expanding distinctions near full quality where it remains applied.
+_Avoid_: applying identity utility to ceiling-sensitive families, group-standardized advantage, cross-task reward normalization
 
 **Ceiling-Sensitive Advantage Utility**:
-The trainer-only monotone utility `log1p(Q / (1 - Q + epsilon)) / log1p(1 / epsilon)` with frozen `epsilon = 0.02`. It is applied to owner-produced terminal quality for ATE, individual-counterfactual, backdoor, and decision groups before group-mean subtraction. Mediator quality passes through unchanged. Raw terminal quality and transformed utility are logged separately, and neither exact task success nor terminal scoring semantics are redefined.
-_Avoid_: unbounded negative-log residual, log-likelihood claim, transforming mediator quality, changing terminal-quality-v1
+The trainer-only monotone utility `log1p(Q / (1 - Q + epsilon)) / log1p(1 / epsilon)` with frozen `epsilon = 0.02`. It is applied to owner-produced terminal quality for ATE, individual-counterfactual, and backdoor groups before group-mean subtraction. Decision and mediator quality pass through unchanged. Raw terminal quality and training utility are logged separately, and neither exact task success nor terminal scoring semantics are redefined.
+_Avoid_: unbounded negative-log residual, log-likelihood claim, transforming normalized decision quality, transforming mediator quality
 
 **Individual Counterfactual Probability**:
-The probability of a named outcome for the same individual under a counterfactual assigned treatment, conditional on that individual's assigned factual treatment and observed factual outcome. The model returns one scalar. The verifier accepts it only when it lies in the hidden sharp interval over every finite nonparametric mechanism completion compatible with the complete DAG, all CPT rows, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Endpoint interventional marginals provide only a Fréchet outer interval in the generic case.
-_Avoid_: population transition query, model-returned interval, hidden-SCM point label, preferred functional family
+The probability of a named outcome for the same individual under a counterfactual assigned treatment, conditional on that individual's assigned factual treatment and observed factual outcome. The model returns the lower and upper endpoints of its sharp identified region over every finite nonparametric mechanism completion compatible with the complete DAG, all CPT rows, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Endpoint interventional marginals provide only a Fréchet outer interval in the generic case.
+_Avoid_: population transition query, compatible-point terminal, hidden-SCM point label, preferred functional family
 
 **Objective Computability**:
 The evaluator can derive one exact task answer from the sealed CPT-World semantics. This does not imply that the visible experiment surface determines that answer.

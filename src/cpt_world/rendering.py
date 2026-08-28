@@ -124,7 +124,7 @@ class RenderedAteQuerySurface:
     outcome: int
     treatment_value: int
     baseline_value: int
-    outcome_state: int
+    outcome_state: int | None
     factual_outcome_state: int | None
     legal_targets: tuple[int, ...]
     readable: tuple[int, ...]
@@ -278,20 +278,28 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("baseline_value", 0))
         if treatment_state == baseline_state:
             raise ValueError("ATE treatment and baseline states must differ")
-        outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state", 1))
+        outcome_states = ctx.states_for_label(outcome)
         lines = [
-            f"Estimate the average treatment effect of {treatment} on {outcome}:",
+            f"Estimate the complete categorical treatment effect of {treatment} on {outcome}.",
             (
-                f"effect = P({outcome}={outcome_state} | do({treatment}={treatment_state}))"
-                f" - P({outcome}={outcome_state} | do({treatment}={baseline_state}))"
+                f"For every state s of {outcome}, effect[s] = "
+                f"P({outcome}=s | do({treatment}={treatment_state})) - "
+                f"P({outcome}=s | do({treatment}={baseline_state}))."
+            ),
+            (
+                "Return every listed outcome state exactly once. The effect components "
+                "must form a valid difference of two categorical distributions: they sum "
+                "to zero and their positive components sum to at most one."
             ),
         ]
         if treatment not in ctx.legal_targets() and outcome not in ctx.legal_targets():
             lines.append(
-                "Both query endpoints are readonly. Use the available passive observations "
-                "and experiments on legal do targets to estimate the effect."
+                f"{treatment} and {outcome} are readonly during experimentation. "
+                "Use the available passive observations and experiments on legal do "
+                "targets to estimate the effect."
             )
-        answer_schema = ['{"type":"answer","effect": <number in [-1,1]>}']
+        effect_fields = ",".join(f'"{state}":<number in [-1,1]>' for state in outcome_states)
+        answer_schema = [f'{{"type":"answer","effect":{{{effect_fields}}}}}']
     elif query_type == "individual_counterfactual_probability":
         treatment_states = ctx.states_for_label(treatment)
         factual_state = ctx.resolve_state_token(treatment, ctx.query.get("factual_value"))
@@ -318,15 +326,16 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
             ),
             (
                 "Across all causally sufficient structural mechanisms compatible with the "
-                "hidden CPT-World, q may lie in a compatible interval. Estimate and return "
-                "one value in that interval."
+                "hidden CPT-World, q has a sharp identified interval [lower, upper]. "
+                "Estimate and return both endpoints of that interval."
             ),
         ]
-        answer_schema = ['{"type":"answer","value": <number in [0,1]>}']
+        answer_schema = ['{"type":"answer","lower":<number in [0,1]>,"upper":<number in [0,1]>}']
         if treatment not in ctx.legal_targets() and outcome not in ctx.legal_targets():
             lines.append(
-                "Both query endpoints are readonly. Use the available passive observations "
-                "and experiments on legal do targets to estimate the probability."
+                f"{treatment} and {outcome} are readonly during experimentation. "
+                "Use the available passive observations and experiments on legal do "
+                "targets to estimate the identified interval."
             )
     elif query_type == "backadj_minimal_sets":
         lines = [
@@ -611,14 +620,15 @@ def _rendered_target_query_surface(
         factual_outcome_state = ctx.resolve_state_token(
             outcome, ctx.query.get("factual_outcome_state")
         )
+        outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state"))
     else:
         treatment_state = ctx.resolve_state_token(treatment, ctx.query.get("treatment_value", 1))
         baseline_state = ctx.resolve_state_token(treatment, ctx.query.get("baseline_value", 0))
         factual_outcome_state = None
+        outcome_state = None
     treatment_states = ctx.states_for_label(treatment)
-    outcome_state = ctx.resolve_state_token(outcome, ctx.query.get("outcome_state", 1))
     outcome_states = ctx.states_for_label(outcome)
-    if outcome_state not in outcome_states:
+    if outcome_state is not None and outcome_state not in outcome_states:
         raise ValueError("target-query outcome state is outside the rendered outcome domain")
     if treatment_state == baseline_state:
         raise ValueError("target-query treatment and baseline states must differ")
@@ -627,15 +637,15 @@ def _rendered_target_query_surface(
         domains=tuple(len(ctx.states_for_label(label)) for label in labels),
         query_type=query_type,
         terminal_kind=(
-            "individual_probability"
+            "identified_interval"
             if query_type == "individual_counterfactual_probability"
-            else "effect"
+            else "effect_vector"
         ),
         treatment=label_positions[treatment],
         outcome=label_positions[outcome],
         treatment_value=treatment_states.index(treatment_state),
         baseline_value=treatment_states.index(baseline_state),
-        outcome_state=outcome_states.index(outcome_state),
+        outcome_state=(outcome_states.index(outcome_state) if outcome_state is not None else None),
         factual_outcome_state=(
             outcome_states.index(factual_outcome_state)
             if factual_outcome_state is not None

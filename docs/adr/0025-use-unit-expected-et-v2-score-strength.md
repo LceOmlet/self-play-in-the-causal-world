@@ -27,9 +27,9 @@ The log-score perturbation is \(s_YG_Y\), and
 
 Thus every non-root node receives one unit of expected squared log-score
 energy independently of its CPT row count and child cardinality. Combined
-with ADR 0024, a node with \(p\) parents gives every nonempty parent subset
-expected elementwise score energy \(1/(2^p-1)\). Realized strengths and subset
-shares remain random.
+with ADRs 0024 and 0027, that energy is split symmetrically across the active
+clique-supported parent subsets. Realized strengths, interaction supports,
+and active-subset shares remain random.
 
 This replaces the earlier \(\operatorname{Uniform}(0,1)\) amplitude, whose
 expected squared score energy was \(1/3\). The new bound is derived from the

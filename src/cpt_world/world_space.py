@@ -7,10 +7,11 @@ The main sampler owns one declared distribution:
 - the node order is a uniform permutation;
 - each node's parent count is uniform over ``0..min(3, predecessor_count)``;
 - the parent subset is uniform conditional on that count;
-- CPTs use a simplex-uniform base distribution; categorical functional-ANOVA
-  score blocks separate every nonempty parent subset, and a simplex-uniform
-  energy split gives every subset the same expected squared energy. ET-V2 maps
-  the score table to probabilities by RMS-normalized exponential tilting.
+- CPTs use a simplex-uniform base distribution.  A uniform undirected graph on
+  each node's parents activates exactly the categorical functional-ANOVA score
+  blocks indexed by its nonempty cliques; a simplex-uniform energy split is
+  applied across those active blocks. ET-V2 maps the score table to
+  probabilities by RMS-normalized exponential tilting.
   Every parent-bearing table receives the binary-preserving contextual
   parent-pair contrast correction declared by ADR 0026. The uniform amplitude
   has one unit of expected squared score energy before that geometric
@@ -324,24 +325,51 @@ def _sample_parent_subset_balanced_effect(
     domain_size: int,
     rng: random.Random,
 ) -> tuple[tuple[float, ...], ...]:
-    """Sample all parent-subset interactions with equal expected conserved energy.
+    """Sample clique-supported parent interactions under one conserved energy budget.
 
-    The realized shares are not fixed averages. They are one draw from the
-    symmetric simplex distribution, so every nonempty parent subset has the
-    same expected share while individual worlds retain heterogeneous effects.
+    A uniformly sampled undirected graph on the parents activates singleton
+    main effects and exactly its higher-order cliques.  Conditional on that
+    support, the realized shares are one draw from the symmetric simplex
+    distribution.  The one-parent law consumes no additional randomness.
     """
 
-    parent_subsets = tuple(
-        positions
-        for subset_size in range(1, len(parent_domains) + 1)
-        for positions in combinations(range(len(parent_domains)), subset_size)
-    )
+    parent_subsets = _sample_parent_interaction_cliques(len(parent_domains), rng)
     blocks = [
         _project_parent_subset_effect(parent_domains, positions, domain_size, rng)
         for positions in parent_subsets
     ]
     energy_shares = (1.0,) if len(blocks) == 1 else _simplex_uniform(len(blocks), rng)
     return _combine_effect_blocks(blocks, energy_shares)
+
+
+def _sample_parent_interaction_cliques(
+    parent_count: int,
+    rng: random.Random,
+) -> tuple[tuple[int, ...], ...]:
+    """Sample the nonempty cliques of a uniform graph on ``parent_count`` vertices.
+
+    With at most three parents this gives the complete parameter-free support
+    law directly: every pair-edge mask is equally likely, all singleton main
+    effects are active, and a higher-order interaction is active exactly when
+    all of its pair edges are present.
+    """
+
+    if isinstance(parent_count, bool) or not isinstance(parent_count, int) or parent_count < 1:
+        raise ValueError("parent_count must be a positive integer")
+    parent_pairs = tuple(combinations(range(parent_count), 2))
+    if not parent_pairs:
+        return ((0,),)
+    edge_mask = rng.randrange(1 << len(parent_pairs))
+    selected_edges = frozenset(
+        pair for index, pair in enumerate(parent_pairs) if edge_mask & (1 << index)
+    )
+    return tuple(
+        positions
+        for subset_size in range(1, parent_count + 1)
+        for positions in combinations(range(parent_count), subset_size)
+        if subset_size == 1
+        or all(tuple(sorted(pair)) in selected_edges for pair in combinations(positions, 2))
+    )
 
 
 def _finalize_cpt_row(values: Sequence[float]) -> tuple[float, ...]:
@@ -452,8 +480,7 @@ def _contextual_parent_pair_score_scale(
 
     domains = tuple(parent_domains)
     if not domains or any(
-        isinstance(domain, bool) or not isinstance(domain, int) or domain < 2
-        for domain in domains
+        isinstance(domain, bool) or not isinstance(domain, int) or domain < 2 for domain in domains
     ):
         raise ValueError("parent_domains must contain integers >= 2")
     row_count = math.prod(domains)
@@ -482,12 +509,7 @@ def _contextual_parent_pair_score_scale(
             for right in range(left + 1, parent_domain)
             for state in range(child_domain)
         )
-        comparison_count = (
-            prefix_count
-            * suffix_count
-            * math.comb(parent_domain, 2)
-            * child_domain
-        )
+        comparison_count = prefix_count * suffix_count * math.comb(parent_domain, 2) * child_domain
         parent_contrasts.append(squared_contrast / comparison_count)
 
     mean_squared_contrast = math.fsum(parent_contrasts) / len(parent_contrasts)
@@ -714,8 +736,8 @@ def _task_target_metrics(
     """Task-relevant numerical targets for optional distribution diagnostics."""
 
     from .query_truth import (
-        ate_effect,
         best_intervention_truth,
+        categorical_treatment_effect,
         interventional_probability,
     )
 
@@ -727,8 +749,13 @@ def _task_target_metrics(
     outcome = int(anchors["outcome"])
     baseline = interventional_probability(world, {}, outcome, 1)
     if query_type == "ate":
+        effect = categorical_treatment_effect(
+            world,
+            int(anchors["treatment"]),
+            outcome,
+        )
         return {
-            "target": ate_effect(world, int(anchors["treatment"]), outcome, outcome_state=1),
+            "target": sum((abs(component) for component in effect), start=0) / 2,
             "baseline": baseline,
         }
     if query_type == "individual_counterfactual_probability":
@@ -953,11 +980,16 @@ def _acceptable_answers(
         if surface.query_type == "ate":
             effect = truth.get("effect")
             if (
-                isinstance(effect, bool)
-                or not isinstance(effect, (int, float, Fraction))
-                or not math.isfinite(float(effect))
+                not isinstance(effect, tuple)
+                or len(effect) != surface.domains[surface.outcome]
+                or any(
+                    isinstance(component, bool)
+                    or not isinstance(component, (int, float, Fraction))
+                    or not math.isfinite(float(component))
+                    for component in effect
+                )
             ):
-                raise TypeError("ATE truth owner must return a finite numeric effect")
+                raise TypeError("ATE truth owner must return one finite effect per outcome state")
             return frozenset({("effect", effect)})
         lower = truth.get("lower")
         upper = truth.get("upper")
@@ -1722,7 +1754,6 @@ def _sample_task_attributes(
                 {
                     "baseline_value": reference,
                     "treatment_value": comparison,
-                    "outcome_state": rng.randrange(world.domains[outcome]),
                 }
             )
         else:
@@ -1912,12 +1943,10 @@ def assemble_seed(
             treatment_name = world.variables[int(selected_anchors["treatment"])]
             baseline_value = int(selected_anchors.get("baseline_value", 0))
             treatment_value = int(selected_anchors.get("treatment_value", 1))
-            outcome_state = int(selected_anchors.get("outcome_state", 1))
             if baseline_value == treatment_value:
                 raise ValueError(f"{seed_id}: treatment and baseline values must differ")
             query_visible["treatment_value"] = visible_state(treatment_name, treatment_value)
             query_visible["baseline_value"] = visible_state(treatment_name, baseline_value)
-            query_visible["outcome_state"] = visible_state(outcome_name, outcome_state)
         if query_type == "individual_counterfactual_probability":
             treatment_name = world.variables[int(selected_anchors["treatment"])]
             factual_value = int(selected_anchors.get("factual_value", 0))

@@ -224,7 +224,7 @@ REVERSE 世界对称。也就是说：
 
 全图只在诊断中保留（例如 SHD 报告 planner 的恢复程度）。
 当前 RL milestone 的训练奖励只来自 query 终局答案的连续质量；regret 与结构正确性
-按 `terminal-quality-v1` 标量化，样本成本单独报告且不进入奖励。
+按 `terminal-quality-v4` 标量化，样本成本单独报告且不进入奖励。
 
 ---
 

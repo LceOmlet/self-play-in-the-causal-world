@@ -49,13 +49,13 @@ OWNER_STATUSES = frozenset(
 QUERY_TYPES: dict[str, Mapping[str, Any]] = {
     "ate": {
         "anchors": ("treatment", "outcome"),
-        "answer_kind": "single_effect",
+        "answer_kind": "categorical_effect_vector",
         "task_heads": frozenset({"target_query"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },
     "individual_counterfactual_probability": {
         "anchors": ("treatment", "outcome"),
-        "answer_kind": "individual_probability",
+        "answer_kind": "identified_interval",
         "task_heads": frozenset({"target_query"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },

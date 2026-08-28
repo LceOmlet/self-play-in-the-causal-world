@@ -7,8 +7,8 @@
 
 | query_type | anchors | answer_kind | 兼容 task_heads | truth owner |
 |---|---|---|---|---|
-| `ate` | treatment, outcome | single_effect | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
-| `individual_counterfactual_probability` | treatment, outcome | individual probability | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界 exact / epsilon-sharp 认证界） |
+| `ate` | treatment, outcome | categorical_effect_vector | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
+| `individual_counterfactual_probability` | treatment, outcome | identified_interval | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界 exact / epsilon-sharp 认证界） |
 | `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
 | `best_intervention` | decision_target, outcome | intervention | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
@@ -17,9 +17,9 @@
 
 | task_head | answer_kind | scorer owner |
 |---|---|---|
-| `target_query` | numeric_value | diagnostic_only（`task_scoring.py`，effect error / counterfactual interval distance） |
+| `target_query` | effect_vector_or_interval | diagnostic_only（`task_scoring.py`，effect error / counterfactual endpoint error） |
 | `discovery` | set_or_set_with_order | diagnostic_only（`task_scoring.py`，set F1 / order F1） |
-| `decision` | intervention | diagnostic_only（`task_scoring.py`，exact regret） |
+| `decision` | intervention | diagnostic_only（`task_scoring.py`，exact raw / span-normalized regret） |
 
 ## 3. 已实现 owner 的边界
 
@@ -27,6 +27,7 @@
 
 ```text
 ate_effect(world, treatment, outcome)
+categorical_treatment_effect(world, treatment, outcome)
 counterfactual_transition_bounds(world, treatment, outcome)
 individual_counterfactual_probability_bounds(world, treatment, outcome, factual evidence)
 validate_individual_counterfactual_probability(world, treatment, outcome, scalar prediction)
@@ -41,11 +42,11 @@ compute_query_truth(world, seed)
 
 - 任意有限离散 `WorldSpec`；
 - exact `Fraction`；
-- `ate` 默认 `state_1` vs `state_0`，可由显式状态索引覆盖；
-- `individual_counterfactual_probability` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率；
-- 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率区间，不选择隐藏 SCM；模型只返回一个 scalar；
+- `ate` 均匀采样 treatment 的有序状态对，返回 outcome 所有类别的概率差向量；各分量之和为零，二分类时与旧标量定义等价；
+- `individual_counterfactual_probability` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率之 sharp identified interval；
+- 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率区间，不选择隐藏 SCM；模型返回 `lower` 与 `upper` 两个端点；
 - 精确闭合时返回 `exact`；否则仅在最终条件概率尺度上两个端点误差都不超过 `0.002` 时返回安全外括的 `epsilon_sharp`；
-- 超过该容差时，Fréchet 外界只能排除落在外界之外的 scalar；外界以内保持 unresolved；
+- 超过该容差时，任务 truth fail closed；Fréchet 外界只保留为求解诊断，不替代正式终局 truth；
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；
 - `mediator_set` 返回所有 X→Y 有向路径上的中间变量与路径边偏序；
@@ -55,10 +56,10 @@ compute_query_truth(world, seed)
 
 ```text
 target_query:
-  parsed effect -> truth effect
-  abs_error, squared_error
-  parsed individual counterfactual probability -> hidden truth interval
-  compatible, distance_to_interval
+  parsed categorical effect vector -> truth vector
+  component_errors, L1 error, total-variation error, mean squared component error
+  parsed individual counterfactual ROI endpoints -> certified endpoint ranges
+  lower/upper endpoint error, endpoint MAE/MSE
 
 decision:
   parsed (target, value) -> exact optimal probability
@@ -75,19 +76,19 @@ mediator_set:
 ```
 
 `src/cpt_world/rewards.py` 在这些 raw diagnostics 之上实现冻结的
-`terminal-quality-v1`，不重新解析模型答案或计算 truth：
+`terminal-quality-v4`，不重新解析模型答案或计算 truth：
 
 ```text
-ate:                              1 - abs_error / 2
-individual counterfactual:       1 - distance_to_interval
-decision:                         1 - regret
+ate:                              1 - vector_L1_error / 4
+individual counterfactual:       1 - mean_absolute_endpoint_error
+decision:                         1 - regret / (p_max - p_min)
 backadj_minimal_sets:             maximum-matching soft family F1
 mediator_set:                     (mediator_f1 + order_f1) / 2
 unfinished / illegal terminal:    0
 ```
 
 实验样本消耗、query 数、轮数与 token 数保持独立诊断，不进入当前训练奖励。
-完整合同见 `docs/terminal-quality-reward-v1.md`。
+完整合同见 `docs/terminal-quality-reward-v4.md`。
 
 五个 query type 均由同一个 `iter_sampled_seeds` 主管线发出。ATE、反事实区间与实验决策
 使用既有数值稳定 CPT draw；后门调整与中介路径直接复用同一次结构世界采样，

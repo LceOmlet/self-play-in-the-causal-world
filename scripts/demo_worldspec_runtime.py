@@ -9,29 +9,22 @@ from fractions import Fraction
 from typing import Any
 
 from cpt_world import (
-    HIDING_MODES,
-    Budget,
     OutcomeTape,
     WorldGrammar,
     WorldSpec,
     WorldSpecEpisode,
-    assemble_seed,
     compute_query_truth,
-    legal_query_anchors,
+    iter_sampled_seeds,
     sample_task_world,
-    sample_world,
 )
 
 _DEMO_SEEDS = {
     "ate": 0,
-    "individual_counterfactual_probability": 0,
+    "individual_counterfactual_probability": 1,
     "best_intervention": 0,
     "backadj_minimal_sets": 0,
     "mediator_set": 5,
 }
-_NUMERICAL_MODES = frozenset({"ate", "individual_counterfactual_probability", "best_intervention"})
-
-
 def _jsonable(value: Any) -> Any:
     if isinstance(value, Fraction):
         return str(value)
@@ -45,30 +38,20 @@ def _jsonable(value: Any) -> Any:
 def _task(query_type: str) -> tuple[Mapping[str, Any], WorldSpec, str]:
     grammar = WorldGrammar()
     seed_number = _DEMO_SEEDS[query_type]
-    structural = sample_world(grammar, seed_number)
-    anchors = legal_query_anchors(structural, query_type)[0]
-    if query_type in _NUMERICAL_MODES:
-        world = sample_task_world(grammar, seed_number, query_type, anchors)
-    else:
-        world = structural
+    world = sample_task_world(grammar, seed_number, query_type)
+    (seed,) = iter_sampled_seeds(
+        grammar,
+        query_types=(query_type,),
+        start_seed=seed_number,
+        count=1,
+    )
     sampling_status = "current_admitted_sampler"
-    task_head = (
-        "target_query"
-        if query_type in {"ate", "individual_counterfactual_probability"}
-        else ("decision" if query_type == "best_intervention" else "discovery")
-    )
-    seed = assemble_seed(
-        world,
-        tuple(sorted(HIDING_MODES)),
-        query_type,
-        task_head,
-        anchors=anchors,
-        seed_id=f"WORLDSPEC-DEMO-{query_type}-{seed_number}",
-    )
     return seed, world, sampling_status
 
 
-def _experiment(seed: Mapping[str, Any], world: WorldSpec) -> Mapping[str, Any]:
+def _experiment(
+    seed: Mapping[str, Any], world: WorldSpec, measure_max: int
+) -> Mapping[str, Any]:
     labels = seed["visible_schema"]["variable_labels"]
     visible_query = seed["query"]
     target_name = next(
@@ -79,18 +62,23 @@ def _experiment(seed: Mapping[str, Any], world: WorldSpec) -> Mapping[str, Any]:
     target_label = labels[target_name]
     inverse = {visible: internal for internal, visible in labels.items()}
     preferred = [visible_query.get("outcome"), visible_query.get("collider")]
-    measure_labels = [
-        label
-        for label in preferred
-        if isinstance(label, str) and label != target_label and seed["readable"][inverse[label]]
-    ]
+    measure_labels: list[str] = []
+    for label in preferred:
+        if (
+            isinstance(label, str)
+            and label != target_label
+            and seed["readable"][inverse[label]]
+            and label not in measure_labels
+            and len(measure_labels) < measure_max
+        ):
+            measure_labels.append(label)
     for name in world.variables:
         label = labels[name]
         if (
             seed["readable"][name]
             and name != target_name
             and label not in measure_labels
-            and len(measure_labels) < 2
+            and len(measure_labels) < measure_max
         ):
             measure_labels.append(label)
     return {
@@ -106,7 +94,13 @@ def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, A
     labels = seed["visible_schema"]["variable_labels"]
     query_type = seed["query"]["type"]
     if query_type == "ate":
-        return {"type": "answer", "effect": float(truth["effect"])}
+        return {
+            "type": "answer",
+            "effect": {
+                f"state_{state}": float(component)
+                for state, component in enumerate(truth["effect"])
+            },
+        }
     if query_type == "individual_counterfactual_probability":
         return {
             "type": "answer",
@@ -142,11 +136,11 @@ def run_demo(query_type: str) -> Mapping[str, Any]:
         world,
         seed,
         OutcomeTape(f"worldspec-demo-tape:{query_type}"),
-        budget=Budget(max_observations=16),
-        measure_max=2,
     )
     prompt = episode.initial_messages()[1]["content"]
-    intervention = _experiment(seed, world)
+    if episode.measure_max is None:
+        raise RuntimeError("sampled demo seed is missing observation bandwidth")
+    intervention = _experiment(seed, world, episode.measure_max)
     batch_step = episode.step(json.dumps(intervention, separators=(",", ":")))
     truth = compute_query_truth(world, seed)
     terminal_answer = _answer(seed, truth)

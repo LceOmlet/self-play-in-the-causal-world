@@ -1,5 +1,7 @@
 # Terminal-Quality Reward v1
 
+Superseded by [`terminal-quality-reward-v2`](terminal-quality-reward-v2.md).
+
 `terminal-quality-v1` is the frozen scalar reward for the current RL milestone.
 Every legal terminal answer receives one exact quality value (Q\in[0,1])
 derived from the raw diagnostics owned by `task_scoring.py`. Experimental

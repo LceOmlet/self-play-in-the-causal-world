@@ -42,10 +42,9 @@ CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES = frozenset(
         "ate",
         "individual_counterfactual_probability",
         "backadj_minimal_sets",
-        "best_intervention",
     }
 )
-_RAW_ADVANTAGE_QUERY_TYPES = frozenset({"mediator_set"})
+_RAW_ADVANTAGE_QUERY_TYPES = frozenset({"best_intervention", "mediator_set"})
 
 
 def bounded_negative_log_residual_utility(
@@ -108,10 +107,96 @@ def build_cpt_world_advantage_utility(
             for family, raw, utility in zip(query_type, raw_rewards, utilities, strict=True):
                 log_metric(f"task/{family}/reward_raw", raw)
                 log_metric(f"task/{family}/reward_utility", utility)
+            _log_terminal_effect_metrics(environments, query_type, log_metric)
         return utilities
 
     cpt_world_advantage_utility.__name__ = "CPTWorldAdvantageUtility"
     return cpt_world_advantage_utility
+
+
+_EFFECT_METRIC_SPECS = {
+    "ate": ("target_query", "squared_error", "ate"),
+    "individual_counterfactual_probability": (
+        "counterfactual_roi",
+        "mean_squared_endpoint_error",
+        "cf",
+    ),
+    "best_intervention": ("decision", "regret", "decision"),
+}
+
+
+def _terminal_score(environment: CPTWorldEnvironment) -> dict[str, Any] | None:
+    episode = getattr(environment, "episode", None)
+    score = getattr(episode, "terminal_score", None)
+    if score is None:
+        return None
+    if not isinstance(score, dict):
+        raise TypeError("terminal score owner returned a non-dict diagnostic")
+    return score
+
+
+def _log_terminal_effect_metrics(
+    environments: Sequence[CPTWorldEnvironment],
+    query_types: Sequence[str],
+    log_metric: Callable[[str, float], None],
+) -> None:
+    """Log batch effect metrics from scorer-owned terminal diagnostics.
+
+    Metrics are conditional on a valid terminal answer. Coverage and count are
+    logged alongside them so an apparent improvement cannot be manufactured by
+    silently dropping unfinished or invalid rollouts.
+    """
+
+    for family, (expected_kind, field, prefix) in _EFFECT_METRIC_SPECS.items():
+        family_environments = [
+            environment
+            for environment, query_type in zip(environments, query_types, strict=True)
+            if query_type == family
+        ]
+        if not family_environments:
+            continue
+        values: list[float] = []
+        normalized_decision_values: list[float] = []
+        for environment in family_environments:
+            score = _terminal_score(environment)
+            if score is None:
+                continue
+            if score.get("kind") != expected_kind:
+                raise RuntimeError(
+                    f"terminal diagnostic kind does not match {family}: {score.get('kind')!r}"
+                )
+            value = float(score[field])
+            if not math.isfinite(value) or value < 0.0:
+                raise ValueError(f"terminal diagnostic {field} must be finite and nonnegative")
+            values.append(value)
+            if family == "best_intervention":
+                normalized_value = float(score["normalized_regret"])
+                if not math.isfinite(normalized_value) or not 0.0 <= normalized_value <= 1.0:
+                    raise ValueError(
+                        "terminal diagnostic normalized_regret must be finite and lie in [0, 1]"
+                    )
+                normalized_decision_values.append(normalized_value)
+        log_metric(f"effect/{prefix}_count", float(len(values)))
+        log_metric(
+            f"effect/{prefix}_coverage",
+            len(values) / len(family_environments),
+        )
+        if not values:
+            continue
+        mean_value = sum(values) / len(values)
+        if prefix == "ate":
+            log_metric("effect/ate_mse", mean_value)
+            log_metric("effect/ate_rmse", math.sqrt(mean_value))
+        elif prefix == "cf":
+            mean_squared_endpoint_error = sum(values) / len(values)
+            log_metric("effect/cf_endpoint_mse", mean_squared_endpoint_error)
+            log_metric("effect/cf_endpoint_rmse", math.sqrt(mean_squared_endpoint_error))
+        else:
+            log_metric("effect/decision_regret", mean_value)
+            log_metric(
+                "effect/decision_normalized_regret",
+                sum(normalized_decision_values) / len(normalized_decision_values),
+            )
 
 
 def _training_row(

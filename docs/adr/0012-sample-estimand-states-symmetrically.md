@@ -1,6 +1,7 @@
 ---
 status: accepted
 implementation: planned
+amended_by: 0028-use-full-categorical-treatment-effect
 ---
 
 # Sample estimand state anchors symmetrically
@@ -10,9 +11,11 @@ State anchors belong to the terminal estimand, not to the episode's experimental
 For ATE and counterfactual-transition tasks with intervention variable \(X\) and outcome \(Y\):
 
 1. sample \((x_{\mathrm{ref}},x_{\mathrm{cmp}})\) uniformly from the \(d_X(d_X-1)\) ordered pairs of distinct states of \(X\);
-2. sample \(y^\star\) uniformly from the \(d_Y\) states of \(Y\).
+2. sample \(y^\star\) uniformly from the \(d_Y\) states of \(Y\) for the
+   counterfactual task only. ADR 0028 replaces the ATE event anchor with the
+   complete categorical effect vector.
 
-The ATE target is the event-probability contrast
+The former ATE target was the event-probability contrast
 
 \[
 P(Y=y^\star\mid do(X=x_{\mathrm{cmp}}))-

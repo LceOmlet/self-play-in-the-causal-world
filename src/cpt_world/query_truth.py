@@ -435,6 +435,52 @@ def ate_effect(
     return do_one - do_zero
 
 
+def categorical_treatment_effect(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    *,
+    treatment_value: int = 1,
+    baseline_value: int = 0,
+) -> tuple[Probability, ...]:
+    """Return the complete categorical treatment-effect vector.
+
+    Component ``state`` is
+    ``P(outcome=state | do(treatment=treatment_value))`` minus the same
+    probability under ``do(treatment=baseline_value)``.  The components are
+    ordered by the outcome domain and sum to zero.
+    """
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    if treatment_node == outcome_node:
+        raise ValueError("treatment and outcome must be different variables")
+    treated = dict(
+        worldspec_projected_interventional_distribution(
+            world,
+            {treatment_node: treatment_value},
+            (outcome_node,),
+        )
+    )
+    baseline = dict(
+        worldspec_projected_interventional_distribution(
+            world,
+            {treatment_node: baseline_value},
+            (outcome_node,),
+        )
+    )
+    effect = tuple(
+        treated[(state,)] - baseline[(state,)] for state in range(world.domains[outcome_node])
+    )
+    exact = _uses_exact_probabilities(world)
+    total = _probability_sum(effect, exact=exact)
+    if (exact and total != 0) or (
+        not exact and (not isfinite(float(total)) or abs(float(total)) > _PROBABILITY_TOLERANCE)
+    ):
+        raise RuntimeError("categorical treatment-effect vector must sum to zero")
+    return effect
+
+
 def counterfactual_transition_bounds(
     world: WorldSpec,
     treatment: object,
@@ -564,11 +610,7 @@ def _individual_counterfactual_probability_certificate(
     if outcome_node not in descendants:
         one = _one(world)
         zero = _zero(world)
-        lower, upper = (
-            (one, one)
-            if factual_outcome_state == target_outcome_state
-            else (zero, zero)
-        )
+        lower, upper = (one, one) if factual_outcome_state == target_outcome_state else (zero, zero)
         return CounterfactualIntervalCertificate(lower, upper, "exact", 0.0)
 
     other_outcome_parents = tuple(
@@ -1541,7 +1583,7 @@ def compute_query_truth(
         outcome_node = _resolve_seed_node(world, seed, outcome)
         return {
             "type": "ate",
-            "effect": ate_effect(
+            "effect": categorical_treatment_effect(
                 world,
                 treatment_node,
                 outcome_node,
@@ -1550,9 +1592,6 @@ def compute_query_truth(
                 ),
                 baseline_value=_state_index_for_node(
                     world, treatment_node, query.get("baseline_value", 0), default=0
-                ),
-                outcome_state=_state_index_for_node(
-                    world, outcome_node, query.get("outcome_state", 1)
                 ),
             ),
         }

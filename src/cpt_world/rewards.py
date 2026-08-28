@@ -11,7 +11,7 @@ from collections.abc import Mapping, Sequence
 from fractions import Fraction
 from typing import Any
 
-TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v1"
+TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v4"
 UNFINISHED_TERMINAL_QUALITY = Fraction(0)
 
 
@@ -148,17 +148,17 @@ def soft_adjustment_family_f1(predicted: object, truth: object) -> Fraction:
 
 
 def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
-    """Map one owner-produced terminal diagnostic record to Reward v1."""
+    """Map one owner-produced terminal diagnostic record to the current reward."""
 
     if not isinstance(score, Mapping):
         raise TypeError("score must be a terminal diagnostic mapping")
     kind = score.get("kind")
     if kind == "target_query":
-        quality = Fraction(1) - _fraction_metric(score, "abs_error", upper=Fraction(2)) / 2
-    elif kind == "individual_counterfactual_probability":
-        quality = Fraction(1) - _fraction_metric(score, "distance_to_interval")
+        quality = Fraction(1) - _fraction_metric(score, "l1_error", upper=Fraction(4)) / 4
+    elif kind == "counterfactual_roi":
+        quality = Fraction(1) - _fraction_metric(score, "mean_absolute_endpoint_error")
     elif kind == "decision":
-        quality = Fraction(1) - _fraction_metric(score, "regret")
+        quality = Fraction(1) - _fraction_metric(score, "normalized_regret")
     elif kind == "backadj":
         quality = soft_adjustment_family_f1(score.get("prediction"), score.get("truth"))
     elif kind == "mediator":

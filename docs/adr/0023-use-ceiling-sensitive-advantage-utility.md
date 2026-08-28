@@ -1,6 +1,7 @@
 ---
 status: accepted
 implementation: implemented
+amended_by: 0030-normalize-decision-regret-by-candidate-span
 ---
 
 # Use a bounded ceiling-sensitive utility for selected GRPO task families
@@ -21,11 +22,12 @@ group ordering, and expands differences near full quality without the
 singularity of an unbounded negative-log residual. It is a training utility,
 not a likelihood and not a new terminal reward.
 
-The transform applies to `ate`, `individual_counterfactual_probability`,
-`backadj_minimal_sets`, and `best_intervention`. `mediator_set` uses identity
-utility. Raw terminal quality remains an explicit zero-weight TRL reward source
-for diagnostics, while the transformed utility is the sole source used to form
-advantages. Both values are logged by task family.
+The transform applies to `ate`, `individual_counterfactual_probability`, and
+`backadj_minimal_sets`. Reward v4 gives `best_intervention` a span-normalized
+semantic reward, so that family now uses identity utility together with
+`mediator_set`. Raw terminal quality remains an explicit zero-weight TRL reward
+source for diagnostics, while the selected utility is the sole source used to
+form advantages. Both values are logged by task family.
 
 Group standard-deviation normalization remains disabled. Equal-quality groups
 still produce exactly zero advantage. The task mixture, terminal parsers,

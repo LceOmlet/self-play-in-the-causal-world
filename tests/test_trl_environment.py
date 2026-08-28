@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import math
 import unittest
 from collections import Counter
 from itertools import islice
@@ -36,10 +37,11 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             0.99 - 0.95,
         )
 
-    def test_mediator_uses_raw_quality_while_other_families_use_ceiling_utility(self) -> None:
+    def test_decision_and_mediator_use_raw_quality_after_reward_v4(self) -> None:
         raw = 0.95
 
         self.assertEqual(task_advantage_utility(raw, "mediator_set"), raw)
+        self.assertEqual(task_advantage_utility(raw, "best_intervention"), raw)
         for query_type in CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES:
             with self.subTest(query_type=query_type):
                 self.assertNotEqual(task_advantage_utility(raw, query_type), raw)
@@ -66,6 +68,75 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
         self.assertNotEqual(utilities[0], 0.95)
         self.assertIn(("task/ate/reward_raw", 0.95), logged)
         self.assertIn(("task/mediator_set/reward_utility", 0.95), logged)
+
+    def test_trl_logs_owner_effect_metrics_and_terminal_coverage(self) -> None:
+        class Episode:
+            def __init__(self, score) -> None:
+                self.terminal_score = score
+
+        class RewardOwner:
+            def __init__(self, reward: float, score) -> None:
+                self.reward = reward
+                self.episode = Episode(score)
+
+            def get_reward(self) -> float:
+                return self.reward
+
+        environments = [
+            RewardOwner(0.9, {"kind": "target_query", "squared_error": 0.09}),
+            RewardOwner(0.8, {"kind": "target_query", "squared_error": 0.16}),
+            RewardOwner(
+                0.9,
+                {
+                    "kind": "counterfactual_roi",
+                    "mean_squared_endpoint_error": 0.01,
+                },
+            ),
+            RewardOwner(
+                0.8,
+                {
+                    "kind": "counterfactual_roi",
+                    "mean_squared_endpoint_error": 0.04,
+                },
+            ),
+            RewardOwner(
+                0.8,
+                {"kind": "decision", "regret": 0.2, "normalized_regret": 0.25},
+            ),
+            RewardOwner(
+                0.6,
+                {"kind": "decision", "regret": 0.4, "normalized_regret": 0.75},
+            ),
+            RewardOwner(0.0, None),
+        ]
+        query_types = [
+            "ate",
+            "ate",
+            "individual_counterfactual_probability",
+            "individual_counterfactual_probability",
+            "best_intervention",
+            "best_intervention",
+            "best_intervention",
+        ]
+        logged: list[tuple[str, float]] = []
+
+        build_cpt_world_advantage_utility()(
+            environments=environments,
+            query_type=query_types,
+            log_metric=lambda name, value: logged.append((name, value)),
+        )
+        metrics = dict(logged)
+
+        self.assertAlmostEqual(metrics["effect/ate_mse"], 0.125)
+        self.assertAlmostEqual(metrics["effect/ate_rmse"], math.sqrt(0.125))
+        self.assertAlmostEqual(metrics["effect/cf_endpoint_mse"], 0.025)
+        self.assertAlmostEqual(metrics["effect/cf_endpoint_rmse"], math.sqrt(0.025))
+        self.assertAlmostEqual(metrics["effect/decision_regret"], 0.3)
+        self.assertAlmostEqual(metrics["effect/decision_normalized_regret"], 0.5)
+        self.assertEqual(metrics["effect/ate_coverage"], 1.0)
+        self.assertEqual(metrics["effect/cf_coverage"], 1.0)
+        self.assertAlmostEqual(metrics["effect/decision_coverage"], 2 / 3)
+        self.assertEqual(metrics["effect/decision_count"], 2.0)
 
     def test_rows_are_exactly_balanced_and_carry_conversational_prompts(self) -> None:
         rows = build_balanced_training_rows(count_per_family=2, start_seed=7)
@@ -95,9 +166,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
         labels = episode.seed["visible_schema"]["variable_labels"]
         target = next(name for name in world.variables if episode.seed["manipulability"][name])
         measure = next(
-            name
-            for name in world.variables
-            if name != target and episode.seed["readable"][name]
+            name for name in world.variables if name != target and episode.seed["readable"][name]
         )
         command = {
             "type": "intervene",
@@ -130,9 +199,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
         )
         self.assertEqual(len({row["sample_index"] for row in rows}), len(rows))
         counterfactual_rows = [
-            row
-            for row in rows
-            if row["query_type"] == "individual_counterfactual_probability"
+            row for row in rows if row["query_type"] == "individual_counterfactual_probability"
         ]
         self.assertTrue(all(row["terminal_truth_json"] for row in counterfactual_rows))
         self.assertTrue(
@@ -191,7 +258,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             "cpt_world.task_scoring.compute_query_truth",
             side_effect=AssertionError("cached truth must bypass the solver"),
         ):
-            feedback = environment.act({"type": "answer", "value": 0.5})
+            feedback = environment.act({"type": "answer", "lower": 0.25, "upper": 0.75})
 
         self.assertIn("Episode complete", feedback)
         self.assertEqual(environment.get_reward(), 1.0)

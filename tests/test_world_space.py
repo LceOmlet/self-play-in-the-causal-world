@@ -52,6 +52,7 @@ from cpt_world.world_space import (
     _project_joint_effect,
     _project_parent_subset_effect,
     _sample_et_v2_strength,
+    _sample_parent_interaction_cliques,
     _sample_parent_subset_balanced_effect,
     _sampled_backdoor_complexity,
     _sampled_role_assignments,
@@ -446,17 +447,36 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             )
             self.assertAlmostEqual(squared_norm(projection), expected_share, places=11)
 
-    def test_parent_subset_energy_is_random_with_equal_expectation(self) -> None:
+    def test_parent_interaction_graph_support_is_uniform_and_clique_closed(self) -> None:
+        rng = random.Random(271828)
+        counts: Counter[tuple[tuple[int, ...], ...]] = Counter(
+            _sample_parent_interaction_cliques(3, rng) for _ in range(8000)
+        )
+        self.assertEqual(len(counts), 8)
+        self.assertTrue(all(900 <= count <= 1100 for count in counts.values()))
+        for support in counts:
+            self.assertTrue(all((parent,) in support for parent in range(3)))
+            if (0, 1, 2) in support:
+                self.assertTrue(all(pair in support for pair in combinations(range(3), 2)))
+
+        separated_rng = random.Random(314159)
+        original_rng = random.Random(314159)
+        self.assertEqual(_sample_parent_interaction_cliques(1, separated_rng), ((0,),))
+        self.assertEqual(separated_rng.random(), original_rng.random())
+        with self.assertRaises(ValueError):
+            _sample_parent_interaction_cliques(0, rng)
+
+    def test_parent_subset_energy_is_random_on_clique_support(self) -> None:
         parent_domains = (2, 2, 2)
         parent_subsets = tuple(
             positions
             for subset_size in range(1, len(parent_domains) + 1)
             for positions in combinations(range(len(parent_domains)), subset_size)
         )
-        totals = [0.0] * len(parent_subsets)
-        first_shares: tuple[float, ...] | None = None
         sample_count = 1000
         rng = random.Random(271828)
+        pair_active = Counter()
+        triple_active = 0
         for _ in range(sample_count):
             effect = _sample_parent_subset_balanced_effect(parent_domains, 3, rng)
             shares = tuple(
@@ -471,16 +491,21 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 )
                 for positions in parent_subsets
             )
-            if first_shares is None:
-                first_shares = shares
-            for index, share in enumerate(shares):
-                totals[index] += share
+            active = frozenset(
+                positions
+                for positions, share in zip(parent_subsets, shares, strict=True)
+                if share > 1e-12
+            )
+            self.assertTrue(all((parent,) in active for parent in range(3)))
+            self.assertAlmostEqual(math.fsum(shares), 1.0, places=11)
+            for pair in combinations(range(3), 2):
+                pair_active[pair] += pair in active
+            if (0, 1, 2) in active:
+                triple_active += 1
+                self.assertTrue(all(pair in active for pair in combinations(range(3), 2)))
 
-        self.assertIsNotNone(first_shares)
-        self.assertGreater(max(first_shares) - min(first_shares), 0.05)
-        expected = 1.0 / len(parent_subsets)
-        for total in totals:
-            self.assertAlmostEqual(total / sample_count, expected, delta=0.015)
+        self.assertTrue(all(450 <= count <= 550 for count in pair_active.values()))
+        self.assertTrue(90 <= triple_active <= 160)
 
     def test_one_parent_subset_sampling_preserves_the_original_direction_law_and_rng(self) -> None:
         separated_rng = random.Random(314159)
@@ -600,13 +625,12 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 child_domain,
                 rng,
             )
-            squared_rms = math.fsum(
-                value * value for row in direction for value in row
-            ) / (math.prod(parent_domains) * child_domain)
+            squared_rms = math.fsum(value * value for row in direction for value in row) / (
+                math.prod(parent_domains) * child_domain
+            )
             scale = _contextual_parent_pair_score_scale(direction, parent_domains)
             normalized = tuple(
-                tuple(scale * value / math.sqrt(squared_rms) for value in row)
-                for row in direction
+                tuple(scale * value / math.sqrt(squared_rms) for value in row) for row in direction
             )
             parent_means: list[float] = []
             for position, parent_domain in enumerate(parent_domains):
@@ -615,9 +639,9 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 contrasts = [
                     (
                         normalized[(prefix * parent_domain + left) * suffix_count + suffix][state]
-                        - normalized[
-                            (prefix * parent_domain + right) * suffix_count + suffix
-                        ][state]
+                        - normalized[(prefix * parent_domain + right) * suffix_count + suffix][
+                            state
+                        ]
                     )
                     ** 2
                     for prefix in range(prefix_count)
@@ -914,8 +938,8 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                     re.search(rf"(?<![A-Za-z0-9]){re.escape(name)}(?![A-Za-z0-9])", prompt)
                 )
             self.assertIn("DOLENS HIDDEN-MECHANISM TASK", prompt)
-            self.assertIn("Estimate the average treatment effect", prompt)
-            self.assertNotIn("probability", prompt.lower())
+            self.assertIn("Estimate the complete categorical treatment effect", prompt)
+            self.assertIn('"effect":{"state_0":', prompt)
             return
         self.fail("no renderable ATE world found")
 
@@ -972,7 +996,6 @@ class WorldSpaceSamplerTests(unittest.TestCase):
     def test_sampled_state_anchors_are_legal_and_not_numerically_filtered(self) -> None:
         grammar = WorldGrammar(node_counts=(5,), max_domain_size=5)
         observed_pairs: set[tuple[int, int]] = set()
-        observed_outcome_states: set[int] = set()
         for sample_index in range(60):
             seed = iter_sampled_seeds(
                 grammar,
@@ -987,24 +1010,27 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             outcome = world.variables.index(internal_by_label[seed["query"]["outcome"]])
             baseline = int(str(seed["query"]["baseline_value"]).removeprefix("state_"))
             comparison = int(str(seed["query"]["treatment_value"]).removeprefix("state_"))
-            outcome_state = int(str(seed["query"]["outcome_state"]).removeprefix("state_"))
             self.assertNotEqual(baseline, comparison)
             self.assertIn(baseline, range(world.domains[treatment]))
             self.assertIn(comparison, range(world.domains[treatment]))
-            self.assertIn(outcome_state, range(world.domains[outcome]))
             observed_pairs.add((baseline, comparison))
-            observed_outcome_states.add(outcome_state)
-            self.assertEqual(compute_query_truth(world, seed)["type"], "ate")
+            self.assertNotIn("outcome_state", seed["query"])
+            truth = compute_query_truth(world, seed)
+            self.assertEqual(truth["type"], "ate")
+            self.assertEqual(len(truth["effect"]), world.domains[outcome])
+            self.assertAlmostEqual(float(sum(truth["effect"])), 0.0)
             prompt = render_seed_task_prompt(seed)
             self.assertIn(
-                f"effect = P({seed['query']['outcome']}={seed['query']['outcome_state']} | "
+                f"For every state s of {seed['query']['outcome']}, effect[s] = "
+                f"P({seed['query']['outcome']}=s | "
                 f"do({seed['query']['treatment']}={seed['query']['treatment_value']})) - "
-                f"P({seed['query']['outcome']}={seed['query']['outcome_state']} | "
-                f"do({seed['query']['treatment']}={seed['query']['baseline_value']}))",
+                f"P({seed['query']['outcome']}=s | "
+                f"do({seed['query']['treatment']}={seed['query']['baseline_value']})).",
                 prompt,
             )
+            for state in range(world.domains[outcome]):
+                self.assertIn(f'"state_{state}":<number in [-1,1]>', prompt)
         self.assertGreater(len(observed_pairs), 1)
-        self.assertGreater(len(observed_outcome_states), 1)
 
     def test_all_five_families_sample_k_and_m_within_the_declared_support(self) -> None:
         grammar = WorldGrammar(node_counts=(6,), max_domain_size=3)
@@ -1054,10 +1080,18 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             prompt = render_seed_task_prompt(seed)
             self.assertIn("One individual was assigned", prompt)
             self.assertIn("for this same individual", prompt)
-            self.assertIn("q may lie in a compatible interval", prompt)
-            self.assertIn("one value in that interval", prompt)
-            self.assertNotIn('"lower": <number in [0,1]>', prompt)
-            self.assertIn('"value": <number in [0,1]>', prompt)
+            self.assertIn("q has a sharp identified interval [lower, upper]", prompt)
+            self.assertIn(
+                '{"type":"answer","lower":<number in [0,1]>,"upper":<number in [0,1]>}',
+                prompt,
+            )
+            self.assertIn("return both endpoints of that interval", prompt)
+            self.assertIn(
+                f"{seed['query']['treatment']} and {seed['query']['outcome']} are readonly "
+                "during experimentation",
+                prompt,
+            )
+            self.assertNotIn('{"type":"answer","value":', prompt)
         self.assertGreater(len(widths), 1)
         self.assertGreater(len(bandwidths), 1)
 

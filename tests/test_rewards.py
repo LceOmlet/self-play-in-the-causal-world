@@ -14,26 +14,52 @@ from cpt_world import (
 
 class TerminalQualityRewardTests(unittest.TestCase):
     def test_reward_contract_version_and_unfinished_value_are_frozen(self) -> None:
-        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v1")
+        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v4")
         self.assertEqual(UNFINISHED_TERMINAL_QUALITY, 0)
 
     def test_numeric_and_decision_rewards_use_owner_diagnostics(self) -> None:
         self.assertEqual(
-            terminal_quality_reward({"kind": "target_query", "abs_error": Fraction(1, 2)}),
-            Fraction(3, 4),
+            terminal_quality_reward({"kind": "target_query", "l1_error": Fraction(1, 2)}),
+            Fraction(7, 8),
         )
         self.assertEqual(
             terminal_quality_reward(
                 {
-                    "kind": "individual_counterfactual_probability",
-                    "distance_to_interval": Fraction(1, 5),
+                    "kind": "counterfactual_roi",
+                    "mean_absolute_endpoint_error": Fraction(1, 5),
                 }
             ),
             Fraction(4, 5),
         )
         self.assertEqual(
-            terminal_quality_reward({"kind": "decision", "regret": Fraction(7, 10)}),
-            Fraction(3, 10),
+            terminal_quality_reward(
+                {
+                    "kind": "decision",
+                    "regret": Fraction(7, 10),
+                    "normalized_regret": Fraction(2, 5),
+                }
+            ),
+            Fraction(3, 5),
+        )
+        self.assertEqual(
+            terminal_quality_reward(
+                {"kind": "decision", "regret": Fraction(0), "normalized_regret": 0}
+            ),
+            1,
+        )
+        self.assertEqual(
+            terminal_quality_reward(
+                {"kind": "decision", "regret": Fraction(1, 1000), "normalized_regret": 1}
+            ),
+            0,
+        )
+
+    def test_binary_vector_reward_equals_the_previous_scalar_reward(self) -> None:
+        scalar_absolute_error = Fraction(3, 10)
+        vector_l1_error = 2 * scalar_absolute_error
+        self.assertEqual(
+            terminal_quality_reward({"kind": "target_query", "l1_error": vector_l1_error}),
+            1 - scalar_absolute_error / 2,
         )
 
     def test_mediator_reward_preserves_both_partial_f1_signals(self) -> None:
@@ -121,8 +147,8 @@ class TerminalQualityRewardTests(unittest.TestCase):
     def test_invalid_owner_diagnostics_fail_closed(self) -> None:
         with self.assertRaisesRegex(ValueError, "unsupported terminal diagnostic kind"):
             terminal_quality_reward({"kind": "unknown"})
-        with self.assertRaisesRegex(ValueError, "abs_error"):
-            terminal_quality_reward({"kind": "target_query", "abs_error": 3})
+        with self.assertRaisesRegex(ValueError, "l1_error"):
+            terminal_quality_reward({"kind": "target_query", "l1_error": 5})
         with self.assertRaisesRegex(ValueError, "duplicate adjustment set"):
             soft_adjustment_family_f1((("A",), ("A",)), (("A",),))
 

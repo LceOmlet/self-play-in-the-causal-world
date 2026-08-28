@@ -318,10 +318,12 @@ class QueryTruthOwnerTests(unittest.TestCase):
                 "outcome": "Y",
                 "baseline_value": "state_2",
                 "treatment_value": "state_0",
-                "outcome_state": "state_1",
             }
         }
-        self.assertEqual(compute_query_truth(world, seed)["effect"], Fraction(-1, 10))
+        self.assertEqual(
+            compute_query_truth(world, seed)["effect"],
+            (Fraction(6, 10), Fraction(-1, 10), Fraction(-5, 10)),
+        )
 
     def test_best_intervention_uses_the_requested_multivalued_outcome_state(self) -> None:
         world = WorldSpec(
@@ -496,9 +498,7 @@ class QueryTruthOwnerTests(unittest.TestCase):
                 world, "X", "Y", 0.5, **arguments
             )
         self.assertEqual(approximate["status"], "epsilon_sharp")
-        self.assertEqual(
-            approximate["interval_source"], "epsilon_sharp_markovian_outer"
-        )
+        self.assertEqual(approximate["interval_source"], "epsilon_sharp_markovian_outer")
         self.assertEqual(approximate["endpoint_error"], 0.0015)
         self.assertTrue(approximate["compatible"])
 
@@ -626,8 +626,7 @@ class QueryTruthOwnerTests(unittest.TestCase):
                         return_value=None,
                     ),
                     patch(
-                        "cpt_world.counterfactual_solver."
-                        "_partially_attainable_terminal_bounds",
+                        "cpt_world.counterfactual_solver._partially_attainable_terminal_bounds",
                         return_value=None,
                     ),
                 ):

@@ -205,7 +205,7 @@ world_runtime.py: IMPLEMENTED
 query_truth.py: IMPLEMENTED（candidate，未经最终审核）
   - ate、individual_counterfactual_probability、backadj_minimal_sets、mediator_set、best_intervention
   - selected-measure exact law 使用变量消元；原 full-joint 枚举保留为 reference owner 并逐 Fraction 对拍
-  - individual_counterfactual_probability 采样一个 factual treatment/outcome 记录和一个 counterfactual target；主管线只发出 scalar-compatible 终局，不另建采样器
+  - individual_counterfactual_probability 采样一个 factual treatment/outcome 记录和一个 counterfactual target；主管线只发出 sharp identified interval 终局，不另建采样器
   - 通用 WorldSpec，exact Fraction
 REGRESSION:
   - n=2,3 的声明分布支持集覆盖全部 binary DAG

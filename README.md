@@ -7,7 +7,7 @@ returns one structured terminal answer. The hidden graph, CPT entries, internal
 variable names, task truth, and scorer are never rendered to the model.
 
 The current milestone provides the environment, task-generation pipeline, and
-the frozen [Terminal-Quality Reward v1](docs/terminal-quality-reward-v1.md),
+the frozen [Terminal-Quality Reward v4](docs/terminal-quality-reward-v4.md),
 plus the [uniform task-family training mixture](docs/training-mixture-v1.md).
 It does **not** yet define a self-play algorithm or a final benchmark mixture.
 
@@ -29,8 +29,8 @@ exact truth owners.
 
 | Query | Terminal output |
 | --- | --- |
-| ATE | The numerical total effect between the named treatment and outcome. The generic sampler keeps both query endpoints readonly, so evidence must come from permitted indirect experiments or passive observations. |
-| Individual counterfactual probability | One scalar probability for the same individual under a named counterfactual treatment, conditioned on that individual's factual treatment and observed outcome. A hidden compatible interval verifies the scalar. |
+| ATE | The complete categorical total-effect vector between the named treatment and outcome. The generic sampler keeps both query endpoints readonly, so evidence must come from permitted indirect experiments or passive observations. |
+| Individual counterfactual ROI | The sharp identified interval for the same individual's counterfactual outcome probability, conditioned on that individual's factual treatment and observed outcome. |
 | Experimental decision | A deployment intervention that minimizes or maximizes the named outcome event. Experiment targets and the deployment decision are separated. |
 | Backdoor adjustment | Every minimal valid adjustment set for the named treatment–outcome query. |
 | Mediator set and order | The mediator variables and the direct path-order relations between them. |
@@ -76,9 +76,10 @@ grid. In the current implementation:
   count uniformly from zero through the smaller of three and its predecessor
   count, followed by a uniform parent subset and continuous float64 CPT
   parameters;
-- each conditional CPT separates one pure categorical interaction block for
-  every nonempty parent subset, then combines the orthogonal blocks with
-  simplex-uniform shares so every subset has the same expected score energy;
+- each conditional CPT samples a uniform undirected interaction graph on its
+  parents, activates the pure categorical interaction blocks indexed by that
+  graph's nonempty cliques, and combines the active orthogonal blocks with
+  simplex-uniform energy shares;
 - ET-V2 maps the combined score direction to probabilities with an exponential
   tilt, so an unrelated rare state cannot impose a global additive zero-wall
   on every effect; its bounded uniform amplitude has one unit of expected

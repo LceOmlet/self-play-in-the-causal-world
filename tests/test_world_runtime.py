@@ -569,13 +569,21 @@ class WorldSpecRuntimeTests(unittest.TestCase):
                     }
                 )
             elif query_type == "ate":
-                raw_answer = json.dumps({"type": "answer", "effect": float(truth["effect"])})
-            else:
-                midpoint = (truth["lower"] + truth["upper"]) / 2
                 raw_answer = json.dumps(
                     {
                         "type": "answer",
-                        "value": float(midpoint),
+                        "effect": {
+                            f"state_{state}": float(component)
+                            for state, component in enumerate(truth["effect"])
+                        },
+                    }
+                )
+            else:
+                raw_answer = json.dumps(
+                    {
+                        "type": "answer",
+                        "lower": float(truth["lower"]),
+                        "upper": float(truth["upper"]),
                     }
                 )
             terminal_step = episode.step(raw_answer)
@@ -588,9 +596,12 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             if query_type == "best_intervention":
                 self.assertEqual(terminal_step.score["regret"], 0)
             elif query_type == "ate":
-                self.assertLess(terminal_step.score["abs_error"], Fraction(1, 10**12))
+                self.assertLess(terminal_step.score["l1_error"], Fraction(1, 10**12))
             else:
-                self.assertTrue(terminal_step.score["compatible"])
+                self.assertLess(
+                    terminal_step.score["mean_absolute_endpoint_error"],
+                    Fraction(1, 10**12),
+                )
             with self.assertRaises(ValueError):
                 episode.step(raw_answer)
 
@@ -604,15 +615,21 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             measure_max=2,
         )
         self.assertIn(
-            "q may lie in a compatible interval",
+            "q has a sharp identified interval [lower, upper]",
             episode.initial_messages()[1]["content"],
         )
         truth = compute_query_truth(world, seed)
-        midpoint = (truth["lower"] + truth["upper"]) / 2
-        terminal = episode.step(json.dumps({"type": "answer", "value": float(midpoint)}))
+        terminal = episode.step(
+            json.dumps(
+                {
+                    "type": "answer",
+                    "lower": float(truth["lower"]),
+                    "upper": float(truth["upper"]),
+                }
+            )
+        )
         self.assertEqual(terminal.kind, "terminal")
-        self.assertTrue(terminal.score["compatible"])
-        self.assertEqual(terminal.score["distance_to_interval"], 0)
+        self.assertLess(terminal.score["mean_absolute_endpoint_error"], Fraction(1, 10**12))
 
     def test_backdoor_discovery_runs_from_intervention_to_exact_terminal_score(self) -> None:
         world = _backdoor_world()

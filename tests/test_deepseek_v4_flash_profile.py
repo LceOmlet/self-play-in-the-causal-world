@@ -56,7 +56,17 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
                             "episode_id": "ate:00",
                             "query_type": "ate",
                             "node_count": 5,
-                        }
+                        },
+                        {
+                            "episode_id": "cf:00",
+                            "query_type": "individual_counterfactual_probability",
+                            "node_count": 6,
+                        },
+                        {
+                            "episode_id": "decision:00",
+                            "query_type": "best_intervention",
+                            "node_count": 7,
+                        },
                     ]
                 },
                 "episodes": [
@@ -66,16 +76,58 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
                         "usage": {"prompt_tokens": 10, "completion_tokens": 2},
                         "score": {
                             "kind": "target_query",
-                            "abs_error": "1/4",
+                            "l1_error": "1/2",
+                            "total_variation_error": "1/4",
                             "squared_error": "1/16",
                         },
-                    }
+                    },
+                    {
+                        "episode_id": "cf:00",
+                        "status": "completed",
+                        "usage": {"prompt_tokens": 12, "completion_tokens": 3},
+                        "score": {
+                            "kind": "counterfactual_roi",
+                            "mean_absolute_endpoint_error": "1/10",
+                            "mean_squared_endpoint_error": "1/50",
+                        },
+                    },
+                    {
+                        "episode_id": "decision:00",
+                        "status": "completed",
+                        "usage": {"prompt_tokens": 9, "completion_tokens": 2},
+                        "score": {
+                            "kind": "decision",
+                            "regret": "1/5",
+                            "normalized_regret": "2/5",
+                        },
+                    },
                 ],
             }
         )
 
-        self.assertEqual(summary["metric_means"]["ate"]["abs_error"]["mean"], 0.25)
+        self.assertEqual(summary["metric_means"]["ate"]["l1_error"]["mean"], 0.5)
+        self.assertEqual(summary["metric_means"]["ate"]["total_variation_error"]["mean"], 0.25)
         self.assertEqual(summary["metric_means"]["ate"]["squared_error"]["mean"], 0.0625)
+        self.assertEqual(
+            summary["metric_means"]["individual_counterfactual_probability"][
+                "mean_absolute_endpoint_error"
+            ]["mean"],
+            0.1,
+        )
+        self.assertEqual(
+            summary["metric_means"]["individual_counterfactual_probability"][
+                "mean_squared_endpoint_error"
+            ]["mean"],
+            0.02,
+        )
+        self.assertEqual(
+            summary["metric_means"]["best_intervention"]["regret"]["mean"],
+            0.2,
+        )
+        self.assertEqual(
+            summary["metric_means"]["best_intervention"]["normalized_regret"]["mean"],
+            0.4,
+        )
 
     def test_small_schedule_and_outcome_tape_are_reproducible(self) -> None:
         first = runner.build_schedule(
@@ -191,10 +243,17 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
         )["entries"][0]
         world, seed = runner._materialize(entry)
         truth = runner.compute_query_truth(world, seed)
+        answer = {
+            "type": "answer",
+            "effect": {
+                f"state_{state}": float(component)
+                for state, component in enumerate(truth["effect"])
+            },
+        }
         replies = iter(
             (
                 '{"type":"observe","measure":[],"batch_size":4}',
-                json.dumps({"type": "answer", "effect": float(truth["effect"])}),
+                json.dumps(answer),
             )
         )
 
@@ -237,9 +296,15 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
 
         world, seed = runner._materialize(entry)
         truth = runner.compute_query_truth(world, seed)
+        answer = {
+            "type": "answer",
+            "effect": {
+                f"state_{state}": float(component)
+                for state, component in enumerate(truth["effect"])
+            },
+        }
         replies = iter(
-            ['{"type":"observe","measure":[],"batch_size":4}'] * 6
-            + [json.dumps({"type": "answer", "effect": float(truth["effect"])})]
+            ['{"type":"observe","measure":[],"batch_size":4}'] * 6 + [json.dumps(answer)]
         )
 
         def fake_chat_completion(*_args: object, **_kwargs: object) -> tuple[str, dict]:

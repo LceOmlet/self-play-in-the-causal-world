@@ -2,7 +2,7 @@
 
 This module is a task-mainline component, not a hidden audit layer. It parses
 the terminal JSON documented by the renderer and reports raw scoring inputs:
-squared/absolute effect error for target queries and exact regret for
+full-vector treatment-effect error for ATE and exact regret for
 single-intervention decisions. Reward scalarization is intentionally not
 performed here.
 """
@@ -22,7 +22,7 @@ from .query_truth import (
 from .rewards import TERMINAL_QUALITY_REWARD_VERSION
 from .world_space import WorldSpec
 
-_NUMERICAL_TOLERANCE = 1e-9
+_ATE_VECTOR_TOLERANCE = 1e-6
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -123,18 +123,33 @@ def parse_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
     if query_type == "ate" and head == "target_query":
         if set(value) != {"type", "effect"}:
             raise ValueError("answer must contain exactly type and effect")
+        effect_value = value["effect"]
+        if not isinstance(effect_value, Mapping):
+            raise ValueError("effect must map every outcome state to a number")
+        outcome_node = _outcome_node_index(seed, world)
+        state_tokens = tuple(f"state_{state}" for state in range(world.domains[outcome_node]))
+        if set(effect_value) != set(state_tokens):
+            raise ValueError("effect must contain every outcome state exactly once")
+        effect = tuple(
+            _finite_float(effect_value[state], field=f"effect.{state}") for state in state_tokens
+        )
+        if abs(sum(effect)) > _ATE_VECTOR_TOLERANCE:
+            raise ValueError("effect components must sum to zero")
+        if sum(component for component in effect if component > 0) > 1 + _ATE_VECTOR_TOLERANCE:
+            raise ValueError("positive effect components must sum to at most one")
         return {
             "kind": "target_query",
-            "effect": _finite_float(value["effect"], field="effect"),
+            "effect": effect,
         }
 
     if query_type == "individual_counterfactual_probability" and head == "target_query":
-        if set(value) != {"type", "value"}:
-            raise ValueError("answer must contain exactly type and value")
-        point = _finite_float(value["value"], field="value")
-        if not 0.0 <= point <= 1.0:
-            raise ValueError("counterfactual value must lie in [0, 1]")
-        return {"kind": "individual_counterfactual_probability", "value": point}
+        if set(value) != {"type", "lower", "upper"}:
+            raise ValueError("answer must contain exactly type, lower, and upper")
+        lower = _finite_float(value["lower"], field="lower")
+        upper = _finite_float(value["upper"], field="upper")
+        if not 0.0 <= lower <= upper <= 1.0:
+            raise ValueError("counterfactual ROI must satisfy 0 <= lower <= upper <= 1")
+        return {"kind": "counterfactual_roi", "lower": lower, "upper": upper}
 
     if query_type == "best_intervention" and head == "decision":
         if set(value) != {"type", "intervention"}:
@@ -285,39 +300,77 @@ def score_terminal_answer(
         raise ValueError("cached terminal truth does not match the task query type")
 
     if parsed["kind"] == "target_query":
-        truth_effect = truth["effect"]
-        predicted = Fraction(parsed["effect"])
-        absolute_error = abs(predicted - truth_effect)
+        truth_effect = tuple(truth["effect"])
+        predicted = tuple(Fraction(component) for component in parsed["effect"])
+        if len(predicted) != len(truth_effect):
+            raise ValueError("ATE prediction and truth domains do not match")
+        component_errors = tuple(
+            abs(predicted_component - truth_component)
+            for predicted_component, truth_component in zip(predicted, truth_effect, strict=True)
+        )
+        l1_error = sum(component_errors, start=Fraction(0))
+        squared_error = sum(
+            (error**2 for error in component_errors),
+            start=Fraction(0),
+        ) / len(component_errors)
         return {
             "kind": "target_query",
             "truth": truth_effect,
             "prediction": predicted,
-            "abs_error": absolute_error,
-            "squared_error": absolute_error**2,
+            "component_errors": component_errors,
+            "l1_error": l1_error,
+            "total_variation_error": l1_error / 2,
+            "squared_error": squared_error,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
-    if parsed["kind"] == "individual_counterfactual_probability":
-        truth_lower = truth["lower"]
-        truth_upper = truth["upper"]
+    if parsed["kind"] == "counterfactual_roi":
+        truth_lower = Fraction(truth["lower"])
+        truth_upper = Fraction(truth["upper"])
         certification = str(truth.get("certification", "exact"))
         endpoint_error = float(truth.get("endpoint_error", 0.0))
-        prediction = Fraction(parsed["value"])
-        distance = max(truth_lower - prediction, Fraction(0), prediction - truth_upper)
+        if not math.isfinite(endpoint_error) or endpoint_error < 0.0:
+            raise ValueError("counterfactual endpoint error must be finite and nonnegative")
+        predicted_lower = Fraction(parsed["lower"])
+        predicted_upper = Fraction(parsed["upper"])
+        error_bound = Fraction(endpoint_error)
+        certified_lower_range = (
+            truth_lower,
+            min(Fraction(1), truth_lower + error_bound),
+        )
+        certified_upper_range = (
+            max(Fraction(0), truth_upper - error_bound),
+            truth_upper,
+        )
+        lower_error = max(
+            certified_lower_range[0] - predicted_lower,
+            Fraction(0),
+            predicted_lower - certified_lower_range[1],
+        )
+        upper_error = max(
+            certified_upper_range[0] - predicted_upper,
+            Fraction(0),
+            predicted_upper - certified_upper_range[1],
+        )
+        mean_absolute_endpoint_error = (lower_error + upper_error) / 2
+        mean_squared_endpoint_error = (lower_error**2 + upper_error**2) / 2
         return {
-            "kind": "individual_counterfactual_probability",
+            "kind": "counterfactual_roi",
             "truth": {
                 "lower": truth_lower,
                 "upper": truth_upper,
                 "certification": certification,
                 "endpoint_error": endpoint_error,
+                "certified_lower_range": certified_lower_range,
+                "certified_upper_range": certified_upper_range,
             },
-            "prediction": prediction,
-            "compatible": float(distance) <= _NUMERICAL_TOLERANCE,
-            "distance_to_interval": distance,
+            "prediction": {"lower": predicted_lower, "upper": predicted_upper},
+            "lower_endpoint_error": lower_error,
+            "upper_endpoint_error": upper_error,
+            "mean_absolute_endpoint_error": mean_absolute_endpoint_error,
+            "mean_squared_endpoint_error": mean_squared_endpoint_error,
             "certification": certification,
             "endpoint_error": endpoint_error,
-            "numerical_tolerance": _NUMERICAL_TOLERANCE,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
@@ -328,28 +381,44 @@ def score_terminal_answer(
         optimal_probability = truth["probability"]
         chosen_name = parsed["target"]
         chosen_value = int(parsed["value"])
-        chosen_probability = (
-            optimal_probability
-            if chosen_name == optimal_name and chosen_value == optimal_value
-            else interventional_probability(
+        target_index = world.variables.index(chosen_name)
+        outcome_index = _outcome_node_index(seed, world)
+        outcome_state = _outcome_state_index(seed, world)
+        candidate_probabilities = tuple(
+            interventional_probability(
                 world,
-                {world.variables.index(chosen_name): chosen_value},
-                _outcome_node_index(seed, world),
-                _outcome_state_index(seed, world),
+                {target_index: state},
+                outcome_index,
+                outcome_state,
             )
+            for state in range(world.domains[target_index])
         )
+        chosen_probability = candidate_probabilities[chosen_value]
+        minimum_probability = min(candidate_probabilities)
+        maximum_probability = max(candidate_probabilities)
+        probability_span = maximum_probability - minimum_probability
         regret = (
             optimal_probability - chosen_probability
             if objective == "maximize"
             else chosen_probability - optimal_probability
         )
+        if probability_span == 0:
+            normalized_regret = Fraction(0)
+        else:
+            normalized_regret = Fraction(regret) / Fraction(probability_span)
         return {
             "kind": "decision",
             "optimal": {"target": optimal_name, "value": optimal_value},
             "chosen": {"target": chosen_name, "value": chosen_value},
             "optimal_probability": optimal_probability,
             "chosen_probability": chosen_probability,
+            "candidate_probabilities": candidate_probabilities,
+            "minimum_probability": minimum_probability,
+            "maximum_probability": maximum_probability,
+            "probability_span": probability_span,
             "regret": regret,
+            "normalized_regret": normalized_regret,
+            "optimal_action": regret == 0,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 

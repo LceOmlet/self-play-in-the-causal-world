@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from dataclasses import replace
 from fractions import Fraction
 
 from cpt_world import (
@@ -88,15 +89,33 @@ class TaskScoringTests(unittest.TestCase):
         seed_obj, world = _find_task("ate")
         truth = seed_obj["query"]
         self.assertEqual(truth["type"], "ate")
-        truth_value = 0.25
-        raw = json.dumps({"type": "answer", "effect": truth_value})
+        outcome_label = str(seed_obj["query"]["outcome"])
+        outcome_internal = next(
+            internal
+            for internal, label in seed_obj["visible_schema"]["variable_labels"].items()
+            if label == outcome_label
+        )
+        domain = world.domains[world.variables.index(outcome_internal)]
+        prediction = (0.25, -0.25) + (0.0,) * (domain - 2)
+        raw = json.dumps(
+            {
+                "type": "answer",
+                "effect": {
+                    f"state_{state}": component for state, component in enumerate(prediction)
+                },
+            }
+        )
         parsed = parse_terminal_answer(raw, seed_obj, world)
         self.assertEqual(parsed["kind"], "target_query")
-        self.assertEqual(parsed["effect"], truth_value)
+        self.assertEqual(parsed["effect"], prediction)
         score = score_terminal_answer(raw, seed_obj, world)
-        self.assertEqual(score["prediction"], Fraction(truth_value))
-        self.assertEqual(score["abs_error"], abs(score["prediction"] - score["truth"]))
-        self.assertEqual(score["squared_error"], score["abs_error"] ** 2)
+        self.assertEqual(score["prediction"], tuple(Fraction(item) for item in prediction))
+        self.assertEqual(score["l1_error"], sum(score["component_errors"]))
+        self.assertEqual(score["total_variation_error"], score["l1_error"] / 2)
+        self.assertEqual(
+            score["squared_error"],
+            sum(error**2 for error in score["component_errors"]) / domain,
+        )
         self.assertEqual(score["reward_scalarization"], TERMINAL_QUALITY_REWARD_VERSION)
 
     def test_target_query_rejects_malformed_answer(self) -> None:
@@ -105,35 +124,46 @@ class TaskScoringTests(unittest.TestCase):
             parse_terminal_answer('{"type":"answer"}', seed_obj, world)
         with self.assertRaises(ValueError):
             parse_terminal_answer('{"type":"answer","effect":"not-a-number"}', seed_obj, world)
+        with self.assertRaises(ValueError):
+            parse_terminal_answer(
+                '{"type":"answer","effect":{"state_0":0.2,"state_1":0.2}}',
+                seed_obj,
+                world,
+            )
 
-    def test_counterfactual_terminal_contract_is_scalar_only(self) -> None:
+    def test_counterfactual_terminal_contract_requires_an_ordered_roi(self) -> None:
         seed_obj, world = _find_task("individual_counterfactual_probability")
         for answer in (
-            {"type": "answer", "lower": 0.1, "upper": 0.2},
-            {"type": "answer", "value": -0.1},
-            {"type": "answer", "value": 1.1},
+            {"type": "answer", "value": 0.5},
+            {"type": "answer", "lower": 0.8, "upper": 0.2},
+            {"type": "answer", "lower": -0.1, "upper": 0.2},
+            {"type": "answer", "lower": 0.1, "upper": 1.1},
         ):
             with self.assertRaises(ValueError):
                 parse_terminal_answer(json.dumps(answer), seed_obj, world)
 
-    def test_individual_counterfactual_probability_uses_continuous_interval_distance(
+    def test_individual_counterfactual_probability_scores_both_roi_endpoints_continuously(
         self,
     ) -> None:
         from cpt_world import compute_query_truth
 
-        point_seed, world = _find_task("individual_counterfactual_probability")
-        truth = compute_query_truth(world, point_seed)
+        roi_seed, world = _find_task("individual_counterfactual_probability")
+        truth = compute_query_truth(world, roi_seed)
         self.assertIn(truth["certification"], {"exact", "epsilon_sharp"})
         self.assertLessEqual(truth["endpoint_error"], truth["endpoint_tolerance"])
-        midpoint = (truth["lower"] + truth["upper"]) / 2
-        inside = score_terminal_answer(
-            json.dumps({"type": "answer", "value": float(midpoint)}),
-            point_seed,
+        exact_roi = score_terminal_answer(
+            json.dumps(
+                {
+                    "type": "answer",
+                    "lower": float(truth["lower"]),
+                    "upper": float(truth["upper"]),
+                }
+            ),
+            roi_seed,
             world,
         )
-        self.assertEqual(inside["kind"], "individual_counterfactual_probability")
-        self.assertTrue(inside["compatible"])
-        self.assertEqual(inside["distance_to_interval"], 0)
+        self.assertEqual(exact_roi["kind"], "counterfactual_roi")
+        self.assertLess(exact_roi["mean_absolute_endpoint_error"], Fraction(1, 10**12))
 
         epsilon_truth = {
             "type": "individual_counterfactual_probability",
@@ -143,39 +173,28 @@ class TaskScoringTests(unittest.TestCase):
             "endpoint_error": 0.0015,
         }
         epsilon_score = score_terminal_answer(
-            json.dumps({"type": "answer", "value": 0.5}),
-            point_seed,
+            json.dumps({"type": "answer", "lower": 0.201, "upper": 0.799}),
+            roi_seed,
             world,
             terminal_truth=epsilon_truth,
         )
         self.assertEqual(epsilon_score["certification"], "epsilon_sharp")
         self.assertEqual(epsilon_score["endpoint_error"], 0.0015)
-        self.assertEqual(
-            epsilon_score["truth"]["certification"], "epsilon_sharp"
-        )
+        self.assertEqual(epsilon_score["truth"]["certification"], "epsilon_sharp")
+        self.assertEqual(epsilon_score["mean_absolute_endpoint_error"], 0)
 
-        if truth["lower"] > 0:
-            outside_value = 0.0
-            expected_distance = truth["lower"]
-        elif truth["upper"] < 1:
-            outside_value = 1.0
-            expected_distance = 1 - truth["upper"]
-        else:
-            self.fail("point-mode fixture unexpectedly has the unconstrained [0,1] interval")
-        outside = score_terminal_answer(
-            json.dumps({"type": "answer", "value": outside_value}),
-            point_seed,
+        shifted = score_terminal_answer(
+            json.dumps({"type": "answer", "lower": 0.1, "upper": 0.9}),
+            roi_seed,
             world,
+            terminal_truth=epsilon_truth,
         )
-        self.assertFalse(outside["compatible"])
-        self.assertEqual(outside["distance_to_interval"], expected_distance)
-
-        with self.assertRaises(ValueError):
-            parse_terminal_answer(
-                json.dumps({"type": "answer", "lower": 0.1, "upper": 0.2}),
-                point_seed,
-                world,
-            )
+        self.assertGreater(shifted["lower_endpoint_error"], 0)
+        self.assertGreater(shifted["upper_endpoint_error"], 0)
+        self.assertEqual(
+            shifted["mean_absolute_endpoint_error"],
+            (shifted["lower_endpoint_error"] + shifted["upper_endpoint_error"]) / 2,
+        )
 
     def test_decision_optimal_answer_has_zero_regret(self) -> None:
         seed_obj, world = _find_task("best_intervention")
@@ -194,6 +213,9 @@ class TaskScoringTests(unittest.TestCase):
         )
         score = score_terminal_answer(raw, seed_obj, world)
         self.assertEqual(score["regret"], 0)
+        self.assertEqual(score["normalized_regret"], 0)
+        self.assertTrue(score["optimal_action"])
+        self.assertGreater(score["probability_span"], 0)
 
     def test_decision_suboptimal_answer_has_positive_regret(self) -> None:
         seed_obj, world = _find_task("best_intervention")
@@ -216,6 +238,9 @@ class TaskScoringTests(unittest.TestCase):
         )
         score = score_terminal_answer(raw, seed_obj, world)
         self.assertGreater(score["regret"], 0)
+        self.assertGreater(score["normalized_regret"], 0)
+        self.assertLessEqual(score["normalized_regret"], 1)
+        self.assertFalse(score["optimal_action"])
 
     def test_decision_suboptimal_probability_and_regret_use_query_outcome(self) -> None:
         seed_obj, world = _decision_world()
@@ -231,6 +256,43 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["optimal_probability"], Fraction(3, 20))
         self.assertEqual(score["chosen_probability"], Fraction(17, 20))
         self.assertEqual(score["regret"], Fraction(7, 10))
+        self.assertEqual(
+            score["candidate_probabilities"],
+            (Fraction(3, 20), Fraction(17, 20)),
+        )
+        self.assertEqual(score["minimum_probability"], Fraction(3, 20))
+        self.assertEqual(score["maximum_probability"], Fraction(17, 20))
+        self.assertEqual(score["probability_span"], Fraction(7, 10))
+        self.assertEqual(score["normalized_regret"], 1)
+
+    def test_decision_zero_span_accepts_every_tied_state_without_division(self) -> None:
+        _, world = _decision_world()
+        tied_rows = tuple((Fraction(1, 2), Fraction(1, 2)) for _ in world.cpt[2])
+        tied_world = replace(world, cpt={**world.cpt, 2: tied_rows})
+        seed_obj = assemble_seed(
+            tied_world,
+            _HIDING_MODES,
+            "best_intervention",
+            "decision",
+            anchors={"decision_target": 0, "outcome": 2, "objective": "minimize"},
+            seed_id="SCORE-TIED-DECISION",
+        )
+        labels = seed_obj["visible_schema"]["variable_labels"]
+        score = score_terminal_answer(
+            json.dumps(
+                {
+                    "type": "answer",
+                    "intervention": {"target": labels["A"], "value": "state_1"},
+                }
+            ),
+            seed_obj,
+            tied_world,
+        )
+
+        self.assertEqual(score["probability_span"], 0)
+        self.assertEqual(score["regret"], 0)
+        self.assertEqual(score["normalized_regret"], 0)
+        self.assertTrue(score["optimal_action"])
 
     def test_decision_parser_rejects_hidden_names_and_noncanonical_states(self) -> None:
         seed_obj, world = _decision_world()

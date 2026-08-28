@@ -2,6 +2,7 @@
 status: accepted
 implementation: implemented
 supersedes: 0021-separate-parent-main-effect-blocks
+amended_by: 0027-sample-clique-supported-parent-interactions
 ---
 
 # Balance expected score energy by parent subset
@@ -49,3 +50,7 @@ from 0.48671 to 0.44477. A 30-seed exact counterfactual probe closed 28 tasks
 under a five-second per-endpoint allocation. Sampling 300 complete worlds was
 about 15% slower; graph structure and node domains remained identical for
 every compared seed.
+
+ADR 0027 retains this symmetric energy law conditional on the sampled active
+support. It no longer activates every nonempty subset in every multi-parent
+CPT.
