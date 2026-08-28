@@ -1126,7 +1126,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertIn("Final deployment decision", prompt)
             verb = "minimizes" if seed["query"]["objective"] == "minimize" else "maximizes"
             self.assertIn(
-                f"{verb} P({seed['query']['outcome']}={seed['query']['outcome_state']})",
+                f"candidate that {verb} the returned causal value profile",
                 prompt,
             )
             self.assertIn("Legal experimental do targets", prompt)

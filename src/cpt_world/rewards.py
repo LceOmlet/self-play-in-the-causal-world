@@ -11,8 +11,9 @@ from collections.abc import Mapping, Sequence
 from fractions import Fraction
 from typing import Any
 
-TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v4"
+TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v5"
 UNFINISHED_TERMINAL_QUALITY = Fraction(0)
+_SHORTCUT_SEPARATION_TOLERANCE = Fraction(1, 10**12)
 
 
 def _fraction_metric(
@@ -147,6 +148,36 @@ def soft_adjustment_family_f1(predicted: object, truth: object) -> Fraction:
     return 2 * matched_similarity / (len(predicted_family) + len(truth_family))
 
 
+def _shortcut_calibrated_quality(
+    score: Mapping[str, Any],
+    *,
+    error_field: str,
+    shortcut_error_field: str,
+    absolute_error_upper: Fraction,
+) -> Fraction:
+    """Return accuracy relative to the task's observational plug-in shortcut.
+
+    A shortcut with nonzero error receives exactly one half, an exact causal
+    answer receives one, and larger errors decrease continuously.  If the
+    observational and causal targets coincide, terminal answers cannot reveal
+    which reasoning route produced them; that non-separable case retains the
+    task's ordinary continuous absolute-error quality.
+    """
+
+    error = _fraction_metric(score, error_field, upper=absolute_error_upper)
+    raw_shortcut_error = score.get(shortcut_error_field)
+    if raw_shortcut_error is None:
+        return Fraction(1) - error / absolute_error_upper
+    shortcut_error = _fraction_metric(
+        {shortcut_error_field: raw_shortcut_error},
+        shortcut_error_field,
+        upper=absolute_error_upper,
+    )
+    if shortcut_error <= _SHORTCUT_SEPARATION_TOLERANCE:
+        return Fraction(1) - error / absolute_error_upper
+    return shortcut_error / (shortcut_error + error)
+
+
 def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
     """Map one owner-produced terminal diagnostic record to the current reward."""
 
@@ -154,11 +185,26 @@ def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
         raise TypeError("score must be a terminal diagnostic mapping")
     kind = score.get("kind")
     if kind == "target_query":
-        quality = Fraction(1) - _fraction_metric(score, "l1_error", upper=Fraction(4)) / 4
+        quality = _shortcut_calibrated_quality(
+            score,
+            error_field="total_variation_error",
+            shortcut_error_field="observational_shortcut_error",
+            absolute_error_upper=Fraction(2),
+        )
     elif kind == "counterfactual_roi":
-        quality = Fraction(1) - _fraction_metric(score, "mean_absolute_endpoint_error")
+        quality = _shortcut_calibrated_quality(
+            score,
+            error_field="mean_absolute_endpoint_error",
+            shortcut_error_field="observational_shortcut_error",
+            absolute_error_upper=Fraction(1),
+        )
     elif kind == "decision":
-        quality = Fraction(1) - _fraction_metric(score, "normalized_regret")
+        quality = _shortcut_calibrated_quality(
+            score,
+            error_field="pairwise_gap_error",
+            shortcut_error_field="observational_shortcut_error",
+            absolute_error_upper=Fraction(2),
+        )
     elif kind == "backadj":
         quality = soft_adjustment_family_f1(score.get("prediction"), score.get("truth"))
     elif kind == "mediator":

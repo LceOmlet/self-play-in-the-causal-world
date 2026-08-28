@@ -562,9 +562,9 @@ class WorldSpecRuntimeTests(unittest.TestCase):
                 raw_answer = json.dumps(
                     {
                         "type": "answer",
-                        "intervention": {
-                            "target": _visible_label(seed, str(truth["target"])),
-                            "value": f"state_{truth['value']}",
+                        "values": {
+                            f"state_{state}": float(probability)
+                            for state, probability in enumerate(truth["candidate_probabilities"])
                         },
                     }
                 )

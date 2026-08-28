@@ -112,6 +112,7 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["prediction"], tuple(Fraction(item) for item in prediction))
         self.assertEqual(score["l1_error"], sum(score["component_errors"]))
         self.assertEqual(score["total_variation_error"], score["l1_error"] / 2)
+        self.assertIn("observational_shortcut_error", score)
         self.assertEqual(
             score["squared_error"],
             sum(error**2 for error in score["component_errors"]) / domain,
@@ -201,13 +202,12 @@ class TaskScoringTests(unittest.TestCase):
         from cpt_world import compute_query_truth
 
         truth = compute_query_truth(world, seed_obj)
-        label_map = seed_obj["visible_schema"]["variable_labels"]
         raw = json.dumps(
             {
                 "type": "answer",
-                "intervention": {
-                    "target": label_map[truth["target"]],
-                    "value": f"state_{truth['value']}",
+                "values": {
+                    f"state_{state}": float(probability)
+                    for state, probability in enumerate(truth["candidate_probabilities"])
                 },
             }
         )
@@ -216,23 +216,26 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["normalized_regret"], 0)
         self.assertTrue(score["optimal_action"])
         self.assertGreater(score["probability_span"], 0)
+        self.assertEqual(score["pairwise_gap_error"], 0)
+        self.assertIn("observational_shortcut_error", score)
 
     def test_decision_suboptimal_answer_has_positive_regret(self) -> None:
         seed_obj, world = _find_task("best_intervention")
         from cpt_world import compute_query_truth
 
         truth = compute_query_truth(world, seed_obj)
-        label_map = seed_obj["visible_schema"]["variable_labels"]
         target_index = world.variables.index(str(truth["target"]))
         suboptimal_value = next(
             state for state in range(world.domains[target_index]) if state != truth["value"]
         )
+        objective = str(seed_obj["query"]["objective"])
+        predicted = [0.5 for _ in range(world.domains[target_index])]
+        predicted[suboptimal_value] = 0.0 if objective == "minimize" else 1.0
         raw = json.dumps(
             {
                 "type": "answer",
-                "intervention": {
-                    "target": label_map[truth["target"]],
-                    "value": f"state_{suboptimal_value}",
+                "values": {
+                    f"state_{state}": probability for state, probability in enumerate(predicted)
                 },
             }
         )
@@ -244,11 +247,10 @@ class TaskScoringTests(unittest.TestCase):
 
     def test_decision_suboptimal_probability_and_regret_use_query_outcome(self) -> None:
         seed_obj, world = _decision_world()
-        labels = seed_obj["visible_schema"]["variable_labels"]
         raw = json.dumps(
             {
                 "type": "answer",
-                "intervention": {"target": labels["A"], "value": "state_1"},
+                "values": {"state_0": 0.85, "state_1": 0.15},
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
@@ -277,12 +279,11 @@ class TaskScoringTests(unittest.TestCase):
             anchors={"decision_target": 0, "outcome": 2, "objective": "minimize"},
             seed_id="SCORE-TIED-DECISION",
         )
-        labels = seed_obj["visible_schema"]["variable_labels"]
         score = score_terminal_answer(
             json.dumps(
                 {
                     "type": "answer",
-                    "intervention": {"target": labels["A"], "value": "state_1"},
+                    "values": {"state_0": 0.5, "state_1": 0.5},
                 }
             ),
             seed_obj,
@@ -296,20 +297,19 @@ class TaskScoringTests(unittest.TestCase):
 
     def test_decision_parser_rejects_hidden_names_and_noncanonical_states(self) -> None:
         seed_obj, world = _decision_world()
-        labels = seed_obj["visible_schema"]["variable_labels"]
         invalid_answers = (
-            ("A", "state_0"),
-            (labels["B"], "state_0"),
-            (labels["A"], "state_00"),
-            (labels["A"], "state_2"),
+            {"state_0": 0.2},
+            {"state_0": 0.2, "state_00": 0.8},
+            {"state_0": -0.1, "state_1": 0.8},
+            {"state_0": 0.2, "state_1": 1.1},
         )
-        for target, value in invalid_answers:
+        for values in invalid_answers:
             with self.assertRaises(ValueError):
                 parse_terminal_answer(
                     json.dumps(
                         {
                             "type": "answer",
-                            "intervention": {"target": target, "value": value},
+                            "values": values,
                         }
                     ),
                     seed_obj,

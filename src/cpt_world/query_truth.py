@@ -1679,22 +1679,34 @@ def compute_query_truth(
         if outcome is None or decision_target is None:
             raise ValueError("best_intervention query requires outcome and decision_target")
         outcome_node = _resolve_seed_node(world, seed, outcome)
+        decision_node = _resolve_seed_node(world, seed, decision_target)
+        outcome_state = _state_index_for_node(
+            world,
+            outcome_node,
+            query.get("target_state", query.get("outcome_state", 1)),
+        )
         target, state, probability = best_intervention_truth(
             world,
             outcome_node,
             str(query.get("objective", "minimize")),
-            _resolve_seed_node(world, seed, decision_target),
-            outcome_state=_state_index_for_node(
+            decision_node,
+            outcome_state=outcome_state,
+        )
+        candidate_probabilities = tuple(
+            interventional_probability(
                 world,
+                {decision_node: candidate_state},
                 outcome_node,
-                query.get("target_state", query.get("outcome_state", 1)),
-            ),
+                outcome_state,
+            )
+            for candidate_state in range(world.domains[decision_node])
         )
         return {
             "type": "best_intervention",
             "target": target,
             "value": state,
             "probability": probability,
+            "candidate_probabilities": candidate_probabilities,
         }
     raise NotImplementedError(
         f"query truth owner for {query_type} is implemented by a legacy owner, "

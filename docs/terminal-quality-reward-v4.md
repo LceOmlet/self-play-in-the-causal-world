@@ -1,5 +1,7 @@
 # Terminal-Quality Reward v4
 
+Superseded by [`terminal-quality-reward-v5`](terminal-quality-reward-v5.md).
+
 `terminal-quality-v4` changes only the experimental-decision component of v3.
 It normalizes probability regret by the complete outcome-probability span of
 the fixed deployment variable's candidate states. Experimental cost remains a

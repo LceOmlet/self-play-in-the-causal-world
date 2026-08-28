@@ -37,11 +37,16 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             0.99 - 0.95,
         )
 
-    def test_decision_and_mediator_use_raw_quality_after_reward_v4(self) -> None:
+    def test_shortcut_calibrated_numeric_and_mediator_rewards_enter_grpo_unchanged(self) -> None:
         raw = 0.95
 
-        self.assertEqual(task_advantage_utility(raw, "mediator_set"), raw)
-        self.assertEqual(task_advantage_utility(raw, "best_intervention"), raw)
+        for query_type in (
+            "ate",
+            "individual_counterfactual_probability",
+            "best_intervention",
+            "mediator_set",
+        ):
+            self.assertEqual(task_advantage_utility(raw, query_type), raw)
         for query_type in CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES:
             with self.subTest(query_type=query_type):
                 self.assertNotEqual(task_advantage_utility(raw, query_type), raw)
@@ -65,7 +70,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
 
         self.assertEqual(reward_func.__name__, "CPTWorldAdvantageUtility")
         self.assertEqual(utilities[1], 0.95)
-        self.assertNotEqual(utilities[0], 0.95)
+        self.assertEqual(utilities[0], 0.95)
         self.assertIn(("task/ate/reward_raw", 0.95), logged)
         self.assertIn(("task/mediator_set/reward_utility", 0.95), logged)
 

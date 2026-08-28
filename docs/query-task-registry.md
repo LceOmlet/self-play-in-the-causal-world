@@ -10,7 +10,7 @@
 | `ate` | treatment, outcome | categorical_effect_vector | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `individual_counterfactual_probability` | treatment, outcome | identified_interval | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界 exact / epsilon-sharp 认证界） |
 | `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
-| `best_intervention` | decision_target, outcome | intervention | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
+| `best_intervention` | decision_target, outcome | complete interventional value profile | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
 
 ## 2. Task head 注册表
@@ -50,7 +50,7 @@ compute_query_truth(world, seed)
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；
 - `mediator_set` 返回所有 X→Y 有向路径上的中间变量与路径边偏序；
-- `best_intervention` 只比较显式 `decision_target` 的各状态；该部署变量在实验阶段 readonly，实验 do target 由独立的 manipulability 掩码给出；ties 按状态顺序确定。
+- `best_intervention` 只比较显式 `decision_target` 的各状态；该部署变量在实验阶段 readonly，实验 do target 由独立的 manipulability 掩码给出；模型返回所有候选状态的因果价值，最优动作由该向量派生。
 
 `src/cpt_world/task_scoring.py` 现在实现 target_query、decision、discovery 的 terminal parser 和 raw scoring：
 
@@ -62,9 +62,8 @@ target_query:
   lower/upper endpoint error, endpoint MAE/MSE
 
 decision:
-  parsed (target, value) -> exact optimal probability
-  maximize regret = optimal_probability - chosen_probability
-  minimize regret = chosen_probability - optimal_probability
+  parsed candidate causal-value vector -> exact hard-do value vector
+  mean pairwise-gap error; derived action regret and normalized regret
 
 backadj_minimal_sets:
   parsed adjustment-set family -> truth minimal-set family
@@ -76,19 +75,19 @@ mediator_set:
 ```
 
 `src/cpt_world/rewards.py` 在这些 raw diagnostics 之上实现冻结的
-`terminal-quality-v4`，不重新解析模型答案或计算 truth：
+`terminal-quality-v5`，不重新解析模型答案或计算 truth：
 
 ```text
-ate:                              1 - vector_L1_error / 4
-individual counterfactual:       1 - mean_absolute_endpoint_error
-decision:                         1 - regret / (p_max - p_min)
+ate:                              B_obs / (B_obs + TV_error)
+individual counterfactual:       B_obs / (B_obs + endpoint_MAE)
+decision:                         B_obs / (B_obs + pairwise_gap_MAE)
 backadj_minimal_sets:             maximum-matching soft family F1
 mediator_set:                     (mediator_f1 + order_f1) / 2
 unfinished / illegal terminal:    0
 ```
 
 实验样本消耗、query 数、轮数与 token 数保持独立诊断，不进入当前训练奖励。
-完整合同见 `docs/terminal-quality-reward-v4.md`。
+完整合同见 `docs/terminal-quality-reward-v5.md`。
 
 五个 query type 均由同一个 `iter_sampled_seeds` 主管线发出。ATE、反事实区间与实验决策
 使用既有数值稳定 CPT draw；后门调整与中介路径直接复用同一次结构世界采样，

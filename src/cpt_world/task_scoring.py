@@ -13,11 +13,13 @@ import json
 import math
 from collections.abc import Mapping
 from fractions import Fraction
+from itertools import combinations
 from typing import Any
 
 from .query_truth import (
     compute_query_truth,
     interventional_probability,
+    worldspec_projected_interventional_distribution,
 )
 from .rewards import TERMINAL_QUALITY_REWARD_VERSION
 from .world_space import WorldSpec
@@ -107,6 +109,13 @@ def _finite_float(value: object, *, field: str) -> float:
     return result
 
 
+def _probability_float(value: object, *, field: str) -> float:
+    result = _finite_float(value, field=field)
+    if result < 0.0:
+        raise ValueError(f"{field} must lie in [0, 1]")
+    return result
+
+
 def parse_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -> Mapping[str, Any]:
     """Parse the terminal JSON documented for a seed's query/task head."""
 
@@ -152,31 +161,26 @@ def parse_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
         return {"kind": "counterfactual_roi", "lower": lower, "upper": upper}
 
     if query_type == "best_intervention" and head == "decision":
-        if set(value) != {"type", "intervention"}:
-            raise ValueError("answer must contain exactly type and intervention")
-        intervention = value["intervention"]
-        if not isinstance(intervention, Mapping) or set(intervention) != {"target", "value"}:
-            raise ValueError("intervention must contain exactly target and value")
-        target = intervention["target"]
-        if not isinstance(target, str):
-            raise ValueError("intervention target must be a string")
-        if not isinstance(intervention["value"], str):
-            raise ValueError("intervention value must be a state_i token")
-        internal_target = _resolve_visible_label(seed, target)
+        if set(value) != {"type", "values"}:
+            raise ValueError("answer must contain exactly type and values")
+        raw_values = value["values"]
+        if not isinstance(raw_values, Mapping):
+            raise ValueError("values must map every deployment state to a probability")
         decision_target_value = query.get("decision_target")
         if decision_target_value is None:
             raise ValueError("best_intervention query missing decision_target")
         decision_target = _resolve_seed_anchor(seed, str(decision_target_value))
-        if internal_target != decision_target:
-            raise ValueError("intervention target is not a final decision candidate")
-        state = _state_index(intervention["value"])
-        target_index = world.variables.index(internal_target)
-        if state >= world.domains[target_index]:
-            raise ValueError("intervention value is outside the target domain")
+        target_index = world.variables.index(decision_target)
+        state_tokens = tuple(f"state_{state}" for state in range(world.domains[target_index]))
+        if set(raw_values) != set(state_tokens):
+            raise ValueError("values must contain every deployment state exactly once")
+        candidate_values = tuple(
+            _probability_float(raw_values[state], field=f"values.{state}") for state in state_tokens
+        )
         return {
             "kind": "decision",
-            "target": internal_target,
-            "value": state,
+            "target": decision_target,
+            "values": candidate_values,
         }
 
     if query_type == "backadj_minimal_sets" and head == "discovery":
@@ -250,6 +254,83 @@ def _outcome_state_index(seed: Mapping[str, Any], world: WorldSpec) -> int:
     return 1
 
 
+def _query_node_index(seed: Mapping[str, Any], world: WorldSpec, field: str) -> int:
+    query = seed.get("query")
+    if not isinstance(query, Mapping) or query.get(field) is None:
+        raise ValueError(f"query missing {field}")
+    return world.variables.index(_resolve_seed_anchor(seed, str(query[field])))
+
+
+def _query_state_index(
+    seed: Mapping[str, Any],
+    world: WorldSpec,
+    node: int,
+    field: str,
+) -> int:
+    query = seed.get("query")
+    if not isinstance(query, Mapping) or query.get(field) is None:
+        raise ValueError(f"query missing {field}")
+    value = query[field]
+    if isinstance(value, str) and value.startswith("state_"):
+        state = _state_index(value)
+    elif isinstance(value, int) and not isinstance(value, bool):
+        state = value
+    elif value in world.state_names[node]:
+        state = world.state_names[node].index(value)
+    else:
+        raise ValueError(f"query field {field} has an unknown state")
+    if not 0 <= state < world.domains[node]:
+        raise ValueError(f"query field {field} is outside its state domain")
+    return state
+
+
+def _observational_conditional_distributions(
+    world: WorldSpec,
+    condition_node: int,
+    outcome_node: int,
+) -> tuple[tuple[Fraction, ...] | None, ...]:
+    """Return every P(outcome | condition=state) from one projected law."""
+
+    law = worldspec_projected_interventional_distribution(
+        world,
+        {},
+        (condition_node, outcome_node),
+    )
+    masses = [
+        [Fraction(0) for _ in range(world.domains[outcome_node])]
+        for _ in range(world.domains[condition_node])
+    ]
+    totals = [Fraction(0) for _ in range(world.domains[condition_node])]
+    for assignment, probability in law:
+        mass = Fraction(probability)
+        masses[assignment[0]][assignment[1]] += mass
+        totals[assignment[0]] += mass
+    return tuple(
+        None if total == 0 else tuple(mass / total for mass in row)
+        for row, total in zip(masses, totals, strict=True)
+    )
+
+
+def _distance_to_interval(value: Fraction, interval: tuple[Fraction, Fraction]) -> Fraction:
+    return max(interval[0] - value, Fraction(0), value - interval[1])
+
+
+def _mean_pairwise_gap_error(
+    prediction: tuple[Fraction, ...],
+    truth: tuple[Fraction, ...],
+) -> Fraction:
+    pairs = tuple(combinations(range(len(truth)), 2))
+    if not pairs:
+        return Fraction(0)
+    return sum(
+        (
+            abs((prediction[left] - prediction[right]) - (truth[left] - truth[right]))
+            for left, right in pairs
+        ),
+        start=Fraction(0),
+    ) / len(pairs)
+
+
 def _set_f1(truth: set[Any], predicted: set[Any]) -> tuple[Fraction, Fraction, Fraction]:
     if not predicted and not truth:
         return Fraction(1), Fraction(1), Fraction(1)
@@ -300,7 +381,7 @@ def score_terminal_answer(
         raise ValueError("cached terminal truth does not match the task query type")
 
     if parsed["kind"] == "target_query":
-        truth_effect = tuple(truth["effect"])
+        truth_effect = tuple(Fraction(component) for component in truth["effect"])
         predicted = tuple(Fraction(component) for component in parsed["effect"])
         if len(predicted) != len(truth_effect):
             raise ValueError("ATE prediction and truth domains do not match")
@@ -313,6 +394,32 @@ def score_terminal_answer(
             (error**2 for error in component_errors),
             start=Fraction(0),
         ) / len(component_errors)
+        treatment_index = _query_node_index(seed, world, "treatment")
+        outcome_index = _outcome_node_index(seed, world)
+        baseline_state = _query_state_index(seed, world, treatment_index, "baseline_value")
+        treatment_state = _query_state_index(seed, world, treatment_index, "treatment_value")
+        observational_laws = _observational_conditional_distributions(
+            world, treatment_index, outcome_index
+        )
+        observed_baseline = observational_laws[baseline_state]
+        observed_treatment = observational_laws[treatment_state]
+        observational_effect = None
+        observational_shortcut_error = None
+        if observed_baseline is not None and observed_treatment is not None:
+            observational_effect = tuple(
+                treated - baseline
+                for treated, baseline in zip(observed_treatment, observed_baseline, strict=True)
+            )
+            observational_shortcut_error = (
+                sum(
+                    (
+                        abs(observed - causal)
+                        for observed, causal in zip(observational_effect, truth_effect, strict=True)
+                    ),
+                    start=Fraction(0),
+                )
+                / 2
+            )
         return {
             "kind": "target_query",
             "truth": truth_effect,
@@ -321,6 +428,8 @@ def score_terminal_answer(
             "l1_error": l1_error,
             "total_variation_error": l1_error / 2,
             "squared_error": squared_error,
+            "observational_shortcut": observational_effect,
+            "observational_shortcut_error": observational_shortcut_error,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 
@@ -342,18 +451,46 @@ def score_terminal_answer(
             max(Fraction(0), truth_upper - error_bound),
             truth_upper,
         )
-        lower_error = max(
-            certified_lower_range[0] - predicted_lower,
-            Fraction(0),
-            predicted_lower - certified_lower_range[1],
-        )
-        upper_error = max(
-            certified_upper_range[0] - predicted_upper,
-            Fraction(0),
-            predicted_upper - certified_upper_range[1],
-        )
+        lower_error = _distance_to_interval(predicted_lower, certified_lower_range)
+        upper_error = _distance_to_interval(predicted_upper, certified_upper_range)
         mean_absolute_endpoint_error = (lower_error + upper_error) / 2
         mean_squared_endpoint_error = (lower_error**2 + upper_error**2) / 2
+        treatment_index = _query_node_index(seed, world, "treatment")
+        outcome_index = _outcome_node_index(seed, world)
+        factual_value = _query_state_index(seed, world, treatment_index, "factual_value")
+        counterfactual_value = _query_state_index(
+            seed, world, treatment_index, "counterfactual_value"
+        )
+        factual_outcome_state = _query_state_index(
+            seed, world, outcome_index, "factual_outcome_state"
+        )
+        target_outcome_state = _query_state_index(seed, world, outcome_index, "outcome_state")
+        observational_laws = _observational_conditional_distributions(
+            world, treatment_index, outcome_index
+        )
+        factual_law = observational_laws[factual_value]
+        counterfactual_law = observational_laws[counterfactual_value]
+        observational_roi = None
+        observational_shortcut_error = None
+        if factual_law is not None and counterfactual_law is not None:
+            factual_probability = factual_law[factual_outcome_state]
+            counterfactual_probability = counterfactual_law[target_outcome_state]
+            if factual_probability > 0:
+                observational_lower = (
+                    max(Fraction(0), factual_probability + counterfactual_probability - 1)
+                    / factual_probability
+                )
+                observational_upper = (
+                    min(factual_probability, counterfactual_probability) / factual_probability
+                )
+                observational_roi = {
+                    "lower": observational_lower,
+                    "upper": observational_upper,
+                }
+                observational_shortcut_error = (
+                    _distance_to_interval(observational_lower, certified_lower_range)
+                    + _distance_to_interval(observational_upper, certified_upper_range)
+                ) / 2
         return {
             "kind": "counterfactual_roi",
             "truth": {
@@ -369,6 +506,8 @@ def score_terminal_answer(
             "upper_endpoint_error": upper_error,
             "mean_absolute_endpoint_error": mean_absolute_endpoint_error,
             "mean_squared_endpoint_error": mean_squared_endpoint_error,
+            "observational_shortcut": observational_roi,
+            "observational_shortcut_error": observational_shortcut_error,
             "certification": certification,
             "endpoint_error": endpoint_error,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
@@ -380,7 +519,7 @@ def score_terminal_answer(
         optimal_value = int(truth["value"])
         optimal_probability = truth["probability"]
         chosen_name = parsed["target"]
-        chosen_value = int(parsed["value"])
+        predicted_probabilities = tuple(Fraction(value) for value in parsed["values"])
         target_index = world.variables.index(chosen_name)
         outcome_index = _outcome_node_index(seed, world)
         outcome_state = _outcome_state_index(seed, world)
@@ -392,6 +531,15 @@ def score_terminal_answer(
                 outcome_state,
             )
             for state in range(world.domains[target_index])
+        )
+        if len(predicted_probabilities) != len(candidate_probabilities):
+            raise ValueError("decision prediction and candidate domains do not match")
+        choose = min if objective == "minimize" else max
+        predicted_optimum = choose(predicted_probabilities)
+        chosen_value = next(
+            state
+            for state, probability in enumerate(predicted_probabilities)
+            if probability == predicted_optimum
         )
         chosen_probability = candidate_probabilities[chosen_value]
         minimum_probability = min(candidate_probabilities)
@@ -406,10 +554,29 @@ def score_terminal_answer(
             normalized_regret = Fraction(0)
         else:
             normalized_regret = Fraction(regret) / Fraction(probability_span)
+        pairwise_gap_error = _mean_pairwise_gap_error(
+            predicted_probabilities,
+            tuple(Fraction(value) for value in candidate_probabilities),
+        )
+        observational_laws = _observational_conditional_distributions(
+            world, target_index, outcome_index
+        )
+        observed_probabilities: list[Fraction] = []
+        observational_shortcut_error = None
+        for law in observational_laws:
+            if law is None:
+                break
+            observed_probabilities.append(law[outcome_state])
+        if len(observed_probabilities) == len(candidate_probabilities):
+            observational_shortcut_error = _mean_pairwise_gap_error(
+                tuple(observed_probabilities),
+                tuple(Fraction(value) for value in candidate_probabilities),
+            )
         return {
             "kind": "decision",
             "optimal": {"target": optimal_name, "value": optimal_value},
             "chosen": {"target": chosen_name, "value": chosen_value},
+            "prediction": predicted_probabilities,
             "optimal_probability": optimal_probability,
             "chosen_probability": chosen_probability,
             "candidate_probabilities": candidate_probabilities,
@@ -418,6 +585,13 @@ def score_terminal_answer(
             "probability_span": probability_span,
             "regret": regret,
             "normalized_regret": normalized_regret,
+            "pairwise_gap_error": pairwise_gap_error,
+            "observational_shortcut": (
+                tuple(observed_probabilities)
+                if len(observed_probabilities) == len(candidate_probabilities)
+                else None
+            ),
+            "observational_shortcut_error": observational_shortcut_error,
             "optimal_action": regret == 0,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }

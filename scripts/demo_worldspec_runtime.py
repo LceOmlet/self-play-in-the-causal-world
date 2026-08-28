@@ -25,6 +25,8 @@ _DEMO_SEEDS = {
     "backadj_minimal_sets": 0,
     "mediator_set": 5,
 }
+
+
 def _jsonable(value: Any) -> Any:
     if isinstance(value, Fraction):
         return str(value)
@@ -49,9 +51,7 @@ def _task(query_type: str) -> tuple[Mapping[str, Any], WorldSpec, str]:
     return seed, world, sampling_status
 
 
-def _experiment(
-    seed: Mapping[str, Any], world: WorldSpec, measure_max: int
-) -> Mapping[str, Any]:
+def _experiment(seed: Mapping[str, Any], world: WorldSpec, measure_max: int) -> Mapping[str, Any]:
     labels = seed["visible_schema"]["variable_labels"]
     visible_query = seed["query"]
     target_name = next(
@@ -110,9 +110,9 @@ def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, A
     if query_type == "best_intervention":
         return {
             "type": "answer",
-            "intervention": {
-                "target": labels[truth["target"]],
-                "value": f"state_{truth['value']}",
+            "values": {
+                f"state_{state}": float(probability)
+                for state, probability in enumerate(truth["candidate_probabilities"])
             },
         }
     if query_type == "backadj_minimal_sets":

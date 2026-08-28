@@ -39,12 +39,17 @@ _MAX_COUNTERFACTUAL_RESAMPLES = 10_000
 DEFAULT_ADVANTAGE_UTILITY_EPSILON = 0.02
 CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES = frozenset(
     {
-        "ate",
-        "individual_counterfactual_probability",
         "backadj_minimal_sets",
     }
 )
-_RAW_ADVANTAGE_QUERY_TYPES = frozenset({"best_intervention", "mediator_set"})
+_RAW_ADVANTAGE_QUERY_TYPES = frozenset(
+    {
+        "ate",
+        "individual_counterfactual_probability",
+        "best_intervention",
+        "mediator_set",
+    }
+)
 
 
 def bounded_negative_log_residual_utility(

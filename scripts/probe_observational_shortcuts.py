@@ -12,6 +12,7 @@ import math
 import statistics
 from collections import deque
 from collections.abc import Mapping, Sequence
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,7 @@ from cpt_world.query_truth import (
     interventional_probability,
     worldspec_projected_interventional_distribution,
 )
+from cpt_world.rewards import terminal_quality_reward
 from cpt_world.world_space import (
     WorldGrammar,
     WorldSpec,
@@ -32,6 +34,7 @@ NUMERIC_QUERY_TYPES = (
     "individual_counterfactual_probability",
     "best_intervention",
 )
+SHORTCUT_SEPARATION_TOLERANCE = 1e-12
 
 
 def _quantile(values: Sequence[float], probability: float) -> float:
@@ -108,25 +111,26 @@ def _task_pair(
     return world, seed
 
 
-def _observational_conditional_outcome(
+def _observational_conditional_outcomes(
     world: WorldSpec,
     conditioning_node: int,
-    conditioning_state: int,
     outcome_node: int,
-) -> tuple[float, ...]:
+) -> tuple[tuple[float, ...], ...]:
     law = worldspec_projected_interventional_distribution(
         world,
         {},
         (conditioning_node, outcome_node),
     )
-    joint = [0.0] * world.domains[outcome_node]
+    joint = [[0.0] * world.domains[outcome_node] for _ in range(world.domains[conditioning_node])]
     for (condition_value, outcome_value), probability in law:
-        if condition_value == conditioning_state:
-            joint[outcome_value] += float(probability)
-    mass = math.fsum(joint)
-    if not mass > 0.0:
-        raise RuntimeError("observational conditioning event has zero probability")
-    return tuple(value / mass for value in joint)
+        joint[condition_value][outcome_value] += float(probability)
+    result: list[tuple[float, ...]] = []
+    for row in joint:
+        mass = math.fsum(row)
+        if not mass > 0.0:
+            raise RuntimeError("observational conditioning event has zero probability")
+        result.append(tuple(value / mass for value in row))
+    return tuple(result)
 
 
 def _interventional_outcome(
@@ -258,10 +262,7 @@ def _ate_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, Any]:
         _interventional_outcome(world, treatment, state, outcome)
         for state in range(world.domains[treatment])
     )
-    observed_by_state = tuple(
-        _observational_conditional_outcome(world, treatment, state, outcome)
-        for state in range(world.domains[treatment])
-    )
+    observed_by_state = _observational_conditional_outcomes(world, treatment, outcome)
     observed_baseline = observed_by_state[baseline]
     observed_treated = observed_by_state[treated]
     shortcut = tuple(
@@ -372,7 +373,16 @@ def _ate_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, Any]:
             treatment,
             outcome,
         ),
-        "current_reward": 1.0 - l1_error / 4.0,
+        "current_reward": float(
+            terminal_quality_reward(
+                {
+                    "kind": "target_query",
+                    "total_variation_error": total_variation_error,
+                    "observational_shortcut_error": total_variation_error,
+                }
+            )
+        ),
+        "reward_separable": total_variation_error > SHORTCUT_SEPARATION_TOLERANCE,
         "exact_match": l1_error <= 1e-10,
     }
 
@@ -391,18 +401,9 @@ def _counterfactual_record(
     factual_outcome = _state_index(query["factual_outcome_state"])
     target_outcome = _state_index(query["outcome_state"])
 
-    factual_law = _observational_conditional_outcome(
-        world,
-        treatment,
-        factual_value,
-        outcome,
-    )
-    counterfactual_law = _observational_conditional_outcome(
-        world,
-        treatment,
-        counterfactual_value,
-        outcome,
-    )
+    observational_laws = _observational_conditional_outcomes(world, treatment, outcome)
+    factual_law = observational_laws[factual_value]
+    counterfactual_law = observational_laws[counterfactual_value]
     factual_probability = factual_law[factual_outcome]
     counterfactual_probability = counterfactual_law[target_outcome]
     fake_lower = max(0.0, factual_probability + counterfactual_probability - 1.0) / (
@@ -438,7 +439,16 @@ def _counterfactual_record(
         "lower_endpoint_error": lower_error,
         "upper_endpoint_error": upper_error,
         "mean_endpoint_error": mean_error,
-        "current_reward": 1.0 - mean_error,
+        "current_reward": float(
+            terminal_quality_reward(
+                {
+                    "kind": "counterfactual_roi",
+                    "mean_absolute_endpoint_error": mean_error,
+                    "observational_shortcut_error": mean_error,
+                }
+            )
+        ),
+        "reward_separable": mean_error > SHORTCUT_SEPARATION_TOLERANCE,
         "exact_match": lower_error <= 1e-10 and upper_error <= 1e-10,
     }
 
@@ -454,8 +464,7 @@ def _decision_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, 
         for state in range(world.domains[decision])
     )
     observational_probabilities = tuple(
-        _observational_conditional_outcome(world, decision, state, outcome)[outcome_state]
-        for state in range(world.domains[decision])
+        law[outcome_state] for law in _observational_conditional_outcomes(world, decision, outcome)
     )
     choose = min if objective == "minimize" else max
     causal_best_probability = choose(causal_probabilities)
@@ -497,6 +506,11 @@ def _decision_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, 
     )
     bias_range = max(biases) - min(biases)
     profile_mae = math.fsum(abs(value) for value in biases) / len(biases)
+    pairwise_gap_error = statistics.fmean(
+        abs(biases[left] - biases[right])
+        for left in range(len(biases))
+        for right in range(left + 1, len(biases))
+    )
     ordered_causal = sorted(set(causal_probabilities))
     if len(ordered_causal) == 1:
         best_second_gap = 0.0
@@ -505,14 +519,14 @@ def _decision_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, 
     else:
         best_second_gap = ordered_causal[1] - ordered_causal[0]
     selection_shift_sum = math.fsum(
-        _parent_selection_shift(world, decision, state)
-        for state in range(world.domains[decision])
+        _parent_selection_shift(world, decision, state) for state in range(world.domains[decision])
     )
     return {
         "sample_index": int(str(seed["seed_id"]).split("-")[1]),
         "minimum_adjustment_size": _minimum_adjustment_size_for_query(world, seed, query),
         "target_linf_error": target_linf_error,
         "profile_mae": profile_mae,
+        "pairwise_gap_error": pairwise_gap_error,
         "bias_range": bias_range,
         "causal_probability_span": probability_span,
         "observational_probability_span": (
@@ -537,7 +551,16 @@ def _decision_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, 
             fake_state in causal_best_states and target_linf_error > 1e-10
         ),
         "normalized_regret": normalized_regret,
-        "current_reward": 1.0 - normalized_regret,
+        "current_reward": float(
+            terminal_quality_reward(
+                {
+                    "kind": "decision",
+                    "pairwise_gap_error": pairwise_gap_error,
+                    "observational_shortcut_error": pairwise_gap_error,
+                }
+            )
+        ),
+        "reward_separable": pairwise_gap_error > SHORTCUT_SEPARATION_TOLERANCE,
     }
 
 
@@ -571,6 +594,12 @@ def _aggregate(
             "observational_shortcut_reward": _summary(
                 [float(row["current_reward"]) for row in ate]
             ),
+            "reward_separable_rate": statistics.fmean(bool(row["reward_separable"]) for row in ate),
+            "separable_shortcut_reward": (
+                _summary([float(row["current_reward"]) for row in ate if row["reward_separable"]])
+                if any(row["reward_separable"] for row in ate)
+                else None
+            ),
             "exact_match_rate": statistics.fmean(bool(row["exact_match"]) for row in ate),
             "by_minimum_adjustment_size": {
                 str(size): {
@@ -578,9 +607,7 @@ def _aggregate(
                     "median_tv_error": statistics.median(
                         float(row["total_variation_error"]) for row in group
                     ),
-                    "exact_match_rate": statistics.fmean(
-                        bool(row["exact_match"]) for row in group
-                    ),
+                    "exact_match_rate": statistics.fmean(bool(row["exact_match"]) for row in group),
                 }
                 for size in observed_adjustment_sizes(ate)
                 if (group := [row for row in ate if row["minimum_adjustment_size"] == size])
@@ -591,9 +618,7 @@ def _aggregate(
             "scored": len(counterfactual),
             "unresolved": len(counterfactual_failures),
             "certification_counts": {
-                certification: sum(
-                    row["certification"] == certification for row in counterfactual
-                )
+                certification: sum(row["certification"] == certification for row in counterfactual)
                 for certification in sorted({row["certification"] for row in counterfactual})
             },
             "observational_shortcut_endpoint_error": (
@@ -604,6 +629,22 @@ def _aggregate(
             "observational_shortcut_reward": (
                 _summary([float(row["current_reward"]) for row in counterfactual])
                 if counterfactual
+                else None
+            ),
+            "reward_separable_rate": (
+                statistics.fmean(bool(row["reward_separable"]) for row in counterfactual)
+                if counterfactual
+                else None
+            ),
+            "separable_shortcut_reward": (
+                _summary(
+                    [
+                        float(row["current_reward"])
+                        for row in counterfactual
+                        if row["reward_separable"]
+                    ]
+                )
+                if any(row["reward_separable"] for row in counterfactual)
                 else None
             ),
             "exact_match_rate": (
@@ -624,9 +665,7 @@ def _aggregate(
                 for size in observed_adjustment_sizes(counterfactual)
                 if (
                     group := [
-                        row
-                        for row in counterfactual
-                        if row["minimum_adjustment_size"] == size
+                        row for row in counterfactual if row["minimum_adjustment_size"] == size
                     ]
                 )
             },
@@ -643,6 +682,16 @@ def _aggregate(
             "observational_shortcut_reward": _summary(
                 [float(row["current_reward"]) for row in decision]
             ),
+            "reward_separable_rate": statistics.fmean(
+                bool(row["reward_separable"]) for row in decision
+            ),
+            "separable_shortcut_reward": (
+                _summary(
+                    [float(row["current_reward"]) for row in decision if row["reward_separable"]]
+                )
+                if any(row["reward_separable"] for row in decision)
+                else None
+            ),
             "by_minimum_adjustment_size": {
                 str(size): {
                     "count": len(group),
@@ -657,13 +706,7 @@ def _aggregate(
                     ),
                 }
                 for size in observed_adjustment_sizes(decision)
-                if (
-                    group := [
-                        row
-                        for row in decision
-                        if row["minimum_adjustment_size"] == size
-                    ]
-                )
+                if (group := [row for row in decision if row["minimum_adjustment_size"] == size])
             },
         },
         "backadj_minimal_sets": {
@@ -689,11 +732,24 @@ def _aggregate(
     }
 
 
+def _cheap_record(job: tuple[int, str]) -> tuple[str, Mapping[str, Any]]:
+    sample_index, query_type = job
+    grammar = WorldGrammar()
+    world, seed = _task_pair(grammar, sample_index, query_type)
+    owners = {
+        "ate": _ate_record,
+        "best_intervention": _decision_record,
+        "backadj_minimal_sets": _backdoor_record,
+    }
+    return query_type, owners[query_type](world, seed)
+
+
 def run_probe(
     *,
     count: int,
     counterfactual_count: int,
     counterfactual_time_limit_seconds: float,
+    workers: int,
 ) -> Mapping[str, Any]:
     grammar = WorldGrammar()
     ate: list[Mapping[str, Any]] = []
@@ -702,14 +758,22 @@ def run_probe(
     decision: list[Mapping[str, Any]] = []
     backdoor: list[Mapping[str, Any]] = []
 
-    for sample_index in range(count):
-        for query_type, destination, owner in (
-            ("ate", ate, _ate_record),
-            ("best_intervention", decision, _decision_record),
-            ("backadj_minimal_sets", backdoor, _backdoor_record),
-        ):
-            world, seed = _task_pair(grammar, sample_index, query_type)
-            destination.append(owner(world, seed))
+    destinations = {
+        "ate": ate,
+        "best_intervention": decision,
+        "backadj_minimal_sets": backdoor,
+    }
+    jobs = [
+        (sample_index, query_type) for sample_index in range(count) for query_type in destinations
+    ]
+    if workers == 1:
+        cheap_records = map(_cheap_record, jobs)
+        for query_type, record in cheap_records:
+            destinations[query_type].append(record)
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            for query_type, record in executor.map(_cheap_record, jobs, chunksize=4):
+                destinations[query_type].append(record)
 
     for sample_index in range(counterfactual_count):
         world, seed = _task_pair(
@@ -726,9 +790,7 @@ def run_probe(
                 )
             )
         except RuntimeError as error:
-            counterfactual_failures.append(
-                {"sample_index": sample_index, "error": str(error)}
-            )
+            counterfactual_failures.append({"sample_index": sample_index, "error": str(error)})
         print(
             f"counterfactual {sample_index + 1}/{counterfactual_count}: "
             f"scored={len(counterfactual)} unresolved={len(counterfactual_failures)}",
@@ -741,10 +803,9 @@ def run_probe(
             "node_counts": list(grammar.node_counts),
             "fixed_sample_indices": list(range(count)),
             "counterfactual_sample_indices": list(range(counterfactual_count)),
-            "counterfactual_endpoint_time_limit_seconds": (
-                counterfactual_time_limit_seconds
-            ),
+            "counterfactual_endpoint_time_limit_seconds": (counterfactual_time_limit_seconds),
             "task_filtering": False,
+            "cheap_task_workers": workers,
         },
         "summary": _aggregate(
             ate,
@@ -767,11 +828,14 @@ def main() -> None:
     parser.add_argument("--count", type=int, default=300)
     parser.add_argument("--counterfactual-count", type=int, default=30)
     parser.add_argument("--counterfactual-time-limit-seconds", type=float, default=5.0)
+    parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--quiet", action="store_true")
     arguments = parser.parse_args()
     if arguments.count <= 0 or arguments.counterfactual_count < 0:
         parser.error("count must be positive and counterfactual count must be nonnegative")
+    if arguments.workers <= 0:
+        parser.error("workers must be positive")
     if arguments.counterfactual_time_limit_seconds <= 0:
         parser.error("counterfactual time limit must be positive")
 
@@ -779,6 +843,7 @@ def main() -> None:
         count=arguments.count,
         counterfactual_count=arguments.counterfactual_count,
         counterfactual_time_limit_seconds=arguments.counterfactual_time_limit_seconds,
+        workers=arguments.workers,
     )
     rendered = json.dumps(result, indent=2, sort_keys=True)
     if arguments.output is not None:

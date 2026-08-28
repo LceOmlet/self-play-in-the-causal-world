@@ -67,7 +67,7 @@ QUERY_TYPES: dict[str, Mapping[str, Any]] = {
     },
     "best_intervention": {
         "anchors": ("decision_target", "outcome"),
-        "answer_kind": "intervention",
+        "answer_kind": "intervention_value_vector",
         "task_heads": frozenset({"decision"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },
@@ -99,7 +99,7 @@ TASK_HEADS: dict[str, Mapping[str, Any]] = {
         "scorer_owner_status": OWNER_STATUS_DIAGNOSTIC_ONLY,
     },
     "decision": {
-        "answer_kind": "intervention",
+        "answer_kind": "intervention_value_vector",
         "scorer_owner_status": OWNER_STATUS_DIAGNOSTIC_ONLY,
     },
 }
