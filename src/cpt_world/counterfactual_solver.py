@@ -2157,7 +2157,6 @@ def _eliminate_factor_tokens(
     model: Model,
     factors: list[_SymbolicFactor],
     tokens: tuple[tuple[int, int], ...],
-    local_factor: _SymbolicFactor,
     *,
     outcome: int,
     outcome_state: int | None,
@@ -2168,7 +2167,8 @@ def _eliminate_factor_tokens(
     """Contract one local mechanism and all downstream messages in one step."""
 
     involving = [factor for factor in factors if any(token in factor.scope for token in tokens)]
-    involving.append(local_factor)
+    if not involving:
+        raise RuntimeError("cannot eliminate tokens absent from every factor")
     untouched = [factor for factor in factors if all(token not in factor.scope for token in tokens)]
     union_scope = tuple(
         sorted({item for factor in involving for item in factor.scope if item not in tokens})
@@ -2750,27 +2750,62 @@ class _SparseResponseModel:
             else []
         )
         relevant = set(self.shared) | set(self.mechanism_affected)
-        for node in reversed(_topological_order(self.world)):
-            if node not in relevant:
-                continue
-            if node in self.affected:
-                tokens = ((node, 0), (node, 1))
-                local_factor = self._affected_factor(node)
-            else:
-                tokens = ((node, -1),)
-                local_factor = self._shared_factor(node)
+        order = _topological_order(self.world)
+        for node in order:
+            if node in relevant:
+                factors.append(
+                    self._affected_factor(node)
+                    if node in self.affected
+                    else self._shared_factor(node)
+                )
+
+        remaining = set(relevant)
+        while remaining:
+            candidates: list[tuple[int, int, int, tuple[tuple[int, int], ...]]] = []
+            for node in remaining:
+                tokens = (
+                    ((node, 0), (node, 1))
+                    if node in self.affected
+                    else ((node, -1),)
+                )
+                involving = [
+                    factor
+                    for factor in factors
+                    if any(token in factor.scope for token in tokens)
+                ]
+                union_scope = {
+                    item
+                    for factor in involving
+                    for item in factor.scope
+                    if item not in tokens
+                }
+                message_cells = 1
+                for item in union_scope:
+                    message_cells *= len(
+                        _token_states(
+                            self.world,
+                            item,
+                            self.outcome,
+                            self.outcome_state,
+                            self.outcome_events,
+                        )
+                    )
+                candidates.append(
+                    (message_cells, len(union_scope), node, tokens)
+                )
+            _, _, node, tokens = min(candidates)
             factors = _eliminate_factor_tokens(
                 self.world,
                 self.model,
                 factors,
                 tokens,
-                local_factor,
                 outcome=self.outcome,
                 outcome_state=self.outcome_state,
                 outcome_events=self.outcome_events,
                 auxiliary_values=self.auxiliary_values,
                 probability_message_bounds=self.probability_message_bounds,
             )
+            remaining.remove(node)
         expression: Any = 1.0
         initial = 1.0
         for factor in factors:
