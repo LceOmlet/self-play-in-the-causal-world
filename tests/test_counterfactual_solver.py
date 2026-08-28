@@ -12,12 +12,14 @@ from cpt_world import (
     reference_individual_counterfactual_probability_bounds,
 )
 from cpt_world.counterfactual_solver import (
+    CounterfactualBoundsResult,
     _coarsen_terminal_event_outcome,
     _eliminate_factor_tokens,
     _exact_pairwise_map,
     _global_bounds_numerically_closed,
     _PairwiseMapOptimization,
     _ResponsePricer,
+    _root_separator_bounds,
     _SparseResponseModel,
     _SymbolicFactor,
     sparse_counterfactual_transition_bounds,
@@ -130,6 +132,48 @@ def _shared_root_separator_world() -> WorldSpec:
                 (Fraction(1, 4), Fraction(7, 20), Fraction(2, 5)),
                 (Fraction(3, 10), Fraction(2, 5), Fraction(3, 10)),
                 (Fraction(7, 20), Fraction(9, 20), Fraction(1, 5)),
+            ),
+        },
+    )
+
+
+def _shared_root_with_extra_ancestor_world() -> WorldSpec:
+    """A valid common root remains usable beside another shared ancestor."""
+
+    return WorldSpec(
+        family="test_dag",
+        topology="shared-root-plus-extra-shared-ancestor",
+        variables=("X", "S", "A", "M", "Y"),
+        domains=(2, 2, 2, 2, 3),
+        state_names=(
+            ("0", "1"),
+            ("0", "1"),
+            ("0", "1"),
+            ("0", "1"),
+            ("0", "1", "2"),
+        ),
+        edges=((0, 3), (1, 2), (1, 3), (1, 4), (2, 4), (3, 4)),
+        parents={0: (), 1: (), 2: (1,), 3: (0, 1), 4: (1, 2, 3)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(2, 5), Fraction(3, 5)),),
+            2: (
+                (Fraction(3, 4), Fraction(1, 4)),
+                (Fraction(1, 4), Fraction(3, 4)),
+            ),
+            3: (
+                (Fraction(4, 5), Fraction(1, 5)),
+                (Fraction(7, 10), Fraction(3, 10)),
+                (Fraction(2, 5), Fraction(3, 5)),
+                (Fraction(1, 5), Fraction(4, 5)),
+            ),
+            4: tuple(
+                (
+                    Fraction(1 + (row % 3), 10),
+                    Fraction(2 + ((row + 1) % 3), 10),
+                    Fraction(7 - (row % 3) - ((row + 1) % 3), 10),
+                )
+                for row in range(8)
             ),
         },
     )
@@ -670,6 +714,80 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
             places=8,
         )
         self.assertEqual(actual.backend, "shared_root_separator_decomposition")
+
+    def test_shared_root_separator_survives_an_extra_shared_ancestor(self) -> None:
+        world = _shared_root_with_extra_ancestor_world()
+        factual_probability = float(interventional_probability(world, {0: 0}, 4, 0))
+        counterfactual_probability = float(
+            interventional_probability(world, {0: 1}, 4, 1)
+        )
+        outer = (
+            max(0.0, factual_probability + counterfactual_probability - 1.0),
+            min(factual_probability, counterfactual_probability),
+        )
+        owner = _SparseResponseModel(
+            world,
+            0,
+            4,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="minimize",
+            target_outer_bounds=outer,
+        )
+        expected_lower, _ = owner.optimize(time_limit_seconds=None)
+        owner.restart_with_objective("maximize")
+        expected_upper, _ = owner.optimize(time_limit_seconds=None)
+
+        actual = sparse_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            4,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertAlmostEqual(actual.lower, expected_lower / factual_probability, places=8)
+        self.assertAlmostEqual(actual.upper, expected_upper / factual_probability, places=8)
+        self.assertEqual(actual.backend, "shared_root_separator_decomposition")
+
+    def test_shared_root_strata_share_the_endpoint_solve_allowance(self) -> None:
+        world = _shared_root_separator_world()
+        stub = CounterfactualBoundsResult(
+            lower=0.1,
+            upper=0.2,
+            build_seconds=0.0,
+            solve_seconds=1.0,
+            affected_nodes=2,
+            pair_kernel_entries=0,
+            generated_columns=0,
+            response_blocks=0,
+            dynamic_response_blocks=0,
+            max_response_contexts=0,
+            auxiliary_variables=0,
+        )
+        with patch(
+            "cpt_world.counterfactual_solver._solve_sparse_two_world_event_bounds",
+            return_value=stub,
+        ) as owner:
+            result = _root_separator_bounds(
+                world,
+                0,
+                3,
+                treatment_value=1,
+                baseline_value=0,
+                outcome_state=None,
+                outcome_events=((0,), (1,)),
+                time_limit_seconds=4.0,
+            )
+
+        self.assertIsNotNone(result)
+        allowances = [
+            call.kwargs["time_limit_seconds"] for call in owner.call_args_list
+        ]
+        self.assertEqual(allowances, [4.0, 3.5])
 
     def test_disjoint_terminal_lower_decomposition_matches_reference(self) -> None:
         world = _non_direct_terminal_world()

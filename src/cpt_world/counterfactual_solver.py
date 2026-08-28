@@ -3107,14 +3107,17 @@ def _root_separator(world: WorldSpec, treatment: int, outcome: int) -> int | Non
         for node in ancestors
         if node not in affected and node != treatment
     )
-    if len(shared) != 1:
+    candidates = tuple(
+        node
+        for node in shared
+        if not world.parents[node]
+        and all(node in world.parents[affected_node] for affected_node in affected)
+    )
+    if not candidates:
         return None
-    separator = shared[0]
-    if world.parents[separator]:
-        return None
-    if any(separator not in world.parents[node] for node in affected):
-        return None
-    return separator
+    # Every candidate gives the same exact conditioning decomposition.  The
+    # smallest domain merely minimizes the number of response strata.
+    return min(candidates, key=lambda node: (world.domains[node], node))
 
 
 def _fix_root_separator(
@@ -3177,10 +3180,17 @@ def _root_separator_bounds(
     from .query_truth import interventional_probability
 
     results: list[tuple[float, CounterfactualBoundsResult]] = []
+    remaining_solve_seconds = (
+        None if time_limit_seconds is None else 2.0 * time_limit_seconds
+    )
     for state, probability in enumerate(world.cpt[separator][0]):
         weight = float(probability)
         if weight <= 0.0:
             continue
+        if remaining_solve_seconds is not None and remaining_solve_seconds <= 0.0:
+            raise RuntimeError(
+                "shared-root decomposition exhausted the combined endpoint time limit"
+            )
         stratum = _fix_root_separator(world, separator, state)
         left_probability = sum(
             float(
@@ -3216,10 +3226,19 @@ def _root_separator_bounds(
                 max(0.0, left_probability + right_probability - 1.0),
                 min(left_probability, right_probability),
             ),
-            time_limit_seconds=time_limit_seconds,
+            # The nested owner may solve both endpoints.  Giving it half the
+            # remaining combined allowance prevents each root state from
+            # silently receiving a fresh pair of endpoint budgets.
+            time_limit_seconds=(
+                None
+                if remaining_solve_seconds is None
+                else remaining_solve_seconds / 2.0
+            ),
             accepted_absolute_gap=accepted_absolute_gap,
         )
         results.append((weight, result))
+        if remaining_solve_seconds is not None:
+            remaining_solve_seconds -= result.solve_seconds
     if not results:
         raise ValueError("root separator has no positive-probability state")
     return CounterfactualBoundsResult(

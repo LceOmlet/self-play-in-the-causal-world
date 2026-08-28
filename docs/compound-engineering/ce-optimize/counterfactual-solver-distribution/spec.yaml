@@ -1,0 +1,138 @@
+name: counterfactual-solver-distribution
+description: >
+  Increase the fraction of individual-counterfactual CPT-World instances that
+  receive exact or epsilon-sharp certificates within the existing per-endpoint
+  solve allowance. Preserve the current Markovian compatible-SCM semantics,
+  numerical tolerance, sampler, task contract, and fallback behavior. Optimize
+  distribution-level performance; never optimize named seeds or finite cases.
+
+metric:
+  primary:
+    type: hard
+    name: distribution_closed_rate
+    direction: maximize
+    target: 1.0
+  objectives:
+    - name: distribution_closed_rate
+      direction: maximize
+      role: required
+      target: 1.0
+      max_regression:
+        type: absolute
+        value: 0.0
+    - name: formal_regression_closed_rate
+      direction: maximize
+      role: required
+      target: 1.0
+      max_regression:
+        type: absolute
+        value: 0.0
+  degenerate_gates:
+    - name: focused_tests_passed
+      check: "== 1"
+      description: Counterfactual solver and query-truth tests remain green.
+    - name: semantic_parity_passed
+      check: "== 1"
+      description: Optimized and reference owners agree on tractable exact cases.
+    - name: immutable_contract_passed
+      check: "== 1"
+      description: Sampler, task, truth, reward, tolerance, and measurement contracts are unchanged.
+    - name: anti_case_specific_scan_passed
+      check: "== 1"
+      description: Solver contains no seed, label, topology-name, fingerprint, or finite-case dispatch.
+  diagnostics:
+    - name: distribution_exact_count
+    - name: distribution_epsilon_sharp_count
+    - name: distribution_unresolved_count
+    - name: distribution_p50_wall_seconds
+    - name: distribution_p95_wall_seconds
+    - name: distribution_total_wall_seconds
+    - name: formal_exact_count
+    - name: formal_epsilon_sharp_count
+    - name: formal_unresolved_count
+    - name: formal_p50_wall_seconds
+    - name: formal_p95_wall_seconds
+
+measurement:
+  command: "python scripts/measure_counterfactual_optimizer.py"
+  timeout_seconds: 1200
+  working_directory: "."
+  stability:
+    mode: ladder
+    repeat_count: 3
+    aggregation: median
+    noise_threshold: 0.01
+    comparison:
+      method: paired
+      relative_threshold: 0.01
+    ladder:
+      smoke_command: "python -m unittest tests.test_counterfactual_solver"
+      exploratory_pairs: 1
+      confirmation_repeats: 3
+      futility:
+        worse_factor: 1.05
+
+scope:
+  mutable:
+    - "src/cpt_world/counterfactual_solver.py"
+  immutable:
+    - "scripts/measure_counterfactual_optimizer.py"
+    - "scripts/probe_counterfactual_solver.py"
+    - "src/cpt_world/world_space.py"
+    - "src/cpt_world/query_truth.py"
+    - "src/cpt_world/rendering.py"
+    - "src/cpt_world/rewards.py"
+    - "src/cpt_world/registry.py"
+    - "tests/"
+    - "pyproject.toml"
+
+execution:
+  mode: serial
+  backend: worktree
+  max_concurrent: 1
+
+parallel:
+  port_strategy: none
+  shared_files: []
+  exclusive_resources:
+    - "local-scip-cpu-and-memory"
+
+dependencies:
+  approved: []
+
+constraints:
+  - >
+    Diagnostic examples may reveal a general bottleneck, but no hypothesis may
+    be proposed, tuned, or accepted from a seed identity or a finite failed-case list.
+  - >
+    Every optimization trigger must be stated as a variable-renaming-invariant
+    and graph-isomorphism-invariant mathematical property and must apply to the
+    entire instance class satisfying that property.
+  - >
+    Do not branch on RNG seed, sample index, variable/state labels, topology
+    strings, exact CPT fingerprints, enumerated graph shapes, or named examples.
+  - >
+    Do not choose solver thresholds by maximizing closure on the fixed cohorts.
+    Resource limits and numerical tolerances are immutable.
+  - >
+    The measurement harness exposes aggregate cohort metrics only. Per-instance
+    records and seed identities are not optimization feedback.
+  - >
+    The fixed formal seed sequence is regression acceptance only. It cannot
+    generate or rank hypotheses.
+  - >
+    Preserve the original exact owner as the semantic oracle on every tractable
+    small and medium case; a fast path without parity evidence is inadmissible.
+  - >
+    Do not change CPT-World generation, task sampling, query semantics, reward,
+    fallback semantics, accepted endpoint error, or the endpoint time allowance.
+  - "One experiment tests one structural hypothesis."
+  - "No new dependencies without explicit user approval."
+
+stopping:
+  max_iterations: 4
+  max_hours: 2
+  plateau_iterations: 3
+  target_reached: true
+
+max_runner_up_merges_per_batch: 0
