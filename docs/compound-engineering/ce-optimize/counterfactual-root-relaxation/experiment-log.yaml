@@ -957,3 +957,21 @@ experiments:
       overwhelm medium owners before the frozen five-second gate.  A viable
       binary route must eliminate the transport redundancy algebraically
       instead of exposing every missing product.
+
+  - id: fused-binary-transport-contraction
+    change: >
+      Use the single free coordinate of every two-by-two response transport to
+      rewrite each four-cell contraction exactly.  Four kernel/message products
+      become one pivot-kernel times a normalized downstream-message contrast,
+      plus linear message terms.  The route applies to every full binary
+      state-pair contraction and introduces no task-dependent threshold.
+    parity: counterfactual-solver tests passed 26/26 in 11.9 seconds
+    distribution: {closed: 23, unresolved: 7}
+    decision: reject
+    reason: >
+      Every unresolved structural bucket matched baseline and no certificate
+      was added.  The rewrite reduces product count but replaces four
+      nonnegative probability products with one signed contrast whose safe
+      interval is substantially wider.  Its root relaxation is no stronger
+      and the cohort tail became visibly slower, so algebraic compression does
+      not solve the shared-mechanism consistency gap.

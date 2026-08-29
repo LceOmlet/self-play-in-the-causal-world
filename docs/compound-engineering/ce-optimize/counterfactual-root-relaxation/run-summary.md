@@ -346,3 +346,12 @@ The aggregate size fell by 133 times, from 5,720,016 missing products to
 cohort run.  Binary transports have only one free coordinate, so any successor
 must fuse the contraction into that coordinate rather than add the other three
 products explicitly.
+
+The corresponding one-coordinate binary contraction was then implemented.
+It exactly rewrote four transport/message products as one pivot transport
+coordinate times a normalized message contrast plus linear terms, and passed
+all 26 focused solver tests.  Frozen closure nevertheless stayed 23/30 with
+the same seven structural failure buckets, while the tail slowed.  Fewer
+products did not mean a tighter relaxation: the signed contrast has a wider
+safe interval than the four original nonnegative probability factors.  This
+binary algebraic route was also removed.
