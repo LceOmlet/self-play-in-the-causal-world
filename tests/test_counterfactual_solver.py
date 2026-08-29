@@ -418,6 +418,7 @@ def _solve_sparse_pair(
     *,
     probability_message_bounds: bool,
     on_demand_response_columns: bool,
+    projected_message_bounds: bool = False,
 ) -> tuple[_SparseResponseModel, float, float]:
     outer = tuple(
         map(
@@ -443,6 +444,7 @@ def _solve_sparse_pair(
         target_outer_bounds=outer,
         probability_message_bounds=probability_message_bounds,
         on_demand_response_columns=on_demand_response_columns,
+        projected_message_bounds=projected_message_bounds,
     )
     lower, _ = owner.optimize(time_limit_seconds=None)
     owner.restart_with_objective("maximize")
@@ -1204,11 +1206,20 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
             probability_message_bounds=True,
             on_demand_response_columns=True,
         )
+        projected, projected_lower, projected_upper = _solve_sparse_pair(
+            world,
+            probability_message_bounds=True,
+            on_demand_response_columns=True,
+            projected_message_bounds=True,
+        )
 
         self.assertAlmostEqual(legacy_lower, float(expected[0]), places=8)
         self.assertAlmostEqual(legacy_upper, float(expected[1]), places=8)
         self.assertAlmostEqual(tightened_lower, legacy_lower, places=8)
         self.assertAlmostEqual(tightened_upper, legacy_upper, places=8)
+        self.assertAlmostEqual(projected_lower, legacy_lower, places=8)
+        self.assertAlmostEqual(projected_upper, legacy_upper, places=8)
+        self.assertGreater(projected.projected_bound_diagnostics["strict_upper"], 0)
         self.assertEqual(len(tightened.auxiliary_values), len(legacy.auxiliary_values))
         self.assertEqual(tightened.model.getNVars(), legacy.model.getNVars())
         self.assertEqual(tightened.model.getNConss(), legacy.model.getNConss())
@@ -1274,6 +1285,7 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         )
 
         lower, _ = owner.optimize(time_limit_seconds=None)
+        lower_root_bounds = tuple(owner.pricer.root_transformed_dual_bounds)
         lower_columns = owner.pricer.generated_columns
         self.assertTrue(owner.pricer.closed)
         self.assertFalse(owner.pricer.timed_out)
@@ -1282,6 +1294,8 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         self.assertEqual(owner.pricer.rounds[-1].generated_columns, 0)
         self.assertGreater(lower_columns, 0)
         self.assertAlmostEqual(lower, expected_lower, delta=1e-8)
+        self.assertTrue(lower_root_bounds)
+        self.assertLessEqual(max(lower_root_bounds), expected_lower + 1e-8)
 
         owner.restart_with_objective("maximize")
         upper, _ = owner.optimize(time_limit_seconds=None)
@@ -1292,6 +1306,11 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         self.assertEqual(owner.pricer.rounds[-1].generated_columns, 0)
         self.assertGreater(owner.pricer.generated_columns - lower_columns, 0)
         self.assertAlmostEqual(upper, expected_upper, places=8)
+        self.assertTrue(owner.pricer.root_transformed_dual_bounds)
+        self.assertGreaterEqual(
+            -max(owner.pricer.root_transformed_dual_bounds),
+            expected_upper - 1e-8,
+        )
 
     def test_pricing_timeout_fails_closed(self) -> None:
         world = _tiny_dynamic_pricer_world()

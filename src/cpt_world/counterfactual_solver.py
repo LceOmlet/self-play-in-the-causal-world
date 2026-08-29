@@ -85,6 +85,16 @@ class _SymbolicFactor:
     upper_bounds: Any
     initial_values: Any
     joint_evaluator: Any | None = None
+    left_projection: _ProjectedFactor | None = None
+    right_projection: _ProjectedFactor | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class _ProjectedFactor:
+    """Numeric one-world projection of a two-world event factor."""
+
+    scope: tuple[tuple[int, int], ...]
+    values: Any
 
 
 @dataclass(slots=True)
@@ -1630,6 +1640,8 @@ class _ResponsePricer(Pricer):
         self.closed = not blocks
         self.timed_out = False
         self.rounds: list[_PricingRoundState] = []
+        self.root_transformed_dual_bounds: list[float] = []
+        self._round_minimum_reduced_costs: list[float] = []
 
     def begin_solve(self, *, deadline: float | None) -> None:
         """Reset solve-local proof state before SCIP enters pricing."""
@@ -1638,6 +1650,8 @@ class _ResponsePricer(Pricer):
         self.closed = not self.blocks
         self.timed_out = False
         self.rounds = []
+        self.root_transformed_dual_bounds = []
+        self._round_minimum_reduced_costs = []
 
     def pricerinit(self) -> None:
         for block in self.blocks:
@@ -1761,6 +1775,7 @@ class _ResponsePricer(Pricer):
                 self.model.interruptSolve()
                 return None
             raise RuntimeError("response pricing MIP did not solve to global optimality")
+        self._round_minimum_reduced_costs.append(pricing.value)
         if self.deadline is not None and time.perf_counter() >= self.deadline:
             self.timed_out = True
             self.model.interruptSolve()
@@ -1808,6 +1823,7 @@ class _ResponsePricer(Pricer):
     def _price(self, *, farkas: bool) -> dict[str, Any]:
         round_state = _PricingRoundState(farkas=farkas)
         self.rounds.append(round_state)
+        self._round_minimum_reduced_costs = []
         if not farkas:
             self.closed = False
         generated_before = self.generated_columns
@@ -1831,6 +1847,14 @@ class _ResponsePricer(Pricer):
         round_state.generated_columns = self.generated_columns - generated_before
         if not farkas:
             self.closed = round_state.generated_columns == 0
+            if self.model.getDepth() == 0:
+                correction = sum(
+                    min(0.0, reduced_cost)
+                    for reduced_cost in self._round_minimum_reduced_costs
+                )
+                self.root_transformed_dual_bounds.append(
+                    float(self.model.getLPObjVal()) + correction
+                )
         return {"result": SCIP_RESULT.SUCCESS}
 
     def pricerredcost(self) -> dict[str, Any]:
@@ -2152,6 +2176,56 @@ def _terminal_lower_is_constant_zero(
     return left_maximum + right_maximum <= 1.0
 
 
+def _projected_factor_value(
+    factor: _ProjectedFactor,
+    assignment: tuple[int, ...],
+) -> float:
+    values = factor.values
+    return float(values(assignment) if callable(values) else values[assignment])
+
+
+def _eliminate_projected_factors(
+    world: WorldSpec,
+    factors: tuple[_ProjectedFactor, ...],
+    tokens: tuple[tuple[int, int], ...],
+    *,
+    outcome: int,
+    outcome_state: int | None,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None,
+) -> _ProjectedFactor:
+    """Eliminate one world's state tokens from fixed numeric factors."""
+
+    union_scope = tuple(
+        sorted({item for factor in factors for item in factor.scope if item not in tokens})
+    )
+    full_scope = (*union_scope, *tokens)
+    projection_positions = tuple(
+        tuple(full_scope.index(item) for item in factor.scope) for factor in factors
+    )
+    values: dict[tuple[int, ...], float] = {}
+    for assignment in product(
+        *(
+            _token_states(world, item, outcome, outcome_state, outcome_events)
+            for item in union_scope
+        )
+    ):
+        total = 0.0
+        for eliminated_assignment in product(
+            *(
+                _token_states(world, item, outcome, outcome_state, outcome_events)
+                for item in tokens
+            )
+        ):
+            full_assignment = (*assignment, *eliminated_assignment)
+            term = 1.0
+            for factor, positions in zip(factors, projection_positions, strict=True):
+                projected = tuple(full_assignment[position] for position in positions)
+                term *= _projected_factor_value(factor, projected)
+            total += term
+        values[assignment] = total
+    return _ProjectedFactor(union_scope, values)
+
+
 def _eliminate_factor_tokens(
     world: WorldSpec,
     model: Model,
@@ -2164,6 +2238,8 @@ def _eliminate_factor_tokens(
     outcome_events: tuple[tuple[int, ...], tuple[int, ...]] | None = None,
     auxiliary_values: list[tuple[Any, float]],
     probability_message_bounds: bool = True,
+    projected_message_bounds: bool = False,
+    projected_bound_diagnostics: dict[str, float] | None = None,
 ) -> list[_SymbolicFactor]:
     """Contract one local mechanism and all downstream messages in one step."""
 
@@ -2177,6 +2253,31 @@ def _eliminate_factor_tokens(
     projection_positions = tuple(
         tuple(full_scope.index(item) for item in factor.scope) for factor in involving
     )
+    left_projection: _ProjectedFactor | None = None
+    right_projection: _ProjectedFactor | None = None
+    if projected_message_bounds:
+        if any(factor.left_projection is None for factor in involving):
+            raise RuntimeError("two-world factor is missing its left projection")
+        if any(factor.right_projection is None for factor in involving):
+            raise RuntimeError("two-world factor is missing its right projection")
+        left_tokens = tuple(token for token in tokens if token[1] in {-1, 0})
+        right_tokens = tuple(token for token in tokens if token[1] in {-1, 1})
+        left_projection = _eliminate_projected_factors(
+            world,
+            tuple(factor.left_projection for factor in involving),
+            left_tokens,
+            outcome=outcome,
+            outcome_state=outcome_state,
+            outcome_events=outcome_events,
+        )
+        right_projection = _eliminate_projected_factors(
+            world,
+            tuple(factor.right_projection for factor in involving),
+            right_tokens,
+            outcome=outcome,
+            outcome_state=outcome_state,
+            outcome_events=outcome_events,
+        )
     values: dict[tuple[int, ...], Any] = {}
     upper_bounds: dict[tuple[int, ...], float] = {}
     initial_values: dict[tuple[int, ...], float] = {}
@@ -2226,16 +2327,47 @@ def _eliminate_factor_tokens(
             terms.append(term)
             upper += term_upper
             initial += term_initial
-        declared_upper = _message_upper_bound(
+        original_declared_upper = _message_upper_bound(
             upper,
             probability_bound=probability_message_bounds,
         )
+        declared_upper = original_declared_upper
+        declared_lower = 0.0
+        if left_projection is not None and right_projection is not None:
+            positions = {token: index for index, token in enumerate(union_scope)}
+            left_assignment = tuple(assignment[positions[token]] for token in left_projection.scope)
+            right_assignment = tuple(
+                assignment[positions[token]] for token in right_projection.scope
+            )
+            left_probability = _projected_factor_value(left_projection, left_assignment)
+            right_probability = _projected_factor_value(right_projection, right_assignment)
+            outward = 10.0 * _SCIP_NUMERICAL_TOLERANCE
+            projected_lower = max(0.0, left_probability + right_probability - 1.0 - outward)
+            projected_upper = min(1.0, left_probability, right_probability) + outward
+            declared_lower = min(projected_lower, initial)
+            declared_upper = max(
+                declared_lower,
+                initial,
+                min(declared_upper, projected_upper),
+            )
+            if projected_bound_diagnostics is not None:
+                projected_bound_diagnostics["cells"] += 1.0
+                projected_bound_diagnostics["positive_lower"] += float(
+                    declared_lower > 0.0
+                )
+                projected_bound_diagnostics["strict_upper"] += float(
+                    declared_upper + outward < original_declared_upper
+                )
+                projected_bound_diagnostics["lower_sum"] += declared_lower
+                projected_bound_diagnostics["upper_reduction_sum"] += max(
+                    0.0, original_declared_upper - declared_upper
+                )
         if all(isinstance(term, (int, float)) for term in terms):
             value: Any = sum(float(term) for term in terms)
         else:
             value = model.addVar(
                 name=f"ve_{len(auxiliary_values)}",
-                lb=0.0,
+                lb=declared_lower,
                 ub=declared_upper,
             )
             model.addCons(value == quicksum(terms))
@@ -2243,7 +2375,16 @@ def _eliminate_factor_tokens(
         values[assignment] = value
         upper_bounds[assignment] = declared_upper
         initial_values[assignment] = initial
-    untouched.append(_SymbolicFactor(union_scope, values, upper_bounds, initial_values))
+    untouched.append(
+        _SymbolicFactor(
+            union_scope,
+            values,
+            upper_bounds,
+            initial_values,
+            left_projection=left_projection,
+            right_projection=right_projection,
+        )
+    )
     return untouched
 
 
@@ -2263,6 +2404,7 @@ class _SparseResponseModel:
         probability_message_bounds: bool = True,
         on_demand_response_columns: bool = True,
         terminal_event_endpoint: str | None = None,
+        projected_message_bounds: bool = False,
     ) -> None:
         self.world = world
         self.treatment = treatment
@@ -2275,6 +2417,16 @@ class _SparseResponseModel:
         self.target_outer_bounds = target_outer_bounds
         self.probability_message_bounds = probability_message_bounds
         self.on_demand_response_columns = on_demand_response_columns
+        self.projected_message_bounds = (
+            projected_message_bounds and probability_message_bounds
+        )
+        self.projected_bound_diagnostics = {
+            "cells": 0.0,
+            "positive_lower": 0.0,
+            "strict_upper": 0.0,
+            "lower_sum": 0.0,
+            "upper_reduction_sum": 0.0,
+        }
         if terminal_event_endpoint not in {None, "lower", "upper"}:
             raise ValueError("terminal_event_endpoint must be lower, upper, or None")
         resolved_terminal_events = _resolved_terminal_events(
@@ -2641,7 +2793,15 @@ class _SparseResponseModel:
             state = assignment[-1]
             return float(self.world.cpt[node][_row_index(self.world, node, context)][state])
 
-        return _SymbolicFactor(scope, value, value, value)
+        projection = _ProjectedFactor(scope, value)
+        return _SymbolicFactor(
+            scope,
+            value,
+            value,
+            value,
+            left_projection=projection,
+            right_projection=projection,
+        )
 
     def _affected_factor(self, node: int) -> _SymbolicFactor:
         parent_tokens: list[tuple[int, int]] = []
@@ -2741,7 +2901,59 @@ class _SparseResponseModel:
                 ),
             )
 
-        return _SymbolicFactor(scope, value, upper, initial, evaluate)
+        left_scope = tuple(
+            (parent, 0) if parent in self.affected else (parent, -1)
+            for parent in parent_specs
+            if parent != self.treatment
+        ) + ((node, 0),)
+        right_scope = tuple(
+            (parent, 1) if parent in self.affected else (parent, -1)
+            for parent in parent_specs
+            if parent != self.treatment
+        ) + ((node, 1),)
+
+        def projected_value(
+            assignment: tuple[int, ...],
+            *,
+            world_index: int,
+        ) -> float:
+            projected_scope = left_scope if world_index == 0 else right_scope
+            projected_values = dict(zip(projected_scope, assignment, strict=True))
+            context = tuple(
+                (
+                    self.baseline_value
+                    if world_index == 0
+                    else self.treatment_value
+                )
+                if parent == self.treatment
+                else projected_values[
+                    (parent, world_index)
+                    if parent in self.affected
+                    else (parent, -1)
+                ]
+                for parent in parent_specs
+            )
+            return float(
+                self.world.cpt[node][_row_index(self.world, node, context)][
+                    projected_values[(node, world_index)]
+                ]
+            )
+
+        return _SymbolicFactor(
+            scope,
+            value,
+            upper,
+            initial,
+            evaluate,
+            left_projection=_ProjectedFactor(
+                left_scope,
+                lambda assignment: projected_value(assignment, world_index=0),
+            ),
+            right_projection=_ProjectedFactor(
+                right_scope,
+                lambda assignment: projected_value(assignment, world_index=1),
+            ),
+        )
 
     def _build_twin_probability(self) -> tuple[Any, float]:
         factors = (
@@ -2770,6 +2982,8 @@ class _SparseResponseModel:
                 outcome_events=self.outcome_events,
                 auxiliary_values=self.auxiliary_values,
                 probability_message_bounds=self.probability_message_bounds,
+                projected_message_bounds=self.projected_message_bounds,
+                projected_bound_diagnostics=self.projected_bound_diagnostics,
             )
         expression: Any = 1.0
         initial = 1.0
@@ -2829,7 +3043,59 @@ class _SparseResponseModel:
                 return max(0.0, left_probability + right_probability - 1.0)
             return min(left_probability, right_probability)
 
-        return _SymbolicFactor(scope, value, value, value)
+        left_scope = tuple(
+            (parent, 0) if parent in self.affected else (parent, -1)
+            for parent in self.world.parents[self.outcome]
+            if parent != self.treatment
+        )
+        right_scope = tuple(
+            (parent, 1) if parent in self.affected else (parent, -1)
+            for parent in self.world.parents[self.outcome]
+            if parent != self.treatment
+        )
+
+        def projected_value(
+            assignment: tuple[int, ...],
+            *,
+            world_index: int,
+        ) -> float:
+            projected_scope = left_scope if world_index == 0 else right_scope
+            projected_values = dict(zip(projected_scope, assignment, strict=True))
+            context = tuple(
+                (
+                    self.baseline_value
+                    if world_index == 0
+                    else self.treatment_value
+                )
+                if parent == self.treatment
+                else projected_values[
+                    (parent, world_index)
+                    if parent in self.affected
+                    else (parent, -1)
+                ]
+                for parent in self.world.parents[self.outcome]
+            )
+            row = self.world.cpt[self.outcome][
+                _row_index(self.world, self.outcome, context)
+            ]
+            return sum(
+                float(row[state]) for state in outcome_events[world_index]
+            )
+
+        return _SymbolicFactor(
+            scope,
+            value,
+            value,
+            value,
+            left_projection=_ProjectedFactor(
+                left_scope,
+                lambda assignment: projected_value(assignment, world_index=0),
+            ),
+            right_projection=_ProjectedFactor(
+                right_scope,
+                lambda assignment: projected_value(assignment, world_index=1),
+            ),
+        )
 
     def _initial_kernel_value(
         self,
@@ -2980,18 +3246,69 @@ class _SparseResponseModel:
             and endpoint_error
             <= accepted_absolute_gap + 10.0 * _SCIP_NUMERICAL_TOLERANCE
         )
-        if not certified_exact and not certified_epsilon:
+        corrected_endpoint: float | None = None
+        corrected_error = float("inf")
+        root_transformed_dual_bounds = tuple(
+            getattr(self.pricer, "root_transformed_dual_bounds", ())
+        )
+        if root_transformed_dual_bounds:
+            transformed_lower = max(root_transformed_dual_bounds)
+            raw_corrected_endpoint = (
+                transformed_lower if self.sense == "minimize" else -transformed_lower
+            )
+            outward = 10.0 * _SCIP_NUMERICAL_TOLERANCE * max(
+                1.0, abs(raw_corrected_endpoint)
+            )
+            corrected_endpoint = (
+                raw_corrected_endpoint - outward
+                if self.sense == "minimize"
+                else raw_corrected_endpoint + outward
+            )
+            corrected_error = (
+                primal_bound - corrected_endpoint
+                if self.sense == "minimize"
+                else corrected_endpoint - primal_bound
+            )
+        corrected_epsilon = (
+            not certified_exact
+            and not certified_epsilon
+            and accepted_absolute_gap > 0.0
+            and corrected_endpoint is not None
+            and scip_status in {"gaplimit", "timelimit", "userinterrupt"}
+            and np.isfinite(primal_bound)
+            and np.isfinite(corrected_error)
+            and corrected_error >= -10.0 * _SCIP_NUMERICAL_TOLERANCE
+            and corrected_error
+            <= accepted_absolute_gap + 10.0 * _SCIP_NUMERICAL_TOLERANCE
+        )
+        if not certified_exact and not certified_epsilon and not corrected_epsilon:
             raise RuntimeError(
                 "SCIP did not certify an optimal counterfactual bound: "
                 f"status={scip_status}, pricing_closed={self.pricer.closed}, "
                 f"pricing_timed_out={self.pricer.timed_out}, "
                 f"sense={self.sense}, primal={primal_bound}, dual={dual_bound}"
             )
-        self.last_certification = "epsilon_sharp" if certified_epsilon else "exact"
-        self.last_endpoint_error = endpoint_error if certified_epsilon else 0.0
+        self.last_certification = (
+            "epsilon_sharp" if certified_epsilon or corrected_epsilon else "exact"
+        )
+        self.last_endpoint_error = (
+            max(0.0, corrected_error)
+            if corrected_epsilon
+            else endpoint_error
+            if certified_epsilon
+            else 0.0
+        )
         # For epsilon-sharp termination the dual bound is the safe outer
         # endpoint: it lies below the true minimum or above the true maximum.
-        endpoint = dual_bound if certified_epsilon else primal_bound
+        endpoint = (
+            corrected_endpoint
+            if corrected_epsilon
+            else dual_bound
+            if certified_epsilon
+            else primal_bound
+        )
+        if endpoint is None:
+            raise RuntimeError("corrected epsilon endpoint is missing")
         return endpoint, elapsed
 
 
@@ -3027,6 +3344,7 @@ def _direct_treatment_terminal_bounds(
         target_outer_bounds=target_outer_bounds,
         outcome_events=outcome_events,
         terminal_event_endpoint="lower",
+        projected_message_bounds=accepted_absolute_gap > 0.0,
     )
     lower_build_seconds = time.perf_counter() - build_started
     lower, lower_seconds = lower_model.optimize(
@@ -3048,6 +3366,7 @@ def _direct_treatment_terminal_bounds(
         target_outer_bounds=target_outer_bounds,
         outcome_events=outcome_events,
         terminal_event_endpoint="upper",
+        projected_message_bounds=accepted_absolute_gap > 0.0,
     )
     upper_build_seconds = time.perf_counter() - build_started
     upper, upper_seconds = upper_model.optimize(
@@ -3361,6 +3680,7 @@ def _partially_attainable_terminal_bounds(
                 target_outer_bounds=target_outer_bounds,
                 terminal_event_endpoint="lower" if lower_terminal else None,
                 on_demand_response_columns=on_demand_response_columns,
+                projected_message_bounds=accepted_absolute_gap > 0.0,
             )
             if not on_demand_response_columns:
                 lower_model._enable_static_presolve()
@@ -3411,6 +3731,7 @@ def _partially_attainable_terminal_bounds(
             target_outer_bounds=target_outer_bounds,
             terminal_event_endpoint="upper" if upper_terminal else None,
             on_demand_response_columns=on_demand_response_columns,
+            projected_message_bounds=accepted_absolute_gap > 0.0,
         )
         if not on_demand_response_columns:
             upper_model._enable_static_presolve()
@@ -3604,6 +3925,7 @@ def _solve_sparse_two_world_event_bounds(
         target_outer_bounds=target_outer_bounds,
         outcome_events=outcome_events,
         on_demand_response_columns=not prefer_static_response_columns,
+        projected_message_bounds=accepted_absolute_gap > 0.0,
     )
     if prefer_static_response_columns:
         lower_model._enable_static_presolve()
