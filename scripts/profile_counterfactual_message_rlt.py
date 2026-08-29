@@ -59,10 +59,12 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
 
     quadratic_edges: set[tuple[str, str]] = set()
     local_owner_groups: list[dict[tuple[tuple[str, int, int], str], set[str]]] = []
+    full_transport_contractions_by_domain = Counter[str]()
     for constraint in owner.model.getConss():
         if not constraint.isNonlinear():
             continue
         constraint_groups: dict[tuple[tuple[str, int, int], str], set[str]] = {}
+        constraint_tables: dict[tuple[int, int, int], set[str]] = {}
         quadratic, _, _ = owner.model.getTermsQuadratic(constraint)
         for left, right, coefficient in quadratic:
             if coefficient == 0.0:
@@ -79,8 +81,15 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
                     (response_owner_by_kernel[kernel_name], other_name),
                     set(),
                 ).add(kernel_name)
+                constraint_tables.setdefault(kernel_keys[kernel_name][:3], set()).add(
+                    kernel_name
+                )
         if constraint_groups:
             local_owner_groups.append(constraint_groups)
+        for table, kernel_names in constraint_tables.items():
+            domain = owner.world.domains[table[0]]
+            if len(kernel_names) == domain * domain:
+                full_transport_contractions_by_domain[str(domain)] += 1
 
     groups: set[tuple[tuple[int, int, int], str]] = set()
     owner_groups: dict[tuple[tuple[str, int, int], str], set[str]] = {}
@@ -209,6 +218,9 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
             local_cyclic_owner_group_size_histogram
         ),
         "cyclic_signature_specs": cyclic_signature_specs,
+        "full_transport_contractions_by_domain": dict(
+            full_transport_contractions_by_domain
+        ),
         "domain_sums": {
             domain: dict(values) for domain, values in domain_sums.items()
         },
@@ -492,6 +504,8 @@ def main() -> None:
     local_owner_group_size_histogram = Counter[str]()
     local_cyclic_owner_group_size_histogram = Counter[str]()
     domain_sums: dict[str, Counter[str]] = {}
+    full_transport_contractions_by_domain = Counter[str]()
+    full_transport_owner_coverage_by_domain = Counter[str]()
     missing_per_owner: list[int] = []
     strict_cyclic_products_per_owner: list[int] = []
     strict_owner_tolerance_ratio = Counter[str]()
@@ -615,6 +629,12 @@ def main() -> None:
             )
             for domain, values in failed["domain_sums"].items():
                 domain_sums.setdefault(domain, Counter()).update(values)
+            for domain, count in failed[
+                "full_transport_contractions_by_domain"
+            ].items():
+                full_transport_contractions_by_domain[domain] += count
+                if count:
+                    full_transport_owner_coverage_by_domain[domain] += 1
             for role in role_sums:
                 role_sums[role]["groups"] += failed["groups_by_role"].get(role, 0)
                 role_sums[role]["required_products"] += failed["required_by_role"].get(
@@ -644,6 +664,18 @@ def main() -> None:
             domain: dict(values)
             for domain, values in sorted(
                 domain_sums.items(), key=lambda item: int(item[0])
+            )
+        },
+        "failed_full_transport_basis_projection": {
+            domain: {
+                "owners": full_transport_owner_coverage_by_domain[domain],
+                "full_contractions": count,
+                "original_products": count * int(domain) ** 2,
+                "compact_basis_products": count * (int(domain) - 1) ** 2,
+            }
+            for domain, count in sorted(
+                full_transport_contractions_by_domain.items(),
+                key=lambda item: int(item[0]),
             )
         },
         "failed_owner_existing_products_per_group": dict(

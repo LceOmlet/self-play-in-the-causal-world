@@ -995,3 +995,30 @@ experiments:
       expression; it does not add the cross-mechanism consistency needed by
       any unresolved endpoint.  The redundant lift was removed and the
       production solver remains unchanged.
+
+  - id: multivalued-compact-transport-basis-projection
+    change: >
+      Before implementation, count every full d-by-d transport contraction in
+      the failed owners and project the exact redundant basis lift that would
+      retain the original products while adding (d-1)^2 free-coordinate
+      products per contraction.  Counts are aggregated by state-domain size
+      and contain no task identity.
+    aggregate_projection:
+      domain_2: {owners: 2, contractions: 3076, original_products: 12304, basis_products: 3076}
+      domain_3: {owners: 3, contractions: 56080, original_products: 504720, basis_products: 224320}
+      domain_4: {owners: 2, contractions: 9620, original_products: 153920, basis_products: 86580}
+      domain_5: {owners: 2, contractions: 840, original_products: 21000, basis_products: 13440}
+      multivalued_original_products: 679640
+      multivalued_basis_products: 324340
+      projected_product_growth_fraction: 0.4772582314172203
+      complete_rlt_missing_products: 5720016
+    distribution: {closed: 23, unresolved: 7}
+    decision: reject_before_implementation
+    reason: >
+      The multivalued basis is far smaller than complete RLT but is not a small
+      lift: it would add 324,340 bilinear products to 679,640 products already
+      present in full contractions, a 47.7 percent expansion.  The binary
+      special case added only 3,076 products and was already slower with no
+      certificate.  Scaling that same local identity by two orders of
+      magnitude has no evidence of a five-second closure gain and fails the
+      implementation gate.

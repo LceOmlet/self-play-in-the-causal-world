@@ -364,3 +364,13 @@ tail.  This rules out the missing binary transport degree of freedom as a
 standalone source of a new certificate: even an exact compact identity remains
 local to one message expression and does not enforce the unresolved
 cross-mechanism consistency.  The lift was removed from the candidate branch.
+
+The exact multivalued generalization was sized before implementation.  Across
+the failed owners, a free-coordinate transport basis would add 324,340
+bilinear products to 679,640 products already present in full contractions, a
+47.7 percent expansion.  The three-state class alone contributes 224,320 new
+products.  This remains much smaller than the 5,720,016 missing products of
+complete message RLT, but it is two orders of magnitude larger than the binary
+lift that already slowed the cohort without closing an endpoint.  The
+multivalued lift was therefore rejected by the aggregate size gate rather than
+turned into another oversized solver candidate.
