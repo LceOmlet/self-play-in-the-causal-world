@@ -16,7 +16,6 @@ from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
 
 from cpt_world import (
-    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
     CPTWorldEnvironment,
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
@@ -55,11 +54,6 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--save-steps", type=int, default=50)
     parser.add_argument("--save-total-limit", type=int, default=5)
-    parser.add_argument(
-        "--reward-utility-epsilon",
-        type=float,
-        default=DEFAULT_ADVANTAGE_UTILITY_EPSILON,
-    )
     parser.add_argument("--resume-from-checkpoint")
     parser.add_argument(
         "--use-liger-kernel",
@@ -167,9 +161,7 @@ def main() -> None:
         model=cli.model,
         args=config,
         train_dataset=dataset,
-        reward_funcs=build_cpt_world_advantage_utility(
-            epsilon=cli.reward_utility_epsilon,
-        ),
+        reward_funcs=build_cpt_world_advantage_utility(),
         peft_config=peft_config,
         environment_factory=CPTWorldEnvironment,
     )

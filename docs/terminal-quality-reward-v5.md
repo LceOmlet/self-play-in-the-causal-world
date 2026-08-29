@@ -33,7 +33,5 @@ has zero mass.
   probability gaps. `B` replaces every hard-do probability by `P(Y|D=d)`.
   The predicted optimum, raw regret, and normalized regret remain diagnostics.
 
-The three calibrated numerical qualities enter GRPO unchanged.  Backdoor
-adjustment retains ceiling-sensitive trainer utility over its soft family F1;
-mediator structure retains its existing mean F1 quality.  Experimental cost
-remains separate.
+All five terminal qualities enter GRPO unchanged. Experimental cost remains
+separate.

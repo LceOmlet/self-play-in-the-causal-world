@@ -10,11 +10,8 @@ from itertools import islice
 from unittest.mock import patch
 
 from cpt_world import (
-    CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES,
-    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
     TASK_FAMILY_QUERY_TYPES,
     CPTWorldEnvironment,
-    bounded_negative_log_residual_utility,
     build_balanced_training_rows,
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
@@ -23,34 +20,11 @@ from cpt_world import (
 
 
 class TRLEnvironmentAdapterTests(unittest.TestCase):
-    def test_bounded_log_residual_utility_preserves_endpoints_and_expands_ceiling(self) -> None:
-        epsilon = DEFAULT_ADVANTAGE_UTILITY_EPSILON
-
-        self.assertEqual(bounded_negative_log_residual_utility(0.0), 0.0)
-        self.assertEqual(bounded_negative_log_residual_utility(1.0), 1.0)
-        self.assertLess(
-            bounded_negative_log_residual_utility(0.95),
-            bounded_negative_log_residual_utility(0.99),
-        )
-        self.assertGreater(
-            bounded_negative_log_residual_utility(0.99, epsilon=epsilon)
-            - bounded_negative_log_residual_utility(0.95, epsilon=epsilon),
-            0.99 - 0.95,
-        )
-
-    def test_shortcut_calibrated_numeric_and_mediator_rewards_enter_grpo_unchanged(self) -> None:
+    def test_all_terminal_rewards_enter_grpo_unchanged(self) -> None:
         raw = 0.95
 
-        for query_type in (
-            "ate",
-            "individual_counterfactual_probability",
-            "best_intervention",
-            "mediator_set",
-        ):
+        for query_type in TASK_FAMILY_QUERY_TYPES:
             self.assertEqual(task_advantage_utility(raw, query_type), raw)
-        for query_type in CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES:
-            with self.subTest(query_type=query_type):
-                self.assertNotEqual(task_advantage_utility(raw, query_type), raw)
 
     def test_trl_advantage_utility_reads_owner_rewards_and_logs_both_values(self) -> None:
         class RewardOwner:
@@ -61,7 +35,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
                 return self.reward
 
         logged: list[tuple[str, float]] = []
-        reward_func = build_cpt_world_advantage_utility(epsilon=0.02)
+        reward_func = build_cpt_world_advantage_utility()
 
         utilities = reward_func(
             environments=[RewardOwner(0.95), RewardOwner(0.95)],
