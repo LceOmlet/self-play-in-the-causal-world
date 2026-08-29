@@ -1084,3 +1084,26 @@ experiments:
       them.  Preloading it would enlarge the first restricted master without
       removing most pricing rounds.  A diverse-looking feasible coupling pool
       is therefore not a supported solution to column-generation tailing.
+
+  - id: pricing-backend-structure-cross-profile
+    change: >
+      Cross the unchanged failed owner's pricing backend with affected
+      mechanism count, changed-parent width, convergence, direct-outcome
+      structure, terminal reduction, objective sense, and master size.  Report
+      only aggregate structural signatures.
+    aggregate:
+      no_pricing_map:
+        count: 3
+        affected_mechanisms: [3, 4, 4]
+        all_have_convergence: true
+        all_master_variables_greater_than_5000: true
+      min_sum_only: {count: 2}
+      scip_fallback: {count: 2}
+    decision: continue_with_global_width_hypothesis
+    reason: >
+      The three owners that never reach pricing share a complete structural
+      obstruction: three or four affected mechanisms, causal convergence, and
+      a master larger than 5,000 variables.  Their terminal and direct-edge
+      forms differ, so no terminal special case covers the class.  The next
+      candidate must reduce the convergence circuit or strengthen its
+      factorization without relying on a query endpoint pattern.

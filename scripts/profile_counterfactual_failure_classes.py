@@ -1034,6 +1034,7 @@ def main() -> None:
     failure_high_arity_term_fraction = Counter[str]()
     failure_linear_auxiliary_fraction = Counter[str]()
     phase_column_sums = Counter[str]()
+    failure_backend_structure = Counter[str]()
 
     for sample_index in range(
         DISTRIBUTION_START_SEED,
@@ -1123,6 +1124,24 @@ def main() -> None:
                     else "no_pricing_map"
                 )
                 failure_pricing_backend[pricing_backend] += 1
+                failure_backend_structure[
+                    "|".join(
+                        (
+                            pricing_backend,
+                            f"mechanisms_{structure['affected_mechanisms']}",
+                            f"changed_parents_{structure['max_changed_parents']}",
+                            f"convergence_{structure['has_convergence']}",
+                            f"direct_{structure['direct_terminal']}",
+                            f"terminal_{failed['terminal_endpoint']}",
+                            f"sense_{failed['sense']}",
+                            "variables_"
+                            + _bucket(
+                                failed["master_variables"],
+                                (100, 500, 1000, 2500, 5000),
+                            ),
+                        )
+                    )
+                ] += 1
                 failure_static_response_columns[
                     _bucket(
                         failed["static_response_columns"],
@@ -1311,6 +1330,9 @@ def main() -> None:
         "unresolved_generated_columns": dict(sorted(failure_generated_columns.items())),
         "unresolved_pricing_rounds": dict(sorted(failure_pricing_rounds.items())),
         "unresolved_pricing_backend": dict(sorted(failure_pricing_backend.items())),
+        "unresolved_pricing_backend_structure": dict(
+            sorted(failure_backend_structure.items())
+        ),
         "unresolved_normalized_gap": dict(sorted(failure_normalized_gap.items())),
         "unresolved_tolerance_gap_ratio": dict(
             sorted(failure_tolerance_gap_ratio.items())

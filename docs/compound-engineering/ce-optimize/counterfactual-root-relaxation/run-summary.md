@@ -401,3 +401,12 @@ owners it would add 17,961 columns, yet it contained only 59 of the 522 columns
 later requested by exact pricing.  The 11.3 percent coverage at a 34-fold
 candidate-to-generated ratio rejects speculative initial-column diversity as
 a remedy for pricing tailing; no warm columns were added to production.
+
+Pricing state was then crossed with graph structure.  All three owners that
+never invoke a pricing MAP have three or four affected mechanisms, causal
+convergence, and more than 5,000 master variables.  Their direct-outcome and
+terminal-reduction forms differ, ruling out another endpoint-specific fast
+path.  This isolates one coherent remaining class: a wide convergence circuit
+whose first global LP consumes the allowance.  Any next candidate for that
+class must change the uniform factorization or exact elimination of the
+convergence circuit, not pricing or terminal routing.
