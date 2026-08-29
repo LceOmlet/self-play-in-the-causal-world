@@ -392,3 +392,27 @@ experiments:
       Extra improving columns enlarged the nonlinear master without completing
       pricing or moving the lagging global dual.  Incomplete pricing is a
       consequence of the root solve, not a one-column-per-round bottleneck.
+
+  - id: exact-junction-tree-response-polytope
+    change: >
+      Triangulate each cyclic response-context graph and replace its complete
+      response table by exact clique marginals with junction-separator
+      consistency.  Running intersection makes this an exact projection of a
+      full response-function law, with size exponential in induced graph width
+      instead of context count.
+    parity: focused solver regression passed 26/26
+    variants:
+      - maximum_bag_cells: 100000
+        distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+        total_seconds: 485.7673035999178
+        p95_seconds: 152.1899715999607
+      - maximum_bag_cells: 3125
+        distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+        total_seconds: 460.41418419993715
+        p95_seconds: 176.68443910003407
+    decision: reject
+    reason: >
+      Exact local response expansion removed no frozen failure and made the
+      global nonlinear master substantially slower at both existing resource
+      boundaries.  The remaining gap is cross-mechanism, not a missing compact
+      owner for one cyclic response polytope.

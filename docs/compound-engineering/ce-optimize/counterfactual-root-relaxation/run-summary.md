@@ -132,3 +132,10 @@ augmented by every rigorously improving Hamming-one neighbor.  Closure remained
 the nonlinear master accumulated more columns.  The incomplete pricing state
 is therefore downstream of the root bottleneck rather than evidence that
 one-column pricing rounds are the bottleneck.
+
+An exact junction-tree response formulation then replaced cyclic local
+response tables by clique marginals and separator consistency.  The 100,000-
+cell and existing 3,125-cell explicit boundaries both remained at 23/30, with
+P95 latency increasing to 152.19 and 176.68 seconds respectively.  Compactly
+closing one local marginal polytope therefore does not close the global
+cross-mechanism relaxation and is too expensive as an explicit master.
