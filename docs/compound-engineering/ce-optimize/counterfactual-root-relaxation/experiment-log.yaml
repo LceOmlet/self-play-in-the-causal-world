@@ -515,3 +515,21 @@ experiments:
     reason: >
       Cross-row edge-concave aggregation added no certificate and substantially
       worsened tail latency.
+
+  - id: factual-event-complement-partition
+    change: >
+      For every joint individual-counterfactual owner, build only the disjoint
+      complement inside the factual event and impose the exact identity
+      P(A and B) + P(A and not B) = P(A), where the single-world factual mass
+      is fixed by the CPT-World.  This replaces the earlier two-complement
+      partition of the full twin outcome space by one directly relevant
+      auxiliary circuit.
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 419.17202680004993
+    p95_seconds: 43.14709489996312
+    decision: reject
+    reason: >
+      The conditional partition is exact and substantially cheaper than the
+      earlier full two-complement construction, but duplicating even one full
+      elimination circuit added no frozen certificate.

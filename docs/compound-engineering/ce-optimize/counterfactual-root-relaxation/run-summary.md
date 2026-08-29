@@ -173,3 +173,12 @@ quadratic rows also kept closure at 23/30 and raised P95 latency to 151.65
 seconds.  Generic product-hypergraph and signed-cycle inequalities therefore do
 not propagate the response-marginal equalities through the elimination layers;
 the next candidate must target that missing equality structure directly.
+
+The individualized conditioning event exposes a cheaper conservation identity:
+the target joint mass plus its counterfactual complement within the same
+factual event equals the known factual mass.  A one-complement implementation
+passed 70 focused tests (one skip) and reduced the duplicate-circuit P95 from
+the earlier 151.39 seconds to 43.15 seconds, but closure remained 23/30 and
+total runtime remained above baseline at 419.17 seconds.  The identity is exact
+but still cannot be materialized as another full circuit; any further use must
+separate its consequence implicitly in the existing graph.
