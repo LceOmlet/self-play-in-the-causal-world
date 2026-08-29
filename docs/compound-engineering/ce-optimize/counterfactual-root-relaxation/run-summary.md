@@ -219,3 +219,12 @@ remaining 115,200 contain two products that never share a kernel row or
 column, and therefore no projectable row/column subset exists.  This closes
 both implementations of message RLT before solver development rather than
 repeating the earlier Cartesian-product failure.
+
+An exact transport-coordinate formulation next removed the row/column linear
+redundancy before nonlinear elimination.  Each forest table retained a free
+block and one pivot variable, while every other entry became an affine function
+of the fixed CPT marginals.  The representation passed all focused owner
+comparisons, but closure stayed 23/30 and P95 rose to 153.61 seconds because
+the dependent entries expanded inside downstream products.  The missing dual
+strength therefore belongs to the joint transport/message convex hull, not to
+the coordinate description of one transport polytope.

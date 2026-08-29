@@ -614,3 +614,21 @@ experiments:
       while no existing product subset shares a response-kernel row or column.
       Consequently an exact zero-expansion projection has no inequality to add,
       and a complete expansion is outside the five-second regime.
+
+  - id: affine-transport-coordinate-elimination
+    change: >
+      Replace every d-by-d forest transport table by an exactly equivalent
+      free block with (d-1)^2 variables, recover the non-pivot row and column
+      entries affinely from their fixed marginals, and retain one pivot entry
+      with the two remaining balance equalities.  The pivot is selected by the
+      largest row and column marginal, independently of sample identity.
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 484.6004937001853
+    p95_seconds: 153.6062426000135
+    decision: reject
+    reason: >
+      The coordinate map preserves the complete transport polytope but expands
+      dependent kernel entries into affine products inside elimination.  It
+      added no frozen certificate and substantially worsened tail latency, so
+      local linear-coordinate redundancy is not the closure bottleneck.
