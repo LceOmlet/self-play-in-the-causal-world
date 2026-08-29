@@ -125,6 +125,16 @@ experiments:
     p95_seconds: 56.70978600002127
     decision: reject_for_closure_goal
     reason: large circuit-size and runtime reductions did not increase closure
+    tolerance_recheck:
+      conditional_endpoint_tolerance: 0.001
+      distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+      total_seconds: 177.3118135999539
+      closure_contingency:
+        both_closed: 23
+        baseline_only: 0
+        candidate_only: 0
+        both_unresolved: 7
+      decision: reject
 
   - id: bilinear-aware-order-plus-message-lower-bounds
     distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}

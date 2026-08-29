@@ -117,3 +117,10 @@ eligible frozen subcohort, however, closure fell from 5/6 to 4/6 and measured
 runtime rose from 13.74 to 27.27 seconds.  Repeated state-specific model builds
 cost more than the decomposition removed, so this exact route was rejected
 before a full-cohort run.
+
+The earlier bilinear-aware elimination order was then rebuilt under the final
+0.001 endpoint tolerance.  It again reduced runtime (177.31 seconds for the
+frozen cohort) but remained at 23/30.  An anonymous instance-level contingency
+showed 23 tasks closed by both formulations, no exclusive certificate on
+either side, and seven common failures.  The smaller circuit therefore cannot
+be used as a formulation portfolio to expand closure.
