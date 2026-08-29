@@ -256,3 +256,13 @@ even when placed directly in the shared product layer.  A subsequent anonymous
 cross-profile placed its sole covered owner more than 100 times outside the
 accepted endpoint gap, ruling out an unsupported combination experiment with
 the previously faster elimination order.
+
+A recursive message-envelope prototype next replaced generic intermediate
+boxes by exact local transport extrema.  Its min-cost transport primitive
+enclosed 80 random two- through five-state SCIP reference problems with only a
+1.01e-8 outward numerical margin, and all focused endpoint values matched.
+However, even a build-only frozen probe that stopped before SCIP optimization
+failed to finish within 180 seconds.  Repeating one transport solve per message
+cell is therefore the wrong granularity: it moves computation outside the
+endpoint timer instead of reducing the global owner.  The prototype and its
+single internal-count regression were removed before a cohort result was used.

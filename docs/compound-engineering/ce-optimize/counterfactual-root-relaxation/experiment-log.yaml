@@ -703,3 +703,27 @@ experiments:
       product/message relation.  The sole covered owner remained more than
       100 times outside its accepted endpoint gap, so compounding this lift
       with unrelated runtime optimizations has no evidence-based rationale.
+
+  - id: recursive-transport-message-envelopes
+    change: >
+      Propagate lower and upper bounds through every elimination message by
+      treating each affected-node contraction as a complete child-state
+      transportation problem.  The downstream interval endpoints become the
+      transport costs, yielding valid local extrema without enumerating a
+      deterministic response table.
+    parity: >
+      Eighty random two- through five-state transport costs were enclosed
+      outward relative to the exact SCIP transport owner by at most 1.01e-8.
+      All focused numerical endpoints matched; one regression failed only its
+      postsolve internal-constraint-count assertion (13 versus 11).
+    build_probe: >
+      A no-optimization probe that stopped immediately after constructing the
+      first sparse owner per frozen task still exceeded 180 seconds before
+      completing the 30-task cohort.
+    decision: reject_before_cohort
+    reason: >
+      Re-solving a small transport problem for every message cell turns a
+      locally polynomial bound into excessive aggregate construction work and
+      lets preprocessing evade the endpoint budget.  The incomplete full
+      cohort was terminated after exceeding twice the baseline wall time; no
+      candidate code or test change was retained.
