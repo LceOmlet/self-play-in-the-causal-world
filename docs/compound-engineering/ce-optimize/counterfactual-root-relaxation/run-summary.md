@@ -150,3 +150,11 @@ P95 to 108.60 seconds, while propagating the lower bounds through elimination
 messages raised P95 to 51.91 seconds; neither closed the near endpoint.  The
 remaining missing information is therefore joint shared-mechanism consistency,
 not another entrywise kernel or message bound.
+
+A full twin-outcome partition then added two disjoint complement circuits and
+the exact identity that target plus complements equals one.  Restricting this
+to static-response joint owners preserved the branch-and-price lifecycle and
+passed 71 focused tests, but closure again remained 23/30 while P95 rose to
+151.39 seconds.  Outcome conservation is therefore too costly when represented
+by duplicate circuits; any useful higher-order consistency must be generated
+implicitly.

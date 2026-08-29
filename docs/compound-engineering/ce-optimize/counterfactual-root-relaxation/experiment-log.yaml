@@ -454,3 +454,21 @@ experiments:
       message boxes both increased work without closing the remaining factor-2
       endpoint.  The missing relaxation is higher-order shared-mechanism
       consistency rather than another scalar bound.
+
+  - id: full-twin-outcome-partition-consistency
+    change: >
+      On static-response joint owners, build two disjoint complement outcome
+      rectangles with the same response mechanisms and enforce that the target
+      rectangle plus both complements sums to one.  This adds a higher-order
+      cross-mechanism probability-conservation identity without changing the
+      target event or compatible SCM set.
+    parity: focused solver, query, and scoring regression passed 71/71 with one skip
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 427.608200900082
+    p95_seconds: 151.39090930001112
+    decision: reject
+    reason: >
+      Duplicating the two complement circuits made the static nonlinear master
+      substantially larger but did not move a frozen endpoint into tolerance.
+      Full outcome conservation is valid but must be separated implicitly, not
+      materialized as two additional arithmetic circuits.
