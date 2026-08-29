@@ -830,3 +830,29 @@ experiments:
       the third does not close within its five-second pricing allowance.
       Running this precheck in production would therefore remove no failed
       terminal mechanism and only consume endpoint time.
+
+  - id: response-pricing-exact-treewidth-and-forbidden-map
+    change: >
+      Trace every exact pairwise response-MAP call reached by frozen unresolved
+      tasks.  Compare the production greedy min-fill width with exact treewidth
+      from a subset dynamic program, and separately measure generic SCIP
+      fallbacks caused by excluding response columns already present in the
+      master.
+    aggregate_coverage:
+      unresolved: 7
+      pricing_calls: 2123
+      direct_min_sum_calls: 2014
+      greedy_width_fallback_calls: 0
+      forbidden_response_fallback_calls: 109
+      forbidden_sizes: {le_32: 13, le_128: 58, le_512: 38}
+      forbidden_status: {optimal: 108, timelimit: 1}
+      forbidden_seconds_total: 2.667447400162928
+      forbidden_seconds_max: 0.08269479998853058
+    decision: reject_before_implementation
+    reason: >
+      Greedy min-fill never caused a failed-task fallback, so exact treewidth
+      cannot recover a missing dynamic-programming fast path.  Every fallback
+      was finite-column exclusion repricing; 108 of 109 calls solved optimally,
+      no call took 0.1 seconds, and their aggregate work was only 2.67 seconds
+      across all seven unresolved tasks.  A k-best or forbidden-set MAP owner
+      would improve a small constant cost but not the lagging global dual.

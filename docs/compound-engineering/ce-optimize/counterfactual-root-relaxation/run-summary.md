@@ -299,3 +299,12 @@ while distinct contexts take their pointwise Frechet optimum.  It certified
 two patterns infeasible and left one unresolved, with no attainable failed
 owner.  Terminal pre-elimination therefore has zero remaining coverage and was
 not added to the production path.
+
+The response-pricing fallback was then isolated from the global owner.  Across
+the seven unresolved tasks, 2,014 of 2,123 pairwise MAP calls already used the
+exact min-sum path.  Exact treewidth found no call where greedy min-fill had
+forced a generic fallback.  All 109 fallbacks instead excluded response columns
+already in the master; 108 solved optimally, their maximum time was 0.083
+seconds, and their total was 2.67 seconds.  Replacing this finite-forbidden-set
+MAP would only remove a small constant cost, so pricing is now ruled out as the
+remaining closure bottleneck.
