@@ -139,3 +139,14 @@ cell and existing 3,125-cell explicit boundaries both remained at 23/30, with
 P95 latency increasing to 152.19 and 176.68 seconds respectively.  Compactly
 closing one local marginal polytope therefore does not close the global
 cross-mechanism relaxation and is too expensive as an explicit master.
+
+The final scalar-bound audit added the exact Frechet lower bound to every
+pair-response kernel.  Alone it cut total runtime to 194.48 seconds; combined
+with bilinear-aware elimination it reached 138.61 seconds and P95 17.71
+seconds.  The latter also reduced failures more than 100 times outside the
+accepted gap from four to two and left one endpoint within a factor of two.
+Closure nevertheless stayed 23/30.  Adding official projected/hidden RLT raised
+P95 to 108.60 seconds, while propagating the lower bounds through elimination
+messages raised P95 to 51.91 seconds; neither closed the near endpoint.  The
+remaining missing information is therefore joint shared-mechanism consistency,
+not another entrywise kernel or message bound.
