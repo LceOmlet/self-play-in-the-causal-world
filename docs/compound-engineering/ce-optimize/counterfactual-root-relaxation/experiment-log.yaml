@@ -472,3 +472,46 @@ experiments:
       substantially larger but did not move a frozen endpoint into tolerance.
       Full outcome conservation is valid but must be separated implicitly, not
       materialized as two additional arithmetic circuits.
+
+  - id: binary-forest-credal-fast-path-coverage
+    change: >
+      Before implementing a 2U or forest-message owner, classify the complete
+      frozen cohort by relabeling-invariant response-context structure while
+      retaining the unchanged exact owner solely to label closure.
+    aggregate_coverage:
+      unresolved: 7
+      all_binary: 0
+      all_response_components_forest: 0
+      all_binary_and_forest: 0
+      terminal_reduced_lower_binary_and_forest: 0
+      terminal_reduced_upper_binary_and_forest: 0
+    decision: reject_before_implementation
+    reason: >
+      The polynomial binary-polytree and exact forest-coupling classes cover no
+      unresolved endpoint, so they cannot improve the frozen closure metric.
+
+  - id: upstream-continuous-product-flower-cuts
+    change: >
+      Enable SCIP's official flower separator on the existing continuous
+      product expressions.  This adds valid multilinear-polytope consistency
+      inequalities without changing the model or compatible mechanisms.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 438.3747823997983
+    p95_seconds: 153.25630989996716
+    decision: reject
+    reason: >
+      Product-hypergraph flower cuts added no certificate and consumed most of
+      the root budget on the tail.
+
+  - id: upstream-edge-concave-row-aggregation
+    change: >
+      Enable SCIP's official edge-concave separator with its upstream default
+      aggregation and cut parameters, allowing multiple quadratic rows to
+      expose odd signed cycles absent from each matching-shaped row alone.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 430.3364586997777
+    p95_seconds: 151.6453231999767
+    decision: reject
+    reason: >
+      Cross-row edge-concave aggregation added no certificate and substantially
+      worsened tail latency.

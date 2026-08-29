@@ -158,3 +158,18 @@ passed 71 focused tests, but closure again remained 23/30 while P95 rose to
 151.39 seconds.  Outcome conservation is therefore too costly when represented
 by duplicate circuits; any useful higher-order consistency must be generated
 implicitly.
+
+The next structural audit ruled out a tempting but irrelevant exact fast path.
+None of the seven unresolved instances is fully binary, none has only forest
+response-context components, and neither terminal-endpoint reduction leaves a
+binary forest instance.  Exact 2U-style propagation or binary transport
+enumeration therefore has zero coverage of the remaining closure gap.
+
+Two upstream separators that had not been covered by the earlier RLT and minor
+experiments were then tested without local tuning.  Enabling SCIP's flower
+separator on continuous product expressions kept closure at 23/30 and raised
+P95 latency to 153.26 seconds.  Enabling the edge-concave separator to aggregate
+quadratic rows also kept closure at 23/30 and raised P95 latency to 151.65
+seconds.  Generic product-hypergraph and signed-cycle inequalities therefore do
+not propagate the response-marginal equalities through the elimination layers;
+the next candidate must target that missing equality structure directly.
