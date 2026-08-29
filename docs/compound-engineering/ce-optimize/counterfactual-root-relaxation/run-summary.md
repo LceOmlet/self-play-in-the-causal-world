@@ -355,3 +355,12 @@ the same seven structural failure buckets, while the tail slowed.  Fewer
 products did not mean a tighter relaxation: the signed contrast has a wider
 safe interval than the four original nonnegative probability factors.  This
 binary algebraic route was also removed.
+
+A compact redundant version was then tested to preserve the original four
+nonnegative products while adding one common-coordinate contraction identity.
+It passed all 26 focused tests, but frozen closure again remained 23/30 with
+the same seven unresolved structural buckets and a materially slower long
+tail.  This rules out the missing binary transport degree of freedom as a
+standalone source of a new certificate: even an exact compact identity remains
+local to one message expression and does not enforce the unresolved
+cross-mechanism consistency.  The lift was removed from the candidate branch.

@@ -975,3 +975,23 @@ experiments:
       interval is substantially wider.  Its root relaxation is no stronger
       and the cohort tail became visibly slower, so algebraic compression does
       not solve the shared-mechanism consistency gap.
+
+  - id: compact-binary-transport-identity
+    change: >
+      Retain the original four nonnegative transport/message products and add
+      one exact redundant contraction identity per full binary state-pair
+      output.  The identity uses the transport's single free coordinate and a
+      normalized downstream-message contrast, so it tests whether the compact
+      common-coordinate relation can strengthen the original relaxation
+      without materializing the 43,056 missing binary RLT products.
+    parity: counterfactual-solver tests passed 26/26 in 10.6 seconds
+    distribution: {closed: 23, unresolved: 7}
+    decision: reject
+    reason: >
+      The frozen cohort retained exactly the baseline closure count and the
+      same seven unresolved structural buckets, while its long tail was
+      materially slower.  Binding each contraction output to a common binary
+      transport coordinate is therefore still only local to one message
+      expression; it does not add the cross-mechanism consistency needed by
+      any unresolved endpoint.  The redundant lift was removed and the
+      production solver remains unchanged.
