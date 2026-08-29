@@ -588,3 +588,29 @@ experiments:
       root budget on the tail.  Generic product-matrix consistency still does
       not transmit the response-function marginal equalities through nested
       elimination messages.
+
+  - id: response-marginal-message-rlt-coverage
+    change: >
+      Inspect every original kernel-times-message product in the unchanged
+      failed owners.  For each response-kernel transport table and message,
+      count the Cartesian completion needed to multiply the exact kernel row
+      and column marginals by that message, and separately count same-row or
+      same-column subsets that could be projected without adding products.
+      The reusable profiler emits aggregates only.
+    aggregate_coverage:
+      unresolved: 7
+      product_groups: 534692
+      existing_products: 649892
+      required_complete_products: 6369908
+      missing_complete_products: 5720016
+      missing_products_per_owner_p50: 172800
+      missing_products_per_owner_p95: 2692800
+      groups_with_one_existing_product: 419492
+      groups_with_two_existing_products: 115200
+      projectable_same_row_or_column_subsets: 0
+    decision: reject_before_implementation
+    reason: >
+      Complete message RLT is larger than the already rejected explicit lifts,
+      while no existing product subset shares a response-kernel row or column.
+      Consequently an exact zero-expansion projection has no inequality to add,
+      and a complete expansion is outside the five-second regime.

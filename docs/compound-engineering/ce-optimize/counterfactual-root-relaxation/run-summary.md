@@ -208,3 +208,14 @@ semidefinite inequalities.  This stronger rank-one treatment also remained at
 23/30, while P95 rose to 152.47 seconds.  Both generic second-order routes have
 therefore been exhausted: the next candidate must explicitly reuse the linear
 response-marginal equalities at the elimination-message level.
+
+A dedicated aggregate profiler then measured that proposed
+response-marginal/message lift before implementation.  Across the seven failed
+owners, completing the exact row- and column-marginal products would require
+6,369,908 products, of which 5,720,016 are absent; the per-owner missing count
+has median 172,800 and P95 2,692,800.  A zero-expansion projection is also
+impossible: 419,492 kernel/message groups contain one existing product, the
+remaining 115,200 contain two products that never share a kernel row or
+column, and therefore no projectable row/column subset exists.  This closes
+both implementations of message RLT before solver development rather than
+repeating the earlier Cartesian-product failure.
