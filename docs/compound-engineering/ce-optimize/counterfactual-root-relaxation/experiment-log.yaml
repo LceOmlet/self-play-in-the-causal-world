@@ -108,3 +108,75 @@ experiments:
       Both the combined candidate and the forest-only variant exceeded 60
       seconds in the focused exact-owner suite; the alternative LP basis made
       pricing or root processing substantially slower.
+
+  - id: bilinear-aware-elimination-order
+    shadow:
+      unresolved_nonlinear_term_ratio_median: 0.1890909090909091
+      unresolved_nonlinear_term_ratio_max: 0.47368421052631576
+      unresolved_bilinear_aux_ratio_median: 0.0823045267489712
+      unresolved_bilinear_aux_ratio_max: 0.39285714285714285
+      unresolved_peak_bilinear_aux_ratio_median: 0.08
+      unresolved_peak_bilinear_aux_ratio_max: 0.5
+    change: >
+      Select exact variable-elimination steps by immediate bilinear term count
+      before using message size as the deterministic tie-breaker.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 171.38869850017363
+    p95_seconds: 56.70978600002127
+    decision: reject_for_closure_goal
+    reason: large circuit-size and runtime reductions did not increase closure
+
+  - id: bilinear-aware-order-plus-message-lower-bounds
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 212.6318019000464
+    p95_seconds: 59.12437949999003
+    decision: reject
+    reason: the complementary size and box-bound improvements had no closure gain
+
+  - id: upstream-external-spatial-branching
+    change: >
+      Let SCIP register nonlinear external branching candidates for its generic
+      branching rules.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 421.3550205999054
+    p95_seconds: 147.83756170002744
+    decision: reject
+    reason: no closure gain and no reduction of the root-dominated tail
+
+  - id: bilinear-aware-order-plus-external-branching
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 172.995445299719
+    p95_seconds: 56.549373999994714
+    decision: reject
+    reason: shrinking the circuit did not make spatial branching certify another task
+
+  - id: attained-outer-endpoint-certificate
+    change: >
+      Certify exactness when a feasible primal mechanism attains the globally
+      valid target outer endpoint.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 295.6956551000476
+    p95_seconds: 25.016723300039303
+    decision: reject_for_closure_goal
+    reason: none of the unresolved feasible primal values attained an outer endpoint
+
+  - id: outer-primal-epsilon-certificate
+    change: >
+      Use the safe bracket between a global outer endpoint and a feasible
+      primal mechanism when its width is within the unchanged endpoint
+      tolerance.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 478.6822940001148
+    p95_seconds: 161.62175580003532
+    decision: reject_for_closure_goal
+    reason: no unresolved outer-primal bracket was within the existing tolerance
+
+  - id: upstream-projected-hidden-rlt
+    change: >
+      Enable projected-row checks, hidden-product detection, hidden RLT cuts,
+      and auxiliary-row participation in SCIP's official RLT separator.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 315.8057668999536
+    p95_seconds: 29.129727699968498
+    decision: reject
+    reason: stronger official RLT separation did not increase closure

@@ -28,3 +28,14 @@ circuit itself without expanding its affine subexpressions. Additional solver
 toggles, scalar message bounds, response pricing changes, redundant-row
 removal, and small-block routing are no longer supported by the aggregate
 evidence as routes to higher closure.
+
+A subsequent bilinear-aware ordering reduced the unresolved cohort's median
+bilinear auxiliary count to 8.23% of the baseline and cut aggregate runtime to
+171.39 seconds, but closure remained 23/30. Combining that formulation with
+message lower bounds or external spatial branching also left closure
+unchanged. Exact and epsilon certificates based on attained global outer
+endpoints found no additional certifiable task. Finally, SCIP's projected and
+hidden-product RLT path produced no closure gain. These results separate model
+size from relaxation strength: the remaining obstacle is the joint convex
+relaxation across shared bilinear mechanism messages, not merely the number of
+products, root branching policy, or an unused termination certificate.
