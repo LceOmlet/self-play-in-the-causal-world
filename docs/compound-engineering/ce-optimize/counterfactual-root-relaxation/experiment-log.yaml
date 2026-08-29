@@ -689,6 +689,7 @@ experiments:
       strict_products_per_owner_p50: 0
       strict_products_per_owner_p95: 129000
       strict_products_per_owner_max: 129000
+      strict_owner_tolerance_gap_ratio: {gt_100: 1}
     parity: focused solver, query, and scoring regression passed 70/70 with one skip
     distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
     total_seconds: 353.7525890999823
@@ -699,4 +700,6 @@ experiments:
       focused endpoints but added no frozen certificate and worsened runtime.
       Exact local cycle support is therefore not the missing global root
       convexification, even when transmitted directly to every affected
-      product/message relation.
+      product/message relation.  The sole covered owner remained more than
+      100 times outside its accepted endpoint gap, so compounding this lift
+      with unrelated runtime optimizations has no evidence-based rationale.

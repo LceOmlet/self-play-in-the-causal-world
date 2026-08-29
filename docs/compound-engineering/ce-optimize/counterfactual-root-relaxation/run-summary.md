@@ -252,4 +252,7 @@ in one structurally eligible failed owner, with no identity-based selection.
 Adding all 23,600 perspective rows passed the focused endpoint suite but again
 left closure at 23/30, while total time rose to 353.75 seconds and P95 to 33.98
 seconds.  The candidate was removed: local cycle-support facets remain too weak
-even when placed directly in the shared product layer.
+even when placed directly in the shared product layer.  A subsequent anonymous
+cross-profile placed its sole covered owner more than 100 times outside the
+accepted endpoint gap, ruling out an unsupported combination experiment with
+the previously faster elimination order.

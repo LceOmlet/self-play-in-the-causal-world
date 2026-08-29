@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import statistics
 import time
 from collections import Counter
@@ -428,9 +429,19 @@ def _trace(calls: list[dict[str, Any]]) -> Iterator[None]:
 
     def traced(self: Any, *args: Any, **kwargs: Any) -> tuple[float, float]:
         record = _model_rlt_coverage(self)
+        record["accepted_absolute_gap"] = float(
+            kwargs.get("accepted_absolute_gap", 0.0)
+        )
         try:
             result = original(self, *args, **kwargs)
-        except RuntimeError:
+        except RuntimeError as exc:
+            message = str(exc)
+            for field in ("primal", "dual"):
+                match = re.search(rf"{field}=([^, )]+)", message)
+                try:
+                    record[field] = float(match.group(1)) if match else None
+                except ValueError:
+                    record[field] = None
             record["outcome"] = "failed"
             calls.append(record)
             raise
@@ -472,6 +483,7 @@ def main() -> None:
     local_cyclic_owner_group_size_histogram = Counter[str]()
     missing_per_owner: list[int] = []
     strict_cyclic_products_per_owner: list[int] = []
+    strict_owner_tolerance_ratio = Counter[str]()
     for sample_index in range(
         DISTRIBUTION_START_SEED,
         DISTRIBUTION_START_SEED + DISTRIBUTION_COUNT,
@@ -548,6 +560,27 @@ def main() -> None:
             strict_cyclic_products_per_owner.append(
                 failed["strict_cyclic_product_occurrences"]
             )
+            if failed["strict_cyclic_product_occurrences"]:
+                primal = failed["primal"]
+                dual = failed["dual"]
+                accepted_gap = failed["accepted_absolute_gap"]
+                if primal is None or dual is None or accepted_gap <= 0.0:
+                    strict_owner_tolerance_ratio["unreported"] += 1
+                else:
+                    ratio = abs(primal - dual) / accepted_gap
+                    if ratio <= 1.0:
+                        bucket = "le_1"
+                    elif ratio <= 2.0:
+                        bucket = "le_2"
+                    elif ratio <= 5.0:
+                        bucket = "le_5"
+                    elif ratio <= 10.0:
+                        bucket = "le_10"
+                    elif ratio <= 100.0:
+                        bucket = "le_100"
+                    else:
+                        bucket = "gt_100"
+                    strict_owner_tolerance_ratio[bucket] += 1
             sums["cyclic_upper_improvement_sum"] += failed[
                 "cyclic_upper_improvement_sum"
             ]
@@ -626,6 +659,9 @@ def main() -> None:
         ),
         "failed_owner_strict_cyclic_products_max": max(
             strict_cyclic_products_per_owner
+        ),
+        "strict_cyclic_owner_tolerance_ratio": dict(
+            sorted(strict_owner_tolerance_ratio.items())
         ),
     }
     print(json.dumps(payload, sort_keys=True))
