@@ -4,38 +4,44 @@
 
 Increase exact or epsilon-sharp individual-counterfactual closure on the frozen
 distribution while preserving CPT-World generation, task/query/reward
-semantics, the Markovian compatible-SCM set, the 0.002 endpoint tolerance, the
-five-second per-endpoint allowance, and formal-regression closure. Every
-optimization must apply to a renaming- and graph-isomorphism-invariant instance
-class; finite-case and seed-specific optimization is forbidden.
+semantics, the Markovian compatible-SCM set, the 0.001 conditional endpoint
+tolerance, the five-second per-endpoint allowance, fallback behavior, and
+formal-regression closure. Every optimization applies to a renaming- and
+graph-isomorphism-invariant mathematical instance class.
 
-## Baseline and final best
+## Result
 
-| Cohort | Baseline | Final best |
-|---|---:|---:|
-| Distribution | 23/30 | 23/30 |
-| Formal regression | 20/30 | 20/30 |
+| Cohort | Baseline | Retained solver | Repeats |
+|---|---:|---:|---:|
+| Frozen distribution | 23/30 | 24/30 | 3/3 |
+| Formal regression | 20/30 | 20/30 | 3/3 |
 
-No candidate produced a stable closure gain, so baseline remains the best and
-all solver candidates were reverted.
+The retained result contains 22 exact and two epsilon-sharp frozen endpoints;
+formal regression contains 18 exact and two epsilon-sharp endpoints. The
+related suite passed 132 tests with one existing skip, and the focused
+counterfactual suite passed 26/26.
 
-## Tested hypotheses
+## Retained mechanism
 
-1. Exact direct-only shared-parent Frechet mixture: exact, but only accelerated
-   already-closed instances.
-2. Pre-model constant-zero direct lower certificate: did not reduce unresolved
-   count and regressed one formal sample.
-3. Exact priced routing for layered cases rejected by explicit objective-size
-   estimation: primary closure stayed unchanged; formal evidence was within
-   the paired noise threshold.
-4. Exact globally affine and one-sided terminal endpoint certificates: both
-   cohorts stayed at baseline closure.
+Each twin-world elimination message has two fixed one-world marginals under
+the supplied CPT-World. Their Frechet interval is therefore a valid bound on
+the joint message for every compatible Markovian SCM. The aggregate profiler
+found 90,431 stricter upper bounds and 16,428 positive lower bounds among
+145,174 message cells. This strengthening alone stayed at 23/30.
 
-## Evidence-based next boundary
+For dynamic response blocks, every completed exact root pricing round also
+provides the minimum reduced cost over every omitted deterministic response.
+Correcting each block's normalization dual by that minimum converts the
+restricted root LP bound into a rigorous full-master bound. Combining this
+bound with the feasible primal certified one additional endpoint within the
+unchanged conditional tolerance, raising frozen closure to 24/30.
 
-The current aggregate evidence rules out further work on these four fast-path
-families as a justified route to higher closure. The next phase must first
-classify unresolved endpoints by mathematical obstruction in aggregate:
-affected-mechanism count, context width, upstream transport vertex product,
-and the exact certification stage that fails. No additional solver change is
-supported until that classification identifies a closure-limiting class.
+The implementation never inspects seeds, labels, topology names, CPT
+fingerprints, or a finite failure list. The added certificate is reported as
+epsilon-sharp; incomplete pricing is never relabeled exact.
+
+## Cost
+
+The retained frozen runs took 359.32, 371.05, and 372.74 seconds in total, with
+P95 per-task wall times of 146.09, 146.93, and 146.89 seconds. The result is a
+closure improvement, not a global latency improvement.

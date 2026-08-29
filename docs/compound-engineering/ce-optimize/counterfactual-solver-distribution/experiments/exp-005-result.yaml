@@ -1,0 +1,55 @@
+experiment: 5
+hypothesis: projected-one-world-message-bounds-plus-root-pricing-certificate
+commit: 4742967
+contracts:
+  cpt_world_generation_unchanged: true
+  task_query_reward_semantics_unchanged: true
+  markovian_compatible_scm_set_unchanged: true
+  conditional_endpoint_tolerance: 0.001
+  scip_feasibility_tolerance: 1.0e-9
+  endpoint_seconds: 5.0
+  fallback_unchanged: true
+  case_specific_selection: false
+parity:
+  counterfactual_solver_tests: {passed: 26, failed: 0}
+  related_tests: {passed: 132, skipped: 1, failed: 0}
+  ruff: passed
+  complete_response_owner:
+    projected_message_endpoints_match: true
+    root_minimize_bound_encloses_exact_endpoint: true
+    root_maximize_bound_encloses_exact_endpoint: true
+shadow_profile:
+  message_cells: 145174
+  strict_upper_cells: 90431
+  positive_lower_cells: 16428
+  projected_bounds_only: {exact: 22, epsilon_sharp: 1, unresolved: 7}
+measurements:
+  distribution:
+    closed_rate_samples: [0.8, 0.8, 0.8]
+    exact_samples: [22, 22, 22]
+    epsilon_sharp_samples: [2, 2, 2]
+    unresolved_samples: [6, 6, 6]
+    total_wall_seconds:
+      - 359.3211148001137
+      - 371.0529847997823
+      - 372.7414930999512
+    p95_wall_seconds:
+      - 146.08932339999592
+      - 146.92628279997734
+      - 146.8913388000219
+  formal:
+    closed_rate_samples:
+      - 0.6666666666666666
+      - 0.6666666666666666
+      - 0.6666666666666666
+    exact_samples: [18, 18, 18]
+    epsilon_sharp_samples: [2, 2, 2]
+    unresolved_samples: [10, 10, 10]
+decision: retain
+reason: >
+  Frozen closure improved reproducibly from 23/30 to 24/30 while formal
+  regression remained 20/30.  Every trigger is a relabeling-invariant
+  mathematical property of the full owner: one-world projection identities,
+  Frechet bounds, normalized response blocks, exact MAP reduced costs, and a
+  completed root pricing round.  No task identity or finite failure list enters
+  the solver.

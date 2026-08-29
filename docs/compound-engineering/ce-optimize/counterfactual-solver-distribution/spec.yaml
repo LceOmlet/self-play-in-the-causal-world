@@ -105,7 +105,7 @@ constraints:
     The optimization cohort is sampled by the unchanged WorldGrammar from
     indices 10000 through 10029. The formal regression cohort remains indices
     0 through 29. Both use the accepted five-second per-endpoint allowance and
-    0.002 conditional endpoint tolerance. These values are fixed for the run.
+    0.001 conditional endpoint tolerance. These values are fixed for the run.
   - >
     Diagnostic examples may reveal a general bottleneck, but no hypothesis may
     be proposed, tuned, or accepted from a seed identity or a finite failed-case list.

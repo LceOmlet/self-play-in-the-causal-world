@@ -282,15 +282,73 @@ experiments:
       structural coverage lies among already-closed instances, so the change
       was reverted.
 
+  - iteration: 5
+    batch: 5
+    hypothesis: >
+      Project every twin-world elimination message to its two fixed one-world
+      marginals, use their Frechet interval as the message box, and convert
+      each completed exact root pricing round into a full-master dual bound by
+      correcting the response-block normalization duals with the minimum
+      omitted-column reduced costs.
+    category: exact-relaxation-and-certificate
+    outcome: retained
+    result_file: experiments/exp-005-result.yaml
+    gates:
+      focused_tests_passed: 1
+      semantic_parity_passed: 1
+      immutable_contract_passed: 1
+      anti_case_specific_scan_passed: 1
+    gates_passed: true
+    metrics:
+      distribution_closed_rate:
+        aggregate: 0.8
+        samples: [0.8, 0.8, 0.8]
+      formal_regression_closed_rate:
+        aggregate: 0.6666666666666666
+        samples: [0.6666666666666666, 0.6666666666666666, 0.6666666666666666]
+    diagnostics:
+      distribution_exact_count: {aggregate: 22, samples: [22, 22, 22]}
+      distribution_epsilon_sharp_count: {aggregate: 2, samples: [2, 2, 2]}
+      distribution_unresolved_count: {aggregate: 6, samples: [6, 6, 6]}
+      distribution_total_wall_seconds:
+        samples: [359.3211148001137, 371.0529847997823, 372.7414930999512]
+      distribution_p95_wall_seconds:
+        samples: [146.08932339999592, 146.92628279997734, 146.8913388000219]
+      formal_exact_count: {aggregate: 18, samples: [18, 18, 18]}
+      formal_epsilon_sharp_count: {aggregate: 2, samples: [2, 2, 2]}
+      formal_unresolved_count: {aggregate: 10, samples: [10, 10, 10]}
+      formal_total_wall_seconds:
+        samples: [141.8685731999576, 134.10394970013294]
+      projected_message_cells: 145174
+      projected_strict_upper_cells: 90431
+      projected_positive_lower_cells: 16428
+    sample_count: 3
+    next_measurement: none
+    primary_delta: 0.033333333333333326
+    objective_results:
+      distribution_closed_rate:
+        verdict: improved
+        delta: 0.033333333333333326
+      formal_regression_closed_rate:
+        verdict: unchanged
+        delta: 0.0
+    learnings: >
+      Exact one-world projections alone tightened 62.3 percent of profiled
+      message upper bounds and gave 11.3 percent a positive lower bound, but
+      stayed at 23/30.  The rigorous root reduced-cost correction then closed
+      one pricing-incomplete endpoint whose global gap was already within the
+      accepted conditional tolerance.  All three frozen repeats reached 24/30
+      and all three formal repeats stayed at 20/30.
+
 best:
-  iteration: 0
+  iteration: 5
   metrics:
     distribution_closed_rate:
-      aggregate: 0.7666666666666667
+      aggregate: 0.8
       samples:
-        - 0.7666666666666667
-        - 0.7666666666666667
-        - 0.7666666666666667
+        - 0.8
+        - 0.8
+        - 0.8
       variance: 0.0
     formal_regression_closed_rate:
       aggregate: 0.6666666666666666

@@ -2,8 +2,9 @@
 
 ## Current best
 
-Baseline remains best: distribution closure 23/30 and formal regression
-closure 20/30 under the frozen measurement contract.
+The retained projected-message and root-pricing certificate reaches 24/30 on
+all three frozen-distribution repeats, up from the 23/30 baseline. Formal
+regression remains 20/30 on all three repeats.
 
 ## Tested
 
@@ -24,15 +25,14 @@ closure 20/30 under the frozen measurement contract.
 
 ## Evidence frontier
 
-- Four planned experiments are complete. None reduced primary unresolved below
-  7/30 or raised the stable formal baseline above 20/30. Direct analytic paths,
-  the existing zero certificate, priced layered routing, and terminal affine
-  certificates all primarily affect already-closed instances.
-- The next evidence phase must classify unresolved endpoints by aggregate
-  mathematical obstruction before proposing code: affected-mechanism count,
-  context width, upstream transport vertex product, and which exact owner or
-  pricing certificate fails. No further solver change is justified by the
-  current aggregate profile alone.
+- Exact one-world projection tightened 62.3 percent of profiled message upper
+  bounds and gave 11.3 percent a positive lower bound, but alone stayed at
+  23/30. A completed exact root pricing round then supplied a rigorous
+  full-master omitted-column correction and closed one additional endpoint as
+  epsilon-sharp.
+- Six frozen instances remain unresolved. Further work requires new aggregate
+  evidence for a complete mathematical class; the retained implementation
+  provides no justification for seed-specific follow-up.
 - Pricing callback micro-optimization remains low priority because aggregate
   callback time is negligible relative to SCIP optimization and model setup.
 - Every next trigger must remain graph-isomorphism and renaming invariant; no
