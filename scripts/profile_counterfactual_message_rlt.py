@@ -113,6 +113,7 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
     cyclic_owner_group_size_histogram = Counter[str]()
     local_owner_group_size_histogram = Counter[str]()
     local_cyclic_owner_group_size_histogram = Counter[str]()
+    domain_sums: dict[str, Counter[str]] = {}
     for constraint_groups in local_owner_groups:
         for (response_owner, _), kernel_names in constraint_groups.items():
             local_owner_group_size_histogram[str(len(kernel_names))] += 1
@@ -153,6 +154,7 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
         cyclic_signature_specs.append((block_id, marginals, entries, occurrences))
     for table, other_name in groups:
         role = _role(other_name)
+        domain = owner.world.domains[table[0]]
         table_edges = {
             tuple(sorted((kernel_name, other_name)))
             for kernel_name in entries_by_table[table]
@@ -160,10 +162,15 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
         required_edges.update(table_edges)
         required_by_role[role] += len(table_edges)
         existing = len(table_edges & quadratic_edges)
+        domain_key = str(domain)
+        domain_sums.setdefault(domain_key, Counter())["groups"] += 1
+        domain_sums[domain_key]["required_products"] += len(table_edges)
+        domain_sums[domain_key]["existing_products"] += existing
+        domain_sums[domain_key]["missing_products"] += len(table_edges) - existing
+        domain_sums[domain_key]["rlt_equalities"] += 2 * domain - 1
         existing_by_role[role] += existing
         existing_products_per_group[str(existing)] += 1
         complete_groups[role] += existing == len(table_edges)
-        domain = owner.world.domains[table[0]]
         rlt_equalities_by_role[role] += 2 * domain - 1
         existing_kernel_names = {
             kernel_name
@@ -202,6 +209,9 @@ def _model_rlt_coverage(owner: Any) -> dict[str, Any]:
             local_cyclic_owner_group_size_histogram
         ),
         "cyclic_signature_specs": cyclic_signature_specs,
+        "domain_sums": {
+            domain: dict(values) for domain, values in domain_sums.items()
+        },
     }
 
 
@@ -481,6 +491,7 @@ def main() -> None:
     cyclic_owner_group_size_histogram = Counter[str]()
     local_owner_group_size_histogram = Counter[str]()
     local_cyclic_owner_group_size_histogram = Counter[str]()
+    domain_sums: dict[str, Counter[str]] = {}
     missing_per_owner: list[int] = []
     strict_cyclic_products_per_owner: list[int] = []
     strict_owner_tolerance_ratio = Counter[str]()
@@ -602,6 +613,8 @@ def main() -> None:
             local_cyclic_owner_group_size_histogram.update(
                 failed["local_cyclic_owner_group_size_histogram"]
             )
+            for domain, values in failed["domain_sums"].items():
+                domain_sums.setdefault(domain, Counter()).update(values)
             for role in role_sums:
                 role_sums[role]["groups"] += failed["groups_by_role"].get(role, 0)
                 role_sums[role]["required_products"] += failed["required_by_role"].get(
@@ -626,6 +639,12 @@ def main() -> None:
         "failed_owner_sums": dict(sums),
         "failed_owner_role_sums": {
             role: dict(values) for role, values in role_sums.items()
+        },
+        "failed_owner_domain_sums": {
+            domain: dict(values)
+            for domain, values in sorted(
+                domain_sums.items(), key=lambda item: int(item[0])
+            )
         },
         "failed_owner_existing_products_per_group": dict(
             sorted(existing_products_per_group.items(), key=lambda item: int(item[0]))
