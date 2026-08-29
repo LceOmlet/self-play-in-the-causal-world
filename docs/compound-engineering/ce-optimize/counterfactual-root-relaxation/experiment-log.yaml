@@ -856,3 +856,36 @@ experiments:
       no call took 0.1 seconds, and their aggregate work was only 2.67 seconds
       across all seven unresolved tasks.  A k-best or forbidden-set MAP owner
       would improve a small constant cost but not the lagging global dual.
+
+  - id: root-reduced-cost-dual-correction
+    change: >
+      Reuse each completed exact response-pricing round to construct a valid
+      full-master root LP bound.  For every normalized response block, shift
+      its normalization dual by the minimum reduced cost over all deterministic
+      responses; the corrected transformed-minimization bound is the restricted
+      LP dual objective plus the sum of negative block minima.  Only depth-zero
+      non-Farkas rounds are eligible, so no branch-local bound is treated as a
+      global certificate.
+    parity: >
+      The pricing return contract passed all 26 counterfactual-solver tests.
+      On a fully enumerable dynamic-pricing fixture, corrected root bounds
+      enclosed both exact endpoints; SCIP's maximization transform was verified
+      to expose the negated objective in the pricing callback.
+    aggregate_coverage:
+      unresolved: 7
+      unresolved_with_completed_root_round: 4
+      stronger_than_outer: 3
+      epsilon_closures: 0
+      no_completed_root_round: 3
+      maximum_transformed_bound_improvement: 0.018555535847373378
+      mean_transformed_bound_improvement: 0.004417048491682758
+      minimum_remaining_joint_gap: 0.0010926018624822231
+      mean_remaining_joint_gap: 0.0958425162555332
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    decision: reject_before_implementation
+    reason: >
+      The correction is rigorous and nearly free, but it certifies no new
+      endpoint under the frozen conditional tolerance.  Three failed owners
+      complete no root pricing round, while the best corrected gap among the
+      others still exceeds that task's factual-mass-scaled threshold.  The
+      production solver and certificate path therefore remain unchanged.

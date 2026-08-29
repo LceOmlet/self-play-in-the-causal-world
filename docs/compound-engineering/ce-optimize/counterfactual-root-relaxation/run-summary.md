@@ -308,3 +308,15 @@ already in the master; 108 solved optimally, their maximum time was 0.083
 seconds, and their total was 2.67 seconds.  Replacing this finite-forbidden-set
 MAP would only remove a small constant cost, so pricing is now ruled out as the
 remaining closure bottleneck.
+
+A final pricing-derived certificate was tested without changing the solver.
+For each completed exact root pricing round, the restricted-master dual was
+made feasible for every omitted response column by shifting each block's
+normalization dual by its minimum reduced cost.  This rigorous correction
+tightened the outer bound for three of seven unresolved endpoints, with a
+maximum transformed-objective improvement of 0.01856, but produced no new
+epsilon-sharp closure.  Three other endpoints completed no root pricing round,
+and the smallest remaining joint gap was 0.001093, still above its
+factual-mass-scaled tolerance.  The production certificate path therefore
+remains unchanged; incomplete-pricing dual correction is not the missing
+closure mechanism.
