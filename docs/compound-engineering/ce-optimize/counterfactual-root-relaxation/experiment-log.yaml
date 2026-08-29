@@ -672,3 +672,31 @@ experiments:
       not transmit the support facet through those equations and added no
       frozen or formal certificate.  Any successor must act directly on the
       dispersed product/message layer rather than repeat this aggregate lift.
+
+  - id: cyclic-response-support-perspectives
+    change: >
+      For the same complete cyclic response-owner/message class, add the exact
+      perspective inequalities L times message <= sum(kernel times message) <=
+      U times message directly as nonlinear rows.  SCIP's shared expression DAG
+      can reuse the product expressions already present in the elimination
+      circuit, avoiding a second explicit Cartesian product lift.
+    aggregate_coverage:
+      unresolved: 7
+      all_cyclic_product_occurrences: 288000
+      strict_cyclic_group_occurrences: 23600
+      strict_cyclic_product_occurrences: 129000
+      perspective_rows: 23600
+      strict_products_per_owner_p50: 0
+      strict_products_per_owner_p95: 129000
+      strict_products_per_owner_max: 129000
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 353.7525890999823
+    p95_seconds: 33.97556659998372
+    decision: reject
+    reason: >
+      The complete structurally selected perspective class preserved all
+      focused endpoints but added no frozen certificate and worsened runtime.
+      Exact local cycle support is therefore not the missing global root
+      convexification, even when transmitted directly to every affected
+      product/message relation.

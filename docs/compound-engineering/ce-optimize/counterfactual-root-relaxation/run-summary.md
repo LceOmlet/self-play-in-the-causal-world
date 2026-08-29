@@ -244,3 +244,12 @@ endpoints, but left both the frozen cohort (23/30) and formal cohort (20/30)
 unchanged.  The useful cycle facets are dispersed across separate nonlinear
 equations, so one aggregate equality does not expose their perspective in the
 root relaxation.
+
+The direct perspective form was then tested on the complete eligible class.
+Among 288,000 cyclic product occurrences, exact support was strict for 23,600
+groups covering 129,000 products; the entire strict class happened to reside
+in one structurally eligible failed owner, with no identity-based selection.
+Adding all 23,600 perspective rows passed the focused endpoint suite but again
+left closure at 23/30, while total time rose to 353.75 seconds and P95 to 33.98
+seconds.  The candidate was removed: local cycle-support facets remain too weak
+even when placed directly in the shared product layer.

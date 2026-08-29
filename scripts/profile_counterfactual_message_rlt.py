@@ -233,6 +233,10 @@ def _cyclic_signature_tightening(
     cyclic_graph_strict_lower_unique = 0
     forest_graph_strict_upper_unique = 0
     forest_graph_strict_lower_unique = 0
+    cyclic_product_occurrences = 0
+    strict_cyclic_group_occurrences = 0
+    strict_cyclic_product_occurrences = 0
+    strict_cyclic_perspective_rows = 0
     support_started = time.perf_counter()
     specs_by_block: dict[
         int,
@@ -324,6 +328,7 @@ def _cyclic_signature_tightening(
         if not graph_is_forest:
             cyclic_graph_unique += 1
             cyclic_graph_occurrences += occurrences
+            cyclic_product_occurrences += occurrences * len(entries)
         individual_upper = sum(
             min(
                 marginals[left][left_state],
@@ -379,6 +384,14 @@ def _cyclic_signature_tightening(
                 forest_graph_strict_lower_unique += 1
             else:
                 cyclic_graph_strict_lower_unique += 1
+        if not graph_is_forest and (
+            upper_improvement > 1e-10 or lower_improvement > 1e-10
+        ):
+            strict_cyclic_group_occurrences += occurrences
+            strict_cyclic_product_occurrences += occurrences * len(entries)
+            strict_cyclic_perspective_rows += occurrences * (
+                int(upper_improvement > 1e-10) + int(lower_improvement > 1e-10)
+            )
         if star_improvement > 1e-10:
             star_strict_upper_unique += 1
             star_strict_upper_occurrences += occurrences
@@ -402,6 +415,10 @@ def _cyclic_signature_tightening(
         "cyclic_graph_strict_lower_unique": cyclic_graph_strict_lower_unique,
         "forest_graph_strict_upper_unique": forest_graph_strict_upper_unique,
         "forest_graph_strict_lower_unique": forest_graph_strict_lower_unique,
+        "cyclic_product_occurrences": cyclic_product_occurrences,
+        "strict_cyclic_group_occurrences": strict_cyclic_group_occurrences,
+        "strict_cyclic_product_occurrences": strict_cyclic_product_occurrences,
+        "strict_cyclic_perspective_rows": strict_cyclic_perspective_rows,
     }
 
 
@@ -454,6 +471,7 @@ def main() -> None:
     local_owner_group_size_histogram = Counter[str]()
     local_cyclic_owner_group_size_histogram = Counter[str]()
     missing_per_owner: list[int] = []
+    strict_cyclic_products_per_owner: list[int] = []
     for sample_index in range(
         DISTRIBUTION_START_SEED,
         DISTRIBUTION_START_SEED + DISTRIBUTION_COUNT,
@@ -521,8 +539,15 @@ def main() -> None:
                 "cyclic_graph_strict_lower_unique",
                 "forest_graph_strict_upper_unique",
                 "forest_graph_strict_lower_unique",
+                "cyclic_product_occurrences",
+                "strict_cyclic_group_occurrences",
+                "strict_cyclic_product_occurrences",
+                "strict_cyclic_perspective_rows",
             ):
                 sums[key] += failed[key]
+            strict_cyclic_products_per_owner.append(
+                failed["strict_cyclic_product_occurrences"]
+            )
             sums["cyclic_upper_improvement_sum"] += failed[
                 "cyclic_upper_improvement_sum"
             ]
@@ -593,6 +618,15 @@ def main() -> None:
         "failed_owner_missing_products_p50": statistics.median(missing_per_owner),
         "failed_owner_missing_products_p95": _percentile(missing_per_owner, 0.95),
         "failed_owner_missing_products_max": max(missing_per_owner),
+        "failed_owner_strict_cyclic_products_p50": statistics.median(
+            strict_cyclic_products_per_owner
+        ),
+        "failed_owner_strict_cyclic_products_p95": _percentile(
+            strict_cyclic_products_per_owner, 0.95
+        ),
+        "failed_owner_strict_cyclic_products_max": max(
+            strict_cyclic_products_per_owner
+        ),
     }
     print(json.dumps(payload, sort_keys=True))
 
