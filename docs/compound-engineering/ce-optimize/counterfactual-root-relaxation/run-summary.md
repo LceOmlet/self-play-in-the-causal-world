@@ -329,3 +329,12 @@ met its factual-mass-scaled tolerance.  This closes the plausible interaction
 between circuit size, scalar kernel boxes, and incomplete-column dual bounds;
 the near endpoint still requires a genuinely stronger cross-mechanism
 relaxation.
+
+The exact single-circuit complement representation was also tested.  It solves
+the same conditional event through `P(A)-P(A and not B)` and therefore avoids
+the duplicated circuit of earlier partition experiments.  Closure fell to
+22/30.  This is structural rather than a solver accident: the original
+singleton target always exposes one jointly attainable terminal endpoint,
+whereas the complement loses that endpoint for multivalued outcomes with
+different factual and target states.  The original event representation is
+therefore retained.

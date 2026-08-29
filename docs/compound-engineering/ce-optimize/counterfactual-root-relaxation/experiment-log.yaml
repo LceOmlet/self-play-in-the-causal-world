@@ -914,3 +914,25 @@ experiments:
       tolerance.  The near endpoint therefore still lacks cross-mechanism
       consistency; combining scalar boxes, a smaller circuit, and complete
       response pricing evidence is insufficient.
+
+  - id: complement-only-equivalent-objective
+    change: >
+      Replace the target joint event P(A and B) by the single-circuit identity
+      P(A) - P(A and not B), then map the sharp complement interval back by
+      one minus each reversed endpoint.  Unlike the rejected partition lifts,
+      this builds only one arithmetic circuit and keeps the same five-second
+      allowance for each transformed endpoint.
+    parity: >
+      Exact complementarity proves identical sharp endpoints.  Focused owners
+      differed only by at most 6.54e-9 from arithmetic order; route-name checks
+      changed because the terminal fast path changed.
+    distribution: {closed: 22, unresolved: 8}
+    decision: reject
+    reason: >
+      The original singleton target representation structurally dominates its
+      complement for terminal elimination.  For singleton factual event A and
+      target B, A != B certifies the original lower terminal endpoint and A = B
+      certifies its upper endpoint.  The complement certifies a lower endpoint
+      only when A = B, and certifies an upper endpoint for A != B only in the
+      binary case.  It loses the fast endpoint whenever the outcome is
+      multivalued and A != B, matching the observed one-task regression.
