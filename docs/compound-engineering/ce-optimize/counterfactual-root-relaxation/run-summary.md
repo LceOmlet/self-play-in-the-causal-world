@@ -182,3 +182,21 @@ the earlier 151.39 seconds to 43.15 seconds, but closure remained 23/30 and
 total runtime remained above baseline at 419.17 seconds.  The identity is exact
 but still cannot be materialized as another full circuit; any further use must
 separate its consequence implicitly in the existing graph.
+
+The remaining failures were then classified by the response mechanisms that
+actually survive endpoint reduction.  Three of seven use only two mechanisms,
+and each combines one cyclic response polytope with one forest response
+polytope.  This does not yield an enumerable exact side: the smallest complete
+forest vertex product already exceeds one million responses.  Exact
+one-mechanism enumeration is therefore not a five-second fast path for any of
+these two-mechanism failures.
+
+Finally, an exact principal-moment lift exposed a square relation for every
+probability variable that already participates in a bilinear product.  This
+gave SCIP's upstream minor separator the square moments needed to couple
+repeated products through positive-semidefinite principal cuts, while
+preserving the original feasible set.  All focused owner comparisons passed,
+but the frozen cohort remained 23/30 and P95 rose from the 23.83-second
+baseline to 49.32 seconds.  Second-order moment consistency is consequently
+too weak; the missing constraint class must transmit complete
+response-marginal equalities across multiple elimination layers.

@@ -533,3 +533,40 @@ experiments:
       The conditional partition is exact and substantially cheaper than the
       earlier full two-complement construction, but duplicating even one full
       elimination circuit added no frozen certificate.
+
+  - id: two-mechanism-forest-vertex-coverage
+    change: >
+      Classify failed owners by their actual response-mechanism count and by
+      whether one complete local response polytope can be enumerated as the
+      vertices of independent forest transports.  The classification uses
+      only relabeling-invariant component structure.
+    aggregate_coverage:
+      unresolved: 7
+      actual_two_mechanism_owners: 3
+      two_mechanism_owners_with_one_all_forest_side: 3
+      enumerable_all_forest_sides: 0
+      minimum_complete_vertex_count: 1000000
+    decision: reject_before_implementation
+    reason: >
+      Every two-mechanism failure has one cyclic side and one forest side, but
+      even the smaller forest side is the Cartesian product of five or more
+      nontrivial transport polytopes and exceeds one million complete vertices.
+      Enumerating either mechanism cannot fit the five-second contract.
+
+  - id: principal-moment-square-lift
+    change: >
+      For every probability variable that actually appears in a product,
+      expose the redundant exact equality q = x squared.  This supplies SCIP's
+      upstream principal-minor separator with shared square moments, allowing
+      repeated products of one kernel or elimination message to participate in
+      positive-semidefinite moment cuts without changing the feasible set.
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 432.09187659970485
+    p95_seconds: 49.31725079996977
+    decision: reject
+    reason: >
+      The compact square lift added no frozen certificate and increased both
+      total runtime and tail latency.  Principal second-order moment
+      consistency does not recover the higher-order response-marginal
+      equalities missing from the current relaxation.
