@@ -288,3 +288,14 @@ choices.  Generating the individual transport vertices alone took 50.80
 seconds.  The guard therefore reflects a genuine Cartesian explosion rather
 than a slow basis enumerator; extending the old layered enumeration cannot be
 the required five-second optimization.
+
+Terminal-response elimination was also generalized at the proof level before
+implementation.  A forest of queried outcome contexts would make all edgewise
+endpoint couplings jointly gluable, but the three failed joint owners have 8,
+10, and 15 contexts with cycle ranks 12, 21, and 91.  An exact linear
+response-feasibility master with pairwise MAP pricing then tested the stronger
+condition: repeated contexts keep their consistency-fixed event intersection,
+while distinct contexts take their pointwise Frechet optimum.  It certified
+two patterns infeasible and left one unresolved, with no attainable failed
+owner.  Terminal pre-elimination therefore has zero remaining coverage and was
+not added to the production path.

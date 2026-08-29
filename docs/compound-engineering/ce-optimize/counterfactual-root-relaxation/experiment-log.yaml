@@ -798,3 +798,35 @@ experiments:
       Merely extending the existing layered enumerator from four to five
       states cannot fit the endpoint contract.  A successor must eliminate
       this Cartesian choice symbolically rather than enumerate it.
+
+  - id: terminal-response-endpoint-attainability
+    change: >
+      Test whether a terminal response mechanism can be removed beyond the
+      existing direct-treatment and common-uniform sufficient conditions.
+      First profile the complete forest-context class, where edge couplings
+      glue exactly.  Then solve an exact linear response-feasibility master
+      with pairwise MAP column pricing for every failed joint endpoint,
+      assigning consistency's fixed event intersection to repeated contexts
+      and Frechet optima only to distinct contexts.
+    aggregate_coverage:
+      unresolved: 7
+      failed_joint_owners: 3
+      terminal_context_counts: {8: 1, 10: 1, 15: 1}
+      terminal_cycle_ranks: {12: 1, 21: 1, 91: 1}
+      terminal_forest_owners: 0
+      pointwise_endpoint_certified_attainable: 0
+      pointwise_endpoint_certified_infeasible: 2
+      pointwise_endpoint_unresolved: 1
+      feasibility_seconds_total: 7.624933600018267
+      feasibility_seconds_max: 4.363104799995199
+      generated_columns_total: 911
+      generated_columns_max: 396
+    decision: reject_before_implementation
+    reason: >
+      None of the failed joint owners belongs to the exact forest class, and
+      the complete response-feasibility test found no additional attainable
+      terminal endpoint.  Two endpoint patterns are rigorously incompatible
+      even after repeated contexts use their consistency-fixed intersection;
+      the third does not close within its five-second pricing allowance.
+      Running this precheck in production would therefore remove no failed
+      terminal mechanism and only consume endpoint time.
