@@ -200,3 +200,11 @@ but the frozen cohort remained 23/30 and P95 rose from the 23.83-second
 baseline to 49.32 seconds.  Second-order moment consistency is consequently
 too weak; the missing constraint class must transmit complete
 response-marginal equalities across multiple elimination layers.
+
+The same square lift was then paired with SCIP's disabled-by-default
+`interminor` separator, which enforces zero 2-by-2 determinants of the product
+matrix through intersection cuts instead of keeping only principal
+semidefinite inequalities.  This stronger rank-one treatment also remained at
+23/30, while P95 rose to 152.47 seconds.  Both generic second-order routes have
+therefore been exhausted: the next candidate must explicitly reuse the linear
+response-marginal equalities at the elimination-message level.

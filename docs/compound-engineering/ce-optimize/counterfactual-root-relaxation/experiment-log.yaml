@@ -570,3 +570,21 @@ experiments:
       total runtime and tail latency.  Principal second-order moment
       consistency does not recover the higher-order response-marginal
       equalities missing from the current relaxation.
+
+  - id: upstream-rank-one-interminor-cuts
+    change: >
+      Combine the exact square lift with SCIP's otherwise disabled upstream
+      interminor separator at the root.  Unlike principal semidefinite minor
+      cuts, this separator uses intersection cuts for zero 2-by-2 determinants
+      of the auxiliary product matrix and therefore targets rank-one product
+      consistency directly.
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 432.9455081997439
+    p95_seconds: 152.4693019000115
+    decision: reject
+    reason: >
+      Rank-one intersection cuts added no frozen certificate and consumed the
+      root budget on the tail.  Generic product-matrix consistency still does
+      not transmit the response-function marginal equalities through nested
+      elimination messages.
