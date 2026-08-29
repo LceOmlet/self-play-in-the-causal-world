@@ -25,7 +25,7 @@ d=\max(L-\hat q,0,\hat q-U),\qquad Q_{\mathrm{CF}}=1-d.
 
 Every point in the certified scoring interval receives full quality. For an
 `epsilon_sharp` result, that safe outer interval extends each unknown sharp
-endpoint by at most `0.002`. The distance is not normalized by interval width
+endpoint by at most `0.001`. The distance is not normalized by interval width
 and no point inside the certified interval is preferred.
 
 For a deployment decision with the scorer-owned exact probability regret,

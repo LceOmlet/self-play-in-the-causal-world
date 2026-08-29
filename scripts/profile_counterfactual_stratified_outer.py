@@ -22,7 +22,7 @@ from cpt_world import counterfactual_solver as solver
 
 DISTRIBUTION_START_SEED = 10_000
 DISTRIBUTION_COUNT = 30
-CONDITIONAL_ENDPOINT_TOLERANCE = 2e-3
+CONDITIONAL_ENDPOINT_TOLERANCE = 1e-3
 
 
 def _query_indices(world: object, seed: dict[str, object]) -> tuple[int, ...]:

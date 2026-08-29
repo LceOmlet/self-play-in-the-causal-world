@@ -180,3 +180,59 @@ experiments:
     p95_seconds: 29.129727699968498
     decision: reject
     reason: stronger official RLT separation did not increase closure
+
+  - id: binary-single-edge-response-vertex-decomposition
+    change: >
+      Enumerate the two exact Frechet vertices of the only binary response
+      mechanism whose queried context graph contains one edge, then solve the
+      remaining mechanisms under the same combined endpoint budget.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    decision: reject
+    reason: >
+      The complete structural class remained unresolved and the dispatcher
+      added model-build and diagnostic overhead without a new certificate.
+
+  - id: indirect-one-mediator-compact-projection
+    change: >
+      Project a pure indirect X-to-M-to-Y twin world onto exact mediator
+      transports and terminal response laws.  Test explicit response columns,
+      on-demand response pricing, and an exact distributive aggregation from
+      shared assignments to P(B,M0,M1) before the remaining bilinear product.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    decision: reject
+    reason: >
+      Explicit columns and the unaggregated target each reached about 1.7 GB
+      before useful solving.  On-demand columns plus exact shared-assignment
+      aggregation removed that resource explosion and correctly took ownership
+      of the wide two-mechanism class, but it still produced no endpoint
+      certificate within five seconds.
+
+  - id: layered-explicit-objective-to-existing-pricer
+    change: >
+      Route a layered two-mediator problem to the existing exact priced
+      response LP when explicit objective evaluation exceeds the existing
+      ten-million-evaluation guard.
+    distribution: {closed: 22, exact: 22, epsilon_sharp: 0, unresolved: 8}
+    decision: reject
+    reason: >
+      The near-tolerance layered instance was actually blocked by the upstream
+      4096-vertex-product guard, while the broader route caused one previously
+      closed task to time out.
+
+  - id: compact-two-mediator-continuous-upstream-projection
+    change: >
+      Replace the Cartesian product of upstream transport vertices by
+      continuous transport tables, linearly aggregate shared-parent terminal
+      costs, and retain only their products with exactly priced downstream
+      response kernels.  Test both direct-terminal joint bounds and attainable
+      endpoint-only bounds, including a five-state first mediator.
+    parity: >
+      Three direct-terminal reference worlds matched at all six endpoints with
+      maximum absolute delta 7.82e-10; the indirect attainable lower endpoint
+      matched exactly at 0.39.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    decision: reject
+    reason: >
+      The new owner correctly replaced the generic failure for both the large
+      upstream-combination class and the five-state endpoint-only class, but
+      neither produced an additional five-second certificate.

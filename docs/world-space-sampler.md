@@ -69,7 +69,7 @@ normalize to a CPT row
 
 `sample_task_world` 对数值型 query 做 acceptance-rejection：只接受数值稳定且 causal target 非零的 CPT draw，不设 goodness 阈值；无稳定 draw 时 fail closed。
 
-`profile_task_targets` 只采样并报告可廉价精确计算的 target 分布与每条边的正负效应计数，不做过滤。个体反事实不走该通用入口；它必须使用 exact / epsilon-sharp 求解探针，超出最终概率端点容差 `0.002` 时明确记为 `unresolved`，Fréchet 外界不得替代任务 target。
+`profile_task_targets` 只采样并报告可廉价精确计算的 target 分布与每条边的正负效应计数，不做过滤。个体反事实不走该通用入口；它必须使用 exact / epsilon-sharp 求解探针，超出最终概率端点容差 `0.001` 时明确记为 `unresolved`，Fréchet 外界不得替代任务 target。
 
 ---
 

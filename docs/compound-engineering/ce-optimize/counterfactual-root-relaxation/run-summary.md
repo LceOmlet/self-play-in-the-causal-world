@@ -39,3 +39,31 @@ hidden-product RLT path produced no closure gain. These results separate model
 size from relaxation strength: the remaining obstacle is the joint convex
 relaxation across shared bilinear mechanism messages, not merely the number of
 products, root branching policy, or an unused termination certificate.
+
+Two later exact structural projections also failed the closure gate.  A
+binary single-edge response mechanism can be reduced to its two transportation
+vertices, but this did not close its unresolved member.  A dedicated pure
+indirect one-mediator formulation eliminated the generic arithmetic circuit;
+after replacing explicit response expansion with exact on-demand pricing and
+aggregating shared assignments before the bilinear product, its resource use
+returned to normal and it correctly owned the intended wide class.  The class
+still failed to certify within five seconds.  This rules out local response
+enumeration and two-mechanism circuit redundancy as the missing source of a
+closure gain.
+
+The final diagnostics compare every failed joint-scale bracket directly with
+the task's accepted endpoint gap under the 0.001 conditional contract.  Five
+to seven failures, depending on fixed-budget runtime variation, remain more
+than 100 times outside tolerance.  Only one or two failures approach the
+2--10-times range.  One is a direct-terminal layered graph that is
+structurally eligible for the existing exact two-mediator owner but exceeds
+its upstream 4096-vertex-product guard; another observed near case is an
+attainable endpoint-only chain with a five-state first mediator.
+
+Routing oversized explicit layered objectives to the existing exact pricer
+did not reach the former class and regressed one previously closed task.  A
+strictly equivalent compact formulation then removed the upstream Cartesian
+product, with reference endpoints agreeing to at most 7.82e-10.  It correctly
+took ownership of both structural classes but still produced no new
+five-second certificate.  The main solver therefore retains none of these
+candidates.

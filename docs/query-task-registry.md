@@ -45,7 +45,7 @@ compute_query_truth(world, seed)
 - `ate` 均匀采样 treatment 的有序状态对，返回 outcome 所有类别的概率差向量；各分量之和为零，二分类时与旧标量定义等价；
 - `individual_counterfactual_probability` 的可见任务给出一个体在指定 factual treatment 下的 factual outcome，要求模型返回该个体在另一 treatment 下达到目标 outcome 的概率之 sharp identified interval；
 - 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率区间，不选择隐藏 SCM；模型返回 `lower` 与 `upper` 两个端点；
-- 精确闭合时返回 `exact`；否则仅在最终条件概率尺度上两个端点误差都不超过 `0.002` 时返回安全外括的 `epsilon_sharp`；
+- 精确闭合时返回 `exact`；否则仅在最终条件概率尺度上两个端点误差都不超过 `0.001` 时返回安全外括的 `epsilon_sharp`；
 - 超过该容差时，任务 truth fail closed；Fréchet 外界只保留为求解诊断，不替代正式终局 truth；
 - `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；

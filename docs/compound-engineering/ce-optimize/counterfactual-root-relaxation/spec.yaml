@@ -21,7 +21,7 @@ measurement:
   distribution_seeds: [10000, 10029]
   formal_seeds: [0, 29]
   endpoint_seconds: 5.0
-  conditional_endpoint_tolerance: 0.002
+  conditional_endpoint_tolerance: 0.001
   command: python scripts/measure_counterfactual_optimizer.py
 
 constraints:
@@ -30,4 +30,3 @@ constraints:
   - Do not tune or dispatch on finite sample identities or representations.
   - Reject a candidate before formal measurement when distribution closure does not increase.
   - Keep the original exact owner for small- and medium-scale parity.
-

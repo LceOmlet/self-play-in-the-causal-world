@@ -14,10 +14,10 @@ import re
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
-from itertools import combinations
+from itertools import combinations, product
 from typing import Any
 
-from pyscipopt import SCIP_BRANCHDIR
+from pyscipopt import Eventhdlr, SCIP_EVENTTYPE
 
 from cpt_world import (
     WorldGrammar,
@@ -30,7 +30,7 @@ from cpt_world import counterfactual_solver as solver
 DISTRIBUTION_START_SEED = 10_000
 DISTRIBUTION_COUNT = 30
 ENDPOINT_SECONDS = 5.0
-CONDITIONAL_ENDPOINT_TOLERANCE = 2e-3
+CONDITIONAL_ENDPOINT_TOLERANCE = 1e-3
 
 
 def _query_indices(
@@ -106,6 +106,82 @@ def _structure_record(
         and node != treatment
         and not world.parents[node]
         and any(node in world.parents[affected_node] for affected_node in affected)
+    )
+    context_separators = tuple(
+        node
+        for node in ancestors
+        if node not in affected_set
+        and node != treatment
+        and affected
+        and all(node in world.parents[affected_node] for affected_node in affected)
+    )
+    children: dict[int, set[int]] = {node: set() for node in range(len(world.variables))}
+    for parent, child in world.edges:
+        children[parent].add(child)
+
+    def screens_its_ancestors(separator: int) -> bool:
+        for ancestor in solver._ancestors(world, separator):
+            stack = [ancestor]
+            seen: set[int] = set()
+            while stack:
+                current = stack.pop()
+                if current == separator or current in seen:
+                    continue
+                if current == outcome:
+                    return False
+                seen.add(current)
+                stack.extend(children[current] - seen)
+        return True
+
+    screened_context_separators = tuple(
+        node for node in context_separators if screens_its_ancestors(node)
+    )
+
+    def queried_context_edge_count(node: int) -> int:
+        contexts = solver._active_contexts(
+            world,
+            node,
+            treatment,
+            baseline_value,
+            treatment_value,
+        )
+        context_indices = {context: index for index, context in enumerate(contexts)}
+        parent_tokens: list[tuple[int, int]] = []
+        for parent in world.parents[node]:
+            if parent == treatment:
+                continue
+            if parent in affected_set:
+                parent_tokens.extend(((parent, 0), (parent, 1)))
+            else:
+                parent_tokens.append((parent, -1))
+        edges: set[tuple[int, int]] = set()
+        for assignment in product(
+            *(range(world.domains[parent]) for parent, _ in parent_tokens)
+        ):
+            token_values = dict(zip(parent_tokens, assignment, strict=True))
+            left_context: list[int] = []
+            right_context: list[int] = []
+            for parent in world.parents[node]:
+                if parent == treatment:
+                    left_context.append(baseline_value)
+                    right_context.append(treatment_value)
+                elif parent in affected_set:
+                    left_context.append(token_values[(parent, 0)])
+                    right_context.append(token_values[(parent, 1)])
+                else:
+                    value = token_values[(parent, -1)]
+                    left_context.append(value)
+                    right_context.append(value)
+            left_index = context_indices[tuple(left_context)]
+            right_index = context_indices[tuple(right_context)]
+            if left_index != right_index:
+                edges.add(tuple(sorted((left_index, right_index))))
+        return len(edges)
+
+    binary_single_edge_mechanisms = tuple(
+        node
+        for node in affected
+        if world.domains[node] == 2 and queried_context_edge_count(node) == 1
     )
     context_divisors = tuple(
         _product(
@@ -198,6 +274,7 @@ def _structure_record(
     generalized_one_mediator = False
     indirect_layered_one_mediator = False
     two_mechanism_signature = "not_two_mechanisms"
+    two_mediator_route = "not_three_mechanisms"
     if len(affected) == 2 and affected[-1] == outcome:
         mediator = affected[0]
         two_mechanism_signature = (
@@ -222,6 +299,30 @@ def _structure_record(
             and mediator in world.parents[outcome]
             and world.domains[mediator] <= 4
         )
+    if len(affected) == 3 and affected[-1] == outcome:
+        first, second, _ = affected
+        if world.domains[first] > 4:
+            two_mediator_route = "first_domain_gt_4"
+        elif treatment not in world.parents[first]:
+            two_mediator_route = "treatment_not_parent_of_first"
+        elif first not in world.parents[second]:
+            two_mediator_route = "first_not_parent_of_second"
+        elif second not in world.parents[outcome]:
+            two_mediator_route = "second_not_parent_of_outcome"
+        elif any(parent in affected for parent in world.parents[first]):
+            two_mediator_route = "first_has_affected_parent"
+        elif {parent for parent in world.parents[second] if parent in affected} != {
+            first
+        }:
+            two_mediator_route = "second_affected_parent_set"
+        elif {
+            parent for parent in world.parents[outcome] if parent in affected
+        } not in ({second}, {first, second}):
+            two_mediator_route = "outcome_affected_parent_set"
+        elif treatment not in world.parents[outcome]:
+            two_mediator_route = "no_direct_terminal"
+        else:
+            two_mediator_route = "eligible"
     return {
         "affected_mechanisms": len(affected),
         "direct_terminal": treatment in world.parents[outcome],
@@ -238,6 +339,22 @@ def _structure_record(
         ),
         "shared_root_affected_coverage": sum(
             divisor > 1 for divisor in context_divisors
+        ),
+        "context_separator_count": len(context_separators),
+        "smallest_context_separator_domain": min(
+            (world.domains[node] for node in context_separators),
+            default=1,
+        ),
+        "has_nonroot_context_separator": any(
+            world.parents[node] for node in context_separators
+        ),
+        "screened_context_separator_count": len(screened_context_separators),
+        "has_nonroot_screened_context_separator": any(
+            world.parents[node] for node in screened_context_separators
+        ),
+        "binary_single_edge_mechanisms": len(binary_single_edge_mechanisms),
+        "terminal_reduced_binary_single_edge_mechanisms": sum(
+            node != outcome for node in binary_single_edge_mechanisms
         ),
         "max_context_divisor": max(context_divisors, default=1),
         "max_response_log10_reduction": max(
@@ -258,6 +375,7 @@ def _structure_record(
         "generalized_one_mediator": generalized_one_mediator,
         "indirect_layered_one_mediator": indirect_layered_one_mediator,
         "two_mechanism_signature": two_mechanism_signature,
+        "two_mediator_route": two_mediator_route,
     }
 
 
@@ -501,6 +619,43 @@ def _error_fields(message: str) -> tuple[str, str, str, float | None, float | No
     )
 
 
+def _solver_variable_role(name: str) -> str:
+    """Classify original and transformed SCIP variables by model role."""
+
+    normalized = name.removeprefix("t_")
+    if normalized.startswith("k_"):
+        return "response_kernel"
+    if normalized.startswith("ve_"):
+        return "elimination_message"
+    if normalized.startswith("lambda_"):
+        return "response_column"
+    if normalized == "counterfactual_target":
+        return "target"
+    return "other"
+
+
+class _BranchRoleTrace(Eventhdlr):
+    """Count selected branch-variable roles while SCIP nodes remain valid."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.counts: Counter[str] = Counter()
+
+    def eventinit(self) -> None:
+        self.model.catchEvent(SCIP_EVENTTYPE.NODEBRANCHED, self)
+
+    def eventexec(self, event: Any) -> None:
+        del event
+        children = self.model.getChildren()
+        if not children:
+            return
+        parent_branchings = children[0].getParentBranchings()
+        if parent_branchings is None:
+            return
+        variables, _, _ = parent_branchings
+        self.counts.update(_solver_variable_role(variable.name) for variable in variables)
+
+
 @contextmanager
 def _trace_sparse_optimization(
     calls: list[dict[str, Any]],
@@ -508,6 +663,16 @@ def _trace_sparse_optimization(
     original = solver._SparseResponseModel.optimize
 
     def traced(self: Any, *args: Any, **kwargs: Any) -> tuple[float, float]:
+        branch_trace = getattr(self, "_failure_profile_branch_trace", None)
+        if branch_trace is None:
+            branch_trace = _BranchRoleTrace()
+            self.model.includeEventhdlr(
+                branch_trace,
+                "CPTWorldFailureBranchTrace",
+                "aggregate branch-variable role profiler",
+            )
+            self._failure_profile_branch_trace = branch_trace
+        branch_trace.counts.clear()
         static_column_counts = tuple(
             len(block.columns) for block in self.pricing_blocks if not block.dynamic
         )
@@ -552,6 +717,9 @@ def _trace_sparse_optimization(
             "max_dynamic_complete_columns": max(
                 dynamic_complete_column_counts, default=0
             ),
+            "accepted_absolute_gap": float(
+                kwargs.get("accepted_absolute_gap", 0.0)
+            ),
         }
         try:
             result = original(self, *args, **kwargs)
@@ -587,34 +755,9 @@ def _trace_sparse_optimization(
                     "solving_nodes": self.model.getNNodes(),
                     "lp_iterations": self.model.getNLPIterations(),
                     "lp_solves": self.model.getNLPs(),
-                    "cuts_found": self.model.getNCuts(),
-                    "cuts_applied": self.model.getNCutsApplied(),
                     "presolving_seconds": self.model.getPresolvingTime(),
                     "solving_seconds": self.model.getSolvingTime(),
-                    "branchings_by_role": dict(
-                        Counter(
-                            (
-                                "response_kernel"
-                                if variable.name.startswith("k_")
-                                else "elimination_message"
-                                if variable.name.startswith("ve_")
-                                else "response_column"
-                                if variable.name.startswith("lambda_")
-                                else "target"
-                                if variable.name == "counterfactual_target"
-                                else "other"
-                            )
-                            for variable in self.model.getVars(transformed=True)
-                            for _ in range(
-                                variable.getNBranchingsCurrentRun(
-                                    SCIP_BRANCHDIR.DOWNWARDS
-                                )
-                                + variable.getNBranchingsCurrentRun(
-                                    SCIP_BRANCHDIR.UPWARDS
-                                )
-                            )
-                        )
-                    ),
+                    "branchings_by_role": dict(branch_trace.counts),
                 }
             )
             calls.append(record)
@@ -667,6 +810,30 @@ def _increment_histograms(
     histograms[f"{prefix}_shared_root_affected_coverage"][
         _bucket(structure["shared_root_affected_coverage"], (0, 1, 2, 3))
     ] += 1
+    histograms[f"{prefix}_context_separator_count"][
+        _bucket(structure["context_separator_count"], (0, 1, 2, 3))
+    ] += 1
+    histograms[f"{prefix}_smallest_context_separator_domain"][
+        _bucket(structure["smallest_context_separator_domain"], (1, 2, 3, 4, 5))
+    ] += 1
+    histograms[f"{prefix}_has_nonroot_context_separator"][
+        str(structure["has_nonroot_context_separator"]).lower()
+    ] += 1
+    histograms[f"{prefix}_screened_context_separator_count"][
+        _bucket(structure["screened_context_separator_count"], (0, 1, 2, 3))
+    ] += 1
+    histograms[f"{prefix}_has_nonroot_screened_context_separator"][
+        str(structure["has_nonroot_screened_context_separator"]).lower()
+    ] += 1
+    histograms[f"{prefix}_binary_single_edge_mechanisms"][
+        _bucket(structure["binary_single_edge_mechanisms"], (0, 1, 2, 3))
+    ] += 1
+    histograms[f"{prefix}_terminal_reduced_binary_single_edge_mechanisms"][
+        _bucket(
+            structure["terminal_reduced_binary_single_edge_mechanisms"],
+            (0, 1, 2, 3),
+        )
+    ] += 1
     histograms[f"{prefix}_max_context_divisor"][
         _bucket(structure["max_context_divisor"], (1, 2, 3, 4, 5))
     ] += 1
@@ -716,6 +883,9 @@ def _increment_histograms(
     histograms[f"{prefix}_two_mechanism_signature"][
         structure["two_mechanism_signature"]
     ] += 1
+    histograms[f"{prefix}_two_mediator_route"][
+        structure["two_mediator_route"]
+    ] += 1
 
 
 def main() -> None:
@@ -734,6 +904,13 @@ def main() -> None:
             f"{prefix}_shared_root_cutset_size",
             f"{prefix}_shared_root_strata",
             f"{prefix}_shared_root_affected_coverage",
+            f"{prefix}_context_separator_count",
+            f"{prefix}_smallest_context_separator_domain",
+            f"{prefix}_has_nonroot_context_separator",
+            f"{prefix}_screened_context_separator_count",
+            f"{prefix}_has_nonroot_screened_context_separator",
+            f"{prefix}_binary_single_edge_mechanisms",
+            f"{prefix}_terminal_reduced_binary_single_edge_mechanisms",
             f"{prefix}_max_context_divisor",
             f"{prefix}_max_response_log10_reduction",
             f"{prefix}_best_single_root_strata",
@@ -743,6 +920,7 @@ def main() -> None:
             f"{prefix}_generalized_one_mediator",
             f"{prefix}_indirect_layered_one_mediator",
             f"{prefix}_two_mechanism_signature",
+            f"{prefix}_two_mediator_route",
         )
     }
     failure_owner = Counter[str]()
@@ -755,6 +933,8 @@ def main() -> None:
     failure_pricing_rounds = Counter[str]()
     failure_pricing_backend = Counter[str]()
     failure_normalized_gap = Counter[str]()
+    failure_tolerance_gap_ratio = Counter[str]()
+    failure_near_tolerance_structure = Counter[str]()
     failure_min_fill_total_ratio = Counter[str]()
     failure_min_fill_peak_ratio = Counter[str]()
     failure_static_response_columns = Counter[str]()
@@ -767,7 +947,6 @@ def main() -> None:
     failure_lp_iterations = Counter[str]()
     failure_branchings_by_role = Counter[str]()
     failure_lp_solves = Counter[str]()
-    failure_cuts_applied = Counter[str]()
     failure_small_dynamic_blocks = Counter[str]()
     failure_all_dynamic_blocks_small = Counter[str]()
     failure_max_dynamic_complete_columns = Counter[str]()
@@ -916,9 +1095,6 @@ def main() -> None:
                 failure_lp_solves[
                     _bucket(failed["lp_solves"], (1, 5, 10, 25, 50, 100))
                 ] += 1
-                failure_cuts_applied[
-                    _bucket(failed["cuts_applied"], (0, 10, 100, 1_000, 10_000))
-                ] += 1
                 failure_small_dynamic_blocks[
                     _bucket(failed["small_dynamic_blocks"], (0, 1, 2, 3))
                 ] += 1
@@ -961,6 +1137,7 @@ def main() -> None:
                 ] += 1
                 if primal is None or dual is None:
                     failure_normalized_gap["unreported"] += 1
+                    failure_tolerance_gap_ratio["unreported"] += 1
                 else:
                     width = max(failed["outer_width"], 1e-15)
                     outer_lower, outer_upper = (
@@ -981,8 +1158,8 @@ def main() -> None:
                         "primal" if primal_progress < dual_progress else "dual"
                     ] += 1
                     normalized_gap = abs(primal - dual) / width
-                    if normalized_gap <= 0.002:
-                        gap_bucket = "le_0.002"
+                    if normalized_gap <= 0.001:
+                        gap_bucket = "le_0.001"
                     elif normalized_gap <= 0.01:
                         gap_bucket = "le_0.01"
                     elif normalized_gap <= 0.1:
@@ -992,6 +1169,33 @@ def main() -> None:
                     else:
                         gap_bucket = "gt_0.5"
                     failure_normalized_gap[gap_bucket] += 1
+                    accepted_gap = failed["accepted_absolute_gap"]
+                    if accepted_gap <= 0.0:
+                        tolerance_bucket = "disabled"
+                    else:
+                        tolerance_ratio = abs(primal - dual) / accepted_gap
+                        if tolerance_ratio <= 1.0:
+                            tolerance_bucket = "le_1"
+                        elif tolerance_ratio <= 2.0:
+                            tolerance_bucket = "le_2"
+                        elif tolerance_ratio <= 5.0:
+                            tolerance_bucket = "le_5"
+                        elif tolerance_ratio <= 10.0:
+                            tolerance_bucket = "le_10"
+                        elif tolerance_ratio <= 100.0:
+                            tolerance_bucket = "le_100"
+                        else:
+                            tolerance_bucket = "gt_100"
+                        if tolerance_ratio <= 10.0:
+                            failure_near_tolerance_structure[
+                                f"{tolerance_bucket}_"
+                                f"mechanisms_{structure['affected_mechanisms']}_"
+                                f"convergence_{str(structure['has_convergence']).lower()}_"
+                                f"direct_{str(structure['direct_terminal']).lower()}_"
+                                f"two_mediator_{structure['two_mediator_route']}_"
+                                f"owner_{owner}"
+                            ] += 1
+                    failure_tolerance_gap_ratio[tolerance_bucket] += 1
         else:
             prefix = "closed"
             totals["closed"] += 1
@@ -1014,6 +1218,12 @@ def main() -> None:
         "unresolved_pricing_rounds": dict(sorted(failure_pricing_rounds.items())),
         "unresolved_pricing_backend": dict(sorted(failure_pricing_backend.items())),
         "unresolved_normalized_gap": dict(sorted(failure_normalized_gap.items())),
+        "unresolved_tolerance_gap_ratio": dict(
+            sorted(failure_tolerance_gap_ratio.items())
+        ),
+        "unresolved_near_tolerance_structure": dict(
+            sorted(failure_near_tolerance_structure.items())
+        ),
         "unresolved_min_fill_total_ratio": dict(
             sorted(failure_min_fill_total_ratio.items())
         ),
@@ -1038,7 +1248,6 @@ def main() -> None:
             sorted(failure_branchings_by_role.items())
         ),
         "unresolved_lp_solves": dict(sorted(failure_lp_solves.items())),
-        "unresolved_cuts_applied": dict(sorted(failure_cuts_applied.items())),
         "unresolved_small_dynamic_blocks": dict(
             sorted(failure_small_dynamic_blocks.items())
         ),

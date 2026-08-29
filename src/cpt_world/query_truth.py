@@ -19,7 +19,7 @@ from .registry import OWNER_STATUS_IMPLEMENTED, query_truth_owner_status
 from .world_space import Probability, WorldSpec, _backdoor_separated_structure
 
 _PROBABILITY_TOLERANCE = 1e-12
-INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE = 2e-3
+INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE = 1e-3
 
 
 @dataclass(frozen=True, slots=True)
