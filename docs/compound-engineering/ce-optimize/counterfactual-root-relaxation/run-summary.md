@@ -98,3 +98,13 @@ shared; neither formulation had an exclusive certificate.  The sequential
 audit also reached an observed 1.72 GB working set.  A parallel formulation
 portfolio therefore has no closure-set union gain and would only duplicate
 the expensive global model.
+
+A custom two-mechanism RLT lift then targeted the remaining mathematical
+gap directly.  It replaced each quadratic kernel term by an explicit product,
+retained the exact nonlinear equality, and added both transportation tables'
+row- and column-marginal product identities.  The complete 10,000-cell class
+passed query-truth endpoint regression but left closure at 23/30.  Extending
+the same complete lift to 100,000 cells reached an observed 1.72 GB working
+set during construction.  Thus first-level pairwise mechanism consistency is
+still too weak, while materializing the next wider pairwise surface is already
+outside the useful five-second regime.

@@ -309,3 +309,28 @@ experiments:
       The two exact formulations had identical closure sets, so a concurrent
       portfolio cannot increase frozen-distribution coverage and duplicates a
       large model build.
+
+  - id: two-mechanism-kernel-product-rlt
+    change: >
+      For complete two-response-mechanism classes, expand the twin objective
+      into kernel-pair products, keep every original nonlinear product
+      equality, and add both mechanisms' exact row- and column-marginal RLT
+      identities to couple all messages that reuse those kernels.
+    parity: >
+      Formal query-truth regression passed 32/32.  Solver endpoint checks
+      passed; one legacy test rejected the intentionally different internal
+      auxiliary-variable count rather than an endpoint value.
+    bounded_variant:
+      maximum_product_cells: 10000
+      distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+      total_seconds: 371.8300429000519
+      p95_seconds: 20.266887700010557
+    wider_variant:
+      maximum_product_cells: 100000
+      observed_working_set_bytes: 1720123392
+      decision: abort_before_cohort
+    decision: reject
+    reason: >
+      Complete first-level kernel RLT did not add a certificate in its
+      runnable structural class, while one wider complete lift exhausted the
+      practical model-construction envelope before useful solving.
