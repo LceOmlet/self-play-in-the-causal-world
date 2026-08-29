@@ -11,6 +11,8 @@ aggregate_diagnosis:
   unresolved_dual_progress_at_most_one_percent: 5
   unresolved_models_over_5000_variables: 5
   unresolved_all_dynamic_blocks_within_existing_3125_column_limit: 2
+  unresolved_symbolic_product_max_arity_at_most_two: 7
+  unresolved_high_arity_product_fraction: 0.0
   interpretation: >
     The dominant failures stall while processing the root nonlinear master.
     Branch selection, local response pricing, and a single enormous local
@@ -66,3 +68,43 @@ experiments:
     decision: reject_for_closure_goal
     reason: substantial runtime improvement but no additional certificate
 
+  - id: upstream-nonlinear-obbt
+    change: >
+      Enable SCIP's official nonlinear optimization-based bound tightening at
+      the root before the unchanged bilinear relaxation.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 475.3831437000772
+    p95_seconds: 173.27341099997284
+    decision: reject
+    reason: no closure gain and severe tail-latency regression
+
+  - id: propagated-message-frechet-lower-bounds
+    change: >
+      Propagate exact local Frechet lower bounds through the nonnegative
+      elimination circuit instead of assigning zero to every message lower
+      bound.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 281.5367622997146
+    p95_seconds: 25.78989209997235
+    decision: reject_for_closure_goal
+    reason: runtime improved, but the certified set did not grow
+
+  - id: affine-message-inlining
+    change: >
+      Inline only elimination messages whose terms contain at most one
+      symbolic factor, retaining auxiliaries for every true bilinear message.
+    decision: reject_before_cohort
+    reason: >
+      The focused exact-owner suite exceeded 60 seconds at the same test that
+      takes about 12 seconds on the baseline because downstream products
+      expanded the affine expressions.
+
+  - id: remove-dependent-coupling-rows
+    change: >
+      Remove the final implied marginal equation from response-mixture and
+      forest-transport coupling blocks.
+    decision: reject_before_cohort
+    reason: >
+      Both the combined candidate and the forest-only variant exceeded 60
+      seconds in the focused exact-owner suite; the alternative LP basis made
+      pricing or root processing substantially slower.

@@ -357,6 +357,100 @@ def _elimination_profile(
     return total_cells, peak_cells
 
 
+def _symbolic_product_arity_profile(
+    world: Any,
+    treatment: int,
+    outcome: int,
+    *,
+    terminal_endpoint: str,
+) -> tuple[int, int, int, int, int]:
+    """Count nonlinear contraction terms by simultaneous symbolic arity."""
+
+    ancestors = solver._ancestors(world, outcome) | {outcome}
+    affected_set = solver._descendants(world, treatment) & ancestors
+    order = solver._topological_order(world)
+    mechanism_affected = tuple(
+        node
+        for node in order
+        if node in affected_set
+        and not (terminal_endpoint in {"lower", "upper"} and node == outcome)
+    )
+    shared = tuple(
+        node
+        for node in order
+        if node in ancestors and node not in affected_set and node != treatment
+    )
+    relevant = set(mechanism_affected) | set(shared)
+
+    def group(node: int) -> tuple[tuple[int, int], ...]:
+        return (
+            ((node, 0), (node, 1))
+            if node in affected_set
+            else ((node, -1),)
+        )
+
+    def parent_tokens(node: int) -> list[tuple[int, int]]:
+        tokens: list[tuple[int, int]] = []
+        for parent in world.parents[node]:
+            if parent == treatment:
+                continue
+            if parent in affected_set:
+                tokens.extend(((parent, 0), (parent, 1)))
+            else:
+                tokens.append((parent, -1))
+        return tokens
+
+    # Each record is (scope, symbolic). Shared CPT and terminal-event factors
+    # are numeric constants; affected response kernels and every message that
+    # depends on one are symbolic.
+    factors: list[tuple[set[tuple[int, int]], bool]] = []
+    if terminal_endpoint in {"lower", "upper"}:
+        factors.append((set(parent_tokens(outcome)), False))
+    for node in relevant:
+        factors.append(
+            (
+                set((*parent_tokens(node), *group(node))),
+                node in mechanism_affected,
+            )
+        )
+
+    nonlinear_terms = 0
+    high_arity_terms = 0
+    max_arity = 0
+    linear_auxiliary_cells = 0
+    bilinear_auxiliary_cells = 0
+    for node in (item for item in reversed(order) if item in relevant):
+        item_group = set(group(node))
+        involving = [factor for factor in factors if factor[0] & item_group]
+        union_scope = set().union(*(scope for scope, _ in involving))
+        assignment_count = _product(
+            world.domains[token[0]] for token in union_scope
+        )
+        symbolic_arity = sum(symbolic for _, symbolic in involving)
+        if symbolic_arity >= 2:
+            nonlinear_terms += assignment_count
+        if symbolic_arity >= 3:
+            high_arity_terms += assignment_count
+        max_arity = max(max_arity, symbolic_arity)
+        output_scope = union_scope - item_group
+        output_cells = _product(
+            world.domains[token[0]] for token in output_scope
+        )
+        if symbolic_arity == 1:
+            linear_auxiliary_cells += output_cells
+        elif symbolic_arity >= 2:
+            bilinear_auxiliary_cells += output_cells
+        factors = [factor for factor in factors if not factor[0] & item_group]
+        factors.append((output_scope, symbolic_arity > 0))
+    return (
+        nonlinear_terms,
+        high_arity_terms,
+        max_arity,
+        linear_auxiliary_cells,
+        bilinear_auxiliary_cells,
+    )
+
+
 def _ratio_bucket(value: float) -> str:
     if value <= 0.1:
         return "le_0.1"
@@ -677,6 +771,9 @@ def main() -> None:
     failure_small_dynamic_blocks = Counter[str]()
     failure_all_dynamic_blocks_small = Counter[str]()
     failure_max_dynamic_complete_columns = Counter[str]()
+    failure_symbolic_max_arity = Counter[str]()
+    failure_high_arity_term_fraction = Counter[str]()
+    failure_linear_auxiliary_fraction = Counter[str]()
 
     for sample_index in range(
         DISTRIBUTION_START_SEED,
@@ -834,6 +931,34 @@ def main() -> None:
                         (32, 256, 3_125, 65_536, 1_000_000),
                     )
                 ] += 1
+                (
+                    nonlinear_terms,
+                    high_arity_terms,
+                    symbolic_max_arity,
+                    linear_auxiliary_cells,
+                    bilinear_auxiliary_cells,
+                ) = (
+                    _symbolic_product_arity_profile(
+                        world,
+                        treatment,
+                        outcome,
+                        terminal_endpoint=failed["terminal_endpoint"],
+                    )
+                )
+                failure_symbolic_max_arity[
+                    _bucket(symbolic_max_arity, (1, 2, 3, 4, 5))
+                ] += 1
+                high_arity_fraction = high_arity_terms / max(nonlinear_terms, 1)
+                failure_high_arity_term_fraction[
+                    _ratio_bucket(high_arity_fraction)
+                ] += 1
+                linear_auxiliary_fraction = linear_auxiliary_cells / max(
+                    linear_auxiliary_cells + bilinear_auxiliary_cells,
+                    1,
+                )
+                failure_linear_auxiliary_fraction[
+                    _ratio_bucket(linear_auxiliary_fraction)
+                ] += 1
                 if primal is None or dual is None:
                     failure_normalized_gap["unreported"] += 1
                 else:
@@ -922,6 +1047,15 @@ def main() -> None:
         ),
         "unresolved_max_dynamic_complete_columns": dict(
             sorted(failure_max_dynamic_complete_columns.items())
+        ),
+        "unresolved_symbolic_max_arity": dict(
+            sorted(failure_symbolic_max_arity.items())
+        ),
+        "unresolved_high_arity_term_fraction": dict(
+            sorted(failure_high_arity_term_fraction.items())
+        ),
+        "unresolved_linear_auxiliary_fraction": dict(
+            sorted(failure_linear_auxiliary_fraction.items())
         ),
     }
     print(json.dumps(payload, sort_keys=True))
