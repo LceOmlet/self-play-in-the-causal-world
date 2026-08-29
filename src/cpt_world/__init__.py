@@ -61,6 +61,7 @@ from .rendering import (
     rendered_discovery_query_surface,
 )
 from .rewards import (
+    TERMINAL_SAMPLING_RESOLUTION,
     TERMINAL_QUALITY_REWARD_VERSION,
     UNFINISHED_TERMINAL_QUALITY,
     soft_adjustment_family_f1,
@@ -149,6 +150,7 @@ __all__ = [
     "RenderedDiscoveryQuerySurface",
     "TASK_HEADS",
     "TASK_FAMILY_QUERY_TYPES",
+    "TERMINAL_SAMPLING_RESOLUTION",
     "TERMINAL_QUALITY_REWARD_VERSION",
     "UNFINISHED_TERMINAL_QUALITY",
     "WORLD_SOURCE_TYPES",

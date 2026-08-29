@@ -1123,12 +1123,11 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertTrue(any(seed["manipulability"].values()))
             self.assertIn("observation_bandwidth", seed)
             prompt = render_seed_task_prompt(seed)
-            self.assertIn("Final deployment decision", prompt)
+            self.assertIn("Choose the final deployment state", prompt)
+            self.assertIn('{"type":"answer","value":"state_i"}', prompt)
+            self.assertNotIn('"values"', prompt)
             verb = "minimizes" if seed["query"]["objective"] == "minimize" else "maximizes"
-            self.assertIn(
-                f"candidate that {verb} the returned causal value profile",
-                prompt,
-            )
+            self.assertIn(f"that {verb} P(", prompt)
             self.assertIn("Legal experimental do targets", prompt)
             experimental_line = next(
                 line for line in prompt.splitlines() if line.startswith("Legal experimental")

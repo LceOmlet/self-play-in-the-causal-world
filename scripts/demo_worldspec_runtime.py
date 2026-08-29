@@ -110,10 +110,7 @@ def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, A
     if query_type == "best_intervention":
         return {
             "type": "answer",
-            "values": {
-                f"state_{state}": float(probability)
-                for state, probability in enumerate(truth["candidate_probabilities"])
-            },
+            "value": f"state_{truth['value']}",
         }
     if query_type == "backadj_minimal_sets":
         return {

@@ -1,5 +1,7 @@
 # Terminal-Quality Reward v5
 
+Superseded by [`terminal-quality-reward-v6`](terminal-quality-reward-v6.md).
+
 `terminal-quality-v5` calibrates the three numerical causal tasks against the
 corresponding oracle observational plug-in answer.  It changes neither the
 hidden-world sampler nor the experiment protocol.

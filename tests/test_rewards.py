@@ -6,6 +6,7 @@ from fractions import Fraction
 
 from cpt_world import (
     TERMINAL_QUALITY_REWARD_VERSION,
+    TERMINAL_SAMPLING_RESOLUTION,
     UNFINISHED_TERMINAL_QUALITY,
     soft_adjustment_family_f1,
     terminal_quality_reward,
@@ -14,10 +15,11 @@ from cpt_world import (
 
 class TerminalQualityRewardTests(unittest.TestCase):
     def test_reward_contract_version_and_unfinished_value_are_frozen(self) -> None:
-        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v5")
+        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v6")
         self.assertEqual(UNFINISHED_TERMINAL_QUALITY, 0)
 
-    def test_numeric_rewards_place_the_observational_shortcut_at_one_half(self) -> None:
+    def test_numeric_shortcuts_use_the_fixed_budget_sampling_resolution(self) -> None:
+        resolution = TERMINAL_SAMPLING_RESOLUTION
         self.assertEqual(
             terminal_quality_reward(
                 {
@@ -26,7 +28,7 @@ class TerminalQualityRewardTests(unittest.TestCase):
                     "observational_shortcut_error": Fraction(1, 4),
                 }
             ),
-            Fraction(1, 2),
+            (resolution + Fraction(1, 4)) / (resolution + Fraction(1, 2)),
         )
         self.assertEqual(
             terminal_quality_reward(
@@ -36,17 +38,17 @@ class TerminalQualityRewardTests(unittest.TestCase):
                     "observational_shortcut_error": Fraction(1, 5),
                 }
             ),
-            Fraction(1, 2),
+            (resolution + Fraction(1, 5)) / (resolution + Fraction(2, 5)),
         )
         self.assertEqual(
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "pairwise_gap_error": Fraction(2, 5),
+                    "regret": Fraction(2, 5),
                     "observational_shortcut_error": Fraction(2, 5),
                 }
             ),
-            Fraction(1, 2),
+            (resolution + Fraction(2, 5)) / (resolution + Fraction(4, 5)),
         )
 
     def test_shortcut_calibration_is_exact_at_one_and_continuous_below_it(self) -> None:
@@ -54,7 +56,7 @@ class TerminalQualityRewardTests(unittest.TestCase):
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "pairwise_gap_error": 0,
+                    "regret": 0,
                     "observational_shortcut_error": Fraction(1, 10),
                 }
             ),
@@ -64,24 +66,37 @@ class TerminalQualityRewardTests(unittest.TestCase):
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "pairwise_gap_error": Fraction(3, 10),
+                    "regret": Fraction(3, 10),
                     "observational_shortcut_error": Fraction(1, 10),
                 }
             ),
-            Fraction(1, 4),
+            (TERMINAL_SAMPLING_RESOLUTION + Fraction(1, 10))
+            / (TERMINAL_SAMPLING_RESOLUTION + Fraction(2, 5)),
         )
 
-    def test_nonseparable_or_unavailable_shortcut_keeps_continuous_absolute_quality(self) -> None:
-        self.assertEqual(
-            terminal_quality_reward(
-                {
-                    "kind": "target_query",
-                    "total_variation_error": Fraction(3, 10),
-                    "observational_shortcut_error": 0,
-                }
-            ),
-            Fraction(17, 20),
+    def test_zero_and_near_zero_shortcut_errors_are_continuous(self) -> None:
+        error = Fraction(1, 1000)
+        zero = terminal_quality_reward(
+            {
+                "kind": "target_query",
+                "total_variation_error": error,
+                "observational_shortcut_error": 0,
+            }
         )
+        near_zero = terminal_quality_reward(
+            {
+                "kind": "target_query",
+                "total_variation_error": error,
+                "observational_shortcut_error": Fraction(1, 10**13),
+            }
+        )
+        self.assertEqual(
+            zero,
+            TERMINAL_SAMPLING_RESOLUTION / (TERMINAL_SAMPLING_RESOLUTION + error),
+        )
+        self.assertLess(abs(float(near_zero - zero)), 1e-10)
+
+    def test_unavailable_shortcut_keeps_continuous_absolute_quality(self) -> None:
         self.assertEqual(
             terminal_quality_reward(
                 {
@@ -91,16 +106,6 @@ class TerminalQualityRewardTests(unittest.TestCase):
                 }
             ),
             Fraction(4, 5),
-        )
-        self.assertEqual(
-            terminal_quality_reward(
-                {
-                    "kind": "decision",
-                    "pairwise_gap_error": Fraction(1, 10**13),
-                    "observational_shortcut_error": Fraction(1, 10**13),
-                }
-            ),
-            1 - Fraction(1, 2 * 10**13),
         )
 
     def test_mediator_reward_preserves_both_partial_f1_signals(self) -> None:
