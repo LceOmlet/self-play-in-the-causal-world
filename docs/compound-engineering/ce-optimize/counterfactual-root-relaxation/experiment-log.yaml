@@ -334,3 +334,28 @@ experiments:
       Complete first-level kernel RLT did not add a certificate in its
       runnable structural class, while one wider complete lift exhausted the
       practical model-construction envelope before useful solving.
+
+  - id: nonroot-shared-response-separator
+    change: >
+      Generalize exact shared-root state decomposition to every non-root shared
+      variable that directly indexes all treatment-affected response
+      mechanisms.  Each stratum retains the separator as evidence, including
+      its correlation with shared ancestors, and uses disjoint response-context
+      components that can be glued into one legal Markovian mechanism law.
+    parity: >
+      A non-root separator with a shared ancestor that also directly enters the
+      outcome matched the unsplit exact owner at both endpoints.  The candidate
+      source passed 72 focused query, solver, and scoring tests with one existing
+      skip.
+    structural_subcohort:
+      size: 6
+      baseline_closed: 5
+      candidate_closed: 4
+      baseline_total_seconds: 13.736705500050448
+      candidate_total_seconds: 27.26925690000644
+    decision: reject_before_full_cohort
+    reason: >
+      The exact state decomposition duplicated global model construction and
+      lost one five-second certificate on the complete eligible class.  Its
+      runtime and closure regression reject both production routing and a
+      threshold-based dispatch patch.

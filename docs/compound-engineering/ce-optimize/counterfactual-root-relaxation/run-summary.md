@@ -108,3 +108,12 @@ the same complete lift to 100,000 cells reached an observed 1.72 GB working
 set during construction.  Thus first-level pairwise mechanism consistency is
 still too weak, while materializing the next wider pairwise surface is already
 outside the useful five-second regime.
+
+The root-separator fast path was also generalized to shared non-root variables
+whose state indexes every affected response mechanism.  The construction kept
+the separator as evidence, so correlations with its shared ancestors were not
+dropped, and its endpoints matched the unsplit exact owner.  On the complete
+eligible frozen subcohort, however, closure fell from 5/6 to 4/6 and measured
+runtime rose from 13.74 to 27.27 seconds.  Repeated state-specific model builds
+cost more than the decomposition removed, so this exact route was rejected
+before a full-cohort run.
