@@ -374,3 +374,12 @@ complete message RLT, but it is two orders of magnitude larger than the binary
 lift that already slowed the cohort without closing an endpoint.  The
 multivalued lift was therefore rejected by the aggregate size gate rather than
 turned into another oversized solver candidate.
+
+A read-only root-LP scan then tested whether only a few full transport
+contractions dominate the nonlinear residual and could support dynamic block
+generation.  Rebuilding the failed owners and inspecting all contractions
+exceeded 720 seconds without completing the cohort, more than twice the normal
+frozen run.  The same scan would have to execute inside the fixed endpoint
+allowance in a formal separator.  This rules out full-root scanning as the
+selection mechanism regardless of the unfinished concentration statistic; the
+diagnostic was removed without changing the solver.

@@ -1022,3 +1022,21 @@ experiments:
       certificate.  Scaling that same local identity by two orders of
       magnitude has no evidence of a five-second closure gain and fails the
       implementation gate.
+
+  - id: full-root-transport-residual-scan
+    change: >
+      Test whether only a small fraction of full transport contractions
+      dominates the initial root-LP nonlinear residual.  The diagnostic first
+      uses the unchanged verifier to locate failed owners, rebuilds the same
+      mathematical owner, and attaches a read-only root separator that scans
+      every full contraction without adding a cut.
+    observed_runtime: greater_than_720_seconds_without_cohort_completion
+    decision: reject_profiler_design
+    reason: >
+      Merely reconstructing failed owners and reading every contraction at the
+      root exceeded twice the ordinary frozen-cohort wall time before an
+      aggregate result was available.  A formal dynamic separator would have
+      to perform the same scan inside the fixed endpoint allowance, so this
+      implementation shape cannot yield a five-second optimization even if a
+      concentrated residual were eventually observed.  The diagnostic script
+      was removed; no solver or task code changed.
