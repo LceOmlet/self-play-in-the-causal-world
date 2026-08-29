@@ -369,3 +369,26 @@ experiments:
       lost one five-second certificate on the complete eligible class.  Its
       runtime and closure regression reject both production routing and a
       threshold-based dispatch patch.
+
+  - id: hamming-one-multicolumn-response-pricing
+    change: >
+      After each exact response MAP call, evaluate the complete Hamming-one
+      neighborhood of the optimal response and add every unseen response with
+      a rigorously negative reduced cost in the same reduced-cost round.
+    parity: >
+      Endpoint values continued to match the explicit response owner.  One
+      lifecycle test exposed that SCIP may issue an empty Farkas callback after
+      an already closed reduced-cost round; no endpoint mismatch occurred.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 310.86684779979987
+    p95_seconds: 21.220590999990236
+    aggregate_pricing:
+      baseline_closed_failures: 3
+      candidate_closed_failures: 2
+      baseline_incomplete_failures: 4
+      candidate_incomplete_failures: 5
+    decision: reject
+    reason: >
+      Extra improving columns enlarged the nonlinear master without completing
+      pricing or moving the lagging global dual.  Incomplete pricing is a
+      consequence of the root solve, not a one-column-per-round bottleneck.

@@ -124,3 +124,11 @@ frozen cohort) but remained at 23/30.  An anonymous instance-level contingency
 showed 23 tasks closed by both formulations, no exclusive certificate on
 either side, and seven common failures.  The smaller circuit therefore cannot
 be used as a formulation portfolio to expand closure.
+
+Batch response pricing was tested after the final profiler showed four failed
+owners without a completed pricing certificate.  Each exact MAP response was
+augmented by every rigorously improving Hamming-one neighbor.  Closure remained
+23/30; more importantly, pricing-closed failures fell from three to two while
+the nonlinear master accumulated more columns.  The incomplete pricing state
+is therefore downstream of the root bottleneck rather than evidence that
+one-column pricing rounds are the bottleneck.
