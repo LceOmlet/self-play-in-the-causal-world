@@ -632,3 +632,43 @@ experiments:
       dependent kernel entries into affine products inside elimination.  It
       added no frozen certificate and substantially worsened tail latency, so
       local linear-coordinate redundancy is not the closure bottleneck.
+
+  - id: cyclic-response-support-product-lift
+    change: >
+      Group kernel-times-message products by their complete response owner and
+      shared elimination message.  Screen the induced response-context graph:
+      forest groups need no additional inequalities because their fixed unary
+      marginals glue exactly by the junction-tree construction, while cyclic
+      groups receive exact support bounds from the unchanged priced-response
+      owner.  An isolated prototype exposed each strict support sum and its
+      exact product with the shared message as a redundant nonlinear lift.
+    aggregate_coverage:
+      unresolved: 7
+      unique_response_signatures: 7584
+      cyclic_response_signatures: 384
+      strict_upper_unique: 97
+      strict_lower_unique: 42
+      strict_upper_occurrences: 19400
+      strict_lower_occurrences: 4200
+      forest_strict_upper_unique: 0
+      forest_strict_lower_unique: 0
+      local_cyclic_groups_size_one: 388800
+      local_all_response_groups_size_one: 707492
+      all_signature_support_seconds: 22.6951
+      cycle_exact_support_seconds: 2.0683132
+    parity: >
+      Explicit candidate-source import passed 81 focused tests with one skip;
+      an activated six-node branch-merge-chain fixture matched the exhaustive
+      owner to a maximum endpoint delta of 5.56e-9.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 330.5007045000093
+    p95_seconds: 23.885725100000855
+    formal_regression: {closed: 20, exact: 18, epsilon_sharp: 2, unresolved: 10}
+    decision: reject
+    reason: >
+      Exact cyclic response support is real and can be found cheaply without
+      enumerating forest groups, but every grouped product occurs in a distinct
+      nonlinear equation.  A single redundant aggregate product equality did
+      not transmit the support facet through those equations and added no
+      frozen or formal certificate.  Any successor must act directly on the
+      dispersed product/message layer rather than repeat this aggregate lift.

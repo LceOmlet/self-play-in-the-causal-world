@@ -228,3 +228,19 @@ comparisons, but closure stayed 23/30 and P95 rose to 153.61 seconds because
 the dependent entries expanded inside downstream products.  The missing dual
 strength therefore belongs to the joint transport/message convex hull, not to
 the coordinate description of one transport polytope.
+
+The product audit was then lifted from individual transport tables to complete
+response owners.  Although each nonlinear equation contains only one product
+from any response-owner/message group, the same message is reused globally:
+7,584 distinct response signatures appear across the seven failed owners.
+Only 384 signatures contain a cycle in their response-context graph, and every
+strict exact support improvement occurs in this cyclic subset (97 upper and 42
+lower signatures, reused 19,400 and 4,200 times respectively); no forest
+signature improves on its entrywise Frechet bounds.  This gives a complete,
+relabeling-invariant screen and reduces bidirectional exact support work from
+22.70 to 2.07 seconds.  A redundant aggregate product lift passed all focused
+comparisons, including an activated fixture within 5.56e-9 of exhaustive
+endpoints, but left both the frozen cohort (23/30) and formal cohort (20/30)
+unchanged.  The useful cycle facets are dispersed across separate nonlinear
+equations, so one aggregate equality does not expose their perspective in the
+root relaxation.
