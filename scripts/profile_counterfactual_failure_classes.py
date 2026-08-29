@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from itertools import combinations, product
 from typing import Any
 
-from pyscipopt import Eventhdlr, SCIP_EVENTTYPE
+from pyscipopt import SCIP_EVENTTYPE, Eventhdlr
 
 from cpt_world import (
     WorldGrammar,
@@ -755,6 +755,7 @@ def _trace_sparse_optimization(
                     "solving_nodes": self.model.getNNodes(),
                     "lp_iterations": self.model.getNLPIterations(),
                     "lp_solves": self.model.getNLPs(),
+                    "separation_rounds": self.model.getNSepaRounds(),
                     "presolving_seconds": self.model.getPresolvingTime(),
                     "solving_seconds": self.model.getSolvingTime(),
                     "branchings_by_role": dict(branch_trace.counts),
@@ -947,6 +948,7 @@ def main() -> None:
     failure_lp_iterations = Counter[str]()
     failure_branchings_by_role = Counter[str]()
     failure_lp_solves = Counter[str]()
+    failure_separation_rounds = Counter[str]()
     failure_small_dynamic_blocks = Counter[str]()
     failure_all_dynamic_blocks_small = Counter[str]()
     failure_max_dynamic_complete_columns = Counter[str]()
@@ -1094,6 +1096,12 @@ def main() -> None:
                 failure_branchings_by_role.update(failed["branchings_by_role"])
                 failure_lp_solves[
                     _bucket(failed["lp_solves"], (1, 5, 10, 25, 50, 100))
+                ] += 1
+                failure_separation_rounds[
+                    _bucket(
+                        failed["separation_rounds"],
+                        (0, 1, 2, 4, 8, 16, 32, 64),
+                    )
                 ] += 1
                 failure_small_dynamic_blocks[
                     _bucket(failed["small_dynamic_blocks"], (0, 1, 2, 3))
@@ -1248,6 +1256,9 @@ def main() -> None:
             sorted(failure_branchings_by_role.items())
         ),
         "unresolved_lp_solves": dict(sorted(failure_lp_solves.items())),
+        "unresolved_separation_rounds": dict(
+            sorted(failure_separation_rounds.items())
+        ),
         "unresolved_small_dynamic_blocks": dict(
             sorted(failure_small_dynamic_blocks.items())
         ),

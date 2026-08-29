@@ -383,3 +383,13 @@ frozen run.  The same scan would have to execute inside the fixed endpoint
 allowance in a formal separator.  This rules out full-root scanning as the
 selection mechanism regardless of the unfinished concentration statistic; the
 diagnostic was removed without changing the solver.
+
+The unchanged failed owners were then audited for root scheduling at constant
+profiler cost.  Four of seven performed no separation round, two performed at
+most two, and only one reached between three and sixteen.  Three failures
+solved at most one LP and issued no pricing round; the other four issued more
+than eight pricing rounds.  Six still processed at most one node.  The solver
+is therefore not spending the five-second allowance in an avoidable root-cut
+loop: the two actual regimes are one expensive initial LP and column-generation
+tailing.  An early-branching or root-round-cap candidate was rejected before
+implementation.

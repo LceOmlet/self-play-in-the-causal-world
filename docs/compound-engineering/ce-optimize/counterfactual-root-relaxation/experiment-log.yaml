@@ -1040,3 +1040,25 @@ experiments:
       implementation shape cannot yield a five-second optimization even if a
       concentrated residual were eventually observed.  The diagnostic script
       was removed; no solver or task code changed.
+
+  - id: root-separation-round-audit
+    change: >
+      Read SCIP's aggregate separation-round, LP-solve, pricing-round, node,
+      and branch-role counters from each unchanged failed owner.  The profiler
+      adds no model operation and emits no owner identity.
+    aggregate:
+      unresolved: 7
+      separation_rounds_zero: 4
+      separation_rounds_at_most_2: 2
+      separation_rounds_3_to_16: 1
+      lp_solves_at_most_1: 3
+      pricing_rounds_zero: 3
+      pricing_rounds_greater_than_8: 4
+      nodes_at_most_1: 6
+    decision: reject_early_branching_hypothesis
+    reason: >
+      Six of seven failures stay at one node, but not because SCIP repeatedly
+      separates the root.  Most owners perform no or at most two separation
+      rounds; three spend the allowance on at most one LP, while four tail in
+      repeated column-generation LPs.  Capping root separation cannot expose
+      a missing branch phase and is not an evidence-supported candidate.
