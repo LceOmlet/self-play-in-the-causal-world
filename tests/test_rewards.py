@@ -15,7 +15,7 @@ from cpt_world import (
 
 class TerminalQualityRewardTests(unittest.TestCase):
     def test_reward_contract_version_and_unfinished_value_are_frozen(self) -> None:
-        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v6")
+        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v7")
         self.assertEqual(UNFINISHED_TERMINAL_QUALITY, 0)
 
     def test_numeric_shortcuts_use_the_fixed_budget_sampling_resolution(self) -> None:
@@ -44,8 +44,8 @@ class TerminalQualityRewardTests(unittest.TestCase):
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "regret": Fraction(2, 5),
-                    "observational_shortcut_error": Fraction(2, 5),
+                    "normalized_regret": Fraction(2, 5),
+                    "observational_shortcut_normalized_regret": Fraction(2, 5),
                 }
             ),
             (resolution + Fraction(2, 5)) / (resolution + Fraction(4, 5)),
@@ -56,8 +56,8 @@ class TerminalQualityRewardTests(unittest.TestCase):
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "regret": 0,
-                    "observational_shortcut_error": Fraction(1, 10),
+                    "normalized_regret": 0,
+                    "observational_shortcut_normalized_regret": Fraction(1, 10),
                 }
             ),
             1,
@@ -66,8 +66,8 @@ class TerminalQualityRewardTests(unittest.TestCase):
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "regret": Fraction(3, 10),
-                    "observational_shortcut_error": Fraction(1, 10),
+                    "normalized_regret": Fraction(3, 10),
+                    "observational_shortcut_normalized_regret": Fraction(1, 10),
                 }
             ),
             (TERMINAL_SAMPLING_RESOLUTION + Fraction(1, 10))

@@ -35,6 +35,7 @@ from cpt_world import (
     assemble_sampled_anchor_tasks,
     budget_for_observation_bandwidth,
     compute_query_truth,
+    iter_sampled_seeds,
     legal_query_anchors,
     sample_world,
 )
@@ -42,7 +43,7 @@ from cpt_world import (
 API_URL = "https://api.ponderera.com/v1/chat/completions"
 MODEL = "deepseek-v4-flash"
 RESULT_SCHEMA = "dolens-ponderera-profile-v6"
-SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v4"
+SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v5"
 MASTER_SEED = 2026082201
 QUERY_TYPES = (
     "ate",
@@ -164,6 +165,45 @@ def _materialize(entry: Mapping[str, Any]) -> tuple[WorldSpec, Mapping[str, Any]
     return tasks[0]
 
 
+def _frozen_schedule_entry(
+    *,
+    query_type: str,
+    repeat: int,
+    node_count: int,
+    max_domain_size: int,
+    world_seed: int,
+    anchor_index: int,
+    world: WorldSpec,
+    seed: Mapping[str, Any],
+) -> Mapping[str, Any]:
+    episode_id = f"{query_type}:{repeat:02d}"
+    episode = WorldSpecEpisode(
+        world,
+        seed,
+        OutcomeTape(_tape_key(episode_id)),
+        budget=_budget_for_seed(seed),
+    )
+    initial_messages = episode.initial_messages()
+    return {
+        "episode_id": episode_id,
+        "query_type": query_type,
+        "repeat": repeat,
+        "node_count": node_count,
+        "max_domain_size": max_domain_size,
+        "world_seed": world_seed,
+        "anchor_index": anchor_index,
+        "seed_id": seed["seed_id"],
+        "world_sha256": _sha256(_world_payload(world)),
+        "seed_sha256": _sha256(seed),
+        "initial_messages_sha256": _sha256(initial_messages),
+        "tape_key": _tape_key(episode_id),
+        "model_seed": _model_seed(episode_id),
+        "edge_count": len(world.edges),
+        "manipulable_width": sum(bool(value) for value in seed["manipulability"].values()),
+        "observation_bandwidth": seed["observation_bandwidth"],
+    }
+
+
 def _schedule_entry(
     query_type: str,
     repeat: int,
@@ -173,6 +213,42 @@ def _schedule_entry(
     max_domain_size: int,
     progress: bool = False,
 ) -> Mapping[str, Any]:
+    if query_type == "best_intervention":
+        node_count = rng.choice(node_counts)
+        raw_slot = rng.randrange(0, 2**31)
+        balanced_slot = raw_slot - raw_slot % 5 + repeat % 5
+        grammar = WorldGrammar(
+            node_counts=(node_count,),
+            max_domain_size=max_domain_size,
+        )
+        (seed,) = iter_sampled_seeds(
+            grammar,
+            query_types=(query_type,),
+            start_seed=balanced_slot,
+            count=1,
+        )
+        seed_id = str(seed["seed_id"])
+        world_seed = int(seed_id.split("-", 2)[1])
+        anchor_index = int(seed_id.rsplit("-a", 1)[1])
+        ((world, regenerated_seed),) = assemble_sampled_anchor_tasks(
+            grammar,
+            world_seed,
+            query_type,
+            anchor_index,
+        )
+        if regenerated_seed != seed:
+            raise RuntimeError("profile task regeneration disagrees with the sampler owner")
+        return _frozen_schedule_entry(
+            query_type=query_type,
+            repeat=repeat,
+            node_count=node_count,
+            max_domain_size=max_domain_size,
+            world_seed=world_seed,
+            anchor_index=anchor_index,
+            world=world,
+            seed=seed,
+        )
+
     for candidate_index in range(10_000):
         node_count = rng.choice(node_counts)
         world_seed = rng.randrange(0, 2**31)
@@ -231,32 +307,16 @@ def _schedule_entry(
             if len(tasks) != 1:
                 continue
             world, seed = tasks[0]
-            episode_id = f"{query_type}:{repeat:02d}"
-            episode = WorldSpecEpisode(
-                world,
-                seed,
-                OutcomeTape(_tape_key(episode_id)),
-                budget=_budget_for_seed(seed),
+            return _frozen_schedule_entry(
+                query_type=query_type,
+                repeat=repeat,
+                node_count=node_count,
+                max_domain_size=max_domain_size,
+                world_seed=world_seed,
+                anchor_index=anchor_index,
+                world=world,
+                seed=seed,
             )
-            initial_messages = episode.initial_messages()
-            return {
-                "episode_id": episode_id,
-                "query_type": query_type,
-                "repeat": repeat,
-                "node_count": node_count,
-                "max_domain_size": max_domain_size,
-                "world_seed": world_seed,
-                "anchor_index": anchor_index,
-                "seed_id": seed["seed_id"],
-                "world_sha256": _sha256(_world_payload(world)),
-                "seed_sha256": _sha256(seed),
-                "initial_messages_sha256": _sha256(initial_messages),
-                "tape_key": _tape_key(episode_id),
-                "model_seed": _model_seed(episode_id),
-                "edge_count": len(world.edges),
-                "manipulable_width": sum(bool(value) for value in seed["manipulability"].values()),
-                "observation_bandwidth": seed["observation_bandwidth"],
-            }
     raise RuntimeError(f"could not build a legal {query_type} task")
 
 

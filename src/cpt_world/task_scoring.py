@@ -530,6 +530,7 @@ def score_terminal_answer(
         )
         observed_probabilities: list[Fraction] = []
         observational_shortcut_error = None
+        observational_shortcut_normalized_regret = None
         observational_choice = None
         for law in observational_laws:
             if law is None:
@@ -548,6 +549,11 @@ def score_terminal_answer(
                 optimal_probability - observational_causal_probability
                 if objective == "maximize"
                 else observational_causal_probability - optimal_probability
+            )
+            observational_shortcut_normalized_regret = (
+                Fraction(0)
+                if probability_span == 0
+                else Fraction(observational_shortcut_error) / Fraction(probability_span)
             )
         return {
             "kind": "decision",
@@ -569,6 +575,9 @@ def score_terminal_answer(
             ),
             "observational_choice": observational_choice,
             "observational_shortcut_error": observational_shortcut_error,
+            "observational_shortcut_normalized_regret": (
+                observational_shortcut_normalized_regret
+            ),
             "optimal_action": regret == 0,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }

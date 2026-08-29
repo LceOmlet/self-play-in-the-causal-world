@@ -14,7 +14,7 @@ from typing import Any
 
 from .episode import OBSERVATIONS_PER_BANDWIDTH_UNIT
 
-TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v6"
+TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v7"
 UNFINISHED_TERMINAL_QUALITY = Fraction(0)
 TERMINAL_SAMPLING_RESOLUTION = Fraction.from_float(
     1.0 / sqrt(OBSERVATIONS_PER_BANDWIDTH_UNIT)
@@ -198,8 +198,8 @@ def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
     elif kind == "decision":
         quality = _shortcut_calibrated_quality(
             score,
-            error_field="regret",
-            shortcut_error_field="observational_shortcut_error",
+            error_field="normalized_regret",
+            shortcut_error_field="observational_shortcut_normalized_regret",
             absolute_error_upper=Fraction(1),
         )
     elif kind == "backadj":

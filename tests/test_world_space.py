@@ -43,6 +43,8 @@ from cpt_world import (
 )
 from cpt_world.world_space import (
     _ET_V2_STRENGTH_CEILING,
+    _balanced_proposal_seed,
+    _best_intervention_is_observationally_discordant,
     _build_world,
     _combine_effect_blocks,
     _contextual_parent_pair_score_scale,
@@ -54,6 +56,7 @@ from cpt_world.world_space import (
     _sample_et_v2_strength,
     _sample_parent_interaction_cliques,
     _sample_parent_subset_balanced_effect,
+    _sample_task_attributes,
     _sampled_backdoor_complexity,
     _sampled_role_assignments,
     _SampledStructure,
@@ -357,6 +360,53 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertTrue(all(legal_world(world) for world, _ in composed))
             return
         self.fail("no world-first sampled ATE task found")
+
+    def test_best_intervention_sampler_balances_observational_action_relation(self) -> None:
+        grammar = WorldGrammar()
+        first = iter_sampled_seeds(
+            grammar,
+            query_types=("best_intervention",),
+            start_seed=0,
+            count=10,
+        )
+        second = iter_sampled_seeds(
+            grammar,
+            query_types=("best_intervention",),
+            start_seed=0,
+            count=10,
+        )
+        self.assertEqual(first, second)
+
+        relations = []
+        for seed in first:
+            seed_id = str(seed["seed_id"])
+            proposal_index = int(seed_id.split("-", 2)[1])
+            anchor_index = int(seed_id.rsplit("-a", 1)[1])
+            world = sample_task_world(grammar, proposal_index, "best_intervention")
+            roles = _sampled_role_assignments(
+                len(world.variables),
+                world.edges,
+                "best_intervention",
+                proposal_index,
+            )
+            anchors = _sample_task_attributes(
+                world,
+                "best_intervention",
+                roles[anchor_index],
+                seed_id=seed_id,
+            )
+            relations.append(
+                _best_intervention_is_observationally_discordant(world, anchors)
+            )
+        self.assertEqual(relations, [False, True, True, True, True] * 2)
+
+    def test_balanced_proposal_seed_mapping_is_injective(self) -> None:
+        values = {
+            _balanced_proposal_seed(slot, attempt)
+            for slot in range(20)
+            for attempt in range(20)
+        }
+        self.assertEqual(len(values), 400)
 
     def test_opaque_label_collision_retries_with_a_deterministic_nonce(self) -> None:
         sample_index = 1000243

@@ -300,6 +300,7 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["observational_shortcut"], (Fraction(9, 20), Fraction(13, 20)))
         self.assertEqual(score["observational_choice"], 0)
         self.assertEqual(score["observational_shortcut_error"], Fraction(1, 5))
+        self.assertEqual(score["observational_shortcut_normalized_regret"], 1)
         self.assertEqual(score["regret"], Fraction(1, 5))
 
     def test_decision_zero_span_accepts_every_tied_state_without_division(self) -> None:
@@ -328,6 +329,7 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["probability_span"], 0)
         self.assertEqual(score["regret"], 0)
         self.assertEqual(score["normalized_regret"], 0)
+        self.assertEqual(score["observational_shortcut_normalized_regret"], 0)
         self.assertTrue(score["optimal_action"])
 
     def test_decision_parser_rejects_hidden_names_and_noncanonical_states(self) -> None:

@@ -75,19 +75,20 @@ mediator_set:
 ```
 
 `src/cpt_world/rewards.py` 在这些 raw diagnostics 之上实现冻结的
-`terminal-quality-v6`，不重新解析模型答案或计算 truth：
+`terminal-quality-v7`，不重新解析模型答案或计算 truth：
 
 ```text
 ate:                              (B_obs + s) / (B_obs + s + TV_error)
 individual counterfactual:       (B_obs + s) / (B_obs + s + endpoint_MAE)
-decision:                         (B_obs_regret + s) / (B_obs_regret + s + regret)
+decision:                         (B_obs_normalized_regret + s) /
+                                  (B_obs_normalized_regret + s + normalized_regret)
 backadj_minimal_sets:             maximum-matching soft family F1
 mediator_set:                     (mediator_f1 + order_f1) / 2
 unfinished / illegal terminal:    0
 ```
 
 实验样本消耗、query 数、轮数与 token 数保持独立诊断，不进入当前训练奖励。
-完整合同见 `docs/terminal-quality-reward-v6.md`。
+完整合同见 `docs/terminal-quality-reward-v7.md`。
 
 五个 query type 均由同一个 `iter_sampled_seeds` 主管线发出。ATE、反事实区间与实验决策
 使用既有数值稳定 CPT draw；后门调整与中介路径直接复用同一次结构世界采样，

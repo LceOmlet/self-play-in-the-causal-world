@@ -555,8 +555,8 @@ def _decision_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, 
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "regret": regret,
-                    "observational_shortcut_error": regret,
+                    "normalized_regret": normalized_regret,
+                    "observational_shortcut_normalized_regret": normalized_regret,
                 }
             )
         ),

@@ -1,5 +1,7 @@
 # Terminal-Quality Reward v6
 
+Superseded by [`terminal-quality-reward-v7`](terminal-quality-reward-v7.md).
+
 All five task families pass their terminal quality unchanged to GRPO. There is
 no additional training-time reward transformation.
 

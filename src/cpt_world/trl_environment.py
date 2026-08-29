@@ -176,10 +176,12 @@ def _training_row(
         start_seed=sample_index,
         count=1,
     )
-    anchor_index = int(str(seed["seed_id"]).rsplit("-a", 1)[1])
+    seed_id = str(seed["seed_id"])
+    proposal_index = int(seed_id.split("-", 2)[1])
+    anchor_index = int(seed_id.rsplit("-a", 1)[1])
     ((world, regenerated_seed),) = assemble_sampled_anchor_tasks(
         grammar,
-        sample_index,
+        proposal_index,
         query_type,
         anchor_index,
     )
@@ -192,7 +194,7 @@ def _training_row(
     )
     row = {
         "prompt": list(episode.initial_messages()),
-        "sample_index": sample_index,
+        "sample_index": proposal_index,
         "query_type": query_type,
         "anchor_index": anchor_index,
         "tape_key": f"trl-grpo:{seed['seed_id']}",

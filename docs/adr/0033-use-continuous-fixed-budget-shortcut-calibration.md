@@ -1,7 +1,8 @@
 ---
-status: accepted
+status: superseded
 implementation: implemented
 supersedes: 0031-calibrate-numeric-rewards-against-observational-shortcuts
+superseded_by: 0034-use-normalized-regret-for-best-intervention
 ---
 
 # Use continuous fixed-budget shortcut calibration
