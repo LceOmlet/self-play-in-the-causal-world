@@ -768,3 +768,33 @@ experiments:
       the closure set unchanged.  Scalar box tightening and circuit-size
       reduction are therefore insufficient even when applied together; the
       missing certificate remains a global shared-mechanism relation.
+
+  - id: five-state-two-mediator-vertex-coverage
+    change: >
+      Audit the complete layered two-mediator class currently excluded only
+      when the first mediator has five states.  Enumerate every spanning-tree
+      basis of each five-by-five upstream transport through a bijective
+      bipartite Pruefer code, solve its masses by leaf elimination, and count
+      distinct feasible vertices without emitting task identities.
+    parity: >
+      The tree-basis enumerator produced all 81 supports of K(3,3), and its
+      feasible vertices on a fixed three-state transport matched the existing
+      exhaustive response-coupling owner exactly.
+    aggregate_coverage:
+      eligible_worlds: 1
+      first_shared_contexts: 10
+      complete_tree_supports_per_transport: 390625
+      feasible_vertices_per_transport_min: 1800
+      feasible_vertices_per_transport_median: 3277.5
+      feasible_vertices_per_transport_max: 5710
+      upstream_selection_log10: 35.20215086086364
+      enumeration_seconds: 50.79719479999039
+    decision: reject_before_implementation
+    reason: >
+      The five-state guard is not hiding a small implementation gap.  The
+      structurally eligible owner has ten independent upstream transports;
+      their exact Cartesian vertex space is about 10^35.2 even after replacing
+      the old basis-combination routine by complete tree-support generation.
+      Merely extending the existing layered enumerator from four to five
+      states cannot fit the endpoint contract.  A successor must eliminate
+      this Cartesian choice symbolically rather than enumerate it.

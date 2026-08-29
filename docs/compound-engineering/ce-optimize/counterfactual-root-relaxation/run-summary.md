@@ -278,3 +278,13 @@ passed every focused regression and cut total runtime to 177.38 seconds with a
 19.10-second P95, yet again left closure at 23/30.  This closes the scalar-box
 and circuit-size route: the remaining dual gap requires a global relation
 among shared mechanisms, not independently tighter variable intervals.
+
+The remaining nonconvergent layered class was then checked before changing its
+four-state fast-path guard.  A complete bipartite-Pruefer enumerator agreed
+with the existing exhaustive owner on a tractable three-state transport.  In
+the frozen five-state class, each upstream transport had 1,800--5,710 distinct
+vertices and ten independent shared contexts produced about 10^35.2 joint
+choices.  Generating the individual transport vertices alone took 50.80
+seconds.  The guard therefore reflects a genuine Cartesian explosion rather
+than a slow basis enumerator; extending the old layered enumeration cannot be
+the required five-second optimization.
