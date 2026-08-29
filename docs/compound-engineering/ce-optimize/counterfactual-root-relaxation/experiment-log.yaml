@@ -1107,3 +1107,43 @@ experiments:
       forms differ, so no terminal special case covers the class.  The next
       candidate must reduce the convergence circuit or strengthen its
       factorization without relying on a query endpoint pattern.
+
+  - id: aggregate-mccormick-gap-elimination-order
+    change: >
+      Generalize exact factor elimination to choose the next node by the sum
+      of worst-case McCormick vertical gaps introduced by that contraction.
+      For nonnegative factors bounded by u and v, each product contributes
+      u*v/4; replication over eliminated and output state cells accounts for
+      circuit width without a fitted tradeoff parameter.  Message-cell count
+      and scope size break exact ties.
+    parity: counterfactual-solver tests passed 26/26 in 9.38 seconds
+    distribution: {closed: 23, unresolved: 7}
+    tolerance_gap_ratio:
+      greater_than_100: 2
+      between_5_and_100: 1
+      between_2_and_5: 3
+      between_1_and_2: 1
+    decision: reject_for_closure_goal
+    reason: >
+      The strength-aware factorization moved two failures out of the
+      greater-than-100 bucket and exposed one endpoint within twice tolerance,
+      but it produced no exact or epsilon-sharp certificate.  A changed
+      relaxation bracket alone does not satisfy the frozen closure objective.
+
+  - id: mccormick-gap-order-plus-kernel-frechet-lower
+    change: >
+      Combine the strength-aware elimination order with the exact pair-kernel
+      lower bound max(0, p_left+p_right-1), the only previously validated
+      scalar box tightening that acts directly on the same products.
+    parity: counterfactual-solver tests passed 26/26 in 9.64 seconds
+    distribution: {closed: 23, unresolved: 7}
+    tolerance_gap_ratio:
+      greater_than_100: 2
+      between_5_and_100: 2
+      between_2_and_5: 3
+    decision: reject
+    reason: >
+      Closure remained unchanged and the sole factor-one-to-two endpoint moved
+      back into the factor-two-to-five bucket.  The exact scalar lower bounds
+      improve runtime but are not complementary to this factorization at the
+      certification boundary.  Both candidate changes were removed.

@@ -410,3 +410,14 @@ path.  This isolates one coherent remaining class: a wide convergence circuit
 whose first global LP consumes the allowance.  Any next candidate for that
 class must change the uniform factorization or exact elimination of the
 convergence circuit, not pricing or terminal routing.
+
+An exact strength-aware elimination order then scored every candidate
+contraction by its aggregate worst-case McCormick gap, using `u*v/4` per
+nonnegative product and state replication to account for width.  It passed all
+26 focused tests and improved the unresolved gap distribution: only two
+failures remained more than 100 times outside tolerance and one fell within a
+factor of two.  Frozen closure nevertheless stayed 23/30.  Adding the exact
+pair-kernel Frechet lower bounds again stayed at 23/30 and moved that near
+endpoint back into the factor-two-to-five bucket.  Since neither exact
+factorization nor their evidence-supported combination added a certificate,
+both were removed rather than compounded with another heuristic.
