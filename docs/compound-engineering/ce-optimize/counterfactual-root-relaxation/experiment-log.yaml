@@ -727,3 +727,44 @@ experiments:
       lets preprocessing evade the endpoint budget.  The incomplete full
       cohort was terminated after exceeding twice the baseline wall time; no
       candidate code or test change was retained.
+
+  - id: normalization-message-envelope
+    change: >
+      Use only the normalization consequence of the rejected recursive
+      transport envelope: a probability-kernel contraction cannot exceed the
+      largest downstream state bound.  This adds one maximum operation inside
+      the existing contraction loop and no variables, constraints, or local
+      optimization problems.
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    aggregate_coverage:
+      symbolic_message_cells: 140103
+      strictly_tightened_upper_cells: 31026
+      cumulative_upper_reduction: 3427.0364145960198
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 316.482961300062
+    p95_seconds: 23.520329600025434
+    decision: reject_for_closure_goal
+    reason: >
+      The normalization envelope is cheap, valid, and broadly active, but it
+      does not add a certificate on the frozen cohort.
+
+  - id: complementary-box-and-circuit-combination
+    change: >
+      Combine the normalization message upper envelope with exact pair-kernel
+      Frechet lower bounds and the exact bilinear-aware elimination order.
+      These complete structural changes tighten opposite sides of each
+      McCormick box while reducing the number of intermediate bilinear cells.
+    parity: focused solver, query, and scoring regression passed 70/70 with one skip
+    aggregate_coverage:
+      symbolic_message_cells: 53571
+      strictly_tightened_upper_cells: 1403
+      cumulative_upper_reduction: 101.35763898565376
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 177.38074200006668
+    p95_seconds: 19.103564299992286
+    decision: reject_for_closure_goal
+    reason: >
+      The evidence-based combination nearly halves total runtime but leaves
+      the closure set unchanged.  Scalar box tightening and circuit-size
+      reduction are therefore insufficient even when applied together; the
+      missing certificate remains a global shared-mechanism relation.

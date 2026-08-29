@@ -266,3 +266,15 @@ failed to finish within 180 seconds.  Repeating one transport solve per message
 cell is therefore the wrong granularity: it moves computation outside the
 endpoint timer instead of reducing the global owner.  The prototype and its
 single internal-count regression were removed before a cohort result was used.
+
+The transport solve can be reduced to a zero-cost normalization consequence:
+every probability-kernel contraction is bounded by the largest downstream
+state bound.  This one-pass envelope tightened 31,026 of 140,103 symbolic
+messages and reduced total runtime to 316.48 seconds, but closure stayed 23/30.
+It was then combined with the exact kernel Frechet lower bounds and the
+bilinear-aware elimination order, which act on the complementary side of the
+same McCormick boxes while shrinking the circuit.  The complete combination
+passed every focused regression and cut total runtime to 177.38 seconds with a
+19.10-second P95, yet again left closure at 23/30.  This closes the scalar-box
+and circuit-size route: the remaining dual gap requires a global relation
+among shared mechanisms, not independently tighter variable intervals.
