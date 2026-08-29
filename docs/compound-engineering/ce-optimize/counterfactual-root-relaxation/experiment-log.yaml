@@ -889,3 +889,28 @@ experiments:
       complete no root pricing round, while the best corrected gap among the
       others still exceeds that task's factual-mass-scaled threshold.  The
       production solver and certificate path therefore remain unchanged.
+
+  - id: kernel-circuit-plus-root-dual-correction
+    change: >
+      Cross the reduced-cost root certificate with the previously strongest
+      regression-safe formulation: exact pair-kernel Frechet lower bounds and
+      the smaller elimination circuit only for static-column owners with at
+      least three affected mechanisms.  The combination tests whether the
+      former factor-one-to-two endpoint was missing only a complete-column
+      dual correction.
+    parity: counterfactual-solver tests passed 26/26
+    aggregate_coverage:
+      unresolved: 7
+      stronger_root_corrections: 3
+      epsilon_closures: 0
+      minimum_remaining_joint_gap: 0.0010922435032510447
+      mean_remaining_joint_gap: 0.09048783641675263
+      maximum_transformed_bound_improvement: 0.018684687313192755
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    decision: reject
+    reason: >
+      The minimum corrected gap changed by less than 3.6e-7 relative to the
+      standalone correction and no endpoint crossed its factual-mass-scaled
+      tolerance.  The near endpoint therefore still lacks cross-mechanism
+      consistency; combining scalar boxes, a smaller circuit, and complete
+      response pricing evidence is insufficient.

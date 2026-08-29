@@ -320,3 +320,12 @@ and the smallest remaining joint gap was 0.001093, still above its
 factual-mass-scaled tolerance.  The production certificate path therefore
 remains unchanged; incomplete-pricing dual correction is not the missing
 closure mechanism.
+
+The same correction was crossed with the strongest earlier regression-safe
+formulation: exact pair-kernel Frechet lower bounds plus the smaller static
+elimination circuit.  Closure again stayed 23/30.  The minimum remaining joint
+gap moved by less than 3.6e-7, from 0.001092602 to 0.001092244, and no endpoint
+met its factual-mass-scaled tolerance.  This closes the plausible interaction
+between circuit size, scalar kernel boxes, and incomplete-column dual bounds;
+the near endpoint still requires a genuinely stronger cross-mechanism
+relaxation.
