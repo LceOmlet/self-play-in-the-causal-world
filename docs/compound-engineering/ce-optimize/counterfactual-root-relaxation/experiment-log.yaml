@@ -936,3 +936,24 @@ experiments:
       only when A = B, and certifies an upper endpoint for A != B only in the
       binary case.  It loses the fast endpoint whenever the outcome is
       multivalued and A != B, matching the observed one-task regression.
+
+  - id: complete-binary-response-message-rlt
+    change: >
+      Complete every response-marginal/message RLT row for the full structural
+      class whose response node has two states.  The aggregate profiler found
+      43,056 missing products in this class versus 5,720,016 globally, a
+      133-fold reduction with no size threshold or identity-based selection.
+    aggregate_coverage:
+      binary_groups: 14352
+      binary_existing_products: 14352
+      binary_missing_products: 43056
+      binary_required_products: 57408
+      all_missing_products: 5720016
+    decision: reject_before_cohort
+    reason: >
+      Although mathematically valid and far smaller than full message RLT,
+      materializing the complete binary class stalled the focused owner suite
+      after 23 of 26 tests for more than 90 seconds.  The added cross-products
+      overwhelm medium owners before the frozen five-second gate.  A viable
+      binary route must eliminate the transport redundancy algebraically
+      instead of exposing every missing product.

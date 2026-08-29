@@ -338,3 +338,11 @@ singleton target always exposes one jointly attainable terminal endpoint,
 whereas the complement loses that endpoint for multivalued outcomes with
 different factual and target states.  The original event representation is
 therefore retained.
+
+Complete message RLT was then restricted to the full binary-response class.
+The aggregate size fell by 133 times, from 5,720,016 missing products to
+43,056, but materializing those products still stalled the focused suite after
+23 of 26 tests for more than 90 seconds.  This class was rejected before a
+cohort run.  Binary transports have only one free coordinate, so any successor
+must fuse the contraction into that coordinate rather than add the other three
+products explicitly.
