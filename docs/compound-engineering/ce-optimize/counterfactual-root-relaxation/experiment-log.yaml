@@ -1062,3 +1062,25 @@ experiments:
       rounds; three spend the allowance on at most one LP, while four tail in
       repeated column-generation LPs.  Capping root separation cannot expose
       a missing branch phase and is not an evidence-supported candidate.
+
+  - id: single-context-phase-column-coverage
+    change: >
+      Before changing the pricer, form a finite marginal-preserving warm-column
+      family for every dynamic response block: start from the common-uniform
+      coupling and rotate one response context at a time through every nonzero
+      categorical phase.  Compare the family only with columns later produced
+      by exact pricing, aggregated over failed owners.
+    aggregate_coverage:
+      dynamic_blocks: 187
+      candidate_columns_beyond_initial: 17961
+      exact_pricing_generated_columns: 522
+      generated_columns_in_family: 59
+      generated_coverage_fraction: 0.11302681992337164
+      candidate_to_generated_ratio: 34.4080459770115
+    decision: reject_before_implementation
+    reason: >
+      The complete structural family is 34 times larger than the columns the
+      exact pricer actually requests and anticipates only 11.3 percent of
+      them.  Preloading it would enlarge the first restricted master without
+      removing most pricing rounds.  A diverse-looking feasible coupling pool
+      is therefore not a supported solution to column-generation tailing.

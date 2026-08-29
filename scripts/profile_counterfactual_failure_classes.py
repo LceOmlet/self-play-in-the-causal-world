@@ -14,7 +14,7 @@ import re
 from collections import Counter
 from collections.abc import Iterator
 from contextlib import contextmanager
-from itertools import combinations, product
+from itertools import combinations, pairwise, product
 from typing import Any
 
 from pyscipopt import SCIP_EVENTTYPE, Eventhdlr
@@ -583,6 +583,83 @@ def _ratio_bucket(value: float) -> str:
     return "gt_1.0"
 
 
+def _single_context_phase_support(
+    rows: tuple[tuple[float, ...], ...],
+) -> frozenset[tuple[int, ...]]:
+    """Return a permutation-symmetric finite family of feasible coupling support.
+
+    Besides the common-uniform coupling, rotate one context at a time by each
+    nonzero categorical phase.  Every phase map preserves that context's
+    marginal exactly; this function is diagnostic only and does not alter the
+    owner.
+    """
+
+    context_count = len(rows)
+    domain = len(rows[0])
+    phase_vectors = [(0.0,) * context_count]
+    for context in range(context_count):
+        for phase in range(1, domain):
+            shifts = [0.0] * context_count
+            shifts[context] = phase / domain
+            phase_vectors.append(tuple(shifts))
+
+    responses: set[tuple[int, ...]] = set()
+    for shifts in phase_vectors:
+        breakpoints = {0.0, 1.0}
+        for row, shift in zip(rows, shifts, strict=True):
+            cumulative = 0.0
+            for probability in row[:-1]:
+                cumulative += probability
+                breakpoints.add((cumulative - shift) % 1.0)
+        ordered = sorted(breakpoints)
+        for left, right in pairwise(ordered):
+            if right - left <= solver._SCIP_NUMERICAL_TOLERANCE:
+                continue
+            uniform = (left + right) / 2.0
+            response: list[int] = []
+            for row, shift in zip(rows, shifts, strict=True):
+                coordinate = (uniform + shift) % 1.0
+                cumulative = 0.0
+                selected = domain - 1
+                for state, probability in enumerate(row):
+                    cumulative += probability
+                    if coordinate < cumulative:
+                        selected = state
+                        break
+                response.append(selected)
+            responses.add(tuple(response))
+    return frozenset(responses)
+
+
+def _phase_column_coverage(owner: Any) -> dict[str, int]:
+    candidates = 0
+    generated = 0
+    overlap = 0
+    dynamic_blocks = 0
+    for block in owner.dynamic_pricing_blocks:
+        dynamic_blocks += 1
+        initial = {
+            response
+            for response, _ in owner.original_pricing_state[block.block_id][3]
+        }
+        current = {response for response, _ in block.columns}
+        generated_responses = current - initial
+        rows = tuple(
+            tuple(float(value) for value in owner.context_rows[block.node][context])
+            for context in block.contexts
+        )
+        family = _single_context_phase_support(rows) - initial
+        candidates += len(family)
+        generated += len(generated_responses)
+        overlap += len(generated_responses & family)
+    return {
+        "phase_dynamic_blocks": dynamic_blocks,
+        "phase_candidate_columns": candidates,
+        "phase_generated_columns": generated,
+        "phase_generated_overlap": overlap,
+    }
+
+
 def _progress_bucket(value: float) -> str:
     if value <= 0.01:
         return "le_0.01"
@@ -759,6 +836,7 @@ def _trace_sparse_optimization(
                     "presolving_seconds": self.model.getPresolvingTime(),
                     "solving_seconds": self.model.getSolvingTime(),
                     "branchings_by_role": dict(branch_trace.counts),
+                    **_phase_column_coverage(self),
                 }
             )
             calls.append(record)
@@ -955,6 +1033,7 @@ def main() -> None:
     failure_symbolic_max_arity = Counter[str]()
     failure_high_arity_term_fraction = Counter[str]()
     failure_linear_auxiliary_fraction = Counter[str]()
+    phase_column_sums = Counter[str]()
 
     for sample_index in range(
         DISTRIBUTION_START_SEED,
@@ -1103,6 +1182,13 @@ def main() -> None:
                         (0, 1, 2, 4, 8, 16, 32, 64),
                     )
                 ] += 1
+                for key in (
+                    "phase_dynamic_blocks",
+                    "phase_candidate_columns",
+                    "phase_generated_columns",
+                    "phase_generated_overlap",
+                ):
+                    phase_column_sums[key] += failed[key]
                 failure_small_dynamic_blocks[
                     _bucket(failed["small_dynamic_blocks"], (0, 1, 2, 3))
                 ] += 1
@@ -1259,6 +1345,7 @@ def main() -> None:
         "unresolved_separation_rounds": dict(
             sorted(failure_separation_rounds.items())
         ),
+        "unresolved_phase_column_coverage": dict(sorted(phase_column_sums.items())),
         "unresolved_small_dynamic_blocks": dict(
             sorted(failure_small_dynamic_blocks.items())
         ),

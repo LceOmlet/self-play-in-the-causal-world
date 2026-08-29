@@ -393,3 +393,11 @@ is therefore not spending the five-second allowance in an avoidable root-cut
 loop: the two actual regimes are one expensive initial LP and column-generation
 tailing.  An early-branching or root-round-cap candidate was rejected before
 implementation.
+
+A compact, marginal-preserving warm-column family was audited next.  It used
+the common-uniform response coupling plus every single-context categorical
+phase, a rule defined uniformly for all dynamic blocks.  Across the failed
+owners it would add 17,961 columns, yet it contained only 59 of the 522 columns
+later requested by exact pricing.  The 11.3 percent coverage at a 34-fold
+candidate-to-generated ratio rejects speculative initial-column diversity as
+a remedy for pricing tailing; no warm columns were added to production.
