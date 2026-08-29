@@ -236,3 +236,76 @@ experiments:
       The new owner correctly replaced the generic failure for both the large
       upstream-combination class and the five-state endpoint-only class, but
       neither produced an additional five-second certificate.
+
+  - id: joint-shared-boundary-stratified-frechet
+    change: >
+      Condition jointly on every shared variable that directly enters the
+      treatment-affected ancestor subgraph, and intersect the resulting exact
+      stratum-wise Frechet bounds with the unstratified outer interval.
+    shadow:
+      tighter_than_best_single_variable: 16
+      best_single_width_median: 0.10189874866137845
+      joint_boundary_width_median: 0.082871797884851
+      maximum_joint_strata: 12800
+      outer_intervals_within_endpoint_tolerance: 0
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 413.2863222002634
+    p95_seconds: 145.66205309994984
+    decision: reject
+    reason: >
+      The strictly tighter valid outer interval did not improve closure and
+      the joint projection substantially increased tail latency.
+
+  - id: sharp-leaf-transport-message-boxes
+    change: >
+      Whenever a leaf contraction is a numeric cost against one affected
+      response kernel, solve the complete child-state transportation problem
+      and use its sharp minimum and maximum as the message variable bounds.
+    parity:
+      Eighty random two- through five-state transports matched the existing
+      exact SCIP transport owner with maximum absolute delta 3.89e-16; the
+      focused 58-test suite passed.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 346.4382802002947
+    p95_seconds: 125.03937959996983
+    decision: reject
+    reason: >
+      Sharp local transport boxes did not improve a global endpoint
+      certificate, confirming that entrywise message bounds are not the
+      remaining shared-mechanism convexification.
+
+  - id: unlimited-bilinear-auxiliary-expressions
+    change: >
+      Remove SCIP's default cap of ten auxiliary expressions registered per
+      bilinear term, allowing the official nonlinear handler to retain every
+      repeated auxiliary occurrence in the shared message circuit.
+    distribution: {closed: 23, exact: 22, epsilon_sharp: 1, unresolved: 7}
+    total_seconds: 417.75295619975077
+    p95_seconds: 147.62195030000294
+    decision: reject
+    reason: >
+      Full auxiliary registration did not improve a certificate and increased
+      root-processing latency, so the default cap is not the missing joint
+      convexification.
+
+  - id: safe-min-fill-formulation-portfolio
+    change: >
+      Compare the original reverse-topological circuit with the exact
+      minimum-fill circuit only on its regression-safe class: no dynamic
+      response blocks and at least three affected mechanisms.  Measure the
+      closure-set union without emitting instance identities.
+    parity: >
+      The restricted alternate formulation passed the focused 58-test suite;
+      the unrestricted historical formulation reproduced an LP numerical
+      failure on the dynamic-pricing regression and was excluded.
+    contingency:
+      both_closed: 23
+      baseline_only: 0
+      alternate_only: 0
+      both_unresolved: 7
+    observed_working_set_bytes: 1719173120
+    decision: reject
+    reason: >
+      The two exact formulations had identical closure sets, so a concurrent
+      portfolio cannot increase frozen-distribution coverage and duplicates a
+      large model build.

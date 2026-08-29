@@ -67,3 +67,34 @@ product, with reference endpoints agreeing to at most 7.82e-10.  It correctly
 took ownership of both structural classes but still produced no new
 five-second certificate.  The main solver therefore retains none of these
 candidates.
+
+A complete shared-parent-boundary stratification tightened the best
+single-variable Frechet interval on 16 of 30 optimization instances, reducing
+the median outer width from 0.10190 to 0.08287.  None of those outer intervals
+was itself within the 0.001 endpoint tolerance, and passing the tighter bounds
+to the unchanged exact owner left closure at 23/30 while increasing total
+runtime from 325.41 to 413.29 seconds and P95 from 23.83 to 145.66 seconds.
+This rejects further outer-bound stratification as the current closure lever:
+the unresolved root gap lies inside the compatible-mechanism optimization,
+not in the available interventional Frechet envelope.
+
+Sharp local transport bounds were also tested at every numeric leaf
+contraction.  The tiny residual-flow solver matched the existing exact
+transport LP to 3.89e-16 over 80 random two- through five-state problems, but
+the frozen cohort again remained 23/30.  Exact entrywise message boxes are
+therefore insufficient: the residual dual gap depends on simultaneous
+consistency across messages that share the same response mechanisms.
+
+The official nonlinear handler's ten-auxiliary-expression cap was then
+removed entirely for every bilinear term.  Closure again remained 23/30 while
+total runtime rose to 417.75 seconds and P95 to 147.62 seconds.  The shared
+mechanism information is therefore absent from the relaxation itself, rather
+than merely hidden behind SCIP's auxiliary-expression registration limit.
+
+Finally, the original circuit and the regression-safe minimum-fill circuit
+were compared instance-by-instance while reporting only their aggregate
+contingency.  All 23 closed tasks were shared and all seven failures were
+shared; neither formulation had an exclusive certificate.  The sequential
+audit also reached an observed 1.72 GB working set.  A parallel formulation
+portfolio therefore has no closure-set union gain and would only duplicate
+the expensive global model.
