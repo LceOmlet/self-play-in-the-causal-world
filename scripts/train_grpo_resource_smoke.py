@@ -28,7 +28,7 @@ from cpt_world import (
     terminal_quality_reward,
 )
 
-_EXPECTED_REWARD_VERSION = "terminal-quality-v8"
+_EXPECTED_REWARD_VERSION = "terminal-quality-v9"
 
 
 def require_cpt_world_training_contract() -> dict[str, object]:
@@ -45,8 +45,7 @@ def require_cpt_world_training_contract() -> dict[str, object]:
             )
     if TERMINAL_QUALITY_REWARD_VERSION != _EXPECTED_REWARD_VERSION:
         raise RuntimeError(
-            f"training requires {_EXPECTED_REWARD_VERSION}, got "
-            f"{TERMINAL_QUALITY_REWARD_VERSION}"
+            f"training requires {_EXPECTED_REWARD_VERSION}, got {TERMINAL_QUALITY_REWARD_VERSION}"
         )
     for query_type in TASK_FAMILY_QUERY_TYPES:
         for quality in (0.0, 0.25, 0.75, 1.0):
@@ -55,28 +54,14 @@ def require_cpt_world_training_contract() -> dict[str, object]:
                     f"training utility altered {query_type} terminal quality {quality}"
                 )
     backdoor_contract = {
-        "exact": terminal_quality_reward(
-            {"kind": "backadj", "adjustment_error": 0, "unadjusted_error": Fraction(1, 5)}
-        ),
-        "unchanged": terminal_quality_reward(
-            {
-                "kind": "backadj",
-                "adjustment_error": Fraction(1, 5),
-                "unadjusted_error": Fraction(1, 5),
-            }
-        ),
-        "worse": terminal_quality_reward(
-            {
-                "kind": "backadj",
-                "adjustment_error": Fraction(2, 5),
-                "unadjusted_error": Fraction(1, 5),
-            }
-        ),
+        "exact": terminal_quality_reward({"kind": "backadj", "edit_distance": 0}),
+        "one_edit": terminal_quality_reward({"kind": "backadj", "edit_distance": 1}),
+        "two_edits": terminal_quality_reward({"kind": "backadj", "edit_distance": 2}),
     }
     if backdoor_contract != {
         "exact": Fraction(1),
-        "unchanged": Fraction(1, 2),
-        "worse": Fraction(1, 3),
+        "one_edit": Fraction(1, 2),
+        "two_edits": Fraction(1, 3),
     }:
         raise RuntimeError(f"unexpected backdoor reward contract: {backdoor_contract}")
     return {

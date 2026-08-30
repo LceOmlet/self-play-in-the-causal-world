@@ -18,13 +18,13 @@ from typing import Any
 from .query_truth import (
     compute_query_truth,
     interventional_probability,
+    nearest_backdoor_adjustment_set,
     worldspec_projected_interventional_distribution,
 )
 from .rewards import TERMINAL_QUALITY_REWARD_VERSION
 from .world_space import WorldSpec
 
 _ATE_VECTOR_TOLERANCE = 1e-6
-_PROBABILITY_IDENTITY_TOLERANCE = Fraction(1, 10**12)
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -308,114 +308,6 @@ def _observational_conditional_distributions(
     )
 
 
-def _adjusted_outcome_distributions(
-    world: WorldSpec,
-    treatment_node: int,
-    outcome_node: int,
-    adjustment_nodes: tuple[int, ...],
-) -> tuple[tuple[Fraction, ...], ...]:
-    """Return standardization over the complete submitted adjustment set.
-
-    For every treatment state ``x``, this computes
-    ``sum_z P(Y | X=x, Z=z) P(Z=z)`` from the observational law.  The function
-    deliberately accepts mediators, colliders, and redundant covariates: their
-    numerical consequences belong in the terminal error rather than being
-    hidden by a graph-based pre-filter.
-    """
-
-    if treatment_node in adjustment_nodes or outcome_node in adjustment_nodes:
-        raise ValueError("adjustment nodes must exclude treatment and outcome")
-    if len(set(adjustment_nodes)) != len(adjustment_nodes):
-        raise ValueError("adjustment nodes must not contain duplicates")
-
-    measure = (treatment_node, *adjustment_nodes, outcome_node)
-    law = worldspec_projected_interventional_distribution(world, {}, measure)
-    marginal_adjustment: dict[tuple[int, ...], Fraction] = {}
-    joint_treatment_adjustment: dict[tuple[int, tuple[int, ...]], Fraction] = {}
-    joint_outcome: dict[tuple[int, tuple[int, ...], int], Fraction] = {}
-    for assignment, raw_probability in law:
-        probability = Fraction(raw_probability)
-        treatment_state = assignment[0]
-        adjustment_state = assignment[1:-1]
-        outcome_state = assignment[-1]
-        marginal_adjustment[adjustment_state] = (
-            marginal_adjustment.get(adjustment_state, Fraction(0)) + probability
-        )
-        treatment_key = (treatment_state, adjustment_state)
-        joint_treatment_adjustment[treatment_key] = (
-            joint_treatment_adjustment.get(treatment_key, Fraction(0)) + probability
-        )
-        outcome_key = (treatment_state, adjustment_state, outcome_state)
-        joint_outcome[outcome_key] = joint_outcome.get(outcome_key, Fraction(0)) + probability
-
-    distributions: list[tuple[Fraction, ...]] = []
-    for treatment_state in range(world.domains[treatment_node]):
-        outcome_masses = [Fraction(0) for _ in range(world.domains[outcome_node])]
-        for adjustment_state, adjustment_probability in marginal_adjustment.items():
-            if adjustment_probability == 0:
-                continue
-            treatment_probability = joint_treatment_adjustment.get(
-                (treatment_state, adjustment_state), Fraction(0)
-            )
-            if treatment_probability == 0:
-                raise ValueError(
-                    "submitted adjustment set violates positivity for a treatment state"
-                )
-            for outcome_state in range(world.domains[outcome_node]):
-                conditional_probability = (
-                    joint_outcome.get(
-                        (treatment_state, adjustment_state, outcome_state), Fraction(0)
-                    )
-                    / treatment_probability
-                )
-                outcome_masses[outcome_state] += (
-                    adjustment_probability * conditional_probability
-                )
-        distributions.append(tuple(outcome_masses))
-    return tuple(distributions)
-
-
-def _interventional_outcome_distributions(
-    world: WorldSpec,
-    treatment_node: int,
-    outcome_node: int,
-) -> tuple[tuple[Fraction, ...], ...]:
-    distributions: list[tuple[Fraction, ...]] = []
-    for treatment_state in range(world.domains[treatment_node]):
-        law = worldspec_projected_interventional_distribution(
-            world,
-            {treatment_node: treatment_state},
-            (outcome_node,),
-        )
-        distributions.append(tuple(Fraction(probability) for _, probability in law))
-    return tuple(distributions)
-
-
-def _mean_distribution_total_variation(
-    left: tuple[tuple[Fraction, ...], ...],
-    right: tuple[tuple[Fraction, ...], ...],
-) -> Fraction:
-    if len(left) != len(right) or not left:
-        raise ValueError("distribution families must have the same nonzero size")
-    total = Fraction(0)
-    for left_distribution, right_distribution in zip(left, right, strict=True):
-        if len(left_distribution) != len(right_distribution):
-            raise ValueError("paired distributions must have the same outcome domain")
-        total += sum(
-            (
-                abs(left_probability - right_probability)
-                for left_probability, right_probability in zip(
-                    left_distribution, right_distribution, strict=True
-                )
-            ),
-            start=Fraction(0),
-        ) / 2
-    mean = total / len(left)
-    if mean <= _PROBABILITY_IDENTITY_TOLERANCE:
-        return Fraction(0)
-    return mean
-
-
 def _distance_to_interval(value: Fraction, interval: tuple[Fraction, Fraction]) -> Fraction:
     return max(interval[0] - value, Fraction(0), value - interval[1])
 
@@ -684,9 +576,7 @@ def score_terminal_answer(
             ),
             "observational_choice": observational_choice,
             "observational_shortcut_error": observational_shortcut_error,
-            "observational_shortcut_normalized_regret": (
-                observational_shortcut_normalized_regret
-            ),
+            "observational_shortcut_normalized_regret": (observational_shortcut_normalized_regret),
             "optimal_action": regret == 0,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
@@ -695,38 +585,18 @@ def score_terminal_answer(
         treatment_index = _query_node_index(seed, world, "treatment")
         outcome_index = _outcome_node_index(seed, world)
         predicted_set = frozenset(parsed["adjustment_set"])
-        adjustment_nodes = tuple(
-            sorted(world.variables.index(name) for name in predicted_set)
-        )
-        truth_distributions = _interventional_outcome_distributions(
-            world, treatment_index, outcome_index
-        )
-        adjusted_distributions = _adjusted_outcome_distributions(
+        edit_distance, nearest_set = nearest_backdoor_adjustment_set(
             world,
             treatment_index,
             outcome_index,
-            adjustment_nodes,
-        )
-        unadjusted_distributions = _adjusted_outcome_distributions(
-            world,
-            treatment_index,
-            outcome_index,
-            (),
-        )
-        adjustment_error = _mean_distribution_total_variation(
-            adjusted_distributions, truth_distributions
-        )
-        unadjusted_error = _mean_distribution_total_variation(
-            unadjusted_distributions, truth_distributions
+            predicted_set,
         )
         return {
             "kind": "backadj",
             "prediction": tuple(sorted(predicted_set)),
-            "adjusted_distributions": adjusted_distributions,
-            "unadjusted_distributions": unadjusted_distributions,
-            "interventional_distributions": truth_distributions,
-            "adjustment_error": adjustment_error,
-            "unadjusted_error": unadjusted_error,
+            "nearest_valid_adjustment_set": nearest_set,
+            "edit_distance": edit_distance,
+            "valid_adjustment_set": edit_distance == 0,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }
 

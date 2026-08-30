@@ -1,5 +1,7 @@
 # Terminal-Quality Reward v8
 
+Superseded by [`terminal-quality-reward-v9`](terminal-quality-reward-v9.md).
+
 `terminal-quality-v8` keeps the v7 numerical rewards for ATE, individual
 counterfactual ROI, and best intervention. It replaces the backdoor terminal
 object and reward.

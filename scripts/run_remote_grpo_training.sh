@@ -44,9 +44,9 @@ if expected_source not in loaded_source.parents:
         f"cpt_world import escaped the requested project: {loaded_source} not under "
         f"{expected_source}"
     )
-if TERMINAL_QUALITY_REWARD_VERSION != "terminal-quality-v8":
+if TERMINAL_QUALITY_REWARD_VERSION != "terminal-quality-v9":
     raise RuntimeError(
-        "training requires terminal-quality-v8, got "
+        "training requires terminal-quality-v9, got "
         f"{TERMINAL_QUALITY_REWARD_VERSION}"
     )
 for query_type in TASK_FAMILY_QUERY_TYPES:
@@ -57,27 +57,19 @@ for query_type in TASK_FAMILY_QUERY_TYPES:
             )
 backdoor_contract = {
     "exact": terminal_quality_reward(
-        {"kind": "backadj", "adjustment_error": 0, "unadjusted_error": Fraction(1, 5)}
+        {"kind": "backadj", "edit_distance": 0}
     ),
-    "unchanged": terminal_quality_reward(
-        {
-            "kind": "backadj",
-            "adjustment_error": Fraction(1, 5),
-            "unadjusted_error": Fraction(1, 5),
-        }
+    "one_edit": terminal_quality_reward(
+        {"kind": "backadj", "edit_distance": 1}
     ),
-    "worse": terminal_quality_reward(
-        {
-            "kind": "backadj",
-            "adjustment_error": Fraction(2, 5),
-            "unadjusted_error": Fraction(1, 5),
-        }
+    "two_edits": terminal_quality_reward(
+        {"kind": "backadj", "edit_distance": 2}
     ),
 }
 if backdoor_contract != {
     "exact": Fraction(1),
-    "unchanged": Fraction(1, 2),
-    "worse": Fraction(1, 3),
+    "one_edit": Fraction(1, 2),
+    "two_edits": Fraction(1, 3),
 }:
     raise RuntimeError(f"unexpected backdoor reward contract: {backdoor_contract}")
 print(

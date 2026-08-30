@@ -541,7 +541,7 @@ class DiscoveryScoringTests(unittest.TestCase):
         )
         return score_terminal_answer(raw, seed_obj, world)
 
-    def test_backadj_one_valid_adjustment_set_has_zero_effect_error(self) -> None:
+    def test_backadj_one_valid_adjustment_set_has_zero_edit_distance(self) -> None:
         seed_obj, world = _find_discovery_task("backadj_minimal_sets")
         label_map = seed_obj["visible_schema"]["variable_labels"]
         treatment = world.variables.index(
@@ -566,7 +566,8 @@ class DiscoveryScoringTests(unittest.TestCase):
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
-        self.assertEqual(score["adjustment_error"], 0)
+        self.assertEqual(score["edit_distance"], 0)
+        self.assertTrue(score["valid_adjustment_set"])
         self.assertEqual(terminal_quality_reward(score), 1)
 
     def test_backadj_scores_the_complete_submitted_set(self) -> None:
@@ -575,37 +576,34 @@ class DiscoveryScoringTests(unittest.TestCase):
         unadjusted = self._score_adjustment_set(seed_obj, world, ())
         overadjusted = self._score_adjustment_set(seed_obj, world, ("Z", "M"))
 
-        self.assertEqual(valid["adjustment_error"], 0)
+        self.assertEqual(valid["edit_distance"], 0)
         self.assertEqual(terminal_quality_reward(valid), 1)
-        self.assertEqual(
-            unadjusted["adjustment_error"], unadjusted["unadjusted_error"]
-        )
+        self.assertEqual(unadjusted["edit_distance"], 1)
         self.assertEqual(terminal_quality_reward(unadjusted), Fraction(1, 2))
-        self.assertGreater(overadjusted["adjustment_error"], 0)
-        self.assertLess(terminal_quality_reward(overadjusted), 1)
+        self.assertEqual(overadjusted["edit_distance"], 1)
+        self.assertEqual(terminal_quality_reward(overadjusted), Fraction(1, 2))
 
     def test_backadj_penalizes_opening_a_collider(self) -> None:
         seed_obj, world = _collider_behavior_task()
         valid = self._score_adjustment_set(seed_obj, world, ())
         collider = self._score_adjustment_set(seed_obj, world, ("C",))
 
-        self.assertEqual(valid["unadjusted_error"], 0)
-        self.assertEqual(valid["adjustment_error"], 0)
+        self.assertEqual(valid["edit_distance"], 0)
         self.assertEqual(terminal_quality_reward(valid), 1)
-        self.assertGreater(collider["adjustment_error"], 0)
-        self.assertEqual(terminal_quality_reward(collider), 0)
+        self.assertEqual(collider["edit_distance"], 1)
+        self.assertEqual(terminal_quality_reward(collider), Fraction(1, 2))
 
-    def test_backadj_prioritizes_the_stronger_missing_confounder(self) -> None:
+    def test_backadj_counts_each_missing_confounder_as_one_edit(self) -> None:
         seed_obj, world = _strong_weak_backdoor_task()
         complete = self._score_adjustment_set(seed_obj, world, ("A", "B"))
         keeps_strong = self._score_adjustment_set(seed_obj, world, ("A",))
         keeps_weak = self._score_adjustment_set(seed_obj, world, ("B",))
 
-        self.assertEqual(complete["adjustment_error"], 0)
-        self.assertLess(keeps_strong["adjustment_error"], keeps_weak["adjustment_error"])
-        self.assertGreater(
-            terminal_quality_reward(keeps_strong), terminal_quality_reward(keeps_weak)
-        )
+        self.assertEqual(complete["edit_distance"], 0)
+        self.assertEqual(keeps_strong["edit_distance"], 1)
+        self.assertEqual(keeps_weak["edit_distance"], 1)
+        self.assertEqual(terminal_quality_reward(keeps_strong), Fraction(1, 2))
+        self.assertEqual(terminal_quality_reward(keeps_weak), Fraction(1, 2))
 
     def test_backadj_parser_rejects_duplicate_and_endpoint_labels(self) -> None:
         seed_obj, world = _backdoor_behavior_task()
@@ -623,9 +621,7 @@ class DiscoveryScoringTests(unittest.TestCase):
             )
         with self.assertRaisesRegex(ValueError, "exclude treatment and outcome"):
             parse_terminal_answer(
-                json.dumps(
-                    {"type": "answer", "adjustment_set": [labels["X"]]}
-                ),
+                json.dumps({"type": "answer", "adjustment_set": [labels["X"]]}),
                 seed_obj,
                 world,
             )
@@ -638,13 +634,19 @@ class DiscoveryScoringTests(unittest.TestCase):
         raw = json.dumps(
             {
                 "type": "answer",
-                "adjustment_set": [
-                    label_map[name] for name in adjustment_sets[0]
-                ],
+                "adjustment_set": [label_map[name] for name in adjustment_sets[0]],
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
-        self.assertEqual(score["adjustment_error"], 0)
+        self.assertEqual(score["edit_distance"], 0)
+        self.assertEqual(terminal_quality_reward(score), 1)
+
+    def test_backadj_accepts_a_valid_nonminimal_adjustment_set(self) -> None:
+        seed_obj, world = _multiple_adjustment_task()
+        score = self._score_adjustment_set(seed_obj, world, ("A", "B"))
+
+        self.assertEqual(score["edit_distance"], 0)
+        self.assertTrue(score["valid_adjustment_set"])
         self.assertEqual(terminal_quality_reward(score), 1)
 
     def test_mediator_correct_answer_has_full_f1(self) -> None:

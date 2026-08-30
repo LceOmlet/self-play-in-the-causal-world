@@ -8,9 +8,10 @@ model answers, or scores them.
 from __future__ import annotations
 
 import heapq
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from fractions import Fraction
+from functools import lru_cache
 from itertools import combinations, product
 from math import fsum, isfinite, prod
 from typing import Any
@@ -1434,6 +1435,82 @@ def backdoor_adjustment_sets(
                 valid.append(condition)
     valid.sort(key=lambda candidate: (len(candidate), tuple(sorted(candidate))))
     return tuple(tuple(world.variables[node] for node in sorted(candidate)) for candidate in valid)
+
+
+@lru_cache(maxsize=8192)
+def _nearest_backdoor_adjustment_indices(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    treatment: int,
+    outcome: int,
+    predicted: frozenset[int],
+) -> tuple[int, tuple[int, ...]]:
+    """Return the exact nearest valid set using increasing Hamming distance."""
+
+    children: dict[int, list[int]] = {node: [] for node in range(node_count)}
+    for parent, child in edges:
+        children[parent].append(child)
+    descendants: set[int] = set()
+    stack = [treatment]
+    while stack:
+        current = stack.pop()
+        for child in children[current]:
+            if child not in descendants:
+                descendants.add(child)
+                stack.append(child)
+
+    allowed = tuple(
+        node
+        for node in range(node_count)
+        if node not in {treatment, outcome} and node not in descendants
+    )
+    allowed_set = frozenset(allowed)
+    forced_removals = len(predicted - allowed_set)
+    projected_prediction = predicted & allowed_set
+
+    # Toggling k allowed variables enumerates exactly the sets at Hamming
+    # distance k from the allowed part of the prediction. The first valid
+    # layer is therefore globally nearest; no probabilistic mechanism is used.
+    for edit_count in range(len(allowed) + 1):
+        for toggled in combinations(allowed, edit_count):
+            candidate = projected_prediction.symmetric_difference(toggled)
+            if _backdoor_separated_structure(
+                node_count,
+                edges,
+                treatment,
+                outcome,
+                candidate,
+            ):
+                return forced_removals + edit_count, tuple(sorted(candidate))
+    raise RuntimeError("a fully observed DAG must admit a back-door adjustment set")
+
+
+def nearest_backdoor_adjustment_set(
+    world: WorldSpec,
+    treatment: object,
+    outcome: object,
+    predicted: Iterable[object],
+) -> tuple[int, tuple[str, ...]]:
+    """Return edit distance and one nearest graphically valid adjustment set.
+
+    Distance is the symmetric-difference size. Valid sets exclude treatment,
+    outcome, and descendants of treatment and satisfy the standard back-door
+    criterion. The result depends only on the DAG, never on CPT magnitudes.
+    """
+
+    treatment_node = _node_index(world, treatment)
+    outcome_node = _node_index(world, outcome)
+    if treatment_node == outcome_node:
+        raise ValueError("treatment and outcome must be different variables")
+    predicted_nodes = frozenset(_node_index(world, node) for node in predicted)
+    distance, nearest = _nearest_backdoor_adjustment_indices(
+        len(world.variables),
+        world.edges,
+        treatment_node,
+        outcome_node,
+        predicted_nodes,
+    )
+    return distance, tuple(world.variables[node] for node in nearest)
 
 
 def collider_bias_effect(

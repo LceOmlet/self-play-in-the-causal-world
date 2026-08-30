@@ -8,7 +8,7 @@ variable names, task truth, and scorer are never rendered to the model.
 
 The current milestone provides the environment, the shared task-generation and
 interaction pipeline, the frozen
-[Terminal-Quality Reward v8](docs/terminal-quality-reward-v8.md), the
+[Terminal-Quality Reward v9](docs/terminal-quality-reward-v9.md), the
 [uniform task-family training mixture](docs/training-mixture-v1.md), and an
 executable GRPO post-training entry point. It does not yet freeze a self-play
 data-generation algorithm, difficulty bands, or a final benchmark aggregation
@@ -35,7 +35,7 @@ task-specific truth owners. The model never receives the graph or CPT tables.
 | Categorical total effect (ATE) | The complete outcome-state effect vector for one ordered pair of treatment states. | Estimating an interventional distributional change when the treatment and outcome are readonly. |
 | Individual counterfactual ROI | The lower and upper endpoints of the same individual's sharp counterfactual probability interval, conditioned on their factual treatment and outcome. | Reasoning over every causally sufficient mechanism compatible with the hidden CPT world, without selecting one hidden SCM. |
 | Experimental decision | One final state of a readonly deployment variable. | Using experiments on other legal targets to minimize or maximize the requested outcome event. |
-| Backdoor adjustment | One complete adjustment set, which may be empty. | Recovering the hard-do outcome laws by standardizing observational conditionals over the submitted variables. |
+| Backdoor adjustment | One complete adjustment set, which may be empty. | Finding variables that satisfy the graphical backdoor criterion without conditioning on treatment descendants. |
 | Mediator set and order | All mediators on directed treatment-to-outcome paths and the consecutive directed path edges. | Recovering the query-relevant causal pathway without reconstructing the full graph. |
 
 Pinned real-world and motif seeds under `data/seeds/` are validation fixtures.
@@ -43,7 +43,7 @@ They are not a second sampler and do not define the generated task distribution.
 
 ## Reward and benchmark metrics
 
-### Terminal-Quality Reward v8
+### Terminal-Quality Reward v9
 
 Every legal terminal answer receives one continuous quality value between zero
 and one. An unfinished episode or an illegal terminal answer receives zero. The
@@ -56,7 +56,7 @@ time are recorded separately and never folded into terminal quality.
 | Categorical total effect | Total-variation error between the predicted and true complete effect vectors. | Accuracy is calibrated against the error of replacing the causal effect with the corresponding observational conditional effect, with one fixed sampling-resolution allowance. Exact recovery receives one and larger vector error lowers quality continuously. |
 | Individual counterfactual ROI | Mean absolute distance of the two predicted endpoints from their certified endpoint ranges. | Accuracy is calibrated against the observational counterfactual plug-in interval with the same fixed sampling-resolution allowance. Both endpoints contribute equally, and exact certified recovery receives one. |
 | Experimental decision | Regret of the chosen deployment state, normalized by the full causal value range available in that world. | Accuracy is calibrated against the normalized regret of the state selected from observational conditionals. An optimal state receives one; increasingly costly decisions receive lower quality. |
-| Backdoor adjustment | Mean total-variation error between the standardized outcome laws induced by the submitted set and the true hard-do outcome laws, averaged over treatment states. | A set that exactly recovers the hard-do laws receives one. Relative to using no adjustment variables, improvement scores above one half, no improvement scores one half, and worsening scores below one half. If no adjustment is already exact, any harmful adjustment receives zero. |
+| Backdoor adjustment | Number of variable additions or removals needed to reach the nearest graphically valid adjustment set. | Any valid set receives one. One required edit receives one half, two receive one third, and further edits decrease quality by the same reciprocal rule. |
 | Mediator set and order | Set disagreement for the mediators and directed-edge disagreement for their path order. | Terminal quality is the equal average of mediator F1 and path-order F1. |
 
 For the first three tasks, the fixed sampling-resolution allowance is set once
@@ -68,7 +68,7 @@ answer to use as a calibration reference. When all deployment states have the
 same causal value, every state is optimal and has zero regret.
 
 The full versioned contract is
-[Terminal-Quality Reward v8](docs/terminal-quality-reward-v8.md). Historical
+[Terminal-Quality Reward v9](docs/terminal-quality-reward-v9.md). Historical
 reward documents remain in `docs/` only to explain earlier experiments; they
 are not active training contracts.
 
@@ -83,7 +83,7 @@ separately using the following definitions:
 | Categorical total effect | Complete-vector RMSE and mean total-variation error; observational-shortcut total-variation error is reported beside them. | Lower is better. |
 | Individual counterfactual ROI | Endpoint MAE, endpoint RMSE, exact endpoint-recovery rate, and predicted and certified interval widths. | Lower endpoint error and higher exact recovery are better. |
 | Experimental decision | Optimal-action accuracy, raw causal regret, and normalized causal regret; concordant and observationally discordant strata are reported separately. | Higher accuracy and lower regret are better. |
-| Backdoor adjustment | Mean adjustment-law total-variation error, exact causal-law recovery rate, and the fraction of answers that improve on the empty adjustment set. Structural set F1 is not a v8 metric. | Lower error and higher recovery or improvement rates are better. |
+| Backdoor adjustment | Nearest-valid-set edit distance, graphically valid-set rate, and mean v9 terminal quality. | Lower edit distance and higher valid-set rate are better. |
 | Mediator set and order | Mediator precision, recall, and F1; path-order precision, recall, and F1; and joint exact-match rate. | Higher is better. |
 
 Complete-vector RMSE gives every outcome-state component equal weight. Endpoint
@@ -92,7 +92,7 @@ numerical enclosure is not counted as model error. Raw regret is the causal
 value lost by the selected action; normalized regret expresses that loss
 relative to the complete causal value range in the same world.
 
-Every task table must also include mean v8 terminal quality and valid-terminal
+Every task table must also include mean v9 terminal quality and valid-terminal
 coverage. Counterfactual truth certification coverage, exact versus
 epsilon-sharp certification counts, node-count histograms, task-answer
 distributions, and observational-shortcut baselines are dataset diagnostics

@@ -13,7 +13,7 @@ from cpt_world import (
 
 class TerminalQualityRewardTests(unittest.TestCase):
     def test_reward_contract_version_and_unfinished_value_are_frozen(self) -> None:
-        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v8")
+        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v9")
         self.assertEqual(UNFINISHED_TERMINAL_QUALITY, 0)
 
     def test_numeric_shortcuts_use_the_fixed_budget_sampling_resolution(self) -> None:
@@ -114,54 +114,18 @@ class TerminalQualityRewardTests(unittest.TestCase):
         }
         self.assertEqual(terminal_quality_reward(score), Fraction(7, 12))
 
-    def test_backdoor_reward_uses_only_adjustment_error_relative_to_unadjusted_error(self) -> None:
+    def test_backdoor_reward_is_reciprocal_in_nearest_valid_set_distance(self) -> None:
         self.assertEqual(
-            terminal_quality_reward(
-                {
-                    "kind": "backadj",
-                    "adjustment_error": 0,
-                    "unadjusted_error": Fraction(1, 5),
-                }
-            ),
+            terminal_quality_reward({"kind": "backadj", "edit_distance": 0}),
             1,
         )
         self.assertEqual(
-            terminal_quality_reward(
-                {
-                    "kind": "backadj",
-                    "adjustment_error": Fraction(1, 5),
-                    "unadjusted_error": Fraction(1, 5),
-                }
-            ),
+            terminal_quality_reward({"kind": "backadj", "edit_distance": 1}),
             Fraction(1, 2),
         )
         self.assertEqual(
-            terminal_quality_reward(
-                {
-                    "kind": "backadj",
-                    "adjustment_error": Fraction(2, 5),
-                    "unadjusted_error": Fraction(1, 5),
-                }
-            ),
+            terminal_quality_reward({"kind": "backadj", "edit_distance": 2}),
             Fraction(1, 3),
-        )
-
-    def test_backdoor_reward_is_closed_when_observational_adjustment_is_exact(self) -> None:
-        self.assertEqual(
-            terminal_quality_reward(
-                {"kind": "backadj", "adjustment_error": 0, "unadjusted_error": 0}
-            ),
-            1,
-        )
-        self.assertEqual(
-            terminal_quality_reward(
-                {
-                    "kind": "backadj",
-                    "adjustment_error": Fraction(1, 10),
-                    "unadjusted_error": 0,
-                }
-            ),
-            0,
         )
 
     def test_invalid_owner_diagnostics_fail_closed(self) -> None:
@@ -175,10 +139,10 @@ class TerminalQualityRewardTests(unittest.TestCase):
                     "observational_shortcut_error": 1,
                 }
             )
-        with self.assertRaisesRegex(ValueError, "adjustment_error"):
-            terminal_quality_reward(
-                {"kind": "backadj", "adjustment_error": 2, "unadjusted_error": 0}
-            )
+        with self.assertRaisesRegex(ValueError, "edit_distance"):
+            terminal_quality_reward({"kind": "backadj", "edit_distance": Fraction(1, 2)})
+        with self.assertRaisesRegex(ValueError, "edit_distance"):
+            terminal_quality_reward({"kind": "backadj", "edit_distance": -1})
 
 
 if __name__ == "__main__":

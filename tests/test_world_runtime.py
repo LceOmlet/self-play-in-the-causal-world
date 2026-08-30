@@ -671,13 +671,11 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             json.dumps(
                 {
                     "type": "answer",
-                    "adjustment_set": [
-                        labels[name] for name in adjustment_set
-                    ],
+                    "adjustment_set": [labels[name] for name in adjustment_set],
                 }
             )
         )
-        self.assertEqual(terminal.score["adjustment_error"], 0)
+        self.assertEqual(terminal.score["edit_distance"], 0)
         self.assertEqual(terminal.reward, 1)
 
     def test_episode_rejects_an_action_surface_with_no_target_measure_pair(self) -> None:

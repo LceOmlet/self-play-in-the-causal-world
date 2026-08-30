@@ -14,11 +14,9 @@ from typing import Any
 
 from .episode import OBSERVATIONS_PER_BANDWIDTH_UNIT
 
-TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v8"
+TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v9"
 UNFINISHED_TERMINAL_QUALITY = Fraction(0)
-TERMINAL_SAMPLING_RESOLUTION = Fraction.from_float(
-    1.0 / sqrt(OBSERVATIONS_PER_BANDWIDTH_UNIT)
-)
+TERMINAL_SAMPLING_RESOLUTION = Fraction.from_float(1.0 / sqrt(OBSERVATIONS_PER_BANDWIDTH_UNIT))
 
 
 def _fraction_metric(
@@ -86,14 +84,12 @@ def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
             absolute_error_upper=Fraction(1),
         )
     elif kind == "backadj":
-        adjustment_error = _fraction_metric(score, "adjustment_error")
-        unadjusted_error = _fraction_metric(score, "unadjusted_error")
-        if adjustment_error == 0:
-            quality = Fraction(1)
-        elif unadjusted_error == 0:
-            quality = Fraction(0)
-        else:
-            quality = unadjusted_error / (unadjusted_error + adjustment_error)
+        edit_distance = score.get("edit_distance")
+        if isinstance(edit_distance, bool) or not isinstance(edit_distance, int):
+            raise ValueError("terminal diagnostic edit_distance must be a nonnegative integer")
+        if edit_distance < 0:
+            raise ValueError("terminal diagnostic edit_distance must be a nonnegative integer")
+        quality = Fraction(1, 1 + edit_distance)
     elif kind == "mediator":
         quality = (_fraction_metric(score, "mediator_f1") + _fraction_metric(score, "order_f1")) / 2
     else:
