@@ -19,6 +19,55 @@ SAVE_TOTAL_LIMIT=${SAVE_TOTAL_LIMIT:-5}
 FLA_KERNEL_DIR=${FLA_KERNEL_DIR:-/home/chen/kernels/fla-v1-398dfa8c}
 RESUME_FROM_CHECKPOINT=${RESUME_FROM_CHECKPOINT:-}
 
+PROJECT_DIR=$(realpath "$PROJECT_DIR")
+export PYTHONPATH="$PROJECT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
+export CPT_WORLD_EXPECTED_SOURCE="$PROJECT_DIR/src/cpt_world"
+
+"$ENV_DIR/bin/python" - <<'PY'
+import json
+import os
+from pathlib import Path
+
+import cpt_world
+from cpt_world import (
+    TASK_FAMILY_QUERY_TYPES,
+    TERMINAL_QUALITY_REWARD_VERSION,
+    task_advantage_utility,
+)
+
+expected_source = Path(os.environ["CPT_WORLD_EXPECTED_SOURCE"]).resolve()
+loaded_source = Path(cpt_world.__file__).resolve()
+if expected_source not in loaded_source.parents:
+    raise RuntimeError(
+        f"cpt_world import escaped the requested project: {loaded_source} not under "
+        f"{expected_source}"
+    )
+if TERMINAL_QUALITY_REWARD_VERSION != "terminal-quality-v7":
+    raise RuntimeError(
+        "training requires terminal-quality-v7, got "
+        f"{TERMINAL_QUALITY_REWARD_VERSION}"
+    )
+for query_type in TASK_FAMILY_QUERY_TYPES:
+    for quality in (0.0, 0.25, 0.75, 1.0):
+        if task_advantage_utility(quality, query_type) != quality:
+            raise RuntimeError(
+                f"training utility altered {query_type} terminal quality {quality}"
+            )
+print(
+    "CPT_WORLD_PREFLIGHT="
+    + json.dumps(
+        {
+            "source": str(loaded_source),
+            "reward_version": TERMINAL_QUALITY_REWARD_VERSION,
+            "task_families": list(TASK_FAMILY_QUERY_TYPES),
+            "utility": "identity",
+        },
+        separators=(",", ":"),
+    ),
+    flush=True,
+)
+PY
+
 mkdir -p "$RUN_DIR"
 export CUDA_VISIBLE_DEVICES=0
 export PYTHONUNBUFFERED=1

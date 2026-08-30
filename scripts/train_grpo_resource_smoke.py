@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 from types import MethodType
@@ -15,11 +16,48 @@ from grpo_kernel_check import enable_local_fla_kernels, require_gdn_kernels_acti
 from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
 
+import cpt_world
 from cpt_world import (
+    TASK_FAMILY_QUERY_TYPES,
+    TERMINAL_QUALITY_REWARD_VERSION,
     CPTWorldEnvironment,
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
+    task_advantage_utility,
 )
+
+_EXPECTED_REWARD_VERSION = "terminal-quality-v7"
+
+
+def require_cpt_world_training_contract() -> dict[str, object]:
+    """Fail before model loading when the process imported the wrong CPT-World."""
+
+    loaded_source = Path(cpt_world.__file__).resolve()
+    expected_source_value = os.environ.get("CPT_WORLD_EXPECTED_SOURCE")
+    if expected_source_value:
+        expected_source = Path(expected_source_value).resolve()
+        if expected_source not in loaded_source.parents:
+            raise RuntimeError(
+                "cpt_world import escaped the requested project: "
+                f"{loaded_source} not under {expected_source}"
+            )
+    if TERMINAL_QUALITY_REWARD_VERSION != _EXPECTED_REWARD_VERSION:
+        raise RuntimeError(
+            f"training requires {_EXPECTED_REWARD_VERSION}, got "
+            f"{TERMINAL_QUALITY_REWARD_VERSION}"
+        )
+    for query_type in TASK_FAMILY_QUERY_TYPES:
+        for quality in (0.0, 0.25, 0.75, 1.0):
+            if task_advantage_utility(quality, query_type) != quality:
+                raise RuntimeError(
+                    f"training utility altered {query_type} terminal quality {quality}"
+                )
+    return {
+        "source": str(loaded_source),
+        "reward_version": TERMINAL_QUALITY_REWARD_VERSION,
+        "task_families": list(TASK_FAMILY_QUERY_TYPES),
+        "utility": "identity",
+    }
 
 
 def parse_args() -> argparse.Namespace:
@@ -66,6 +104,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     cli = parse_args()
+    print(
+        "CPT_WORLD_RUNTIME="
+        + json.dumps(require_cpt_world_training_contract(), separators=(",", ":")),
+        flush=True,
+    )
     if cli.vllm_mtp_speculative_tokens < 0:
         raise ValueError("--vllm-mtp-speculative-tokens must be nonnegative")
     if cli.vllm_mtp_speculative_tokens and cli.vllm_sleep_level != 1:
