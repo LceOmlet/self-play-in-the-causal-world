@@ -13,9 +13,9 @@ from cpt_world import (
     WorldGrammar,
     WorldSpec,
     WorldSpecEpisode,
+    assemble_sampled_anchor_tasks,
     compute_query_truth,
     iter_sampled_seeds,
-    sample_task_world,
 )
 
 _DEMO_SEEDS = {
@@ -40,13 +40,23 @@ def _jsonable(value: Any) -> Any:
 def _task(query_type: str) -> tuple[Mapping[str, Any], WorldSpec, str]:
     grammar = WorldGrammar()
     seed_number = _DEMO_SEEDS[query_type]
-    world = sample_task_world(grammar, seed_number, query_type)
     (seed,) = iter_sampled_seeds(
         grammar,
         query_types=(query_type,),
         start_seed=seed_number,
         count=1,
     )
+    seed_id = str(seed["seed_id"])
+    proposal_index = int(seed_id.split("-", 2)[1])
+    anchor_index = int(seed_id.rsplit("-a", 1)[1])
+    ((world, regenerated_seed),) = assemble_sampled_anchor_tasks(
+        grammar,
+        proposal_index,
+        query_type,
+        anchor_index,
+    )
+    if regenerated_seed != seed:
+        raise RuntimeError("demo task regeneration disagrees with the sampler owner")
     sampling_status = "current_admitted_sampler"
     return seed, world, sampling_status
 
@@ -110,10 +120,7 @@ def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, A
     if query_type == "best_intervention":
         return {
             "type": "answer",
-            "values": {
-                f"state_{state}": float(probability)
-                for state, probability in enumerate(truth["candidate_probabilities"])
-            },
+            "value": f"state_{truth['value']}",
         }
     if query_type == "backadj_minimal_sets":
         return {

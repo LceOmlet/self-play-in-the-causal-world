@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+from cpt_world.world_space import _best_intervention_is_observationally_discordant
+
 
 def _load_runner() -> Any:
     path = Path(__file__).parents[1] / "scripts" / "run_deepseek_v4_flash_profile.py"
@@ -39,6 +41,34 @@ class _Response:
 
 
 class DeepSeekV4FlashProfileTests(unittest.TestCase):
+    def test_best_intervention_schedule_uses_balanced_main_sampler(self) -> None:
+        rng = runner.random.Random(1701)
+        relations = []
+        for repeat in range(5):
+            entry = runner._schedule_entry(
+                "best_intervention",
+                repeat,
+                rng,
+                node_counts=(8,),
+                max_domain_size=2,
+            )
+            world, seed = runner._materialize(entry)
+            query = seed["query"]
+            labels = seed["visible_schema"]["variable_labels"]
+            inverse = {str(label): str(name) for name, label in labels.items()}
+            anchors = {
+                "decision_target": world.variables.index(
+                    inverse[str(query["decision_target"])]
+                ),
+                "outcome": world.variables.index(inverse[str(query["outcome"])]),
+                "objective": str(query["objective"]),
+                "outcome_state": int(str(query["outcome_state"]).removeprefix("state_")),
+            }
+            relations.append(
+                _best_intervention_is_observationally_discordant(world, anchors)
+            )
+        self.assertEqual(relations, [False, True, True, True, True])
+
     def test_generated_exact_fraction_serializes_beyond_python_display_guard(self) -> None:
         value = Fraction(10**5000 + 1, 10**5000 + 3)
         encoded = runner._jsonable(value)

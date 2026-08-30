@@ -205,10 +205,7 @@ class TaskScoringTests(unittest.TestCase):
         raw = json.dumps(
             {
                 "type": "answer",
-                "values": {
-                    f"state_{state}": float(probability)
-                    for state, probability in enumerate(truth["candidate_probabilities"])
-                },
+                "value": f"state_{truth['value']}",
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
@@ -216,7 +213,6 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["normalized_regret"], 0)
         self.assertTrue(score["optimal_action"])
         self.assertGreater(score["probability_span"], 0)
-        self.assertEqual(score["pairwise_gap_error"], 0)
         self.assertIn("observational_shortcut_error", score)
 
     def test_decision_suboptimal_answer_has_positive_regret(self) -> None:
@@ -228,15 +224,10 @@ class TaskScoringTests(unittest.TestCase):
         suboptimal_value = next(
             state for state in range(world.domains[target_index]) if state != truth["value"]
         )
-        objective = str(seed_obj["query"]["objective"])
-        predicted = [0.5 for _ in range(world.domains[target_index])]
-        predicted[suboptimal_value] = 0.0 if objective == "minimize" else 1.0
         raw = json.dumps(
             {
                 "type": "answer",
-                "values": {
-                    f"state_{state}": probability for state, probability in enumerate(predicted)
-                },
+                "value": f"state_{suboptimal_value}",
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
@@ -250,7 +241,7 @@ class TaskScoringTests(unittest.TestCase):
         raw = json.dumps(
             {
                 "type": "answer",
-                "values": {"state_0": 0.85, "state_1": 0.15},
+                "value": "state_1",
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
@@ -266,6 +257,51 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["maximum_probability"], Fraction(17, 20))
         self.assertEqual(score["probability_span"], Fraction(7, 10))
         self.assertEqual(score["normalized_regret"], 1)
+
+    def test_decision_observational_shortcut_error_is_raw_causal_action_regret(self) -> None:
+        world = WorldSpec(
+            family="test_dag",
+            topology="B-confounds-A-to-Y",
+            variables=("B", "A", "Y"),
+            domains=(2, 2, 2),
+            state_names=(("b0", "b1"), ("a0", "a1"), ("y0", "y1")),
+            edges=((0, 1), (0, 2), (1, 2)),
+            parents={0: (), 1: (0,), 2: (0, 1)},
+            cpt={
+                0: ((Fraction(1, 2), Fraction(1, 2)),),
+                1: (
+                    (Fraction(9, 10), Fraction(1, 10)),
+                    (Fraction(1, 10), Fraction(9, 10)),
+                ),
+                2: (
+                    (Fraction(3, 5), Fraction(2, 5)),
+                    (Fraction(4, 5), Fraction(1, 5)),
+                    (Fraction(1, 10), Fraction(9, 10)),
+                    (Fraction(3, 10), Fraction(7, 10)),
+                ),
+            },
+        )
+        seed_obj = assemble_seed(
+            world,
+            _HIDING_MODES,
+            "best_intervention",
+            "decision",
+            anchors={"decision_target": 1, "outcome": 2, "objective": "minimize"},
+            seed_id="SCORE-CONFOUNDED-DECISION",
+        )
+
+        score = score_terminal_answer(
+            json.dumps({"type": "answer", "value": "state_0"}),
+            seed_obj,
+            world,
+        )
+
+        self.assertEqual(score["candidate_probabilities"], (Fraction(13, 20), Fraction(9, 20)))
+        self.assertEqual(score["observational_shortcut"], (Fraction(9, 20), Fraction(13, 20)))
+        self.assertEqual(score["observational_choice"], 0)
+        self.assertEqual(score["observational_shortcut_error"], Fraction(1, 5))
+        self.assertEqual(score["observational_shortcut_normalized_regret"], 1)
+        self.assertEqual(score["regret"], Fraction(1, 5))
 
     def test_decision_zero_span_accepts_every_tied_state_without_division(self) -> None:
         _, world = _decision_world()
@@ -283,7 +319,7 @@ class TaskScoringTests(unittest.TestCase):
             json.dumps(
                 {
                     "type": "answer",
-                    "values": {"state_0": 0.5, "state_1": 0.5},
+                    "value": "state_1",
                 }
             ),
             seed_obj,
@@ -293,23 +329,19 @@ class TaskScoringTests(unittest.TestCase):
         self.assertEqual(score["probability_span"], 0)
         self.assertEqual(score["regret"], 0)
         self.assertEqual(score["normalized_regret"], 0)
+        self.assertEqual(score["observational_shortcut_normalized_regret"], 0)
         self.assertTrue(score["optimal_action"])
 
     def test_decision_parser_rejects_hidden_names_and_noncanonical_states(self) -> None:
         seed_obj, world = _decision_world()
-        invalid_answers = (
-            {"state_0": 0.2},
-            {"state_0": 0.2, "state_00": 0.8},
-            {"state_0": -0.1, "state_1": 0.8},
-            {"state_0": 0.2, "state_1": 1.1},
-        )
-        for values in invalid_answers:
+        invalid_answers = (0, "state_00", "state_2", "A")
+        for value in invalid_answers:
             with self.assertRaises(ValueError):
                 parse_terminal_answer(
                     json.dumps(
                         {
                             "type": "answer",
-                            "values": values,
+                            "value": value,
                         }
                     ),
                     seed_obj,

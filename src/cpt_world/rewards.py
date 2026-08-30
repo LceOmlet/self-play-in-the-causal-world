@@ -9,11 +9,16 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from fractions import Fraction
+from math import sqrt
 from typing import Any
 
-TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v5"
+from .episode import OBSERVATIONS_PER_BANDWIDTH_UNIT
+
+TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v7"
 UNFINISHED_TERMINAL_QUALITY = Fraction(0)
-_SHORTCUT_SEPARATION_TOLERANCE = Fraction(1, 10**12)
+TERMINAL_SAMPLING_RESOLUTION = Fraction.from_float(
+    1.0 / sqrt(OBSERVATIONS_PER_BANDWIDTH_UNIT)
+)
 
 
 def _fraction_metric(
@@ -155,14 +160,7 @@ def _shortcut_calibrated_quality(
     shortcut_error_field: str,
     absolute_error_upper: Fraction,
 ) -> Fraction:
-    """Return accuracy relative to the task's observational plug-in shortcut.
-
-    A shortcut with nonzero error receives exactly one half, an exact causal
-    answer receives one, and larger errors decrease continuously.  If the
-    observational and causal targets coincide, terminal answers cannot reveal
-    which reasoning route produced them; that non-separable case retains the
-    task's ordinary continuous absolute-error quality.
-    """
+    """Return continuous accuracy at the fixed-budget sampling resolution."""
 
     error = _fraction_metric(score, error_field, upper=absolute_error_upper)
     raw_shortcut_error = score.get(shortcut_error_field)
@@ -173,9 +171,8 @@ def _shortcut_calibrated_quality(
         shortcut_error_field,
         upper=absolute_error_upper,
     )
-    if shortcut_error <= _SHORTCUT_SEPARATION_TOLERANCE:
-        return Fraction(1) - error / absolute_error_upper
-    return shortcut_error / (shortcut_error + error)
+    scale = shortcut_error + TERMINAL_SAMPLING_RESOLUTION
+    return scale / (scale + error)
 
 
 def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
@@ -201,9 +198,9 @@ def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
     elif kind == "decision":
         quality = _shortcut_calibrated_quality(
             score,
-            error_field="pairwise_gap_error",
-            shortcut_error_field="observational_shortcut_error",
-            absolute_error_upper=Fraction(2),
+            error_field="normalized_regret",
+            shortcut_error_field="observational_shortcut_normalized_regret",
+            absolute_error_upper=Fraction(1),
         )
     elif kind == "backadj":
         quality = soft_adjustment_family_f1(score.get("prediction"), score.get("truth"))

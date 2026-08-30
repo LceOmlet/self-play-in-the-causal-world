@@ -13,7 +13,6 @@ import json
 import math
 from collections.abc import Mapping
 from fractions import Fraction
-from itertools import combinations
 from typing import Any
 
 from .query_truth import (
@@ -161,26 +160,23 @@ def parse_terminal_answer(raw: str, seed: Mapping[str, Any], world: WorldSpec) -
         return {"kind": "counterfactual_roi", "lower": lower, "upper": upper}
 
     if query_type == "best_intervention" and head == "decision":
-        if set(value) != {"type", "values"}:
-            raise ValueError("answer must contain exactly type and values")
-        raw_values = value["values"]
-        if not isinstance(raw_values, Mapping):
-            raise ValueError("values must map every deployment state to a probability")
+        if set(value) != {"type", "value"}:
+            raise ValueError("answer must contain exactly type and value")
         decision_target_value = query.get("decision_target")
         if decision_target_value is None:
             raise ValueError("best_intervention query missing decision_target")
         decision_target = _resolve_seed_anchor(seed, str(decision_target_value))
         target_index = world.variables.index(decision_target)
-        state_tokens = tuple(f"state_{state}" for state in range(world.domains[target_index]))
-        if set(raw_values) != set(state_tokens):
-            raise ValueError("values must contain every deployment state exactly once")
-        candidate_values = tuple(
-            _probability_float(raw_values[state], field=f"values.{state}") for state in state_tokens
-        )
+        raw_value = value["value"]
+        if not isinstance(raw_value, str):
+            raise ValueError("value must be a state_i token")
+        chosen_value = _state_index(raw_value)
+        if chosen_value >= world.domains[target_index]:
+            raise ValueError("decision value is outside the deployment domain")
         return {
             "kind": "decision",
             "target": decision_target,
-            "values": candidate_values,
+            "value": chosen_value,
         }
 
     if query_type == "backadj_minimal_sets" and head == "discovery":
@@ -313,22 +309,6 @@ def _observational_conditional_distributions(
 
 def _distance_to_interval(value: Fraction, interval: tuple[Fraction, Fraction]) -> Fraction:
     return max(interval[0] - value, Fraction(0), value - interval[1])
-
-
-def _mean_pairwise_gap_error(
-    prediction: tuple[Fraction, ...],
-    truth: tuple[Fraction, ...],
-) -> Fraction:
-    pairs = tuple(combinations(range(len(truth)), 2))
-    if not pairs:
-        return Fraction(0)
-    return sum(
-        (
-            abs((prediction[left] - prediction[right]) - (truth[left] - truth[right]))
-            for left, right in pairs
-        ),
-        start=Fraction(0),
-    ) / len(pairs)
 
 
 def _set_f1(truth: set[Any], predicted: set[Any]) -> tuple[Fraction, Fraction, Fraction]:
@@ -519,7 +499,7 @@ def score_terminal_answer(
         optimal_value = int(truth["value"])
         optimal_probability = truth["probability"]
         chosen_name = parsed["target"]
-        predicted_probabilities = tuple(Fraction(value) for value in parsed["values"])
+        chosen_value = int(parsed["value"])
         target_index = world.variables.index(chosen_name)
         outcome_index = _outcome_node_index(seed, world)
         outcome_state = _outcome_state_index(seed, world)
@@ -531,15 +511,6 @@ def score_terminal_answer(
                 outcome_state,
             )
             for state in range(world.domains[target_index])
-        )
-        if len(predicted_probabilities) != len(candidate_probabilities):
-            raise ValueError("decision prediction and candidate domains do not match")
-        choose = min if objective == "minimize" else max
-        predicted_optimum = choose(predicted_probabilities)
-        chosen_value = next(
-            state
-            for state, probability in enumerate(predicted_probabilities)
-            if probability == predicted_optimum
         )
         chosen_probability = candidate_probabilities[chosen_value]
         minimum_probability = min(candidate_probabilities)
@@ -554,29 +525,41 @@ def score_terminal_answer(
             normalized_regret = Fraction(0)
         else:
             normalized_regret = Fraction(regret) / Fraction(probability_span)
-        pairwise_gap_error = _mean_pairwise_gap_error(
-            predicted_probabilities,
-            tuple(Fraction(value) for value in candidate_probabilities),
-        )
         observational_laws = _observational_conditional_distributions(
             world, target_index, outcome_index
         )
         observed_probabilities: list[Fraction] = []
         observational_shortcut_error = None
+        observational_shortcut_normalized_regret = None
+        observational_choice = None
         for law in observational_laws:
             if law is None:
                 break
             observed_probabilities.append(law[outcome_state])
         if len(observed_probabilities) == len(candidate_probabilities):
-            observational_shortcut_error = _mean_pairwise_gap_error(
-                tuple(observed_probabilities),
-                tuple(Fraction(value) for value in candidate_probabilities),
+            choose = min if objective == "minimize" else max
+            observational_optimum = choose(observed_probabilities)
+            observational_choice = next(
+                state
+                for state, probability in enumerate(observed_probabilities)
+                if probability == observational_optimum
+            )
+            observational_causal_probability = candidate_probabilities[observational_choice]
+            observational_shortcut_error = (
+                optimal_probability - observational_causal_probability
+                if objective == "maximize"
+                else observational_causal_probability - optimal_probability
+            )
+            observational_shortcut_normalized_regret = (
+                Fraction(0)
+                if probability_span == 0
+                else Fraction(observational_shortcut_error) / Fraction(probability_span)
             )
         return {
             "kind": "decision",
             "optimal": {"target": optimal_name, "value": optimal_value},
             "chosen": {"target": chosen_name, "value": chosen_value},
-            "prediction": predicted_probabilities,
+            "prediction": {"target": chosen_name, "value": chosen_value},
             "optimal_probability": optimal_probability,
             "chosen_probability": chosen_probability,
             "candidate_probabilities": candidate_probabilities,
@@ -585,13 +568,16 @@ def score_terminal_answer(
             "probability_span": probability_span,
             "regret": regret,
             "normalized_regret": normalized_regret,
-            "pairwise_gap_error": pairwise_gap_error,
             "observational_shortcut": (
                 tuple(observed_probabilities)
                 if len(observed_probabilities) == len(candidate_probabilities)
                 else None
             ),
+            "observational_choice": observational_choice,
             "observational_shortcut_error": observational_shortcut_error,
+            "observational_shortcut_normalized_regret": (
+                observational_shortcut_normalized_regret
+            ),
             "optimal_action": regret == 0,
             "reward_scalarization": TERMINAL_QUALITY_REWARD_VERSION,
         }

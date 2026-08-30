@@ -37,63 +37,23 @@ make no more tool calls and finish with a brief acknowledgement.
 COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS = 5.0
 _COUNTERFACTUAL_QUERY_TYPE = "individual_counterfactual_probability"
 _MAX_COUNTERFACTUAL_RESAMPLES = 10_000
-DEFAULT_ADVANTAGE_UTILITY_EPSILON = 0.02
-CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES = frozenset(
-    {
-        "backadj_minimal_sets",
-    }
-)
-_RAW_ADVANTAGE_QUERY_TYPES = frozenset(
-    {
-        "ate",
-        "individual_counterfactual_probability",
-        "best_intervention",
-        "mediator_set",
-    }
-)
-
-
-def bounded_negative_log_residual_utility(
-    terminal_quality: float,
-    *,
-    epsilon: float = DEFAULT_ADVANTAGE_UTILITY_EPSILON,
-) -> float:
-    """Expand quality differences near one without changing endpoints or ordering."""
-
-    if not math.isfinite(terminal_quality) or not 0.0 <= terminal_quality <= 1.0:
-        raise ValueError("terminal quality must be finite and lie in [0, 1]")
-    if not math.isfinite(epsilon) or epsilon <= 0.0:
-        raise ValueError("advantage utility epsilon must be finite and positive")
-    return math.log1p(terminal_quality / (1.0 - terminal_quality + epsilon)) / math.log1p(
-        1.0 / epsilon
-    )
 
 
 def task_advantage_utility(
     terminal_quality: float,
     query_type: str,
-    *,
-    epsilon: float = DEFAULT_ADVANTAGE_UTILITY_EPSILON,
 ) -> float:
-    """Return the training utility for one owner-produced terminal quality."""
+    """Pass one owner-produced terminal quality unchanged to training."""
 
-    if query_type in CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES:
-        return bounded_negative_log_residual_utility(terminal_quality, epsilon=epsilon)
-    if query_type in _RAW_ADVANTAGE_QUERY_TYPES:
-        if not math.isfinite(terminal_quality) or not 0.0 <= terminal_quality <= 1.0:
-            raise ValueError("terminal quality must be finite and lie in [0, 1]")
-        return terminal_quality
-    raise ValueError(f"unsupported training query type: {query_type!r}")
+    if query_type not in TASK_FAMILY_QUERY_TYPES:
+        raise ValueError(f"unsupported training query type: {query_type!r}")
+    if not math.isfinite(terminal_quality) or not 0.0 <= terminal_quality <= 1.0:
+        raise ValueError("terminal quality must be finite and lie in [0, 1]")
+    return terminal_quality
 
 
-def build_cpt_world_advantage_utility(
-    *,
-    epsilon: float = DEFAULT_ADVANTAGE_UTILITY_EPSILON,
-) -> Callable[..., list[float]]:
+def build_cpt_world_advantage_utility() -> Callable[..., list[float]]:
     """Build a TRL reward-function adapter over exact environment-owned rewards."""
-
-    # Validate once at construction rather than after the model has begun generation.
-    bounded_negative_log_residual_utility(0.0, epsilon=epsilon)
 
     def cpt_world_advantage_utility(
         *,
@@ -106,7 +66,7 @@ def build_cpt_world_advantage_utility(
             raise ValueError("environment and query-type batches must have equal length")
         raw_rewards = [environment.get_reward() for environment in environments]
         utilities = [
-            task_advantage_utility(raw, family, epsilon=epsilon)
+            task_advantage_utility(raw, family)
             for raw, family in zip(raw_rewards, query_type, strict=True)
         ]
         if log_metric is not None:
@@ -209,17 +169,26 @@ def _training_row(
     grammar: WorldGrammar,
     sample_index: int,
     query_type: str,
+    *,
+    best_intervention_balance_slot: int | None = None,
 ) -> tuple[dict[str, Any], WorldSpec, dict[str, Any]]:
+    if best_intervention_balance_slot is not None and query_type != "best_intervention":
+        raise ValueError(
+            "best_intervention_balance_slot is only valid for best_intervention rows"
+        )
     (seed,) = iter_sampled_seeds(
         grammar,
         query_types=(query_type,),
         start_seed=sample_index,
         count=1,
+        best_intervention_balance_start=best_intervention_balance_slot,
     )
-    anchor_index = int(str(seed["seed_id"]).rsplit("-a", 1)[1])
+    seed_id = str(seed["seed_id"])
+    proposal_index = int(seed_id.split("-", 2)[1])
+    anchor_index = int(seed_id.rsplit("-a", 1)[1])
     ((world, regenerated_seed),) = assemble_sampled_anchor_tasks(
         grammar,
-        sample_index,
+        proposal_index,
         query_type,
         anchor_index,
     )
@@ -232,7 +201,7 @@ def _training_row(
     )
     row = {
         "prompt": list(episode.initial_messages()),
-        "sample_index": sample_index,
+        "sample_index": proposal_index,
         "query_type": query_type,
         "anchor_index": anchor_index,
         "tape_key": f"trl-grpo:{seed['seed_id']}",
@@ -294,6 +263,7 @@ def _iter_random_balanced_training_rows(
         raise ValueError("counterfactual endpoint time limit must be positive")
     resolved_grammar = grammar or WorldGrammar()
     sample_index = start_seed
+    best_intervention_balance_slot = 0
     while True:
         for query_type in TASK_FAMILY_QUERY_TYPES:
             attempts = 0
@@ -302,6 +272,11 @@ def _iter_random_balanced_training_rows(
                     resolved_grammar,
                     sample_index,
                     query_type,
+                    best_intervention_balance_slot=(
+                        best_intervention_balance_slot
+                        if query_type == "best_intervention"
+                        else None
+                    ),
                 )
                 sample_index += 1
                 if query_type != _COUNTERFACTUAL_QUERY_TYPE:
@@ -327,6 +302,8 @@ def _iter_random_balanced_training_rows(
                     separators=(",", ":"),
                 )
                 break
+            if query_type == "best_intervention":
+                best_intervention_balance_slot += 1
             yield row
 
 

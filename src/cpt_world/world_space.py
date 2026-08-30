@@ -1808,6 +1808,67 @@ def _sample_task_attributes(
     return anchors
 
 
+def _best_intervention_is_observationally_discordant(
+    world: WorldSpec,
+    anchors: Mapping[str, int | str],
+) -> bool:
+    """Return whether observational and interventional optimal actions are disjoint."""
+
+    from .query_truth import (
+        best_intervention_states,
+        worldspec_projected_interventional_distribution,
+    )
+
+    decision = int(anchors["decision_target"])
+    outcome = int(anchors["outcome"])
+    outcome_state = int(anchors["outcome_state"])
+    objective = str(anchors["objective"])
+    causal_states, _ = best_intervention_states(
+        world,
+        outcome,
+        objective,
+        decision,
+        outcome_state=outcome_state,
+    )
+
+    law = worldspec_projected_interventional_distribution(
+        world,
+        {},
+        (decision, outcome),
+    )
+    action_mass = [0.0] * world.domains[decision]
+    target_mass = [0.0] * world.domains[decision]
+    for (action, observed_outcome), raw_probability in law:
+        probability = float(raw_probability)
+        action_mass[action] += probability
+        if observed_outcome == outcome_state:
+            target_mass[action] += probability
+    observational_values = tuple(
+        target_mass[action] / action_mass[action]
+        for action in range(world.domains[decision])
+    )
+    observational_best = (
+        min(observational_values)
+        if objective == "minimize"
+        else max(observational_values)
+    )
+    observational_states = frozenset(
+        action
+        for action, value in enumerate(observational_values)
+        if value == observational_best
+    )
+    return observational_states.isdisjoint(causal_states)
+
+
+def _balanced_proposal_seed(slot: int, attempt: int) -> int:
+    """Injectively map a balanced-task slot and rejection attempt to one seed."""
+
+    if slot < 0 or attempt < 0:
+        raise ValueError("slot and attempt must be nonnegative")
+    diagonal = slot + attempt
+    return diagonal * (diagonal + 1) // 2 + attempt
+
+
 def _randomized_interaction_surface(
     world: WorldSpec,
     query_type: str,
@@ -2148,8 +2209,9 @@ def iter_sampled_seeds(
     start_seed: int = 0,
     count: int = 1,
     hiding: str | object = "mechanism_hidden",
+    best_intervention_balance_start: int | None = None,
 ) -> tuple[Mapping[str, Any], ...]:
-    """Yield one world-first role sample per requested task family and seed.
+    """Yield one sampled task per requested family and output slot.
 
     Linear expansion step:
 
@@ -2157,13 +2219,24 @@ def iter_sampled_seeds(
 
     The caller explicitly names a nonempty subset of the five implemented
     query types. Node count stays fixed during structural eligibility sampling.
-    Numerical answers never filter mechanisms. The main pipeline samples one
-    legal variable-role assignment uniformly, then the declared state anchors,
-    a nonempty K-subset, and an independent seed-fixed M.
+    The main pipeline samples one legal variable-role assignment uniformly,
+    then the declared state anchors, a nonempty K-subset, and an independent
+    seed-fixed M. Four families never filter numerical answers. Best
+    intervention uses deterministic rejection over complete task proposals so
+    the first output slot in every five-slot block is observationally
+    concordant and the other four are observationally discordant. By default,
+    ``start_seed`` also owns that output-slot phase. Streaming callers that
+    share world seeds across task families may provide
+    ``best_intervention_balance_start`` to keep the best-intervention slot
+    independent of skipped or resampled rows. This makes every consecutive
+    aligned five-slot block exactly 1:4 without changing either conditional
+    proposal distribution.
     """
 
     if count <= 0:
         raise ValueError("count must be positive")
+    if best_intervention_balance_start is not None and best_intervention_balance_start < 0:
+        raise ValueError("best_intervention_balance_start must be nonnegative")
     admitted_query_types = frozenset(TASK_FAMILY_QUERY_TYPES)
     if not query_types:
         raise ValueError("query_types must not be empty")
@@ -2175,24 +2248,58 @@ def iter_sampled_seeds(
             f"generic sampler does not admit query types: {sorted(unknown_query_types)}"
         )
     generated: list[tuple[WorldSpec, Mapping[str, Any]]] = []
-    for sample_index in range(start_seed, start_seed + count):
+    for output_offset, sample_index in enumerate(range(start_seed, start_seed + count)):
         for query_type in query_types:
-            task_world = sample_task_world(grammar, sample_index, query_type)
-            legal_roles = _sampled_role_assignments(
-                len(task_world.variables),
-                task_world.edges,
-                query_type,
-                sample_index,
-            )
-            role_seed_id = f"SAMPLED-{sample_index}-{query_type}"
-            anchor_index = _axis_rng(role_seed_id, "variable-role").randrange(len(legal_roles))
-            generated.extend(
-                assemble_sampled_anchor_tasks(
-                    grammar,
-                    sample_index,
-                    query_type,
-                    anchor_index,
-                    hiding=hiding,
+            attempt = 0
+            while True:
+                proposal_index = (
+                    _balanced_proposal_seed(sample_index, attempt)
+                    if query_type == "best_intervention"
+                    else sample_index
                 )
-            )
+                task_world = sample_task_world(grammar, proposal_index, query_type)
+                legal_roles = _sampled_role_assignments(
+                    len(task_world.variables),
+                    task_world.edges,
+                    query_type,
+                    proposal_index,
+                )
+                role_seed_id = f"SAMPLED-{proposal_index}-{query_type}"
+                anchor_index = _axis_rng(role_seed_id, "variable-role").randrange(
+                    len(legal_roles)
+                )
+                if query_type == "best_intervention":
+                    task_head = "decision"
+                    anchors = _sample_task_attributes(
+                        task_world,
+                        query_type,
+                        legal_roles[anchor_index],
+                        seed_id=(
+                            f"SAMPLED-{proposal_index}-{query_type}-{task_head}"
+                            f"-a{anchor_index}"
+                        ),
+                    )
+                    discordant = _best_intervention_is_observationally_discordant(
+                        task_world,
+                        anchors,
+                    )
+                    balance_slot = (
+                        sample_index
+                        if best_intervention_balance_start is None
+                        else best_intervention_balance_start + output_offset
+                    )
+                    desired_discordant = balance_slot % 5 != 0
+                    if discordant != desired_discordant:
+                        attempt += 1
+                        continue
+                generated.extend(
+                    assemble_sampled_anchor_tasks(
+                        grammar,
+                        proposal_index,
+                        query_type,
+                        anchor_index,
+                        hiding=hiding,
+                    )
+                )
+                break
     return tuple(seed for _, seed in generated)

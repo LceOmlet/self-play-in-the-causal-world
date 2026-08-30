@@ -1,7 +1,8 @@
 ---
-status: accepted
+status: superseded
 implementation: implemented
 amended_by: 0030-normalize-decision-regret-by-candidate-span
+superseded_by: 0032-use-raw-terminal-quality-for-all-grpo-families
 ---
 
 # Use a bounded ceiling-sensitive utility for selected GRPO task families

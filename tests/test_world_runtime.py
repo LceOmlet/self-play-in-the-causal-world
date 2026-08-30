@@ -536,6 +536,11 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             initial = episode.initial_messages()
             self.assertIn("DOLENS HIDDEN-MECHANISM TASK", initial[1]["content"])
             if query_type == "best_intervention":
+                self.assertIn(
+                    '{"type":"answer","value":"state_i"}',
+                    initial[1]["content"],
+                )
+                self.assertNotIn('"values"', initial[1]["content"])
                 decision_label = seed["query"]["decision_target"]
                 measure_label = next(
                     label
@@ -562,10 +567,7 @@ class WorldSpecRuntimeTests(unittest.TestCase):
                 raw_answer = json.dumps(
                     {
                         "type": "answer",
-                        "values": {
-                            f"state_{state}": float(probability)
-                            for state, probability in enumerate(truth["candidate_probabilities"])
-                        },
+                        "value": f"state_{truth['value']}",
                     }
                 )
             elif query_type == "ate":

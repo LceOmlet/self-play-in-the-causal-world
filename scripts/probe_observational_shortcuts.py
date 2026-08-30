@@ -555,12 +555,12 @@ def _decision_record(world: WorldSpec, seed: Mapping[str, Any]) -> Mapping[str, 
             terminal_quality_reward(
                 {
                     "kind": "decision",
-                    "pairwise_gap_error": pairwise_gap_error,
-                    "observational_shortcut_error": pairwise_gap_error,
+                    "normalized_regret": normalized_regret,
+                    "observational_shortcut_normalized_regret": normalized_regret,
                 }
             )
         ),
-        "reward_separable": pairwise_gap_error > SHORTCUT_SEPARATION_TOLERANCE,
+        "reward_separable": regret > SHORTCUT_SEPARATION_TOLERANCE,
     }
 
 

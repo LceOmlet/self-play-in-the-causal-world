@@ -181,7 +181,11 @@ tasks = iter_sampled_seeds(
 
 This materializes exactly 20 episodes from each family (100 total). Training
 consumers may deterministically shuffle the episodes; they must not reweight
-the five families.
+the five families. Within `best_intervention`, each aligned five-slot block
+contains one observationally concordant and four observationally discordant
+optimal-action sets. The balance is therefore exactly 1:4; each stratum
+retains the existing complete-task proposal law conditioned only on that
+relation.
 
 For prompt-to-feedback examples, run:
 

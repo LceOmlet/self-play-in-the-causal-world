@@ -61,6 +61,7 @@ from .rendering import (
     rendered_discovery_query_surface,
 )
 from .rewards import (
+    TERMINAL_SAMPLING_RESOLUTION,
     TERMINAL_QUALITY_REWARD_VERSION,
     UNFINISHED_TERMINAL_QUALITY,
     soft_adjustment_family_f1,
@@ -78,11 +79,8 @@ from .seeds import (
 )
 from .task_scoring import parse_terminal_answer, score_terminal_answer
 from .trl_environment import (
-    CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES,
     COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS,
-    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
     CPTWorldEnvironment,
-    bounded_negative_log_residual_utility,
     build_balanced_training_rows,
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
@@ -135,11 +133,9 @@ __all__ = [
     "CandidateSeedSpec",
     "CPTWorldEnvironment",
     "CounterfactualIntervalCertificate",
-    "CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES",
     "COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS",
     "CounterfactualBoundsResult",
     "DEFAULT_NODE_COUNTS",
-    "DEFAULT_ADVANTAGE_UTILITY_EPSILON",
     "HIDING_MODES",
     "INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE",
     "MAX_FEEDBACK_CELLS",
@@ -154,6 +150,7 @@ __all__ = [
     "RenderedDiscoveryQuerySurface",
     "TASK_HEADS",
     "TASK_FAMILY_QUERY_TYPES",
+    "TERMINAL_SAMPLING_RESOLUTION",
     "TERMINAL_QUALITY_REWARD_VERSION",
     "UNFINISHED_TERMINAL_QUALITY",
     "WORLD_SOURCE_TYPES",
@@ -172,7 +169,6 @@ __all__ = [
     "best_intervention_truth",
     "best_intervention_states",
     "budget_for_observation_bandwidth",
-    "bounded_negative_log_residual_utility",
     "build_balanced_training_rows",
     "build_cpt_world_advantage_utility",
     "candidate_seed_manifest_path",

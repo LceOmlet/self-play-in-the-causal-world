@@ -376,23 +376,18 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
         verb = "minimize" if objective == "minimize" else "maximize"
         decision_states = ctx.states_for_label(decision_target)
         lines = [
-            f"Final deployment decision values: estimate P({outcome}={outcome_state} | "
-            f"do({decision_target}=d)) for every candidate state d.",
+            f"Choose the final deployment state of {decision_target} that {verb}s "
+            f"P({outcome}={outcome_state} | do({decision_target}=d)).",
             (
                 "Final deployment candidates: "
                 + " / ".join(f"do({decision_target}={state})" for state in decision_states)
             ),
             (
-                f"The final decision is the candidate that {verb}s the returned causal "
-                "value profile. Return every candidate state exactly once."
-            ),
-            (
-                f"{decision_target} is readonly during experimentation. The final "
-                "deployment values are answers, not experiments."
+                f"{decision_target} is readonly during experimentation. The final choice "
+                "is an answer, not an experiment."
             ),
         ]
-        value_fields = ",".join(f'"{state}":<number in [0,1]>' for state in decision_states)
-        answer_schema = [f'{{"type":"answer","values":{{{value_fields}}}}}']
+        answer_schema = ['{"type":"answer","value":"state_i"}']
     else:
         raise ValueError(f"unsupported query type {query_type}")
     return lines, answer_schema

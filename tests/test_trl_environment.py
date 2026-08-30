@@ -10,47 +10,28 @@ from itertools import islice
 from unittest.mock import patch
 
 from cpt_world import (
-    CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES,
-    DEFAULT_ADVANTAGE_UTILITY_EPSILON,
     TASK_FAMILY_QUERY_TYPES,
     CPTWorldEnvironment,
-    bounded_negative_log_residual_utility,
+    WorldGrammar,
     build_balanced_training_rows,
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
+    sample_task_world,
     task_advantage_utility,
+)
+from cpt_world.world_space import (
+    _best_intervention_is_observationally_discordant,
+    _sample_task_attributes,
+    _sampled_role_assignments,
 )
 
 
 class TRLEnvironmentAdapterTests(unittest.TestCase):
-    def test_bounded_log_residual_utility_preserves_endpoints_and_expands_ceiling(self) -> None:
-        epsilon = DEFAULT_ADVANTAGE_UTILITY_EPSILON
-
-        self.assertEqual(bounded_negative_log_residual_utility(0.0), 0.0)
-        self.assertEqual(bounded_negative_log_residual_utility(1.0), 1.0)
-        self.assertLess(
-            bounded_negative_log_residual_utility(0.95),
-            bounded_negative_log_residual_utility(0.99),
-        )
-        self.assertGreater(
-            bounded_negative_log_residual_utility(0.99, epsilon=epsilon)
-            - bounded_negative_log_residual_utility(0.95, epsilon=epsilon),
-            0.99 - 0.95,
-        )
-
-    def test_shortcut_calibrated_numeric_and_mediator_rewards_enter_grpo_unchanged(self) -> None:
+    def test_all_terminal_rewards_enter_grpo_unchanged(self) -> None:
         raw = 0.95
 
-        for query_type in (
-            "ate",
-            "individual_counterfactual_probability",
-            "best_intervention",
-            "mediator_set",
-        ):
+        for query_type in TASK_FAMILY_QUERY_TYPES:
             self.assertEqual(task_advantage_utility(raw, query_type), raw)
-        for query_type in CEILING_SENSITIVE_ADVANTAGE_QUERY_TYPES:
-            with self.subTest(query_type=query_type):
-                self.assertNotEqual(task_advantage_utility(raw, query_type), raw)
 
     def test_trl_advantage_utility_reads_owner_rewards_and_logs_both_values(self) -> None:
         class RewardOwner:
@@ -61,7 +42,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
                 return self.reward
 
         logged: list[tuple[str, float]] = []
-        reward_func = build_cpt_world_advantage_utility(epsilon=0.02)
+        reward_func = build_cpt_world_advantage_utility()
 
         utilities = reward_func(
             environments=[RewardOwner(0.95), RewardOwner(0.95)],
@@ -197,13 +178,21 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             "upper": 0.75,
         }
 
-        rows = list(islice(iter_random_balanced_training_rows(), 10))
+        rows = list(islice(iter_random_balanced_training_rows(), 25))
 
         self.assertEqual(
             Counter(row["query_type"] for row in rows),
-            Counter(dict.fromkeys(TASK_FAMILY_QUERY_TYPES, 2)),
+            Counter(dict.fromkeys(TASK_FAMILY_QUERY_TYPES, 5)),
         )
-        self.assertEqual(len({row["sample_index"] for row in rows}), len(rows))
+        self.assertEqual(
+            len(
+                {
+                    (row["sample_index"], row["query_type"], row["anchor_index"])
+                    for row in rows
+                }
+            ),
+            len(rows),
+        )
         counterfactual_rows = [
             row for row in rows if row["query_type"] == "individual_counterfactual_probability"
         ]
@@ -216,6 +205,37 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
                 call.kwargs["counterfactual_endpoint_time_limit_seconds"] == 5.0
                 for call in truth_owner.call_args_list
             )
+        )
+
+        grammar = WorldGrammar()
+        best_intervention_relations = []
+        for row in rows:
+            if row["query_type"] != "best_intervention":
+                continue
+            proposal_index = row["sample_index"]
+            anchor_index = row["anchor_index"]
+            seed_id = (
+                f"SAMPLED-{proposal_index}-best_intervention-decision-a{anchor_index}"
+            )
+            world = sample_task_world(grammar, proposal_index, "best_intervention")
+            roles = _sampled_role_assignments(
+                len(world.variables),
+                world.edges,
+                "best_intervention",
+                proposal_index,
+            )
+            anchors = _sample_task_attributes(
+                world,
+                "best_intervention",
+                roles[anchor_index],
+                seed_id=seed_id,
+            )
+            best_intervention_relations.append(
+                _best_intervention_is_observationally_discordant(world, anchors)
+            )
+        self.assertEqual(
+            best_intervention_relations,
+            [False, True, True, True, True],
         )
 
     @patch("cpt_world.trl_environment.compute_query_truth")

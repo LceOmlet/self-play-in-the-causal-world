@@ -1,6 +1,7 @@
 ---
-status: accepted
+status: superseded
 implementation: implemented
+superseded_by: 0033-use-continuous-fixed-budget-shortcut-calibration
 ---
 
 # Calibrate numerical rewards against observational plug-in shortcuts
