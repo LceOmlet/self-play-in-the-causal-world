@@ -6,10 +6,13 @@ measurements through passive observation or batched hard interventions, and
 returns one structured terminal answer. The hidden graph, CPT entries, internal
 variable names, task truth, and scorer are never rendered to the model.
 
-The current milestone provides the environment, task-generation pipeline, and
-the frozen [Terminal-Quality Reward v4](docs/terminal-quality-reward-v4.md),
-plus the [uniform task-family training mixture](docs/training-mixture-v1.md).
-It does **not** yet define a self-play algorithm or a final benchmark mixture.
+The current milestone provides the environment, the shared task-generation and
+interaction pipeline, the frozen
+[Terminal-Quality Reward v8](docs/terminal-quality-reward-v8.md), the
+[uniform task-family training mixture](docs/training-mixture-v1.md), and an
+executable GRPO post-training entry point. It does not yet freeze a self-play
+data-generation algorithm, difficulty bands, or a final benchmark aggregation
+mixture.
 
 ## Paper
 
@@ -22,21 +25,82 @@ execution engine, and validation results:
 - [evidence map](paper/evidence_map.md)
 - [paper blueprint](paper/blueprint.md)
 
-## Implemented task family
+## Implemented task families
 
 All tasks use the same `WorldSpec` sampler, renderer, interaction runtime, and
-exact truth owners.
+task-specific truth owners. The model never receives the graph or CPT tables.
 
-| Query | Terminal output |
-| --- | --- |
-| ATE | The complete categorical total-effect vector between the named treatment and outcome. The generic sampler keeps both query endpoints readonly, so evidence must come from permitted indirect experiments or passive observations. |
-| Individual counterfactual ROI | The sharp identified interval for the same individual's counterfactual outcome probability, conditioned on that individual's factual treatment and observed outcome. |
-| Experimental decision | A deployment intervention that minimizes or maximizes the named outcome event. Experiment targets and the deployment decision are separated. |
-| Backdoor adjustment | Every minimal valid adjustment set for the named treatment–outcome query. |
-| Mediator set and order | The mediator variables and the direct path-order relations between them. |
+| Task | What the model returns | What the task tests |
+| --- | --- | --- |
+| Categorical total effect (ATE) | The complete outcome-state effect vector for one ordered pair of treatment states. | Estimating an interventional distributional change when the treatment and outcome are readonly. |
+| Individual counterfactual ROI | The lower and upper endpoints of the same individual's sharp counterfactual probability interval, conditioned on their factual treatment and outcome. | Reasoning over every causally sufficient mechanism compatible with the hidden CPT world, without selecting one hidden SCM. |
+| Experimental decision | One final state of a readonly deployment variable. | Using experiments on other legal targets to minimize or maximize the requested outcome event. |
+| Backdoor adjustment | One complete adjustment set, which may be empty. | Recovering the hard-do outcome laws by standardizing observational conditionals over the submitted variables. |
+| Mediator set and order | All mediators on directed treatment-to-outcome paths and the consecutive directed path edges. | Recovering the query-relevant causal pathway without reconstructing the full graph. |
 
 Pinned real-world and motif seeds under `data/seeds/` are validation fixtures.
 They are not a second sampler and do not define the generated task distribution.
+
+## Reward and benchmark metrics
+
+### Terminal-Quality Reward v8
+
+Every legal terminal answer receives one continuous quality value between zero
+and one. An unfinished episode or an illegal terminal answer receives zero. The
+environment owns this value, and the GRPO adapter passes it through unchanged.
+Experimental cost, query count, trajectory length, token usage, and wall-clock
+time are recorded separately and never folded into terminal quality.
+
+| Task | Error used by the reward | Meaning of the terminal quality |
+| --- | --- | --- |
+| Categorical total effect | Total-variation error between the predicted and true complete effect vectors. | Accuracy is calibrated against the error of replacing the causal effect with the corresponding observational conditional effect, with one fixed sampling-resolution allowance. Exact recovery receives one and larger vector error lowers quality continuously. |
+| Individual counterfactual ROI | Mean absolute distance of the two predicted endpoints from their certified endpoint ranges. | Accuracy is calibrated against the observational counterfactual plug-in interval with the same fixed sampling-resolution allowance. Both endpoints contribute equally, and exact certified recovery receives one. |
+| Experimental decision | Regret of the chosen deployment state, normalized by the full causal value range available in that world. | Accuracy is calibrated against the normalized regret of the state selected from observational conditionals. An optimal state receives one; increasingly costly decisions receive lower quality. |
+| Backdoor adjustment | Mean total-variation error between the standardized outcome laws induced by the submitted set and the true hard-do outcome laws, averaged over treatment states. | A set that exactly recovers the hard-do laws receives one. Relative to using no adjustment variables, improvement scores above one half, no improvement scores one half, and worsening scores below one half. If no adjustment is already exact, any harmful adjustment receives zero. |
+| Mediator set and order | Set disagreement for the mediators and directed-edge disagreement for their path order. | Terminal quality is the equal average of mediator F1 and path-order F1. |
+
+For the first three tasks, the fixed sampling-resolution allowance is set once
+from the public budget of 2,048 sample rows per observation-bandwidth unit. It
+is not fitted per model or per episode. If the relevant observational
+conditional is undefined, the scorer falls back to the task's bounded
+absolute-error quality because that episode has no observational plug-in
+answer to use as a calibration reference. When all deployment states have the
+same causal value, every state is optimal and has zero regret.
+
+The full versioned contract is
+[Terminal-Quality Reward v8](docs/terminal-quality-reward-v8.md). Historical
+reward documents remain in `docs/` only to explain earlier experiments; they
+are not active training contracts.
+
+### Benchmark reporting
+
+Terminal quality is a training-compatible summary, not a replacement for the
+underlying task metrics. A benchmark result should report every task family
+separately using the following definitions:
+
+| Task | Primary benchmark metrics | Direction |
+| --- | --- | --- |
+| Categorical total effect | Complete-vector RMSE and mean total-variation error; observational-shortcut total-variation error is reported beside them. | Lower is better. |
+| Individual counterfactual ROI | Endpoint MAE, endpoint RMSE, exact endpoint-recovery rate, and predicted and certified interval widths. | Lower endpoint error and higher exact recovery are better. |
+| Experimental decision | Optimal-action accuracy, raw causal regret, and normalized causal regret; concordant and observationally discordant strata are reported separately. | Higher accuracy and lower regret are better. |
+| Backdoor adjustment | Mean adjustment-law total-variation error, exact causal-law recovery rate, and the fraction of answers that improve on the empty adjustment set. Structural set F1 is not a v8 metric. | Lower error and higher recovery or improvement rates are better. |
+| Mediator set and order | Mediator precision, recall, and F1; path-order precision, recall, and F1; and joint exact-match rate. | Higher is better. |
+
+Complete-vector RMSE gives every outcome-state component equal weight. Endpoint
+errors measure distance to the certified endpoint ranges, so a solver's safe
+numerical enclosure is not counted as model error. Raw regret is the causal
+value lost by the selected action; normalized regret expresses that loss
+relative to the complete causal value range in the same world.
+
+Every task table must also include mean v8 terminal quality and valid-terminal
+coverage. Counterfactual truth certification coverage, exact versus
+epsilon-sharp certification counts, node-count histograms, task-answer
+distributions, and observational-shortcut baselines are dataset diagnostics
+and must be published beside model results. Query count, sampled rows, scalar
+measurements, input and output tokens, and wall-clock time are resource
+diagnostics rather than components of task accuracy. The current repository
+freezes equal task-family mass for training only; until a benchmark aggregation
+mixture is frozen, it does not define or endorse one overall five-task score.
 
 ## Model-visible interaction
 
@@ -70,13 +134,13 @@ grid. In the current implementation:
 
 - node count is uniform over the configured `node_counts` support; the default
   support is every integer from 8 through 16;
-- every node's domain size is uniform over `2..max_domain_size`, currently up to
-  five states;
+- every node's domain size is uniform from two states through the configured
+  maximum, currently five states;
 - a topological order is sampled uniformly; each node then draws its parent
-  count uniformly from zero through the smaller of `floor(n / 3)` and its
-  predecessor count, followed by a uniform parent subset and continuous
-  float64 CPT parameters; custom grammars below eight nodes retain the legacy
-  maximum parent count of three;
+  count uniformly from zero through one third of the world size, rounded down
+  and capped by the available predecessors, followed by a uniform parent subset
+  and continuous float64 CPT parameters; custom grammars below eight nodes
+  retain the legacy maximum parent count of three;
 - each conditional CPT samples a uniform undirected interaction graph on its
   parents, activates the pure categorical interaction blocks indexed by that
   graph's nonempty cliques, and combines the active orthogonal blocks with
@@ -89,14 +153,14 @@ grid. In the current implementation:
   configurations, or parents without selecting a distinguished contrast;
 - legal query anchors are derived from the sampled world;
 - all five task families draw the minimum adjustment-set size uniformly from
-  `{0, ..., floor(n / 3)}` and resample same-size structures until a role with
-  that value exists;
+  zero through one third of the node count, rounded down, and resample
+  same-size structures until a role with that value exists;
 - task-family answerability remains an optional diagnostic and is not applied
   as a generation label, filter, or admission check;
 - conditional on the eligible non-anchor intervention variables, the legal
-  hard-do width `K` is uniform over `1..|eligible|`, and the subset is uniform
-  conditional on that width;
-- `M` is sampled independently and uniformly over `1..n`.
+  hard-do width `K` is uniform from one through the number of eligible
+  variables, and the subset is uniform conditional on that width;
+- `M` is sampled independently and uniformly from one through the node count.
 
 Thus `K` and `M` change the evidence surface without redefining whether the
 underlying world/query instance has an answer.
@@ -114,13 +178,10 @@ The probability layer has one semantic owner and two execution paths:
 - the tape remains invariant to surface renaming, requested-measure projection,
   batch splitting, and action interleaving.
 
-For `n` nodes, maximum domain size `d`, selected width `m`, induced elimination
-width `w`, and batch size `b`, the main costs are:
-
-- old full-joint batch path: `O((n + b) d^n)` time and `O(d^n + d^m)` memory;
-- ancestral batch path: `O(b n d)` time and
-  `O(n + min(b, d^m))` working/output memory;
-- selected marginal: `O(n d^(w+1) + d^m)` time.
+The production paths avoid materializing the full joint state space for every
+interactive query. Runtime is governed by the requested batch, the selected
+measurements, and the induced elimination width; the full-joint path remains
+only as a semantic reference for parity tests.
 
 On the included sparse binary-chain benchmark, the measured median speedups
 were:
@@ -150,21 +211,10 @@ python -m ruff check .
 python -m ruff format --check .
 ```
 
-Run one generic episode:
+Run the end-to-end prompt, experiment, feedback, and terminal-scoring demo:
 
-```python
-from cpt_world import Budget, OutcomeTape, WorldSpecEpisode
-
-episode = WorldSpecEpisode(
-    world,
-    seed,
-    OutcomeTape("preregistered-tape-key"),
-    budget=Budget(max_observations=16),
-)
-messages = episode.initial_messages()
-step = episode.step(
-    '{"type":"intervene","target":"ITJ","value":"state_1","measure":["RTG"],"batch_size":8}'
-)
+```bash
+python scripts/demo_worldspec_runtime.py
 ```
 
 Sample all five task types through the main pipeline:
@@ -179,27 +229,25 @@ tasks = iter_sampled_seeds(
 )
 ```
 
-This materializes exactly 20 episodes from each family (100 total). Training
-consumers may deterministically shuffle the episodes; they must not reweight
-the five families. Within `best_intervention`, each aligned five-slot block
-contains one observationally concordant and four observationally discordant
-optimal-action sets. The balance is therefore exactly 1:4; each stratum
-retains the existing complete-task proposal law conditioned only on that
-relation.
+This materializes exactly 20 task manifests from each family (100 total).
+Training consumers may deterministically shuffle the stream; they must not
+reweight the five families. Within `best_intervention`, each aligned five-slot
+block contains one observationally concordant and four observationally
+discordant optimal-action sets. Each stratum retains the existing complete-task
+proposal law conditioned only on that relation.
 
-For prompt-to-feedback examples, run:
+## GRPO post-training
 
-```bash
-python scripts/demo_worldspec_runtime.py
-```
+`scripts/train_grpo_resource_smoke.py` consumes the balanced five-family stream
+and the environment-owned v8 terminal quality. Its startup preflight rejects a
+different reward version, a transformed utility, or an unexpected task-family
+registry before loading the model. `scripts/run_remote_grpo_training.sh`
+provides the reproducible launcher used by the current post-training runs.
 
-## Terminal reward
-
-`WorldSpecEpisode.step()` returns both the raw terminal diagnostics and the
-frozen terminal-quality reward when the model submits a legal answer. The
-reward is continuous, lies in `[0, 1]`, and excludes experimental cost, query
-count, trajectory length, and token usage. Trainer adapters should consume the
-returned reward rather than reparse answers or recompute task truth.
+This is an executable GRPO workflow, not a frozen self-play algorithm. A future
+self-play contract must specify how new worlds or curricula are proposed, how
+opponents or generators are updated, and how generated episodes enter the
+training distribution.
 
 ## Ownership boundaries
 
