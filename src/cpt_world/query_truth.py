@@ -1650,14 +1650,7 @@ def compute_query_truth(
         outcome = query.get("outcome")
         if treatment is None or outcome is None:
             raise ValueError("backadj_minimal_sets query requires treatment and outcome")
-        return {
-            "type": "backadj_minimal_sets",
-            "adjustment_sets": backdoor_adjustment_sets(
-                world,
-                _resolve_seed_node(world, seed, treatment),
-                _resolve_seed_node(world, seed, outcome),
-            ),
-        }
+        return {"type": "backadj_minimal_sets"}
     if query_type == "mediator_set":
         treatment = query.get("treatment")
         outcome = query.get("outcome")

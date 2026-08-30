@@ -10,11 +10,13 @@ from cpt_world import (
     WorldGrammar,
     WorldSpec,
     assemble_seed,
+    backdoor_adjustment_sets,
     legal_query_anchors,
     parse_terminal_answer,
     sample_task_world,
     sample_world,
     score_terminal_answer,
+    terminal_quality_reward,
 )
 
 _HIDING_MODES = (
@@ -51,6 +53,165 @@ def _decision_world():
         "decision",
         anchors={"decision_target": 0, "outcome": 2, "objective": "minimize"},
         seed_id="SCORE-EXACT-DECISION",
+    )
+    return seed, world
+
+
+def _backdoor_behavior_task():
+    """Z confounds X/Y while M carries the directed X-to-Y effect."""
+
+    world = WorldSpec(
+        family="test_dag",
+        topology="Z-to-X-and-Y-X-to-M-to-Y",
+        variables=("Z", "X", "M", "Y"),
+        domains=(2, 2, 2, 2),
+        state_names=(("0", "1"),) * 4,
+        edges=((0, 1), (0, 3), (1, 2), (2, 3)),
+        parents={0: (), 1: (0,), 2: (1,), 3: (0, 2)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(4, 5), Fraction(1, 5)), (Fraction(1, 5), Fraction(4, 5))),
+            2: ((Fraction(9, 10), Fraction(1, 10)), (Fraction(1, 10), Fraction(9, 10))),
+            3: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(3, 10), Fraction(7, 10)),
+                (Fraction(7, 10), Fraction(3, 10)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+        },
+    )
+    seed = assemble_seed(
+        world,
+        _HIDING_MODES,
+        "backadj_minimal_sets",
+        "discovery",
+        anchors={"treatment": 1, "outcome": 3},
+        seed_id="SCORE-BACKDOOR-BEHAVIOR",
+    )
+    return seed, world
+
+
+def _collider_behavior_task():
+    """X and U are independent until conditioning on their collider C."""
+
+    world = WorldSpec(
+        family="test_dag",
+        topology="X-to-C-from-U-X-and-U-to-Y",
+        variables=("X", "U", "C", "Y"),
+        domains=(2, 2, 2, 2),
+        state_names=(("0", "1"),) * 4,
+        edges=((0, 2), (1, 2), (0, 3), (1, 3)),
+        parents={0: (), 1: (), 2: (0, 1), 3: (0, 1)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(1, 2), Fraction(1, 2)),),
+            2: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(1, 5), Fraction(4, 5)),
+                (Fraction(1, 5), Fraction(4, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+            3: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(1, 5), Fraction(4, 5)),
+                (Fraction(4, 5), Fraction(1, 5)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+        },
+    )
+    seed = assemble_seed(
+        world,
+        _HIDING_MODES,
+        "backadj_minimal_sets",
+        "discovery",
+        anchors={"treatment": 0, "outcome": 3},
+        seed_id="SCORE-COLLIDER-BEHAVIOR",
+    )
+    return seed, world
+
+
+def _strong_weak_backdoor_task():
+    """A and B are respectively strong and weak observed confounders."""
+
+    def binary_row(probability_one: Fraction) -> tuple[Fraction, Fraction]:
+        return Fraction(1) - probability_one, probability_one
+
+    world = WorldSpec(
+        family="test_dag",
+        topology="A-and-B-to-X-and-Y-X-to-Y",
+        variables=("A", "B", "X", "Y"),
+        domains=(2, 2, 2, 2),
+        state_names=(("0", "1"),) * 4,
+        edges=((0, 2), (1, 2), (0, 3), (1, 3), (2, 3)),
+        parents={0: (), 1: (), 2: (0, 1), 3: (0, 1, 2)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(1, 2), Fraction(1, 2)),),
+            2: tuple(
+                binary_row(probability)
+                for probability in (
+                    Fraction(1, 10),
+                    Fraction(3, 20),
+                    Fraction(17, 20),
+                    Fraction(9, 10),
+                )
+            ),
+            3: tuple(
+                binary_row(probability)
+                for probability in (
+                    Fraction(1, 10),
+                    Fraction(3, 10),
+                    Fraction(3, 25),
+                    Fraction(8, 25),
+                    Fraction(7, 10),
+                    Fraction(9, 10),
+                    Fraction(18, 25),
+                    Fraction(23, 25),
+                )
+            ),
+        },
+    )
+    seed = assemble_seed(
+        world,
+        _HIDING_MODES,
+        "backadj_minimal_sets",
+        "discovery",
+        anchors={"treatment": 2, "outcome": 3},
+        seed_id="SCORE-STRONG-WEAK-BACKDOOR",
+    )
+    return seed, world
+
+
+def _multiple_adjustment_task():
+    """Either A or its parent B blocks the sole backdoor path."""
+
+    world = WorldSpec(
+        family="test_dag",
+        topology="X-from-A-from-B-to-Y-and-X-to-Y",
+        variables=("B", "A", "X", "Y"),
+        domains=(2, 2, 2, 2),
+        state_names=(("0", "1"),) * 4,
+        edges=((0, 1), (1, 2), (0, 3), (2, 3)),
+        parents={0: (), 1: (0,), 2: (1,), 3: (0, 2)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: ((Fraction(4, 5), Fraction(1, 5)), (Fraction(1, 5), Fraction(4, 5))),
+            2: ((Fraction(4, 5), Fraction(1, 5)), (Fraction(1, 5), Fraction(4, 5))),
+            3: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(1, 2), Fraction(1, 2)),
+                (Fraction(1, 2), Fraction(1, 2)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+        },
+    )
+    seed = assemble_seed(
+        world,
+        _HIDING_MODES,
+        "backadj_minimal_sets",
+        "discovery",
+        anchors={"treatment": 2, "outcome": 3},
+        seed_id="SCORE-MULTIPLE-ADJUSTMENT",
     )
     return seed, world
 
@@ -369,41 +530,122 @@ def _find_discovery_task(query_type: str):
 
 
 class DiscoveryScoringTests(unittest.TestCase):
-    def test_backadj_correct_answer_has_full_f1(self) -> None:
-        seed_obj, world = _find_discovery_task("backadj_minimal_sets")
-        from cpt_world import compute_query_truth
-
-        truth = compute_query_truth(world, seed_obj)
+    @staticmethod
+    def _score_adjustment_set(seed_obj, world, names: tuple[str, ...]):
         label_map = seed_obj["visible_schema"]["variable_labels"]
         raw = json.dumps(
             {
                 "type": "answer",
-                "adjustment_sets": [
-                    [label_map[name] for name in adjustment_set]
-                    for adjustment_set in truth["adjustment_sets"]
+                "adjustment_set": [label_map[name] for name in names],
+            }
+        )
+        return score_terminal_answer(raw, seed_obj, world)
+
+    def test_backadj_one_valid_adjustment_set_has_zero_effect_error(self) -> None:
+        seed_obj, world = _find_discovery_task("backadj_minimal_sets")
+        label_map = seed_obj["visible_schema"]["variable_labels"]
+        treatment = world.variables.index(
+            next(
+                internal
+                for internal, visible in label_map.items()
+                if visible == seed_obj["query"]["treatment"]
+            )
+        )
+        outcome = world.variables.index(
+            next(
+                internal
+                for internal, visible in label_map.items()
+                if visible == seed_obj["query"]["outcome"]
+            )
+        )
+        adjustment_set = backdoor_adjustment_sets(world, treatment, outcome)[0]
+        raw = json.dumps(
+            {
+                "type": "answer",
+                "adjustment_set": [label_map[name] for name in adjustment_set],
+            }
+        )
+        score = score_terminal_answer(raw, seed_obj, world)
+        self.assertEqual(score["adjustment_error"], 0)
+        self.assertEqual(terminal_quality_reward(score), 1)
+
+    def test_backadj_scores_the_complete_submitted_set(self) -> None:
+        seed_obj, world = _backdoor_behavior_task()
+        valid = self._score_adjustment_set(seed_obj, world, ("Z",))
+        unadjusted = self._score_adjustment_set(seed_obj, world, ())
+        overadjusted = self._score_adjustment_set(seed_obj, world, ("Z", "M"))
+
+        self.assertEqual(valid["adjustment_error"], 0)
+        self.assertEqual(terminal_quality_reward(valid), 1)
+        self.assertEqual(
+            unadjusted["adjustment_error"], unadjusted["unadjusted_error"]
+        )
+        self.assertEqual(terminal_quality_reward(unadjusted), Fraction(1, 2))
+        self.assertGreater(overadjusted["adjustment_error"], 0)
+        self.assertLess(terminal_quality_reward(overadjusted), 1)
+
+    def test_backadj_penalizes_opening_a_collider(self) -> None:
+        seed_obj, world = _collider_behavior_task()
+        valid = self._score_adjustment_set(seed_obj, world, ())
+        collider = self._score_adjustment_set(seed_obj, world, ("C",))
+
+        self.assertEqual(valid["unadjusted_error"], 0)
+        self.assertEqual(valid["adjustment_error"], 0)
+        self.assertEqual(terminal_quality_reward(valid), 1)
+        self.assertGreater(collider["adjustment_error"], 0)
+        self.assertEqual(terminal_quality_reward(collider), 0)
+
+    def test_backadj_prioritizes_the_stronger_missing_confounder(self) -> None:
+        seed_obj, world = _strong_weak_backdoor_task()
+        complete = self._score_adjustment_set(seed_obj, world, ("A", "B"))
+        keeps_strong = self._score_adjustment_set(seed_obj, world, ("A",))
+        keeps_weak = self._score_adjustment_set(seed_obj, world, ("B",))
+
+        self.assertEqual(complete["adjustment_error"], 0)
+        self.assertLess(keeps_strong["adjustment_error"], keeps_weak["adjustment_error"])
+        self.assertGreater(
+            terminal_quality_reward(keeps_strong), terminal_quality_reward(keeps_weak)
+        )
+
+    def test_backadj_parser_rejects_duplicate_and_endpoint_labels(self) -> None:
+        seed_obj, world = _backdoor_behavior_task()
+        labels = seed_obj["visible_schema"]["variable_labels"]
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            parse_terminal_answer(
+                json.dumps(
+                    {
+                        "type": "answer",
+                        "adjustment_set": [labels["Z"], labels["Z"]],
+                    }
+                ),
+                seed_obj,
+                world,
+            )
+        with self.assertRaisesRegex(ValueError, "exclude treatment and outcome"):
+            parse_terminal_answer(
+                json.dumps(
+                    {"type": "answer", "adjustment_set": [labels["X"]]}
+                ),
+                seed_obj,
+                world,
+            )
+
+    def test_backadj_does_not_require_every_minimal_adjustment_set(self) -> None:
+        seed_obj, world = _multiple_adjustment_task()
+        adjustment_sets = backdoor_adjustment_sets(world, "X", "Y")
+        self.assertEqual(set(adjustment_sets), {("A",), ("B",)})
+        label_map = seed_obj["visible_schema"]["variable_labels"]
+        raw = json.dumps(
+            {
+                "type": "answer",
+                "adjustment_set": [
+                    label_map[name] for name in adjustment_sets[0]
                 ],
             }
         )
         score = score_terminal_answer(raw, seed_obj, world)
-        self.assertEqual(score["f1"], 1)
-        self.assertTrue(score["exact_match"])
-
-    def test_backadj_incomplete_answer_has_lower_f1(self) -> None:
-        seed_obj, world = _find_discovery_task("backadj_minimal_sets")
-        from cpt_world import compute_query_truth
-
-        truth = compute_query_truth(world, seed_obj)
-        if len(truth["adjustment_sets"]) <= 1:
-            self.skipTest("no partial backadj answer available")
-        label_map = seed_obj["visible_schema"]["variable_labels"]
-        raw = json.dumps(
-            {
-                "type": "answer",
-                "adjustment_sets": [[label_map[name] for name in truth["adjustment_sets"][0]]],
-            }
-        )
-        score = score_terminal_answer(raw, seed_obj, world)
-        self.assertLess(score["f1"], 1)
+        self.assertEqual(score["adjustment_error"], 0)
+        self.assertEqual(terminal_quality_reward(score), 1)
 
     def test_mediator_correct_answer_has_full_f1(self) -> None:
         seed_obj, world = _find_discovery_task("mediator_set")

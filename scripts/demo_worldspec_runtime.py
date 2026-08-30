@@ -14,6 +14,7 @@ from cpt_world import (
     WorldSpec,
     WorldSpecEpisode,
     assemble_sampled_anchor_tasks,
+    backdoor_adjustment_sets,
     compute_query_truth,
     iter_sampled_seeds,
 )
@@ -100,7 +101,11 @@ def _experiment(seed: Mapping[str, Any], world: WorldSpec, measure_max: int) -> 
     }
 
 
-def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, Any]:
+def _answer(
+    seed: Mapping[str, Any],
+    world: WorldSpec,
+    truth: Mapping[str, Any],
+) -> Mapping[str, Any]:
     labels = seed["visible_schema"]["variable_labels"]
     query_type = seed["query"]["type"]
     if query_type == "ate":
@@ -123,11 +128,14 @@ def _answer(seed: Mapping[str, Any], truth: Mapping[str, Any]) -> Mapping[str, A
             "value": f"state_{truth['value']}",
         }
     if query_type == "backadj_minimal_sets":
+        inverse = {visible: internal for internal, visible in labels.items()}
+        treatment = world.variables.index(inverse[str(seed["query"]["treatment"])])
+        outcome = world.variables.index(inverse[str(seed["query"]["outcome"])])
+        adjustment_set = backdoor_adjustment_sets(world, treatment, outcome)[0]
         return {
             "type": "answer",
-            "adjustment_sets": [
-                [labels[name] for name in adjustment_set]
-                for adjustment_set in truth["adjustment_sets"]
+            "adjustment_set": [
+                labels[name] for name in adjustment_set
             ],
         }
     return {
@@ -150,7 +158,7 @@ def run_demo(query_type: str) -> Mapping[str, Any]:
     intervention = _experiment(seed, world, episode.measure_max)
     batch_step = episode.step(json.dumps(intervention, separators=(",", ":")))
     truth = compute_query_truth(world, seed)
-    terminal_answer = _answer(seed, truth)
+    terminal_answer = _answer(seed, world, truth)
     terminal = episode.step(json.dumps(terminal_answer, separators=(",", ":")))
     return {
         "query_type": query_type,

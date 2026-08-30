@@ -61,7 +61,7 @@ QUERY_TYPES: dict[str, Mapping[str, Any]] = {
     },
     "backadj_minimal_sets": {
         "anchors": ("treatment", "outcome"),
-        "answer_kind": "set",
+        "answer_kind": "adjustment_set",
         "task_heads": frozenset({"discovery"}),
         "truth_owner_status": OWNER_STATUS_IMPLEMENTED,
     },

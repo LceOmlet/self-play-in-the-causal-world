@@ -15,6 +15,7 @@ from cpt_world import (
     WorldSpec,
     WorldSpecEpisode,
     assemble_seed,
+    backdoor_adjustment_sets,
     compute_query_truth,
     legal_query_anchors,
     sample_task_world,
@@ -663,20 +664,20 @@ class WorldSpecRuntimeTests(unittest.TestCase):
             )
         )
         self.assertEqual(step.kind, "batch")
-        truth = compute_query_truth(world, seed)
+        treatment = world.variables.index("X")
+        outcome = world.variables.index("Y")
+        adjustment_set = backdoor_adjustment_sets(world, treatment, outcome)[0]
         terminal = episode.step(
             json.dumps(
                 {
                     "type": "answer",
-                    "adjustment_sets": [
-                        [labels[name] for name in adjustment_set]
-                        for adjustment_set in truth["adjustment_sets"]
+                    "adjustment_set": [
+                        labels[name] for name in adjustment_set
                     ],
                 }
             )
         )
-        self.assertEqual(terminal.score["f1"], 1)
-        self.assertTrue(terminal.score["exact_match"])
+        self.assertEqual(terminal.score["adjustment_error"], 0)
         self.assertEqual(terminal.reward, 1)
 
     def test_episode_rejects_an_action_surface_with_no_target_measure_pair(self) -> None:

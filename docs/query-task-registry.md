@@ -9,7 +9,7 @@
 |---|---|---|---|---|
 | `ate` | treatment, outcome | categorical_effect_vector | `target_query` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `individual_counterfactual_probability` | treatment, outcome | identified_interval | `target_query` | implemented（`query_truth.py` → `counterfactual_solver.py`，给定个体 factual evidence 后的完整相容世界 exact / epsilon-sharp 认证界） |
-| `backadj_minimal_sets` | treatment, outcome | set | `discovery` | implemented（`query_truth.py`） |
+| `backadj_minimal_sets` | treatment, outcome | one adjustment set | `discovery` | implemented（`task_scoring.py`，标准化分布与 hard-do 分布对比） |
 | `best_intervention` | decision_target, outcome | deployment state | `decision` | implemented（`query_truth.py`，通用 WorldSpec） |
 | `mediator_set` | treatment, outcome | set_with_order | `discovery` | implemented（`query_truth.py`） |
 
@@ -47,7 +47,7 @@ compute_query_truth(world, seed)
 - 隐藏验证器在与完整 DAG、全部 CPT 行和公开因果语义相容的全部 Markovian 有限机制上计算条件概率区间，不选择隐藏 SCM；模型返回 `lower` 与 `upper` 两个端点；
 - 精确闭合时返回 `exact`；否则仅在最终条件概率尺度上两个端点误差都不超过 `0.001` 时返回安全外括的 `epsilon_sharp`；
 - 超过该容差时，任务 truth fail closed；Fréchet 外界只保留为求解诊断，不替代正式终局 truth；
-- `backadj` 采用标准 back-door criterion，返回 inclusion-minimal 集合；
+- `backadj` 接收一个完整调整集合，并直接检验该集合标准化后的 outcome 分布是否恢复 hard-do 分布；图论 minimal sets 仅保留为生成和测试诊断；
 - collider 条件 do 对比不再是独立 query，只作为 ATE 的诊断切片；
 - `mediator_set` 返回所有 X→Y 有向路径上的中间变量与路径边偏序；
 - `best_intervention` 只比较显式 `decision_target` 的各状态；该部署变量在实验阶段 readonly，实验 do target 由独立的 manipulability 掩码给出；模型只返回最终部署状态。
@@ -66,8 +66,8 @@ decision:
   raw action regret; normalized regret remains a diagnostic
 
 backadj_minimal_sets:
-  parsed adjustment-set family -> truth minimal-set family
-  precision / recall / F1 / exact_match
+  parsed complete adjustment set -> standardized outcome laws
+  mean TV error against hard-do laws; empty-set baseline error
 
 mediator_set:
   parsed mediators + order -> truth mediators + path-edge order
@@ -75,20 +75,21 @@ mediator_set:
 ```
 
 `src/cpt_world/rewards.py` 在这些 raw diagnostics 之上实现冻结的
-`terminal-quality-v7`，不重新解析模型答案或计算 truth：
+`terminal-quality-v8`，不重新解析模型答案或计算 truth：
 
 ```text
 ate:                              (B_obs + s) / (B_obs + s + TV_error)
 individual counterfactual:       (B_obs + s) / (B_obs + s + endpoint_MAE)
 decision:                         (B_obs_normalized_regret + s) /
                                   (B_obs_normalized_regret + s + normalized_regret)
-backadj_minimal_sets:             maximum-matching soft family F1
+backadj_minimal_sets:             B_empty / (B_empty + adjustment_TV_error)
 mediator_set:                     (mediator_f1 + order_f1) / 2
 unfinished / illegal terminal:    0
 ```
 
 实验样本消耗、query 数、轮数与 token 数保持独立诊断，不进入当前训练奖励。
-完整合同见 `docs/terminal-quality-reward-v7.md`。
+其中 `s` 是固定预算采样分辨率；`B_empty=0` 时，后门调整的零误差得 1，正误差得 0。所有五类 terminal quality 均原样进入 GRPO。
+完整合同见 `docs/terminal-quality-reward-v8.md`。
 
 五个 query type 均由同一个 `iter_sampled_seeds` 主管线发出。ATE、反事实区间与实验决策
 使用既有数值稳定 CPT draw；后门调整与中介路径直接复用同一次结构世界采样，

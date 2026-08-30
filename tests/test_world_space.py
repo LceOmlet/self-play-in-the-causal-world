@@ -1191,7 +1191,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             query_types=("backadj_minimal_sets", "mediator_set"),
         )
         backdoor_prompt = render_seed_task_prompt(backdoor)
-        self.assertIn('"adjustment_sets":[[]]', backdoor_prompt)
+        self.assertIn('"adjustment_set":[]', backdoor_prompt)
 
         mediator_prompt = render_seed_task_prompt(mediator)
         self.assertIn(

@@ -53,7 +53,7 @@ rendering.py 不做：
 | query_type | 必须暴露的锚点 | task_head | 终局对象 |
 |---|---|---|---|
 | `ate` | treatment, outcome | `target_query` | 一个连续效应值 |
-| `backadj_minimal_sets` | treatment, outcome | `discovery` | adjustment sets |
+| `backadj_minimal_sets` | treatment, outcome | `discovery` | one complete adjustment set |
 | `mediator_set` | treatment, outcome | `discovery` | mediators + 路径上的连续有向边 |
 | `best_intervention` | decision target + outcome + objective + outcome 状态 | `decision` | decision target 的一个部署状态 |
 

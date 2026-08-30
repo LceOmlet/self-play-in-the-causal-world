@@ -61,10 +61,9 @@ from .rendering import (
     rendered_discovery_query_surface,
 )
 from .rewards import (
-    TERMINAL_SAMPLING_RESOLUTION,
     TERMINAL_QUALITY_REWARD_VERSION,
+    TERMINAL_SAMPLING_RESOLUTION,
     UNFINISHED_TERMINAL_QUALITY,
-    soft_adjustment_family_f1,
     terminal_quality_reward,
 )
 from .seeds import (
@@ -218,7 +217,6 @@ __all__ = [
     "seed_triple_is_registered",
     "sparse_counterfactual_transition_bounds",
     "sparse_individual_counterfactual_probability_bounds",
-    "soft_adjustment_family_f1",
     "supports_hiding",
     "supports_query",
     "supports_task",

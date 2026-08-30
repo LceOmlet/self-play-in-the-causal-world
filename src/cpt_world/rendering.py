@@ -339,14 +339,15 @@ def _render_query_block(ctx: _RenderContext) -> tuple[list[str], list[str]]:
             )
     elif query_type == "backadj_minimal_sets":
         lines = [
-            f"Return all minimal adjustment sets for the total effect of {treatment} on {outcome}."
+            (
+                f"Return one adjustment set for the total effect of {treatment} on {outcome}. "
+                "Choose observed variables that remove backdoor bias without conditioning away "
+                "the directed causal effect. Do not include the treatment or outcome."
+            )
         ]
         answer_schema = [
-            '{"type":"answer","adjustment_sets":[["LAB", ...], ...]}',
-            (
-                "Encode the singleton family containing the empty adjustment set as "
-                '{"type":"answer","adjustment_sets":[[]]}.'
-            ),
+            '{"type":"answer","adjustment_set":["LAB", ...]}',
+            'Return an empty adjustment set as {"type":"answer","adjustment_set":[]}.',
         ]
     elif query_type == "mediator_set":
         lines = [

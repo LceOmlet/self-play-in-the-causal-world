@@ -26,6 +26,7 @@ export CPT_WORLD_EXPECTED_SOURCE="$PROJECT_DIR/src/cpt_world"
 "$ENV_DIR/bin/python" - <<'PY'
 import json
 import os
+from fractions import Fraction
 from pathlib import Path
 
 import cpt_world
@@ -33,6 +34,7 @@ from cpt_world import (
     TASK_FAMILY_QUERY_TYPES,
     TERMINAL_QUALITY_REWARD_VERSION,
     task_advantage_utility,
+    terminal_quality_reward,
 )
 
 expected_source = Path(os.environ["CPT_WORLD_EXPECTED_SOURCE"]).resolve()
@@ -42,9 +44,9 @@ if expected_source not in loaded_source.parents:
         f"cpt_world import escaped the requested project: {loaded_source} not under "
         f"{expected_source}"
     )
-if TERMINAL_QUALITY_REWARD_VERSION != "terminal-quality-v7":
+if TERMINAL_QUALITY_REWARD_VERSION != "terminal-quality-v8":
     raise RuntimeError(
-        "training requires terminal-quality-v7, got "
+        "training requires terminal-quality-v8, got "
         f"{TERMINAL_QUALITY_REWARD_VERSION}"
     )
 for query_type in TASK_FAMILY_QUERY_TYPES:
@@ -53,6 +55,31 @@ for query_type in TASK_FAMILY_QUERY_TYPES:
             raise RuntimeError(
                 f"training utility altered {query_type} terminal quality {quality}"
             )
+backdoor_contract = {
+    "exact": terminal_quality_reward(
+        {"kind": "backadj", "adjustment_error": 0, "unadjusted_error": Fraction(1, 5)}
+    ),
+    "unchanged": terminal_quality_reward(
+        {
+            "kind": "backadj",
+            "adjustment_error": Fraction(1, 5),
+            "unadjusted_error": Fraction(1, 5),
+        }
+    ),
+    "worse": terminal_quality_reward(
+        {
+            "kind": "backadj",
+            "adjustment_error": Fraction(2, 5),
+            "unadjusted_error": Fraction(1, 5),
+        }
+    ),
+}
+if backdoor_contract != {
+    "exact": Fraction(1),
+    "unchanged": Fraction(1, 2),
+    "worse": Fraction(1, 3),
+}:
+    raise RuntimeError(f"unexpected backdoor reward contract: {backdoor_contract}")
 print(
     "CPT_WORLD_PREFLIGHT="
     + json.dumps(
@@ -61,6 +88,9 @@ print(
             "reward_version": TERMINAL_QUALITY_REWARD_VERSION,
             "task_families": list(TASK_FAMILY_QUERY_TYPES),
             "utility": "identity",
+            "backdoor_reward": {
+                key: str(value) for key, value in backdoor_contract.items()
+            },
         },
         separators=(",", ":"),
     ),

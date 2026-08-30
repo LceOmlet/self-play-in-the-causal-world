@@ -109,12 +109,12 @@ For the fixed deployment variable, let the candidate-state outcome probabilities
 _Avoid_: canonical-action-only reward, unnormalized-regret reward, best-second-gap normalization, experiment-cost-adjusted regret
 
 **Backdoor Task Success**:
-A backdoor-adjustment answer succeeds only when it reports all and only the inclusion-minimal valid adjustment sets. Missing a set, adding a set, or changing the membership of any set is not a successful answer.
-_Avoid_: any-valid-set success, partial-family success
+A backdoor-adjustment answer succeeds when the model's one complete submitted covariate set standardizes the observational law to the true intervention distribution for every treatment state. The score uses every submitted variable, so conditioning on a mediator or collider can worsen the answer while harmless redundant covariates remain harmless.
+_Avoid_: minimal-set-family enumeration, graph-overlap success, filtering the submission through a true set
 
 **Backdoor Terminal Quality**:
-The training quality of a backdoor-adjustment answer is a soft family F1 obtained by maximum-weight one-to-one matching between predicted and true adjustment sets, using set-level Dice overlap as the matching weight. It reaches one exactly when Backdoor Task Success holds; exact family match remains the task-success metric.
-_Avoid_: atomic-family F1 as training reward, exact-match-only training reward
+Let `E` be the mean total-variation distance between the submitted set's standardized outcome distributions and the hard-do outcome distributions over all treatment states. Let `B` be the same error for the empty set. Exact adjustment receives one; when `B>0`, quality is `B/(B+E)`; when `B=0`, zero adjustment error receives one and positive error receives zero. This prioritizes variables according to their effect on the target adjustment error without changing the world distribution.
+_Avoid_: structural F1, set-family matching, path-strength thresholds, multiplying structural and effect scores
 
 **Mediator Task Success**:
 A mediator answer succeeds only when both its mediator-variable set and its consecutive directed-path-edge set exactly match their truths.
@@ -145,12 +145,8 @@ A comparison group whose policy rollouts share one hidden world, task, interacti
 _Avoid_: shared transcript, independently resampled group tasks, identical rollout copies
 
 **Unscaled Group-Relative Advantage**:
-The policy signal obtained by subtracting the common-randomness group's mean training utility from each rollout's training utility without dividing by the group's standard deviation. Terminal quality remains the semantic reward and evaluation value. For ATE, individual counterfactual, and backdoor tasks, training utility is the bounded negative-log residual transform with frozen epsilon `0.02`; for decision and mediator tasks it is the identity. The transform preserves endpoints and ordering while expanding distinctions near full quality where it remains applied.
-_Avoid_: applying identity utility to ceiling-sensitive families, group-standardized advantage, cross-task reward normalization
-
-**Ceiling-Sensitive Advantage Utility**:
-The trainer-only monotone utility `log1p(Q / (1 - Q + epsilon)) / log1p(1 / epsilon)` with frozen `epsilon = 0.02`. It is applied to owner-produced terminal quality for ATE, individual-counterfactual, and backdoor groups before group-mean subtraction. Decision and mediator quality pass through unchanged. Raw terminal quality and training utility are logged separately, and neither exact task success nor terminal scoring semantics are redefined.
-_Avoid_: unbounded negative-log residual, log-likelihood claim, transforming normalized decision quality, transforming mediator quality
+The policy signal obtained by subtracting the common-randomness group's mean terminal quality from each rollout's terminal quality without dividing by the group's standard deviation. Every task's owner-produced reward enters GRPO unchanged.
+_Avoid_: trainer-only reward shaping, group-standardized advantage, cross-task reward normalization
 
 **Individual Counterfactual Probability**:
 The probability of a named outcome for the same individual under a counterfactual assigned treatment, conditional on that individual's assigned factual treatment and observed factual outcome. The model returns the lower and upper endpoints of its sharp identified region over every finite nonparametric mechanism completion compatible with the complete DAG, all CPT rows, consistency, mechanism replacement, and the other public CPT-World assumptions. No completion is selected or assigned a prior. Endpoint interventional marginals provide only a Fréchet outer interval in the generic case.
@@ -165,5 +161,5 @@ Before per-seed K and M are sampled, every world in a declared candidate family 
 _Avoid_: a truth exists, finite-sample accuracy, universal identifiability over undeclared worlds
 
 **Structural Discovery Task**:
-A task whose terminal answer is a causal structure object rather than a numerical effect or deployment action. The current structural discovery tasks are minimal backdoor adjustment sets and mediator paths.
+A task whose terminal answer is a causal structure object rather than a numerical effect or deployment action. Mediator-path recovery is the current structural discovery task; backdoor adjustment is scored by the causal distribution recovered by the submitted set.
 _Avoid_: numerical target task, graph dump

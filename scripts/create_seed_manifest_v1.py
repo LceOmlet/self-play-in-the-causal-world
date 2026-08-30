@@ -133,7 +133,7 @@ def main() -> None:
             60,
             "SEED-CL-DIAMONDCUT-BACKADJ",
             {"type": "backadj_minimal_sets", "treatment": "X", "outcome": "Y"},
-            {"head": "discovery", "answer": "adjustment_sets"},
+            {"head": "discovery", "answer": "adjustment_set"},
             ["X"],
         ),
         _bif_seed(

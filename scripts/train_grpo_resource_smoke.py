@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import time
+from fractions import Fraction
 from pathlib import Path
 from types import MethodType
 
@@ -24,9 +25,10 @@ from cpt_world import (
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
     task_advantage_utility,
+    terminal_quality_reward,
 )
 
-_EXPECTED_REWARD_VERSION = "terminal-quality-v7"
+_EXPECTED_REWARD_VERSION = "terminal-quality-v8"
 
 
 def require_cpt_world_training_contract() -> dict[str, object]:
@@ -52,11 +54,37 @@ def require_cpt_world_training_contract() -> dict[str, object]:
                 raise RuntimeError(
                     f"training utility altered {query_type} terminal quality {quality}"
                 )
+    backdoor_contract = {
+        "exact": terminal_quality_reward(
+            {"kind": "backadj", "adjustment_error": 0, "unadjusted_error": Fraction(1, 5)}
+        ),
+        "unchanged": terminal_quality_reward(
+            {
+                "kind": "backadj",
+                "adjustment_error": Fraction(1, 5),
+                "unadjusted_error": Fraction(1, 5),
+            }
+        ),
+        "worse": terminal_quality_reward(
+            {
+                "kind": "backadj",
+                "adjustment_error": Fraction(2, 5),
+                "unadjusted_error": Fraction(1, 5),
+            }
+        ),
+    }
+    if backdoor_contract != {
+        "exact": Fraction(1),
+        "unchanged": Fraction(1, 2),
+        "worse": Fraction(1, 3),
+    }:
+        raise RuntimeError(f"unexpected backdoor reward contract: {backdoor_contract}")
     return {
         "source": str(loaded_source),
         "reward_version": TERMINAL_QUALITY_REWARD_VERSION,
         "task_families": list(TASK_FAMILY_QUERY_TYPES),
         "utility": "identity",
+        "backdoor_reward": {key: str(value) for key, value in backdoor_contract.items()},
     }
 
 
@@ -67,7 +95,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-steps", type=int, default=1)
     parser.add_argument("--max-completion-length", type=int, default=7168)
     parser.add_argument("--max-model-length", type=int, default=9216)
+    parser.add_argument(
+        "--vllm-mode",
+        choices=("colocate", "server"),
+        default="colocate",
+    )
     parser.add_argument("--vllm-memory-utilization", type=float, default=0.50)
+    parser.add_argument(
+        "--vllm-server-base-url",
+        default="http://127.0.0.1:8000",
+    )
+    parser.add_argument("--vllm-server-timeout", type=float, default=600.0)
+    parser.add_argument("--vllm-group-port", type=int, default=51216)
     parser.add_argument(
         "--vllm-rollout-residency",
         action=argparse.BooleanOptionalAction,
@@ -116,11 +155,21 @@ def main() -> None:
             "MTP speculative decoding requires --vllm-sleep-level 1 so its draft "
             "weights survive the generation/training sleep boundary"
         )
+    if cli.vllm_mode == "server" and (
+        cli.vllm_rollout_residency
+        or cli.vllm_enable_prefix_caching is not None
+        or cli.vllm_mtp_speculative_tokens
+        or cli.vllm_sleep_level != 2
+    ):
+        raise ValueError(
+            "colocated rollout acceleration flags do not apply in server mode; "
+            "configure prefix caching and speculative decoding on `trl vllm-serve`"
+        )
     output_dir = Path(cli.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     dataset = IterableDataset.from_generator(iter_random_balanced_training_rows)
     acceleration_config = {}
-    if "vllm_rollout_residency" in GRPOConfig.__dataclass_fields__:
+    if cli.vllm_mode == "colocate" and "vllm_rollout_residency" in GRPOConfig.__dataclass_fields__:
         acceleration_config = {
             "vllm_rollout_residency": cli.vllm_rollout_residency,
             "vllm_enable_prefix_caching": cli.vllm_enable_prefix_caching,
@@ -134,7 +183,7 @@ def main() -> None:
             ),
             "vllm_sleep_level": cli.vllm_sleep_level,
         }
-    elif (
+    elif cli.vllm_mode == "colocate" and (
         cli.vllm_rollout_residency
         or cli.vllm_enable_prefix_caching is not None
         or cli.vllm_mtp_speculative_tokens
@@ -153,8 +202,11 @@ def main() -> None:
         max_completion_length=cli.max_completion_length,
         max_tool_calling_iterations=None,
         use_vllm=True,
-        vllm_mode="colocate",
-        vllm_enable_sleep_mode=True,
+        vllm_mode=cli.vllm_mode,
+        vllm_server_base_url=cli.vllm_server_base_url,
+        vllm_server_timeout=cli.vllm_server_timeout,
+        vllm_group_port=cli.vllm_group_port,
+        vllm_enable_sleep_mode=cli.vllm_mode == "colocate",
         vllm_gpu_memory_utilization=cli.vllm_memory_utilization,
         vllm_max_model_length=cli.max_model_length,
         vllm_importance_sampling_correction=True,

@@ -969,7 +969,11 @@ def _acceptable_answers(
     seed: Mapping[str, Any],
     surface: object,
 ) -> frozenset[tuple[object, ...]]:
-    from .query_truth import best_intervention_states, compute_query_truth
+    from .query_truth import (
+        backdoor_adjustment_sets,
+        best_intervention_states,
+        compute_query_truth,
+    )
     from .rendering import (
         RenderedAteQuerySurface,
         RenderedDecisionQuerySurface,
@@ -1024,7 +1028,11 @@ def _acceptable_answers(
             adjustment_sets = tuple(
                 sorted(
                     tuple(sorted(position(name) for name in adjustment_set))
-                    for adjustment_set in truth["adjustment_sets"]
+                    for adjustment_set in backdoor_adjustment_sets(
+                        world,
+                        display_nodes[surface.treatment],
+                        display_nodes[surface.outcome],
+                    )
                 )
             )
             return frozenset({("backadj_minimal_sets", adjustment_sets)})

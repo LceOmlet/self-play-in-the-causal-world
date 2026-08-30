@@ -51,7 +51,7 @@ query, a legal
 experiment interface, and a structured terminal schema. It gathers selected joint
 counts through passive observation or batched hard interventions. One exact engine
 generates the feedback and verifies five terminal objects: total effects,
-individual counterfactual probabilities, experimental decisions, minimal adjustment sets,
+individual counterfactual probabilities, experimental decisions, causal adjustment sets,
 and mediator structure. Counterfactual scoring ranges over every cross-world
 coupling compatible with the CPT world, so equally compatible structural causal
 models receive the same legal answer set. Variable elimination and ancestral
@@ -118,7 +118,8 @@ This interaction creates a direct test of experimental causal reasoning. Conside
 an ATE query whose treatment and outcome are read-only. The model must use legal
 probes on other variables and decide which endpoints to measure together. A
 decision query separates exploratory interventions from the final deployment
-action. Discovery queries ask for minimal adjustment sets or mediator order after
+action. Adjustment queries ask for a covariate set that removes backdoor bias
+without conditioning away the directed effect; discovery queries ask for mediator order after
 the model has manipulated and observed the hidden system. The same renderer and
 runtime support every task, so task variation comes from the causal query and the
 interaction surface.
@@ -324,7 +325,7 @@ Task & Question & Terminal object & Experimental separation \\
 \cmidrule(lr){1-4}
 \textbf{Experimental decision} & Deployment value optimizing an outcome event & target-value intervention & deployment variable read-only during evidence collection \\
 \cmidrule(lr){1-4}
-\textbf{Backdoor adjustment} & Covariates that block every backdoor path & all minimal sets & manipulate and read candidate covariates \\
+\textbf{Backdoor adjustment} & Covariates that remove backdoor bias while preserving the directed effect & one adjustment set & manipulate and read candidate covariates \\
 \cmidrule(lr){1-4}
 \textbf{Mediator structure} & Variables and consecutive edges on directed $X\to Y$ paths & mediator set and order & perturb path candidates and read descendants \\
 \bottomrule
