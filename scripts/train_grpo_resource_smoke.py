@@ -91,7 +91,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument("--save-steps", type=int, default=50)
-    parser.add_argument("--save-total-limit", type=int, default=5)
+    parser.add_argument("--save-total-limit", type=int, default=200)
     parser.add_argument("--resume-from-checkpoint")
     parser.add_argument(
         "--use-liger-kernel",
