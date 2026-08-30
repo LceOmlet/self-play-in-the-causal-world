@@ -12,10 +12,17 @@ from unittest.mock import patch
 from cpt_world import (
     TASK_FAMILY_QUERY_TYPES,
     CPTWorldEnvironment,
+    WorldGrammar,
     build_balanced_training_rows,
     build_cpt_world_advantage_utility,
     iter_random_balanced_training_rows,
+    sample_task_world,
     task_advantage_utility,
+)
+from cpt_world.world_space import (
+    _best_intervention_is_observationally_discordant,
+    _sample_task_attributes,
+    _sampled_role_assignments,
 )
 
 
@@ -171,13 +178,21 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             "upper": 0.75,
         }
 
-        rows = list(islice(iter_random_balanced_training_rows(), 10))
+        rows = list(islice(iter_random_balanced_training_rows(), 25))
 
         self.assertEqual(
             Counter(row["query_type"] for row in rows),
-            Counter(dict.fromkeys(TASK_FAMILY_QUERY_TYPES, 2)),
+            Counter(dict.fromkeys(TASK_FAMILY_QUERY_TYPES, 5)),
         )
-        self.assertEqual(len({row["sample_index"] for row in rows}), len(rows))
+        self.assertEqual(
+            len(
+                {
+                    (row["sample_index"], row["query_type"], row["anchor_index"])
+                    for row in rows
+                }
+            ),
+            len(rows),
+        )
         counterfactual_rows = [
             row for row in rows if row["query_type"] == "individual_counterfactual_probability"
         ]
@@ -190,6 +205,37 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
                 call.kwargs["counterfactual_endpoint_time_limit_seconds"] == 5.0
                 for call in truth_owner.call_args_list
             )
+        )
+
+        grammar = WorldGrammar()
+        best_intervention_relations = []
+        for row in rows:
+            if row["query_type"] != "best_intervention":
+                continue
+            proposal_index = row["sample_index"]
+            anchor_index = row["anchor_index"]
+            seed_id = (
+                f"SAMPLED-{proposal_index}-best_intervention-decision-a{anchor_index}"
+            )
+            world = sample_task_world(grammar, proposal_index, "best_intervention")
+            roles = _sampled_role_assignments(
+                len(world.variables),
+                world.edges,
+                "best_intervention",
+                proposal_index,
+            )
+            anchors = _sample_task_attributes(
+                world,
+                "best_intervention",
+                roles[anchor_index],
+                seed_id=seed_id,
+            )
+            best_intervention_relations.append(
+                _best_intervention_is_observationally_discordant(world, anchors)
+            )
+        self.assertEqual(
+            best_intervention_relations,
+            [False, True, True, True, True],
         )
 
     @patch("cpt_world.trl_environment.compute_query_truth")

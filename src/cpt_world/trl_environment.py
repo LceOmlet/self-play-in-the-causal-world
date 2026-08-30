@@ -169,12 +169,19 @@ def _training_row(
     grammar: WorldGrammar,
     sample_index: int,
     query_type: str,
+    *,
+    best_intervention_balance_slot: int | None = None,
 ) -> tuple[dict[str, Any], WorldSpec, dict[str, Any]]:
+    if best_intervention_balance_slot is not None and query_type != "best_intervention":
+        raise ValueError(
+            "best_intervention_balance_slot is only valid for best_intervention rows"
+        )
     (seed,) = iter_sampled_seeds(
         grammar,
         query_types=(query_type,),
         start_seed=sample_index,
         count=1,
+        best_intervention_balance_start=best_intervention_balance_slot,
     )
     seed_id = str(seed["seed_id"])
     proposal_index = int(seed_id.split("-", 2)[1])
@@ -256,6 +263,7 @@ def _iter_random_balanced_training_rows(
         raise ValueError("counterfactual endpoint time limit must be positive")
     resolved_grammar = grammar or WorldGrammar()
     sample_index = start_seed
+    best_intervention_balance_slot = 0
     while True:
         for query_type in TASK_FAMILY_QUERY_TYPES:
             attempts = 0
@@ -264,6 +272,11 @@ def _iter_random_balanced_training_rows(
                     resolved_grammar,
                     sample_index,
                     query_type,
+                    best_intervention_balance_slot=(
+                        best_intervention_balance_slot
+                        if query_type == "best_intervention"
+                        else None
+                    ),
                 )
                 sample_index += 1
                 if query_type != _COUNTERFACTUAL_QUERY_TYPE:
@@ -289,6 +302,8 @@ def _iter_random_balanced_training_rows(
                     separators=(",", ":"),
                 )
                 break
+            if query_type == "best_intervention":
+                best_intervention_balance_slot += 1
             yield row
 
 

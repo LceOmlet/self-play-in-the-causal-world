@@ -2209,6 +2209,7 @@ def iter_sampled_seeds(
     start_seed: int = 0,
     count: int = 1,
     hiding: str | object = "mechanism_hidden",
+    best_intervention_balance_start: int | None = None,
 ) -> tuple[Mapping[str, Any], ...]:
     """Yield one sampled task per requested family and output slot.
 
@@ -2223,13 +2224,19 @@ def iter_sampled_seeds(
     seed-fixed M. Four families never filter numerical answers. Best
     intervention uses deterministic rejection over complete task proposals so
     the first output slot in every five-slot block is observationally
-    concordant and the other four are observationally discordant. This makes
-    every consecutive aligned five-slot block exactly 1:4 without changing
-    either conditional proposal distribution.
+    concordant and the other four are observationally discordant. By default,
+    ``start_seed`` also owns that output-slot phase. Streaming callers that
+    share world seeds across task families may provide
+    ``best_intervention_balance_start`` to keep the best-intervention slot
+    independent of skipped or resampled rows. This makes every consecutive
+    aligned five-slot block exactly 1:4 without changing either conditional
+    proposal distribution.
     """
 
     if count <= 0:
         raise ValueError("count must be positive")
+    if best_intervention_balance_start is not None and best_intervention_balance_start < 0:
+        raise ValueError("best_intervention_balance_start must be nonnegative")
     admitted_query_types = frozenset(TASK_FAMILY_QUERY_TYPES)
     if not query_types:
         raise ValueError("query_types must not be empty")
@@ -2241,7 +2248,7 @@ def iter_sampled_seeds(
             f"generic sampler does not admit query types: {sorted(unknown_query_types)}"
         )
     generated: list[tuple[WorldSpec, Mapping[str, Any]]] = []
-    for sample_index in range(start_seed, start_seed + count):
+    for output_offset, sample_index in enumerate(range(start_seed, start_seed + count)):
         for query_type in query_types:
             attempt = 0
             while True:
@@ -2276,7 +2283,12 @@ def iter_sampled_seeds(
                         task_world,
                         anchors,
                     )
-                    desired_discordant = sample_index % 5 != 0
+                    balance_slot = (
+                        sample_index
+                        if best_intervention_balance_start is None
+                        else best_intervention_balance_start + output_offset
+                    )
+                    desired_discordant = balance_slot % 5 != 0
                     if discordant != desired_discordant:
                         attempt += 1
                         continue
