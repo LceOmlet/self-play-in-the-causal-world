@@ -8,7 +8,7 @@ variable names, task truth, and scorer are never rendered to the model.
 
 The current milestone provides the environment, the shared task-generation and
 interaction pipeline, the frozen
-[Terminal-Quality Reward v9](docs/terminal-quality-reward-v9.md), the
+[Terminal-Quality Reward v10](docs/terminal-quality-reward-v10.md), the
 [uniform task-family training mixture](docs/training-mixture-v1.md), and an
 executable GRPO post-training entry point. It does not yet freeze a self-play
 data-generation algorithm, difficulty bands, or a final benchmark aggregation
@@ -43,7 +43,7 @@ They are not a second sampler and do not define the generated task distribution.
 
 ## Reward and benchmark metrics
 
-### Terminal-Quality Reward v9
+### Terminal-Quality Reward v10
 
 Every legal terminal answer receives one continuous quality value between zero
 and one. An unfinished episode or an illegal terminal answer receives zero. The
@@ -56,7 +56,7 @@ time are recorded separately and never folded into terminal quality.
 | Categorical total effect | Total-variation error between the predicted and true complete effect vectors. | Accuracy is calibrated against the error of replacing the causal effect with the corresponding observational conditional effect, with one fixed sampling-resolution allowance. Exact recovery receives one and larger vector error lowers quality continuously. |
 | Individual counterfactual ROI | Mean absolute distance of the two predicted endpoints from their certified endpoint ranges. | Accuracy is calibrated against the observational counterfactual plug-in interval with the same fixed sampling-resolution allowance. Both endpoints contribute equally, and exact certified recovery receives one. |
 | Experimental decision | Regret of the chosen deployment state, normalized by the full causal value range available in that world. | Accuracy is calibrated against the normalized regret of the state selected from observational conditionals. An optimal state receives one; increasingly costly decisions receive lower quality. |
-| Backdoor adjustment | Number of variable additions or removals needed to reach the nearest graphically valid adjustment set. | Any valid set receives one. One required edit receives one half, two receive one third, and further edits decrease quality by the same reciprocal rule. |
+| Backdoor adjustment | Number of variable additions or removals needed to reach the nearest graphically valid adjustment set. | Any valid set receives one. Every additional edit subtracts the same amount, fixed by the configured maximum graph size rather than by the current world. |
 | Mediator set and order | Set disagreement for the mediators and directed-edge disagreement for their path order. | Terminal quality is the equal average of mediator F1 and path-order F1. |
 
 For the first three tasks, the fixed sampling-resolution allowance is set once
@@ -68,7 +68,7 @@ answer to use as a calibration reference. When all deployment states have the
 same causal value, every state is optimal and has zero regret.
 
 The full versioned contract is
-[Terminal-Quality Reward v9](docs/terminal-quality-reward-v9.md). Historical
+[Terminal-Quality Reward v10](docs/terminal-quality-reward-v10.md). Historical
 reward documents remain in `docs/` only to explain earlier experiments; they
 are not active training contracts.
 
@@ -83,7 +83,7 @@ separately using the following definitions:
 | Categorical total effect | Complete-vector RMSE and mean total-variation error; observational-shortcut total-variation error is reported beside them. | Lower is better. |
 | Individual counterfactual ROI | Endpoint MAE, endpoint RMSE, exact endpoint-recovery rate, and predicted and certified interval widths. | Lower endpoint error and higher exact recovery are better. |
 | Experimental decision | Optimal-action accuracy, raw causal regret, and normalized causal regret; concordant and observationally discordant strata are reported separately. | Higher accuracy and lower regret are better. |
-| Backdoor adjustment | Nearest-valid-set edit distance, graphically valid-set rate, and mean v9 terminal quality. | Lower edit distance and higher valid-set rate are better. |
+| Backdoor adjustment | Nearest-valid-set edit distance, graphically valid-set rate, and mean v10 terminal quality. | Lower edit distance and higher valid-set rate are better. |
 | Mediator set and order | Mediator precision, recall, and F1; path-order precision, recall, and F1; and joint exact-match rate. | Higher is better. |
 
 Complete-vector RMSE gives every outcome-state component equal weight. Endpoint
@@ -92,7 +92,7 @@ numerical enclosure is not counted as model error. Raw regret is the causal
 value lost by the selected action; normalized regret expresses that loss
 relative to the complete causal value range in the same world.
 
-Every task table must also include mean v9 terminal quality and valid-terminal
+Every task table must also include mean v10 terminal quality and valid-terminal
 coverage. Counterfactual truth certification coverage, exact versus
 epsilon-sharp certification counts, node-count histograms, task-answer
 distributions, and observational-shortcut baselines are dataset diagnostics

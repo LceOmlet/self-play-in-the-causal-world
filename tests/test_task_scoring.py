@@ -579,9 +579,9 @@ class DiscoveryScoringTests(unittest.TestCase):
         self.assertEqual(valid["edit_distance"], 0)
         self.assertEqual(terminal_quality_reward(valid), 1)
         self.assertEqual(unadjusted["edit_distance"], 1)
-        self.assertEqual(terminal_quality_reward(unadjusted), Fraction(1, 2))
+        self.assertEqual(terminal_quality_reward(unadjusted), Fraction(13, 14))
         self.assertEqual(overadjusted["edit_distance"], 1)
-        self.assertEqual(terminal_quality_reward(overadjusted), Fraction(1, 2))
+        self.assertEqual(terminal_quality_reward(overadjusted), Fraction(13, 14))
 
     def test_backadj_penalizes_opening_a_collider(self) -> None:
         seed_obj, world = _collider_behavior_task()
@@ -591,7 +591,7 @@ class DiscoveryScoringTests(unittest.TestCase):
         self.assertEqual(valid["edit_distance"], 0)
         self.assertEqual(terminal_quality_reward(valid), 1)
         self.assertEqual(collider["edit_distance"], 1)
-        self.assertEqual(terminal_quality_reward(collider), Fraction(1, 2))
+        self.assertEqual(terminal_quality_reward(collider), Fraction(13, 14))
 
     def test_backadj_counts_each_missing_confounder_as_one_edit(self) -> None:
         seed_obj, world = _strong_weak_backdoor_task()
@@ -602,8 +602,8 @@ class DiscoveryScoringTests(unittest.TestCase):
         self.assertEqual(complete["edit_distance"], 0)
         self.assertEqual(keeps_strong["edit_distance"], 1)
         self.assertEqual(keeps_weak["edit_distance"], 1)
-        self.assertEqual(terminal_quality_reward(keeps_strong), Fraction(1, 2))
-        self.assertEqual(terminal_quality_reward(keeps_weak), Fraction(1, 2))
+        self.assertEqual(terminal_quality_reward(keeps_strong), Fraction(13, 14))
+        self.assertEqual(terminal_quality_reward(keeps_weak), Fraction(13, 14))
 
     def test_backadj_parser_rejects_duplicate_and_endpoint_labels(self) -> None:
         seed_obj, world = _backdoor_behavior_task()

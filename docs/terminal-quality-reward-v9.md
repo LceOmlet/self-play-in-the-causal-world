@@ -1,5 +1,7 @@
 # Terminal-Quality Reward v9
 
+Superseded by [`terminal-quality-reward-v10`](terminal-quality-reward-v10.md).
+
 `terminal-quality-v9` keeps the v8 rewards for categorical total effect,
 individual counterfactual ROI, experimental decision, and mediator structure.
 It replaces only the backdoor-adjustment scorer and reward.

@@ -678,6 +678,16 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(terminal.score["edit_distance"], 0)
         self.assertEqual(terminal.reward, 1)
 
+    def test_episode_rejects_a_reward_graph_bound_smaller_than_its_world(self) -> None:
+        seed, world = _sampled_task("ate")
+        with self.assertRaisesRegex(ValueError, "covering the episode world"):
+            WorldSpecEpisode(
+                world,
+                seed,
+                OutcomeTape("runtime-invalid-reward-graph-bound"),
+                max_graph_nodes=len(world.variables) - 1,
+            )
+
     def test_episode_rejects_an_action_surface_with_no_target_measure_pair(self) -> None:
         seed, world = _sampled_task("ate", preferred_seed=64)
         only_name = world.variables[0]

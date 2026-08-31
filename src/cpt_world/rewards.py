@@ -13,10 +13,12 @@ from math import sqrt
 from typing import Any
 
 from .episode import OBSERVATIONS_PER_BANDWIDTH_UNIT
+from .world_space import DEFAULT_NODE_COUNTS
 
-TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v9"
+TERMINAL_QUALITY_REWARD_VERSION = "terminal-quality-v10"
 UNFINISHED_TERMINAL_QUALITY = Fraction(0)
 TERMINAL_SAMPLING_RESOLUTION = Fraction.from_float(1.0 / sqrt(OBSERVATIONS_PER_BANDWIDTH_UNIT))
+DEFAULT_REWARD_MAX_GRAPH_NODES = max(DEFAULT_NODE_COUNTS)
 
 
 def _fraction_metric(
@@ -56,7 +58,11 @@ def _shortcut_calibrated_quality(
     return scale / (scale + error)
 
 
-def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
+def terminal_quality_reward(
+    score: Mapping[str, Any],
+    *,
+    max_graph_nodes: int = DEFAULT_REWARD_MAX_GRAPH_NODES,
+) -> Fraction:
     """Map one owner-produced terminal diagnostic record to the current reward."""
 
     if not isinstance(score, Mapping):
@@ -84,12 +90,23 @@ def terminal_quality_reward(score: Mapping[str, Any]) -> Fraction:
             absolute_error_upper=Fraction(1),
         )
     elif kind == "backadj":
+        if (
+            isinstance(max_graph_nodes, bool)
+            or not isinstance(max_graph_nodes, int)
+            or max_graph_nodes < 3
+        ):
+            raise ValueError("max_graph_nodes must be an integer >= 3")
         edit_distance = score.get("edit_distance")
         if isinstance(edit_distance, bool) or not isinstance(edit_distance, int):
             raise ValueError("terminal diagnostic edit_distance must be a nonnegative integer")
         if edit_distance < 0:
             raise ValueError("terminal diagnostic edit_distance must be a nonnegative integer")
-        quality = Fraction(1, 1 + edit_distance)
+        maximum_edit_distance = max_graph_nodes - 2
+        if edit_distance > maximum_edit_distance:
+            raise ValueError(
+                "terminal diagnostic edit_distance exceeds the configured graph support"
+            )
+        quality = Fraction(maximum_edit_distance - edit_distance, maximum_edit_distance)
     elif kind == "mediator":
         quality = (_fraction_metric(score, "mediator_f1") + _fraction_metric(score, "order_f1")) / 2
     else:

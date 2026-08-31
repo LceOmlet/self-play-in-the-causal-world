@@ -373,6 +373,7 @@ class CPTWorldEnvironment:
             seed,
             OutcomeTape(tape_key),
             terminal_truth=terminal_truth,
+            max_graph_nodes=max(self._grammar.node_counts),
         )
         return _TOOL_PROTOCOL_INSTRUCTION
 

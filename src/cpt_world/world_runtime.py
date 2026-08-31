@@ -27,7 +27,7 @@ from .rendering import render_seed_initial_messages, resolve_observation_bandwid
 from .rewards import terminal_quality_reward
 from .task_scoring import score_terminal_answer
 from .world import OutcomeTape
-from .world_space import WorldSpec
+from .world_space import DEFAULT_NODE_COUNTS, WorldSpec
 
 MAX_FEEDBACK_CELLS = 128
 
@@ -565,6 +565,7 @@ class WorldSpecEpisode:
         budget: Budget | None = None,
         measure_max: int | None = None,
         terminal_truth: Mapping[str, Any] | None = None,
+        max_graph_nodes: int = max(DEFAULT_NODE_COUNTS),
     ) -> None:
         if not isinstance(world, WorldSpec):
             raise TypeError("world must be a WorldSpec")
@@ -574,6 +575,14 @@ class WorldSpecEpisode:
             raise TypeError("budget must be a Budget")
         if terminal_truth is not None and not isinstance(terminal_truth, Mapping):
             raise TypeError("terminal_truth must be a mapping")
+        if (
+            isinstance(max_graph_nodes, bool)
+            or not isinstance(max_graph_nodes, int)
+            or max_graph_nodes < len(world.variables)
+        ):
+            raise ValueError(
+                "max_graph_nodes must be an integer covering the episode world"
+            )
         _runtime_view(seed, world)
         resolved_measure_max = resolve_observation_bandwidth(seed, measure_max)
         if budget is None:
@@ -594,6 +603,7 @@ class WorldSpecEpisode:
         self.tape = tape
         self.budget = resolved_budget
         self.measure_max = resolved_measure_max
+        self.max_graph_nodes = max_graph_nodes
         self.terminal_truth = dict(terminal_truth) if terminal_truth is not None else None
         self._queries_used = 0
         self._sample_rows_used = 0
@@ -791,7 +801,7 @@ class WorldSpecEpisode:
                 self.world,
                 terminal_truth=self.terminal_truth,
             )
-            reward = terminal_quality_reward(score)
+            reward = terminal_quality_reward(score, max_graph_nodes=self.max_graph_nodes)
             self._terminal_score = score
             self._terminal_reward = reward
             return WorldEpisodeStep(kind="terminal", score=score, reward=reward)

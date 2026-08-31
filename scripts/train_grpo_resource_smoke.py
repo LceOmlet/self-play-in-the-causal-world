@@ -20,6 +20,7 @@ from trl import GRPOConfig, GRPOTrainer
 
 import cpt_world
 from cpt_world import (
+    DEFAULT_REWARD_MAX_GRAPH_NODES,
     TASK_FAMILY_QUERY_TYPES,
     TERMINAL_QUALITY_REWARD_VERSION,
     CPTWorldEnvironment,
@@ -29,7 +30,7 @@ from cpt_world import (
     terminal_quality_reward,
 )
 
-_EXPECTED_REWARD_VERSION = "terminal-quality-v9"
+_EXPECTED_REWARD_VERSION = "terminal-quality-v10"
 
 
 def require_cpt_world_training_contract() -> dict[str, object]:
@@ -54,15 +55,25 @@ def require_cpt_world_training_contract() -> dict[str, object]:
                 raise RuntimeError(
                     f"training utility altered {query_type} terminal quality {quality}"
                 )
+    maximum_edit_distance = DEFAULT_REWARD_MAX_GRAPH_NODES - 2
     backdoor_contract = {
-        "exact": terminal_quality_reward({"kind": "backadj", "edit_distance": 0}),
-        "one_edit": terminal_quality_reward({"kind": "backadj", "edit_distance": 1}),
-        "two_edits": terminal_quality_reward({"kind": "backadj", "edit_distance": 2}),
+        "exact": terminal_quality_reward(
+            {"kind": "backadj", "edit_distance": 0},
+            max_graph_nodes=DEFAULT_REWARD_MAX_GRAPH_NODES,
+        ),
+        "one_edit": terminal_quality_reward(
+            {"kind": "backadj", "edit_distance": 1},
+            max_graph_nodes=DEFAULT_REWARD_MAX_GRAPH_NODES,
+        ),
+        "two_edits": terminal_quality_reward(
+            {"kind": "backadj", "edit_distance": 2},
+            max_graph_nodes=DEFAULT_REWARD_MAX_GRAPH_NODES,
+        ),
     }
     if backdoor_contract != {
         "exact": Fraction(1),
-        "one_edit": Fraction(1, 2),
-        "two_edits": Fraction(1, 3),
+        "one_edit": Fraction(maximum_edit_distance - 1, maximum_edit_distance),
+        "two_edits": Fraction(maximum_edit_distance - 2, maximum_edit_distance),
     }:
         raise RuntimeError(f"unexpected backdoor reward contract: {backdoor_contract}")
     return {
@@ -70,6 +81,7 @@ def require_cpt_world_training_contract() -> dict[str, object]:
         "reward_version": TERMINAL_QUALITY_REWARD_VERSION,
         "task_families": list(TASK_FAMILY_QUERY_TYPES),
         "utility": "identity",
+        "reward_max_graph_nodes": DEFAULT_REWARD_MAX_GRAPH_NODES,
         "backdoor_reward": {key: str(value) for key, value in backdoor_contract.items()},
     }
 

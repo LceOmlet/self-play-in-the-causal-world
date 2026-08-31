@@ -4,6 +4,7 @@ import unittest
 from fractions import Fraction
 
 from cpt_world import (
+    DEFAULT_REWARD_MAX_GRAPH_NODES,
     TERMINAL_QUALITY_REWARD_VERSION,
     TERMINAL_SAMPLING_RESOLUTION,
     UNFINISHED_TERMINAL_QUALITY,
@@ -13,7 +14,8 @@ from cpt_world import (
 
 class TerminalQualityRewardTests(unittest.TestCase):
     def test_reward_contract_version_and_unfinished_value_are_frozen(self) -> None:
-        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v9")
+        self.assertEqual(TERMINAL_QUALITY_REWARD_VERSION, "terminal-quality-v10")
+        self.assertEqual(DEFAULT_REWARD_MAX_GRAPH_NODES, 16)
         self.assertEqual(UNFINISHED_TERMINAL_QUALITY, 0)
 
     def test_numeric_shortcuts_use_the_fixed_budget_sampling_resolution(self) -> None:
@@ -114,18 +116,36 @@ class TerminalQualityRewardTests(unittest.TestCase):
         }
         self.assertEqual(terminal_quality_reward(score), Fraction(7, 12))
 
-    def test_backdoor_reward_is_reciprocal_in_nearest_valid_set_distance(self) -> None:
+    def test_backdoor_reward_is_linear_in_nearest_valid_set_distance(self) -> None:
         self.assertEqual(
             terminal_quality_reward({"kind": "backadj", "edit_distance": 0}),
             1,
         )
         self.assertEqual(
             terminal_quality_reward({"kind": "backadj", "edit_distance": 1}),
-            Fraction(1, 2),
+            Fraction(13, 14),
         )
         self.assertEqual(
             terminal_quality_reward({"kind": "backadj", "edit_distance": 2}),
-            Fraction(1, 3),
+            Fraction(6, 7),
+        )
+        self.assertEqual(
+            terminal_quality_reward({"kind": "backadj", "edit_distance": 14}),
+            0,
+        )
+
+    def test_backdoor_reward_uses_the_configured_maximum_graph_size(self) -> None:
+        rewards = [
+            terminal_quality_reward(
+                {"kind": "backadj", "edit_distance": distance},
+                max_graph_nodes=6,
+            )
+            for distance in range(5)
+        ]
+        self.assertEqual(rewards, [1, Fraction(3, 4), Fraction(1, 2), Fraction(1, 4), 0])
+        self.assertEqual(
+            [rewards[index] - rewards[index + 1] for index in range(4)],
+            [Fraction(1, 4)] * 4,
         )
 
     def test_invalid_owner_diagnostics_fail_closed(self) -> None:
@@ -143,6 +163,16 @@ class TerminalQualityRewardTests(unittest.TestCase):
             terminal_quality_reward({"kind": "backadj", "edit_distance": Fraction(1, 2)})
         with self.assertRaisesRegex(ValueError, "edit_distance"):
             terminal_quality_reward({"kind": "backadj", "edit_distance": -1})
+        with self.assertRaisesRegex(ValueError, "configured graph support"):
+            terminal_quality_reward(
+                {"kind": "backadj", "edit_distance": 5},
+                max_graph_nodes=6,
+            )
+        with self.assertRaisesRegex(ValueError, "max_graph_nodes"):
+            terminal_quality_reward(
+                {"kind": "backadj", "edit_distance": 0},
+                max_graph_nodes=2,
+            )
 
 
 if __name__ == "__main__":
