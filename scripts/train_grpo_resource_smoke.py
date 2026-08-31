@@ -14,6 +14,7 @@ from types import MethodType
 import torch.distributed as dist
 from datasets import IterableDataset
 from grpo_kernel_check import enable_local_fla_kernels, require_gdn_kernels_active
+from grpo_logprob_guard import require_finite_sampling_logprobs
 from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
 
@@ -251,10 +252,21 @@ def main() -> None:
         )
     trainer.reward_weights[0] = 1.0
     trainer.reward_weights[1] = 0.0
+    original_generate = trainer._generate
+
+    def guarded_generate(_trainer, prompts):
+        result = original_generate(prompts)
+        require_finite_sampling_logprobs(
+            result[4],
+            global_step=trainer.state.global_step,
+        )
+        return result
+
+    trainer._generate = MethodType(guarded_generate, trainer)
     if cli.capture_rollouts:
         rollout_path = output_dir / "rollout-artifacts.jsonl"
         lifecycle_path = output_dir / "vllm-lifecycle.jsonl"
-        original_generate = trainer._generate
+        guarded_generate_method = trainer._generate
 
         def append_jsonl(path: Path, payload: dict) -> None:
             with path.open("a", encoding="utf-8") as stream:
@@ -320,7 +332,7 @@ def main() -> None:
         time_method(trainer.vllm_generation.llm, "generate", "generate")
 
         def capture_generate(_trainer, prompts):
-            result = original_generate(prompts)
+            result = guarded_generate_method(prompts)
             prompt_ids, completion_ids, tool_mask, completions, logprobs = result[:5]
             payload = {
                 "global_step": trainer.state.global_step,
