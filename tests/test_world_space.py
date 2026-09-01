@@ -43,8 +43,9 @@ from cpt_world import (
 )
 from cpt_world.world_space import (
     _ET_V2_STRENGTH_CEILING,
+    BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP,
     _balanced_proposal_seed,
-    _best_intervention_is_observationally_discordant,
+    _best_intervention_observational_relation,
     _build_world,
     _combine_effect_blocks,
     _contextual_parent_pair_score_scale,
@@ -175,6 +176,33 @@ def _decision_chain_seed(world: WorldSpec, seed_id: str) -> Mapping[str, object]
         anchors={"decision_target": 0, "outcome": 2, "objective": "maximize"},
         manipulability={"D": False, "M": True, "Y": False},
         readable={"D": True, "M": True, "Y": True},
+    )
+
+
+def _strong_reversal_world() -> WorldSpec:
+    """Binary Simpson-reversal fixture with an absolute causal loss of 0.2."""
+
+    return WorldSpec(
+        family="sampled_dag",
+        topology="test-strong-observational-reversal",
+        variables=("C", "D", "Y"),
+        domains=(2, 2, 2),
+        state_names=(("0", "1"),) * 3,
+        edges=((0, 1), (0, 2), (1, 2)),
+        parents={0: (), 1: (0,), 2: (0, 1)},
+        cpt={
+            0: ((Fraction(1, 2), Fraction(1, 2)),),
+            1: (
+                (Fraction(9, 10), Fraction(1, 10)),
+                (Fraction(1, 10), Fraction(9, 10)),
+            ),
+            2: (
+                (Fraction(1, 5), Fraction(4, 5)),
+                (Fraction(0), Fraction(1)),
+                (Fraction(1), Fraction(0)),
+                (Fraction(4, 5), Fraction(1, 5)),
+            ),
+        },
     )
 
 
@@ -363,18 +391,22 @@ class WorldSpaceSamplerTests(unittest.TestCase):
 
     def test_best_intervention_sampler_balances_observational_action_relation(self) -> None:
         grammar = WorldGrammar()
-        first = iter_sampled_seeds(
-            grammar,
-            query_types=("best_intervention",),
-            start_seed=0,
-            count=10,
-        )
-        second = iter_sampled_seeds(
-            grammar,
-            query_types=("best_intervention",),
-            start_seed=0,
-            count=10,
-        )
+        with patch(
+            "cpt_world.world_space.BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP",
+            0.0,
+        ):
+            first = iter_sampled_seeds(
+                grammar,
+                query_types=("best_intervention",),
+                start_seed=0,
+                count=10,
+            )
+            second = iter_sampled_seeds(
+                grammar,
+                query_types=("best_intervention",),
+                start_seed=0,
+                count=10,
+            )
         self.assertEqual(first, second)
 
         relations = []
@@ -395,16 +427,37 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 roles[anchor_index],
                 seed_id=seed_id,
             )
-            relations.append(
-                _best_intervention_is_observationally_discordant(world, anchors)
+            discordant, causal_loss = _best_intervention_observational_relation(
+                world,
+                anchors,
             )
+            relations.append(discordant)
+            self.assertGreaterEqual(causal_loss, 0.0)
         self.assertEqual(relations, [False, True, True, True, True] * 2)
+
+    def test_strong_reversal_gap_uses_absolute_causal_loss(self) -> None:
+        world = _strong_reversal_world()
+        discordant, causal_loss = _best_intervention_observational_relation(
+            world,
+            {
+                "decision_target": 1,
+                "outcome": 2,
+                "outcome_state": 1,
+                "objective": "maximize",
+            },
+        )
+
+        self.assertTrue(discordant)
+        self.assertAlmostEqual(causal_loss, 0.2)
+        self.assertGreater(causal_loss, BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP)
+        self.assertAlmostEqual(
+            BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP,
+            2.0 / math.sqrt(2048),
+        )
 
     def test_balanced_proposal_seed_mapping_is_injective(self) -> None:
         values = {
-            _balanced_proposal_seed(slot, attempt)
-            for slot in range(20)
-            for attempt in range(20)
+            _balanced_proposal_seed(slot, attempt) for slot in range(20) for attempt in range(20)
         }
         self.assertEqual(len(values), 400)
 
@@ -1012,6 +1065,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         self.assertTrue(seeds)
         widths: set[int] = set()
         bandwidths: set[int] = set()
+        budget_exponents: set[int] = set()
         for seed in seeds:
             self.assertNotIn("answerability", seed)
             labels = seed["visible_schema"]["variable_labels"]
@@ -1032,10 +1086,13 @@ class WorldSpaceSamplerTests(unittest.TestCase):
             self.assertLessEqual(width, len(seed["world_source"]["variables"]) - 2)
             bandwidth = seed["observation_bandwidth"]
             bandwidths.add(bandwidth)
+            budget_exponents.add(seed["observation_budget_exponent"])
             self.assertGreaterEqual(bandwidth, 1)
             self.assertLessEqual(bandwidth, len(seed["world_source"]["variables"]))
+            self.assertIn(seed["observation_budget_exponent"], (11, 12, 13, 14))
         self.assertGreater(len(widths), 1)
         self.assertGreater(len(bandwidths), 1)
+        self.assertGreater(len(budget_exponents), 1)
 
         repeated = iter_sampled_seeds(
             self.grammar,
@@ -1044,11 +1101,21 @@ class WorldSpaceSamplerTests(unittest.TestCase):
         )
         self.assertEqual(
             [
-                (seed["seed_id"], seed["manipulability"], seed["observation_bandwidth"])
+                (
+                    seed["seed_id"],
+                    seed["manipulability"],
+                    seed["observation_bandwidth"],
+                    seed["observation_budget_exponent"],
+                )
                 for seed in seeds
             ],
             [
-                (seed["seed_id"], seed["manipulability"], seed["observation_bandwidth"])
+                (
+                    seed["seed_id"],
+                    seed["manipulability"],
+                    seed["observation_bandwidth"],
+                    seed["observation_budget_exponent"],
+                )
                 for seed in repeated
             ],
         )
@@ -1109,6 +1176,7 @@ class WorldSpaceSamplerTests(unittest.TestCase):
                 self.assertGreaterEqual(width, 1)
                 self.assertLessEqual(width, 4)
                 self.assertIn(seed["observation_bandwidth"], range(1, 7))
+                self.assertIn(seed["observation_budget_exponent"], (11, 12, 13, 14))
 
     def test_individual_counterfactual_probability_uses_main_pipeline_and_k_m_surface(
         self,

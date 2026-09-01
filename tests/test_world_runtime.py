@@ -459,6 +459,47 @@ class WorldSpecRuntimeTests(unittest.TestCase):
         self.assertEqual(episode.sample_rows_used, 4)
         self.assertEqual(episode.observations_used, 8)
 
+    def test_seed_owned_power_of_two_budget_is_used_by_default(self) -> None:
+        world = _deterministic_multivalue_chain()
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            "mediator_set",
+            "discovery",
+            anchors={"treatment": 0, "outcome": 2},
+            seed_id="RUNTIME-POWER-OF-TWO-BUDGET",
+            observation_bandwidth=2,
+            observation_budget_exponent=13,
+        )
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-power-of-two-budget"),
+        )
+
+        self.assertEqual(episode.budget.max_observations, 2 * 2**13)
+        prompt = episode.initial_messages()[1]["content"]
+        self.assertIn("2 x 2^13 = 2 x 8192", prompt)
+
+    def test_legacy_seed_budget_defaults_to_two_to_the_eleventh(self) -> None:
+        world = _deterministic_multivalue_chain()
+        seed = assemble_seed(
+            world,
+            tuple(sorted(HIDING_MODES)),
+            "mediator_set",
+            "discovery",
+            anchors={"treatment": 0, "outcome": 2},
+            seed_id="RUNTIME-LEGACY-BUDGET",
+            observation_bandwidth=2,
+        )
+        episode = WorldSpecEpisode(
+            world,
+            seed,
+            OutcomeTape("runtime-legacy-budget"),
+        )
+
+        self.assertEqual(episode.budget.max_observations, 2 * 2**11)
+
     def test_feedback_contains_only_selected_visible_joint_counts(self) -> None:
         seed, world = _sampled_task("ate", preferred_seed=64)
         episode = WorldSpecEpisode(

@@ -14,9 +14,10 @@ from dataclasses import dataclass
 from typing import Any
 
 from .episode import (
-    OBSERVATIONS_PER_BANDWIDTH_UNIT,
+    OBSERVATION_BUDGET_EXPONENTS,
     Budget,
     budget_for_observation_bandwidth,
+    observations_per_bandwidth_unit,
 )
 from .registry import HIDING_MODES
 from .world_space import world_state_names
@@ -42,6 +43,7 @@ class _RenderContext:
     readable: Mapping[str, bool]
     budget: Budget
     measure_max: int | None
+    observation_budget_exponent: int
 
     def visible_labels(self) -> tuple[str, ...]:
         return tuple(str(item["label"]) for item in self.variables)
@@ -255,6 +257,26 @@ def resolve_observation_bandwidth(
         raise ValueError("seed observation_bandwidth is outside its visible variable domain")
     if requested is not None and requested != declared:
         raise ValueError("measure_max cannot override seed observation_bandwidth")
+    return declared
+
+
+def resolve_observation_budget_exponent(seed: Mapping[str, Any]) -> int:
+    """Resolve the seed-owned power-of-two sample exponent.
+
+    Legacy and hand-authored seeds retain the historical ``2**11`` unit.
+    """
+
+    declared = seed.get("observation_budget_exponent")
+    if declared is None:
+        return min(OBSERVATION_BUDGET_EXPONENTS)
+    if (
+        isinstance(declared, bool)
+        or not isinstance(declared, int)
+        or declared not in OBSERVATION_BUDGET_EXPONENTS
+    ):
+        raise ValueError(
+            f"seed observation_budget_exponent must be one of {OBSERVATION_BUDGET_EXPONENTS}"
+        )
     return declared
 
 
@@ -480,14 +502,16 @@ def _render_prompt(ctx: _RenderContext) -> str:
         lines.append(
             "There is no initial dataset; evidence comes only from requested batch experiments."
         )
+    per_bandwidth_unit = observations_per_bandwidth_unit(ctx.observation_budget_exponent)
     budget_line = f"The total observation budget is {ctx.budget.max_observations} scalar values."
     if (
         ctx.measure_max is not None
-        and ctx.budget.max_observations == ctx.measure_max * OBSERVATIONS_PER_BANDWIDTH_UNIT
+        and ctx.budget.max_observations == ctx.measure_max * per_bandwidth_unit
     ):
         budget_line = (
             f"The total observation budget is {ctx.budget.max_observations} scalar values "
-            f"({ctx.measure_max} x {OBSERVATIONS_PER_BANDWIDTH_UNIT})."
+            f"({ctx.measure_max} x 2^{ctx.observation_budget_exponent} = "
+            f"{ctx.measure_max} x {per_bandwidth_unit})."
         )
     lines.append(budget_line)
     lines.append(
@@ -528,10 +552,14 @@ def _render_context(
     if not isinstance(seed, Mapping):
         raise TypeError("seed must be a mapping")
     measure_max = resolve_observation_bandwidth(seed, measure_max)
+    observation_budget_exponent = resolve_observation_budget_exponent(seed)
     if budget is None:
         if measure_max is None:
             raise ValueError("a seed without observation_bandwidth requires an explicit Budget")
-        budget = budget_for_observation_bandwidth(measure_max)
+        budget = budget_for_observation_bandwidth(
+            measure_max,
+            exponent=observation_budget_exponent,
+        )
     if not isinstance(budget, Budget):
         raise TypeError("budget must be a Budget")
 
@@ -568,6 +596,7 @@ def _render_context(
         readable=readable,
         budget=budget,
         measure_max=measure_max,
+        observation_budget_exponent=observation_budget_exponent,
     )
 
 

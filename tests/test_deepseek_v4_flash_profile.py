@@ -57,16 +57,12 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
             labels = seed["visible_schema"]["variable_labels"]
             inverse = {str(label): str(name) for name, label in labels.items()}
             anchors = {
-                "decision_target": world.variables.index(
-                    inverse[str(query["decision_target"])]
-                ),
+                "decision_target": world.variables.index(inverse[str(query["decision_target"])]),
                 "outcome": world.variables.index(inverse[str(query["outcome"])]),
                 "objective": str(query["objective"]),
                 "outcome_state": int(str(query["outcome_state"]).removeprefix("state_")),
             }
-            relations.append(
-                _best_intervention_is_observationally_discordant(world, anchors)
-            )
+            relations.append(_best_intervention_is_observationally_discordant(world, anchors))
         self.assertEqual(relations, [False, True, True, True, True])
 
     def test_generated_exact_fraction_serializes_beyond_python_display_guard(self) -> None:
@@ -190,8 +186,8 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
             budget=runner._budget_for_entry(first["entries"][0]),
         )
         user_prompt = episode.initial_messages()[1]["content"]
-        expected_budget = (
-            first["entries"][0]["observation_bandwidth"] * runner.OBSERVATIONS_PER_BANDWIDTH_UNIT
+        expected_budget = first["entries"][0]["observation_bandwidth"] * (
+            1 << first["entries"][0]["observation_budget_exponent"]
         )
         self.assertIn(f"total observation budget is {expected_budget}", user_prompt)
         self.assertIn("batch_size may be any positive integer", user_prompt)
@@ -313,7 +309,7 @@ class DeepSeekV4FlashProfileTests(unittest.TestCase):
         self.assertEqual(payload["budget_consumed"], 0)
         self.assertEqual(
             payload["remaining_budget"],
-            entry["observation_bandwidth"] * runner.OBSERVATIONS_PER_BANDWIDTH_UNIT,
+            entry["observation_bandwidth"] * (1 << entry["observation_budget_exponent"]),
         )
 
     def test_repeated_invalid_commands_remain_correctable_without_a_turn_cap(self) -> None:

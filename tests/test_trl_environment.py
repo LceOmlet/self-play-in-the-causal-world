@@ -20,7 +20,8 @@ from cpt_world import (
     task_advantage_utility,
 )
 from cpt_world.world_space import (
-    _best_intervention_is_observationally_discordant,
+    BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP,
+    _best_intervention_observational_relation,
     _sample_task_attributes,
     _sampled_role_assignments,
 )
@@ -185,12 +186,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             Counter(dict.fromkeys(TASK_FAMILY_QUERY_TYPES, 5)),
         )
         self.assertEqual(
-            len(
-                {
-                    (row["sample_index"], row["query_type"], row["anchor_index"])
-                    for row in rows
-                }
-            ),
+            len({(row["sample_index"], row["query_type"], row["anchor_index"]) for row in rows}),
             len(rows),
         )
         counterfactual_rows = [
@@ -209,14 +205,13 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
 
         grammar = WorldGrammar()
         best_intervention_relations = []
+        best_intervention_causal_losses = []
         for row in rows:
             if row["query_type"] != "best_intervention":
                 continue
             proposal_index = row["sample_index"]
             anchor_index = row["anchor_index"]
-            seed_id = (
-                f"SAMPLED-{proposal_index}-best_intervention-decision-a{anchor_index}"
-            )
+            seed_id = f"SAMPLED-{proposal_index}-best_intervention-decision-a{anchor_index}"
             world = sample_task_world(grammar, proposal_index, "best_intervention")
             roles = _sampled_role_assignments(
                 len(world.variables),
@@ -230,12 +225,21 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
                 roles[anchor_index],
                 seed_id=seed_id,
             )
-            best_intervention_relations.append(
-                _best_intervention_is_observationally_discordant(world, anchors)
+            discordant, causal_loss = _best_intervention_observational_relation(
+                world,
+                anchors,
             )
+            best_intervention_relations.append(discordant)
+            best_intervention_causal_losses.append(causal_loss)
         self.assertEqual(
             best_intervention_relations,
             [False, True, True, True, True],
+        )
+        self.assertTrue(
+            all(
+                loss >= BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP
+                for loss in best_intervention_causal_losses[1:]
+            )
         )
 
     @patch("cpt_world.trl_environment.compute_query_truth")

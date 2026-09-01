@@ -161,6 +161,8 @@ grid. In the current implementation:
   hard-do width `K` is uniform from one through the number of eligible
   variables, and the subset is uniform conditional on that width;
 - `M` is sampled independently and uniformly from one through the node count.
+- an exponent is sampled independently and uniformly from `11`, `12`, `13`,
+  and `14`; the scalar-observation budget is `M * 2^exponent`.
 
 Thus `K` and `M` change the evidence surface without redefining whether the
 underlying world/query instance has an answer.
@@ -233,13 +235,17 @@ This materializes exactly 20 task manifests from each family (100 total).
 Training consumers may deterministically shuffle the stream; they must not
 reweight the five families. Within `best_intervention`, each aligned five-slot
 block contains one observationally concordant and four observationally
-discordant optimal-action sets. Each stratum retains the existing complete-task
-proposal law conditioned only on that relation.
+discordant optimal-action sets. A discordant task is admitted only when choosing
+the observationally optimal state loses at least about 0.044 in absolute causal
+outcome probability. This is the two-standard-error resolution of the minimum
+`2^11 = 2048` per-bandwidth sample unit under an ideal two-action split.
+The terminal score remains normalized causal regret; this admission condition
+only removes observational reversals that are statistical near-ties.
 
 ## GRPO post-training
 
 `scripts/train_grpo_resource_smoke.py` consumes the balanced five-family stream
-and the environment-owned v8 terminal quality. Its startup preflight rejects a
+and the environment-owned v10 terminal quality. Its startup preflight rejects a
 different reward version, a transformed utility, or an unexpected task-family
 registry before loading the model. `scripts/run_remote_grpo_training.sh`
 provides the reproducible launcher used by the current post-training runs.

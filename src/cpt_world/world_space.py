@@ -37,6 +37,7 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any
 
+from .episode import OBSERVATION_BUDGET_EXPONENTS, OBSERVATIONS_PER_BANDWIDTH_UNIT
 from .registry import (
     HIDING_MODES,
     QUERY_TYPES,
@@ -52,6 +53,7 @@ _MAX_GRAMMAR_NODES = 16
 _BACKDOOR_STRATIFIED_QUERY_TYPES = frozenset(TASK_FAMILY_QUERY_TYPES)
 _CPT_VALIDITY_TOLERANCE = 1e-12
 _ET_V2_STRENGTH_CEILING = math.sqrt(3.0)
+BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP = 2.0 / math.sqrt(OBSERVATIONS_PER_BANDWIDTH_UNIT)
 
 Probability = float | Fraction
 
@@ -1822,8 +1824,23 @@ def _best_intervention_is_observationally_discordant(
 ) -> bool:
     """Return whether observational and interventional optimal actions are disjoint."""
 
+    discordant, _ = _best_intervention_observational_relation(world, anchors)
+    return discordant
+
+
+def _best_intervention_observational_relation(
+    world: WorldSpec,
+    anchors: Mapping[str, int | str],
+) -> tuple[bool, float]:
+    """Return action discordance and its absolute causal-value loss.
+
+    When observational optima tie, the loss uses the observationally optimal
+    action having the best causal value. A positive returned gap therefore
+    lower-bounds the causal loss of every observationally optimal action.
+    """
+
     from .query_truth import (
-        best_intervention_states,
+        interventional_probability,
         worldspec_projected_interventional_distribution,
     )
 
@@ -1831,12 +1848,18 @@ def _best_intervention_is_observationally_discordant(
     outcome = int(anchors["outcome"])
     outcome_state = int(anchors["outcome_state"])
     objective = str(anchors["objective"])
-    causal_states, _ = best_intervention_states(
-        world,
-        outcome,
-        objective,
-        decision,
-        outcome_state=outcome_state,
+    causal_values = tuple(
+        interventional_probability(
+            world,
+            {decision: action},
+            outcome,
+            outcome_state,
+        )
+        for action in range(world.domains[decision])
+    )
+    causal_best = min(causal_values) if objective == "minimize" else max(causal_values)
+    causal_states = frozenset(
+        action for action, value in enumerate(causal_values) if value == causal_best
     )
 
     law = worldspec_projected_interventional_distribution(
@@ -1852,20 +1875,29 @@ def _best_intervention_is_observationally_discordant(
         if observed_outcome == outcome_state:
             target_mass[action] += probability
     observational_values = tuple(
-        target_mass[action] / action_mass[action]
-        for action in range(world.domains[decision])
+        target_mass[action] / action_mass[action] for action in range(world.domains[decision])
     )
     observational_best = (
-        min(observational_values)
-        if objective == "minimize"
-        else max(observational_values)
+        min(observational_values) if objective == "minimize" else max(observational_values)
     )
     observational_states = frozenset(
-        action
-        for action, value in enumerate(observational_values)
-        if value == observational_best
+        action for action, value in enumerate(observational_values) if value == observational_best
     )
-    return observational_states.isdisjoint(causal_states)
+    discordant = observational_states.isdisjoint(causal_states)
+    if not discordant:
+        return False, 0.0
+
+    if objective == "minimize":
+        observational_causal_value = min(causal_values[action] for action in observational_states)
+        gap = float(observational_causal_value - causal_best)
+    else:
+        observational_causal_value = max(causal_values[action] for action in observational_states)
+        gap = float(causal_best - observational_causal_value)
+    if gap < 0.0 and abs(gap) <= 1e-15:
+        gap = 0.0
+    if gap < 0.0:
+        raise RuntimeError("observational reversal produced negative causal regret")
+    return True, gap
 
 
 def _balanced_proposal_seed(slot: int, attempt: int) -> int:
@@ -1883,8 +1915,8 @@ def _randomized_interaction_surface(
     anchors: Mapping[str, int | str],
     *,
     seed_id: str,
-) -> tuple[dict[str, bool], int]:
-    """Draw the main-pipeline manipulability width and observation bandwidth.
+) -> tuple[dict[str, bool], int, int]:
+    """Draw K, M, and the power-of-two per-bandwidth sample exponent.
 
     Query anchors remain readonly.  Conditional on the remaining candidate
     variables, the width is uniform over every nonempty size and the subset is
@@ -1905,7 +1937,11 @@ def _randomized_interaction_surface(
     observation_bandwidth = _axis_rng(seed_id, "observation-bandwidth").randint(
         1, len(world.variables)
     )
-    return manipulability, observation_bandwidth
+    observation_budget_exponent = _axis_rng(
+        seed_id,
+        "observation-budget-exponent",
+    ).choice(OBSERVATION_BUDGET_EXPONENTS)
+    return manipulability, observation_bandwidth, observation_budget_exponent
 
 
 def anonymize_world(
@@ -1959,6 +1995,7 @@ def assemble_seed(
     manipulability: Mapping[str, bool] | None = None,
     readable: Mapping[str, bool] | None = None,
     observation_bandwidth: int | None = None,
+    observation_budget_exponent: int | None = None,
 ) -> Mapping[str, Any]:
     """Assemble an anonymous candidate seed or fail closed.
 
@@ -1966,8 +2003,8 @@ def assemble_seed(
     :func:`legal_query_anchors`. If omitted, the first legal assignment is
     used. Masks default to the anchor-minimal rule from
     :func:`default_manipulability`; pinned seed masks can be passed explicitly.
-    ``observation_bandwidth`` is optional for legacy/manual seeds and fixed in
-    every seed emitted by the main sampler.
+    ``observation_bandwidth`` and ``observation_budget_exponent`` are optional
+    for legacy/manual seeds and fixed in every seed emitted by the main sampler.
     """
 
     if not isinstance(seed_id, str) or not seed_id:
@@ -2077,6 +2114,20 @@ def assemble_seed(
             raise ValueError(
                 f"{seed_id}: observation_bandwidth must lie in [1, {len(world.variables)}]"
             )
+    if observation_budget_exponent is not None:
+        if observation_bandwidth is None:
+            raise ValueError(
+                f"{seed_id}: observation_budget_exponent requires observation_bandwidth"
+            )
+        if (
+            isinstance(observation_budget_exponent, bool)
+            or not isinstance(observation_budget_exponent, int)
+            or observation_budget_exponent not in OBSERVATION_BUDGET_EXPONENTS
+        ):
+            raise ValueError(
+                f"{seed_id}: observation_budget_exponent must be one of "
+                f"{OBSERVATION_BUDGET_EXPONENTS}"
+            )
 
     visible = hide_world(visible_variables, query_visible, hiding_modes)
     assembled: dict[str, Any] = {
@@ -2108,6 +2159,8 @@ def assemble_seed(
     }
     if observation_bandwidth is not None:
         assembled["observation_bandwidth"] = observation_bandwidth
+    if observation_budget_exponent is not None:
+        assembled["observation_budget_exponent"] = observation_budget_exponent
     return assembled
 
 
@@ -2190,7 +2243,11 @@ def assemble_sampled_anchor_tasks(
         roles,
         seed_id=base_seed_id,
     )
-    manipulability, observation_bandwidth = _randomized_interaction_surface(
+    (
+        manipulability,
+        observation_bandwidth,
+        observation_budget_exponent,
+    ) = _randomized_interaction_surface(
         task_world,
         query_type,
         anchors,
@@ -2205,6 +2262,7 @@ def assemble_sampled_anchor_tasks(
         seed_id=base_seed_id,
         manipulability=manipulability,
         observation_bandwidth=observation_bandwidth,
+        observation_budget_exponent=observation_budget_exponent,
     )
     render_seed_prompt(base_assembled)
     return ((task_world, base_assembled),)
@@ -2232,7 +2290,8 @@ def iter_sampled_seeds(
     seed-fixed M. Four families never filter numerical answers. Best
     intervention uses deterministic rejection over complete task proposals so
     the first output slot in every five-slot block is observationally
-    concordant and the other four are observationally discordant. By default,
+    concordant and the other four are observationally discordant with absolute
+    causal-value loss at least ``2 / sqrt(2048)``. By default,
     ``start_seed`` also owns that output-slot phase. Streaming callers that
     share world seeds across task families may provide
     ``best_intervention_balance_start`` to keep the best-intervention slot
@@ -2273,9 +2332,7 @@ def iter_sampled_seeds(
                     proposal_index,
                 )
                 role_seed_id = f"SAMPLED-{proposal_index}-{query_type}"
-                anchor_index = _axis_rng(role_seed_id, "variable-role").randrange(
-                    len(legal_roles)
-                )
+                anchor_index = _axis_rng(role_seed_id, "variable-role").randrange(len(legal_roles))
                 if query_type == "best_intervention":
                     task_head = "decision"
                     anchors = _sample_task_attributes(
@@ -2283,11 +2340,10 @@ def iter_sampled_seeds(
                         query_type,
                         legal_roles[anchor_index],
                         seed_id=(
-                            f"SAMPLED-{proposal_index}-{query_type}-{task_head}"
-                            f"-a{anchor_index}"
+                            f"SAMPLED-{proposal_index}-{query_type}-{task_head}-a{anchor_index}"
                         ),
                     )
-                    discordant = _best_intervention_is_observationally_discordant(
+                    discordant, absolute_causal_loss = _best_intervention_observational_relation(
                         task_world,
                         anchors,
                     )
@@ -2297,7 +2353,14 @@ def iter_sampled_seeds(
                         else best_intervention_balance_start + output_offset
                     )
                     desired_discordant = balance_slot % 5 != 0
-                    if discordant != desired_discordant:
+                    if desired_discordant:
+                        admitted = (
+                            discordant
+                            and absolute_causal_loss >= BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP
+                        )
+                    else:
+                        admitted = not discordant
+                    if not admitted:
                         attempt += 1
                         continue
                 generated.extend(

@@ -18,8 +18,10 @@ rendering.py 不做：
 - 退化检查。
 ```
 
-`budget` 仍是显式运行参数。主采样 seed 固定写入 `observation_bandwidth`（即 M）；
-运行时不能覆盖它。`measure_max` 只保留给没有该字段的旧手工 seed。
+`budget` 仍是显式运行参数。主采样 seed 固定写入 `observation_bandwidth`（即 M）
+和 `observation_budget_exponent`（在 11、12、13、14 中均匀采样）；默认总标量预算为
+`M * 2^observation_budget_exponent`。运行时不能覆盖 M。`measure_max` 只保留给
+没有该字段的旧手工 seed；没有指数的旧 seed 继续使用 `2^11`。
 
 ## 2. 对 LLM 可见
 

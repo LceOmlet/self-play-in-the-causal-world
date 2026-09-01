@@ -32,6 +32,7 @@ from pathlib import Path
 import cpt_world
 from cpt_world import (
     DEFAULT_REWARD_MAX_GRAPH_NODES,
+    OBSERVATION_BUDGET_EXPONENTS,
     TASK_FAMILY_QUERY_TYPES,
     TERMINAL_QUALITY_REWARD_VERSION,
     task_advantage_utility,
@@ -49,6 +50,11 @@ if TERMINAL_QUALITY_REWARD_VERSION != "terminal-quality-v10":
     raise RuntimeError(
         "training requires terminal-quality-v10, got "
         f"{TERMINAL_QUALITY_REWARD_VERSION}"
+    )
+if OBSERVATION_BUDGET_EXPONENTS != (11, 12, 13, 14):
+    raise RuntimeError(
+        "training requires observation budget exponents (11, 12, 13, 14), got "
+        f"{OBSERVATION_BUDGET_EXPONENTS}"
     )
 for query_type in TASK_FAMILY_QUERY_TYPES:
     for quality in (0.0, 0.25, 0.75, 1.0):
@@ -86,6 +92,7 @@ print(
             "task_families": list(TASK_FAMILY_QUERY_TYPES),
             "utility": "identity",
             "reward_max_graph_nodes": DEFAULT_REWARD_MAX_GRAPH_NODES,
+            "observation_budget_exponents": list(OBSERVATION_BUDGET_EXPONENTS),
             "backdoor_reward": {
                 key: str(value) for key, value in backdoor_contract.items()
             },

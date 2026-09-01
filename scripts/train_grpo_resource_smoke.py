@@ -21,6 +21,7 @@ from trl import GRPOConfig, GRPOTrainer
 import cpt_world
 from cpt_world import (
     DEFAULT_REWARD_MAX_GRAPH_NODES,
+    OBSERVATION_BUDGET_EXPONENTS,
     TASK_FAMILY_QUERY_TYPES,
     TERMINAL_QUALITY_REWARD_VERSION,
     CPTWorldEnvironment,
@@ -48,6 +49,11 @@ def require_cpt_world_training_contract() -> dict[str, object]:
     if TERMINAL_QUALITY_REWARD_VERSION != _EXPECTED_REWARD_VERSION:
         raise RuntimeError(
             f"training requires {_EXPECTED_REWARD_VERSION}, got {TERMINAL_QUALITY_REWARD_VERSION}"
+        )
+    if OBSERVATION_BUDGET_EXPONENTS != (11, 12, 13, 14):
+        raise RuntimeError(
+            "training requires observation budget exponents (11, 12, 13, 14), got "
+            f"{OBSERVATION_BUDGET_EXPONENTS}"
         )
     for query_type in TASK_FAMILY_QUERY_TYPES:
         for quality in (0.0, 0.25, 0.75, 1.0):
@@ -82,6 +88,7 @@ def require_cpt_world_training_contract() -> dict[str, object]:
         "task_families": list(TASK_FAMILY_QUERY_TYPES),
         "utility": "identity",
         "reward_max_graph_nodes": DEFAULT_REWARD_MAX_GRAPH_NODES,
+        "observation_budget_exponents": list(OBSERVATION_BUDGET_EXPONENTS),
         "backdoor_reward": {key: str(value) for key, value in backdoor_contract.items()},
     }
 

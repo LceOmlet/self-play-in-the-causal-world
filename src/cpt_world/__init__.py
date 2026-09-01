@@ -6,9 +6,11 @@ from .counterfactual_solver import (
     sparse_individual_counterfactual_probability_bounds,
 )
 from .episode import (
+    OBSERVATION_BUDGET_EXPONENTS,
     OBSERVATIONS_PER_BANDWIDTH_UNIT,
     Budget,
     budget_for_observation_bandwidth,
+    observations_per_bandwidth_unit,
 )
 from .query_truth import (
     INDIVIDUAL_COUNTERFACTUAL_ENDPOINT_TOLERANCE,
@@ -144,6 +146,7 @@ __all__ = [
     "OWNER_STATUS_DIAGNOSTIC_ONLY",
     "OWNER_STATUS_IMPLEMENTED",
     "OWNER_STATUS_REGISTERED",
+    "OBSERVATION_BUDGET_EXPONENTS",
     "OBSERVATIONS_PER_BANDWIDTH_UNIT",
     "OutcomeTape",
     "QUERY_TYPES",
@@ -171,6 +174,7 @@ __all__ = [
     "best_intervention_truth",
     "best_intervention_states",
     "budget_for_observation_bandwidth",
+    "observations_per_bandwidth_unit",
     "build_balanced_training_rows",
     "build_cpt_world_advantage_utility",
     "candidate_seed_manifest_path",

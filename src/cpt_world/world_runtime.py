@@ -23,7 +23,11 @@ from typing import Any
 
 from .episode import Budget, budget_for_observation_bandwidth
 from .query_truth import sample_worldspec_assignment
-from .rendering import render_seed_initial_messages, resolve_observation_bandwidth
+from .rendering import (
+    render_seed_initial_messages,
+    resolve_observation_bandwidth,
+    resolve_observation_budget_exponent,
+)
 from .rewards import terminal_quality_reward
 from .task_scoring import score_terminal_answer
 from .world import OutcomeTape
@@ -580,15 +584,17 @@ class WorldSpecEpisode:
             or not isinstance(max_graph_nodes, int)
             or max_graph_nodes < len(world.variables)
         ):
-            raise ValueError(
-                "max_graph_nodes must be an integer covering the episode world"
-            )
+            raise ValueError("max_graph_nodes must be an integer covering the episode world")
         _runtime_view(seed, world)
         resolved_measure_max = resolve_observation_bandwidth(seed, measure_max)
+        observation_budget_exponent = resolve_observation_budget_exponent(seed)
         if budget is None:
             if resolved_measure_max is None:
                 raise ValueError("a seed without observation_bandwidth requires an explicit Budget")
-            resolved_budget = budget_for_observation_bandwidth(resolved_measure_max)
+            resolved_budget = budget_for_observation_bandwidth(
+                resolved_measure_max,
+                exponent=observation_budget_exponent,
+            )
         else:
             resolved_budget = budget
         # Reuse the renderer's public action-surface validation so an episode

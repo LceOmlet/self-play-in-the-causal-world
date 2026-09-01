@@ -25,6 +25,7 @@ from typing import Any
 
 from cpt_world import (
     DEFAULT_NODE_COUNTS,
+    OBSERVATION_BUDGET_EXPONENTS,
     OBSERVATIONS_PER_BANDWIDTH_UNIT,
     TERMINAL_QUALITY_REWARD_VERSION,
     Budget,
@@ -42,8 +43,8 @@ from cpt_world import (
 
 API_URL = "https://api.ponderera.com/v1/chat/completions"
 MODEL = "deepseek-v4-flash"
-RESULT_SCHEMA = "dolens-ponderera-profile-v6"
-SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v5"
+RESULT_SCHEMA = "dolens-ponderera-profile-v7"
+SCHEDULE_SCHEMA = "dolens-evaluation-schedule-v6"
 MASTER_SEED = 2026082201
 QUERY_TYPES = (
     "ate",
@@ -57,17 +58,27 @@ DEFAULT_TIMEOUT_SECONDS = 180.0
 
 
 def _budget_for_seed(seed: Mapping[str, Any]) -> Budget:
-    return budget_for_observation_bandwidth(int(seed["observation_bandwidth"]))
+    return budget_for_observation_bandwidth(
+        int(seed["observation_bandwidth"]),
+        exponent=int(seed.get("observation_budget_exponent", 11)),
+    )
 
 
 def _budget_for_entry(entry: Mapping[str, Any]) -> Budget:
-    return budget_for_observation_bandwidth(int(entry["observation_bandwidth"]))
+    return budget_for_observation_bandwidth(
+        int(entry["observation_bandwidth"]),
+        exponent=int(entry.get("observation_budget_exponent", 11)),
+    )
 
 
 def _budget_contract() -> Mapping[str, Any]:
     return {
         "kind": "scalar_observation_budget",
-        "observations_per_bandwidth_unit": OBSERVATIONS_PER_BANDWIDTH_UNIT,
+        "observations_per_bandwidth_unit": {
+            "kind": "power_of_two",
+            "exponents": list(OBSERVATION_BUDGET_EXPONENTS),
+            "minimum": OBSERVATIONS_PER_BANDWIDTH_UNIT,
+        },
         "query_cost": "batch_size*measure_width",
         "batch_size_domain": "any_positive_integer_fitting_remaining_budget",
         "query_count_limit": None,
@@ -201,6 +212,7 @@ def _frozen_schedule_entry(
         "edge_count": len(world.edges),
         "manipulable_width": sum(bool(value) for value in seed["manipulability"].values()),
         "observation_bandwidth": seed["observation_bandwidth"],
+        "observation_budget_exponent": seed["observation_budget_exponent"],
     }
 
 
