@@ -9,12 +9,17 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from collections.abc import Callable, Iterator, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from fractions import Fraction
+from pathlib import Path
 from typing import Any
 
-from .query_truth import compute_query_truth
+from .counterfactual_isolation import (
+    CounterfactualResourceLimitError,
+    compute_counterfactual_truth_isolated,
+)
 from .registry import TASK_FAMILY_QUERY_TYPES
 from .world import OutcomeTape
 from .world_runtime import WorldSpecEpisode
@@ -283,13 +288,37 @@ def _iter_random_balanced_training_rows(
                     break
                 attempts += 1
                 try:
-                    truth = compute_query_truth(
+                    truth = compute_counterfactual_truth_isolated(
                         world,
                         seed,
-                        counterfactual_endpoint_time_limit_seconds=(
+                        endpoint_time_limit_seconds=(
                             counterfactual_endpoint_time_limit_seconds
                         ),
+                        diagnostic_dir=(
+                            Path(diagnostic_dir)
+                            if (
+                                diagnostic_dir := os.environ.get(
+                                    "CPT_WORLD_RESOURCE_DIAGNOSTIC_DIR"
+                                )
+                            )
+                            else None
+                        ),
                     )
+                except CounterfactualResourceLimitError as error:
+                    print(
+                        "CPT_WORLD_COUNTERFACTUAL_SKIP="
+                        + json.dumps(
+                            {"seed_id": seed["seed_id"], "reason": str(error)},
+                            ensure_ascii=False,
+                            separators=(",", ":"),
+                        ),
+                        flush=True,
+                    )
+                    if attempts >= _MAX_COUNTERFACTUAL_RESAMPLES:
+                        raise RuntimeError(
+                            "could not sample a counterfactual task with certified bounded truth"
+                        ) from error
+                    continue
                 except RuntimeError as error:
                     if attempts >= _MAX_COUNTERFACTUAL_RESAMPLES:
                         raise RuntimeError(

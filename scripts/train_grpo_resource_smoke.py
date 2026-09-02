@@ -134,7 +134,7 @@ def parse_args() -> argparse.Namespace:
             "for A/B validation."
         ),
     )
-    parser.add_argument("--save-steps", type=int, default=50)
+    parser.add_argument("--save-steps", type=int, default=10)
     parser.add_argument("--save-total-limit", type=int, default=200)
     parser.add_argument("--resume-from-checkpoint")
     parser.add_argument(

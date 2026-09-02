@@ -171,7 +171,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
         payload = json.loads(left_feedback.splitlines()[0])
         self.assertEqual(payload["type"], "batch_result")
 
-    @patch("cpt_world.trl_environment.compute_query_truth")
+    @patch("cpt_world.trl_environment.compute_counterfactual_truth_isolated")
     def test_random_stream_is_balanced_and_uses_fresh_sampler_seeds(self, truth_owner) -> None:
         truth_owner.return_value = {
             "type": "individual_counterfactual_probability",
@@ -198,7 +198,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
         )
         self.assertTrue(
             all(
-                call.kwargs["counterfactual_endpoint_time_limit_seconds"] == 5.0
+                call.kwargs["endpoint_time_limit_seconds"] == 5.0
                 for call in truth_owner.call_args_list
             )
         )
@@ -242,7 +242,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             )
         )
 
-    @patch("cpt_world.trl_environment.compute_query_truth")
+    @patch("cpt_world.trl_environment.compute_counterfactual_truth_isolated")
     def test_counterfactual_timeout_resamples_without_emitting_unscored_row(
         self,
         truth_owner,
@@ -268,7 +268,7 @@ class TRLEnvironmentAdapterTests(unittest.TestCase):
             "individual_counterfactual_probability",
         )
 
-    @patch("cpt_world.trl_environment.compute_query_truth")
+    @patch("cpt_world.trl_environment.compute_counterfactual_truth_isolated")
     def test_random_stream_prepares_counterfactual_truth_on_one_producer_thread(
         self,
         truth_owner,
