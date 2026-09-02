@@ -1,19 +1,21 @@
 """Resource isolation for training-time counterfactual certification.
 
 The exact counterfactual owner remains :func:`compute_query_truth`. This
-module only runs that owner in a disposable spawned process because native
-SCIP model construction can exceed its cooperative time limit and otherwise
-take the colocated trainer down with it.
+module only runs that owner in a disposable Python process because native SCIP
+model construction can exceed its cooperative time limit and otherwise take
+the colocated trainer down with it.
 """
 
 from __future__ import annotations
 
 import faulthandler
 import json
-import multiprocessing
 import os
+import pickle
 import signal
+import subprocess
 import sys
+import tempfile
 import time
 from collections.abc import Mapping
 from pathlib import Path
@@ -67,14 +69,13 @@ def _linux_process_memory_kib(pid: int) -> dict[str, int]:
     return result
 
 
-def _counterfactual_truth_worker(
-    connection: Any,
+def _worker_result(
     world: WorldSpec,
     seed: Mapping[str, Any],
     endpoint_time_limit_seconds: float,
     memory_limit_bytes: int,
     stack_path: str | None,
-) -> None:
+) -> dict[str, Any]:
     stack_file = None
     started = time.perf_counter()
     try:
@@ -90,56 +91,69 @@ def _counterfactual_truth_worker(
             seed,
             counterfactual_endpoint_time_limit_seconds=endpoint_time_limit_seconds,
         )
-        connection.send(
-            {
-                "status": "ok",
-                "truth": dict(truth),
-                "elapsed_seconds": time.perf_counter() - started,
-                "max_rss_kib": _maximum_resident_set_kib(),
-            }
-        )
+        return {
+            "status": "ok",
+            "truth": dict(truth),
+            "elapsed_seconds": time.perf_counter() - started,
+            "max_rss_kib": _maximum_resident_set_kib(),
+        }
     except MemoryError as error:
         if stack_file is not None:
             faulthandler.dump_traceback(file=stack_file, all_threads=True)
             stack_file.flush()
-        connection.send(
-            {
-                "status": "memory_limit",
-                "error": f"{type(error).__name__}: {error}",
-                "elapsed_seconds": time.perf_counter() - started,
-                "max_rss_kib": _maximum_resident_set_kib(),
-            }
-        )
+        return {
+            "status": "memory_limit",
+            "error": f"{type(error).__name__}: {error}",
+            "elapsed_seconds": time.perf_counter() - started,
+            "max_rss_kib": _maximum_resident_set_kib(),
+        }
     except RuntimeError as error:
-        connection.send(
-            {
-                "status": "solver_rejected",
-                "error": f"{type(error).__name__}: {error}",
-                "elapsed_seconds": time.perf_counter() - started,
-                "max_rss_kib": _maximum_resident_set_kib(),
-            }
-        )
+        return {
+            "status": "solver_rejected",
+            "error": f"{type(error).__name__}: {error}",
+            "elapsed_seconds": time.perf_counter() - started,
+            "max_rss_kib": _maximum_resident_set_kib(),
+        }
     except Exception as error:
         if stack_file is not None:
             faulthandler.dump_traceback(file=stack_file, all_threads=True)
             stack_file.flush()
-        connection.send(
-            {
-                "status": "worker_error",
-                "error": f"{type(error).__name__}: {error}",
-                "elapsed_seconds": time.perf_counter() - started,
-                "max_rss_kib": _maximum_resident_set_kib(),
-            }
-        )
+        return {
+            "status": "worker_error",
+            "error": f"{type(error).__name__}: {error}",
+            "elapsed_seconds": time.perf_counter() - started,
+            "max_rss_kib": _maximum_resident_set_kib(),
+        }
     finally:
         if stack_file is not None:
             stack_file.close()
-        connection.close()
 
 
-def _stop_process(process: multiprocessing.Process) -> None:
-    if not process.is_alive():
-        process.join()
+def _worker_main(arguments: list[str]) -> int:
+    if len(arguments) != 4:
+        return 2
+    request_path = Path(arguments[0])
+    result_path = Path(arguments[1])
+    memory_limit_bytes = int(arguments[2])
+    stack_path = arguments[3] or None
+    with request_path.open("rb") as stream:
+        world, seed, endpoint_time_limit_seconds = pickle.load(stream)
+    result = _worker_result(
+        world,
+        seed,
+        endpoint_time_limit_seconds,
+        memory_limit_bytes,
+        stack_path,
+    )
+    temporary = result_path.with_name(f"{result_path.name}.{os.getpid()}.tmp")
+    with temporary.open("wb") as stream:
+        pickle.dump(result, stream, protocol=pickle.HIGHEST_PROTOCOL)
+    temporary.replace(result_path)
+    return 0
+
+
+def _stop_process(process: subprocess.Popen[bytes]) -> None:
+    if process.poll() is not None:
         return
     if os.name == "posix" and hasattr(signal, "SIGUSR1"):
         try:
@@ -148,10 +162,11 @@ def _stop_process(process: multiprocessing.Process) -> None:
         except ProcessLookupError:
             pass
     process.terminate()
-    process.join(timeout=1.0)
-    if process.is_alive():
+    try:
+        process.wait(timeout=1.0)
+    except subprocess.TimeoutExpired:
         process.kill()
-        process.join()
+        process.wait()
 
 
 def _write_diagnostic(
@@ -180,6 +195,12 @@ def _remove_empty_stack(stack_path: str | None) -> None:
         stack.unlink()
 
 
+def _temporary_pickle_path(prefix: str) -> Path:
+    descriptor, name = tempfile.mkstemp(prefix=prefix, suffix=".pickle")
+    os.close(descriptor)
+    return Path(name)
+
+
 def compute_counterfactual_truth_isolated(
     world: WorldSpec,
     seed: Mapping[str, Any],
@@ -187,7 +208,7 @@ def compute_counterfactual_truth_isolated(
     endpoint_time_limit_seconds: float,
     diagnostic_dir: Path | None = None,
 ) -> Mapping[str, Any]:
-    """Run the exact truth owner in a bounded, disposable spawned process.
+    """Run the exact truth owner in a bounded, disposable interpreter.
 
     The hard wall is the two endpoint allowances plus one second for process
     communication. Exceeding it or the 8-GiB address-space ceiling rejects
@@ -205,122 +226,117 @@ def compute_counterfactual_truth_isolated(
     if diagnostic_dir is not None:
         diagnostic_dir.mkdir(parents=True, exist_ok=True)
 
-    context = multiprocessing.get_context("spawn")
-    receive_connection, send_connection = context.Pipe(duplex=False)
-    process = context.Process(
-        target=_counterfactual_truth_worker,
-        args=(
-            send_connection,
-            world,
-            dict(seed),
-            endpoint_time_limit_seconds,
-            COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
-            stack_path,
-        ),
-        name=f"cpt-world-cf-{candidate_id}",
-    )
-    started = time.perf_counter()
-    process.start()
-    send_connection.close()
-    hard_wall_seconds = 2.0 * endpoint_time_limit_seconds + _COUNTERFACTUAL_WORKER_GRACE_SECONDS
-    deadline = started + hard_wall_seconds
-    observed_memory: dict[str, int] = {}
-    message: Mapping[str, Any] | None = None
-    while time.perf_counter() < deadline:
-        observed_memory.update(_linux_process_memory_kib(process.pid))
-        if receive_connection.poll(_COUNTERFACTUAL_WORKER_POLL_SECONDS):
-            try:
-                message = receive_connection.recv()
-            except EOFError:
-                message = None
-            break
-        if not process.is_alive():
-            break
-
-    elapsed_seconds = time.perf_counter() - started
-    if message is None and receive_connection.poll():
-        try:
-            message = receive_connection.recv()
-        except EOFError:
-            message = None
-    if message is None and process.is_alive():
-        observed_memory.update(_linux_process_memory_kib(process.pid))
-        _stop_process(process)
-        payload = {
-            "status": "hard_timeout",
-            "candidate_id": candidate_id,
-            "elapsed_seconds": elapsed_seconds,
-            "hard_wall_seconds": hard_wall_seconds,
-            "memory_limit_bytes": COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
-            "process_memory_kib": observed_memory,
-            "exit_code": process.exitcode,
-            "stack_path": stack_path,
-        }
-        path = _write_diagnostic(diagnostic_dir, candidate_id, payload)
-        raise CounterfactualResourceLimitError(
-            f"counterfactual candidate {candidate_id} exceeded the {hard_wall_seconds:g}s "
-            f"hard wall; diagnostic={path}"
+    request_path = _temporary_pickle_path("cpt-world-cf-request-")
+    result_path = _temporary_pickle_path("cpt-world-cf-result-")
+    result_path.unlink()
+    try:
+        with request_path.open("wb") as stream:
+            pickle.dump(
+                (world, dict(seed), endpoint_time_limit_seconds),
+                stream,
+                protocol=pickle.HIGHEST_PROTOCOL,
+            )
+        command = (
+            sys.executable,
+            "-c",
+            (
+                "import sys; from cpt_world.counterfactual_isolation import _worker_main; "
+                "raise SystemExit(_worker_main(sys.argv[1:]))"
+            ),
+            str(request_path),
+            str(result_path),
+            str(COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES),
+            stack_path or "",
         )
-
-    process.join(timeout=1.0)
-    if process.is_alive():
-        _stop_process(process)
-    receive_connection.close()
-    if message is None:
-        payload = {
-            "status": "worker_exit",
-            "candidate_id": candidate_id,
-            "elapsed_seconds": elapsed_seconds,
-            "memory_limit_bytes": COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
-            "process_memory_kib": observed_memory,
-            "exit_code": process.exitcode,
-            "stack_path": stack_path,
-        }
-        path = _write_diagnostic(diagnostic_dir, candidate_id, payload)
-        raise CounterfactualResourceLimitError(
-            f"counterfactual candidate {candidate_id} exited without a result; "
-            f"diagnostic={path}"
+        started = time.perf_counter()
+        process = subprocess.Popen(command)
+        hard_wall_seconds = (
+            2.0 * endpoint_time_limit_seconds + _COUNTERFACTUAL_WORKER_GRACE_SECONDS
         )
+        deadline = started + hard_wall_seconds
+        observed_memory: dict[str, int] = {}
+        while time.perf_counter() < deadline and process.poll() is None:
+            observed_memory.update(_linux_process_memory_kib(process.pid))
+            time.sleep(_COUNTERFACTUAL_WORKER_POLL_SECONDS)
 
-    status = str(message.get("status"))
-    if status == "ok":
-        _remove_empty_stack(stack_path)
-        truth = message.get("truth")
-        if not isinstance(truth, Mapping):
-            raise RuntimeError("counterfactual worker returned a non-mapping truth")
-        return dict(truth)
-    if status == "solver_rejected":
-        _remove_empty_stack(stack_path)
-        raise RuntimeError(str(message.get("error", "counterfactual solver rejected candidate")))
-    if status == "worker_error":
-        path = _write_diagnostic(
-            diagnostic_dir,
-            candidate_id,
-            {
-                **dict(message),
+        elapsed_seconds = time.perf_counter() - started
+        if process.poll() is None:
+            observed_memory.update(_linux_process_memory_kib(process.pid))
+            _stop_process(process)
+            payload = {
+                "status": "hard_timeout",
                 "candidate_id": candidate_id,
+                "elapsed_seconds": elapsed_seconds,
                 "hard_wall_seconds": hard_wall_seconds,
                 "memory_limit_bytes": COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
                 "process_memory_kib": observed_memory,
-                "exit_code": process.exitcode,
+                "exit_code": process.returncode,
                 "stack_path": stack_path,
-            },
-        )
-        raise CounterfactualWorkerError(
-            f"counterfactual candidate {candidate_id} failed unexpectedly; diagnostic={path}"
-        )
+            }
+            path = _write_diagnostic(diagnostic_dir, candidate_id, payload)
+            raise CounterfactualResourceLimitError(
+                f"counterfactual candidate {candidate_id} exceeded the {hard_wall_seconds:g}s "
+                f"hard wall; diagnostic={path}"
+            )
 
-    payload = {
-        **dict(message),
-        "candidate_id": candidate_id,
-        "hard_wall_seconds": hard_wall_seconds,
-        "memory_limit_bytes": COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
-        "process_memory_kib": observed_memory,
-        "exit_code": process.exitcode,
-        "stack_path": stack_path,
-    }
-    path = _write_diagnostic(diagnostic_dir, candidate_id, payload)
-    raise CounterfactualResourceLimitError(
-        f"counterfactual candidate {candidate_id} failed in isolated worker "
-        f"({status}); diagnostic={path}"
-    )
+        if not result_path.exists():
+            payload = {
+                "status": "worker_exit",
+                "candidate_id": candidate_id,
+                "elapsed_seconds": elapsed_seconds,
+                "memory_limit_bytes": COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
+                "process_memory_kib": observed_memory,
+                "exit_code": process.returncode,
+                "stack_path": stack_path,
+            }
+            path = _write_diagnostic(diagnostic_dir, candidate_id, payload)
+            raise CounterfactualResourceLimitError(
+                f"counterfactual candidate {candidate_id} exited without a result; "
+                f"diagnostic={path}"
+            )
+
+        with result_path.open("rb") as stream:
+            message = pickle.load(stream)
+        if not isinstance(message, Mapping):
+            raise CounterfactualWorkerError("counterfactual worker returned a non-mapping result")
+        status = str(message.get("status"))
+        if status == "ok":
+            _remove_empty_stack(stack_path)
+            truth = message.get("truth")
+            if not isinstance(truth, Mapping):
+                raise CounterfactualWorkerError(
+                    "counterfactual worker returned a non-mapping truth"
+                )
+            return dict(truth)
+        if status == "solver_rejected":
+            _remove_empty_stack(stack_path)
+            raise RuntimeError(
+                str(message.get("error", "counterfactual solver rejected candidate"))
+            )
+
+        payload = {
+            **dict(message),
+            "candidate_id": candidate_id,
+            "hard_wall_seconds": hard_wall_seconds,
+            "memory_limit_bytes": COUNTERFACTUAL_WORKER_MEMORY_LIMIT_BYTES,
+            "process_memory_kib": observed_memory,
+            "exit_code": process.returncode,
+            "stack_path": stack_path,
+        }
+        path = _write_diagnostic(diagnostic_dir, candidate_id, payload)
+        if status == "worker_error":
+            raise CounterfactualWorkerError(
+                f"counterfactual candidate {candidate_id} failed unexpectedly; "
+                f"diagnostic={path}"
+            )
+        raise CounterfactualResourceLimitError(
+            f"counterfactual candidate {candidate_id} failed in isolated worker "
+            f"({status}); diagnostic={path}"
+        )
+    finally:
+        request_path.unlink(missing_ok=True)
+        result_path.unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    raise SystemExit(_worker_main(sys.argv[1:]))
