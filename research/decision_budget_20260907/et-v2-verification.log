@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "budget": 131072,
+  "real_et_v2_row_checks": 960,
+  "maximum_cpt_error": 1.1102230246251565e-16,
+  "high_precision_kl_checks": 120,
+  "kl_per_full_sample_upper": "2*t**2",
+  "all_policy_pair_error_lower": "max(0,(1-sqrt(B)*t)/2)",
+  "conditional_strength_results": [
+    {
+      "target_quality": "3/4",
+      "strength_cutoff": "0.001350550353879975636300817824294086144188520695398274677207601344717882",
+      "conditional_uniform_strength_mass": "0.0007797406103667482706943151457955907652228448844261376088513564416702315",
+      "meaning": "Conditional on a binary decision and binary sole-parent outcome in a concordant slot, sign-pairs below this amplitude have oracle-aided equal-prior optimal mean quality strictly below the target under the IID model. This is not the whole-task-distribution prevalence."
+    },
+    {
+      "target_quality": "9/10",
+      "strength_cutoff": "0.002197501659957961014834806103400874393499242507116670894136962105845043",
+      "conditional_uniform_strength_mass": "0.001268728174921378252886040150000225131075836188401966812459563110750499",
+      "meaning": "Conditional on a binary decision and binary sole-parent outcome in a concordant slot, sign-pairs below this amplitude have oracle-aided equal-prior optimal mean quality strictly below the target under the IID model. This is not the whole-task-distribution prevalence."
+    },
+    {
+      "target_quality": "99/100",
+      "strength_cutoff": "0.002705672443604752241955199070864947343085675594147708624294578562521339",
+      "conditional_uniform_strength_mass": "0.00156212071365415624220107515252300575058763097078746433462448711219866",
+      "meaning": "Conditional on a binary decision and binary sole-parent outcome in a concordant slot, sign-pairs below this amplitude have oracle-aided equal-prior optimal mean quality strictly below the target under the IID model. This is not the whole-task-distribution prevalence."
+    }
+  ],
+  "assumptions": [
+    "Declared continuous ET-V2 law and IID sample model",
+    "binary X,Y; Pa(Y)={X}",
+    "The rest of the legal DAG/CPT is arbitrary and fixed between signs",
+    "Uniform amplitude and equally likely one-dimensional Gaussian direction signs",
+    "All nuisance parameters may be revealed to the decision rule; the sign remains hidden"
+  ],
+  "world_space_sha256": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b"
+}

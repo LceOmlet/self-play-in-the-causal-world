@@ -5,7 +5,9 @@ data:
   train_files: ${oc.env:CPT_WORLD_TRAIN_DATA}
   val_files: ${oc.env:CPT_WORLD_VAL_DATA}
   train_batch_size: 1
-  gen_batch_size: 3
+  # The official recipe truncates surplus retained prompts to train_batch_size.
+  # Match the verified run-02 path; dynamic filtering generates again if needed.
+  gen_batch_size: ${data.train_batch_size}
   val_batch_size: 5
   max_prompt_length: 2048
   max_response_length: 30720

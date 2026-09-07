@@ -37,7 +37,19 @@ observational distributions, weight variables by mechanism strength, compare
 families of minimal sets, or compute set F1. The nearest-set search is exact on
 the complete generated support of at most 16 nodes.
 
-All five owner-produced terminal qualities enter GRPO unchanged. Benchmark
+The environment adapter returns these owner-produced terminal qualities. The
+current trainer is the pinned official verl DAPO integration; its group
+advantages, token aggregation, and explicitly configured rollout corrections
+are audited separately in `dapo-execution-audit-20260907.md`. Benchmark
 reports retain nearest-valid-set edit distance and valid-set rate as the
 primary backdoor metrics; mean terminal quality is a training-compatible
 summary of the same fixed linear scale.
+
+Decision quality still has the relative-regret semantics chosen in ADR 0034.
+Its fixed resolution in normalized units is proportional to the candidate
+span in absolute probability units. It does not certify finite-budget
+learnability: legal, arbitrarily weak decision mechanisms can require
+distinguishing opposite optimal actions while their experiment laws converge.
+See `decision-budget-certificate-20260907.md` for the all-policy IID risk and a
+separate exhaustive finite-tape witness. Neither certificate changes this
+reward or estimates the prevalence of difficult generated tasks.

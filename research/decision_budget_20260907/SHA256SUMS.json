@@ -1,0 +1,10 @@
+{
+  "decision-budget-acceptance.json": "ff0ce65efcdb5275a6844e7a1d0bea13d936df92a9e3d0cf1df8179f8c15c578",
+  "et-v2-budget-bound.json": "832446e23df7f1612e072ab3e7df4b1bcba3a3bfd1fa0cf578b6e8fc67d41e1e",
+  "et-v2-verification.log": "832446e23df7f1612e072ab3e7df4b1bcba3a3bfd1fa0cf578b6e8fc67d41e1e",
+  "initial-serialization-assertion.log": "bd1c53dd3e33cffcb4e349eb2285cb2c45db07aabc2af59cc2cb193d6addcb85",
+  "README.md": "f7b9f8371e7adf915d1fc741e59de2809315e72e38fcf7f9bc238d6d278ac7a3",
+  "verification.log": "cc80f342cc4dffecc21db4fe37fdf630dcfa58a92804f42f7ace1c7e29f83fb9",
+  "verify_decision_budget.py": "26fcbb95921af49cd117090894792fbd78097558ac81a81b80c2577a0c049ffd",
+  "verify_et_v2_budget_bound.py": "f7707225bc8115bb3dcdc78e769bf7abe40693d5e9af7c65c7d859dc11808991"
+}

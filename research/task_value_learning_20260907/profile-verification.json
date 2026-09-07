@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "interpolation_checks": [
+    {
+      "train_batch_size": 1,
+      "gen_batch_size": 1
+    },
+    {
+      "train_batch_size": 2,
+      "gen_batch_size": 2
+    },
+    {
+      "train_batch_size": 4,
+      "gen_batch_size": 4
+    }
+  ],
+  "profile_sha256": "75f22a884d3f620c6d90db6c1223651f396890e86c3d1ab0c34a9023ff7a740d",
+  "recipe_sha256": "ce4a091c7987088694b9fddfd57c2988439f2ad2df580e5debf113b538e91cc0",
+  "scope": "Config interpolation and installed surplus-slicing source only; not a new DAPO execution or learning test. Run-02 already used gen_batch_size=1."
+}

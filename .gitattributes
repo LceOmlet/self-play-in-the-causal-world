@@ -25,3 +25,6 @@ research/symbolic_contraction_20260907/** -text whitespace=cr-at-eol
 research/symbolic_contraction_20260907/*.patch -whitespace
 # Strong-reversal admission proof and fixed complete-generation comparison.
 research/strong_reversal_admission_20260907/** -text whitespace=cr-at-eol
+# Completed boundary evidence and read-only task/learning log analysis.
+research/decision_budget_20260907/** -text whitespace=cr-at-eol
+research/task_value_learning_20260907/** -text whitespace=cr-at-eol

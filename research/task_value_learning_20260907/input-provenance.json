@@ -1,0 +1,42 @@
+{
+  "historical-train.log": {
+    "uncompressed_sha256": "87609df4b54548803a16bf7ff61f6b483aa488b22d401dc21a75df41121269b6",
+    "uncompressed_bytes": 937796,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\training_priority_20260907\\historical-train.log"
+  },
+  "official-train.log": {
+    "uncompressed_sha256": "a2349f71166ca747c060ee63bfd32cec84585bac5a7a057724c4113363f0f6f2",
+    "uncompressed_bytes": 159623,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\training_priority_20260907\\official-train.log"
+  },
+  "official-rollouts.jsonl": {
+    "uncompressed_sha256": "8e45a56c0ef8fbc8d942e67c9f36f0a419636ef16838e99191a38f409892c410",
+    "uncompressed_bytes": 91624,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\training_priority_20260907\\official-rollouts.jsonl"
+  },
+  "official-environment.jsonl": {
+    "uncompressed_sha256": "9a97aec9a00db95aadd910bc4c2a9265d42d6ca0be5cc9ff53cf4c10450552f7",
+    "uncompressed_bytes": 31087,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\training_priority_20260907\\official-environment.jsonl"
+  },
+  "generation-profile-failed.log": {
+    "uncompressed_sha256": "dd2b1b7fcc7b1a3619bbcc8f33b927092c5a1abf48f764cbcbd09b94615394ec",
+    "uncompressed_bytes": 34033,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\training_priority_20260907\\generation-profile-failed.log"
+  },
+  "environment-summary.json": {
+    "uncompressed_sha256": "ece29f762871f4ba94e53eead411a9b86cc2e52b626f9fc4f79e87884d765cb9",
+    "uncompressed_bytes": 96732,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\environment_validation_20260907\\summary.json"
+  },
+  "cohort-a-profiles.jsonl": {
+    "uncompressed_sha256": "d30f4f66aa78f0a604cf3d5a54e4a67109594e72642a46929936a69e13086344",
+    "uncompressed_bytes": 612527,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\environment_validation_20260907\\evidence\\cohort-a\\profiles.jsonl"
+  },
+  "cohort-b-profiles.jsonl": {
+    "uncompressed_sha256": "256366cdd4a5fc65b7a9efc54adfc331b6d20f562c8ce9d0aae054edcf46162a",
+    "uncompressed_bytes": 609873,
+    "local_source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\environment_validation_20260907\\evidence\\cohort-b\\profiles.jsonl"
+  }
+}

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/chen/runs/decision-budget-20260907/audit/research/decision_budget_20260907/verify_decision_budget.py", line 362, in <module>
+    main()
+  File "/home/chen/runs/decision-budget-20260907/audit/research/decision_budget_20260907/verify_decision_budget.py", line 305, in main
+    assert scores == float_scores
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

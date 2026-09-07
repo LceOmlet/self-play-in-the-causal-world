@@ -1,0 +1,271 @@
+{
+  "scope": "Existing 250-world diagnostic cohort, 50 per family; not an untouched evaluation set and not model learning evidence. Two finite-sample tapes per world are clustered in the archived confidence intervals.",
+  "threshold_scope": "0.9 and 0.95 are descriptive score summaries, not new acceptance thresholds or reward changes.",
+  "families": {
+    "ate": {
+      "worlds": 50,
+      "constant_name": "constant_zero",
+      "constant_quality_mean": 0.4293645624776334,
+      "constant_quality_at_least_0.9_count": 4,
+      "constant_quality_at_least_0.95_count": 1,
+      "finite_heuristic_quality_mean_ci": [
+        0.5986842451788776,
+        0.5635098634559256,
+        0.6336103539739408
+      ],
+      "finite_heuristic_paired_gain_over_constant_mean_ci": [
+        0.16931968270124426,
+        0.08178036866923619,
+        0.25626003481380566
+      ],
+      "finite_heuristic_task_metric_mean_ci": {
+        "l1_error": [
+          0.0969185632644031,
+          0.07095722430874352,
+          0.12730641348844995
+        ],
+        "total_variation_error": [
+          0.04845928163220155,
+          0.03547861215437176,
+          0.06365320674422498
+        ],
+        "squared_error": [
+          0.003036553630129644,
+          0.00122568127064103,
+          0.0054840633578806496
+        ],
+        "observational_shortcut_error": [
+          0.0371222533142238,
+          0.024000139029226465,
+          0.052176555093371844
+        ]
+      },
+      "population_observational_quality_mean": 0.7453457657320284,
+      "constant_quality_higher_than_population_observation_count": 10,
+      "effect_tv_below_0.01_count": 10
+    },
+    "individual_counterfactual_probability": {
+      "worlds": 50,
+      "constant_name": "constant_zero",
+      "constant_quality_mean": 0.3944312516027638,
+      "constant_quality_at_least_0.9_count": 0,
+      "constant_quality_at_least_0.95_count": 0,
+      "finite_heuristic_quality_mean_ci": [
+        0.6416865659956811,
+        0.59178671085556,
+        0.6927940416812901
+      ],
+      "finite_heuristic_paired_gain_over_constant_mean_ci": [
+        0.24725531439291737,
+        0.15512285054521976,
+        0.34322600562318095
+      ],
+      "finite_heuristic_task_metric_mean_ci": {
+        "lower_endpoint_error": [
+          0.07410445284827677,
+          0.0388151589391882,
+          0.11481625468325503
+        ],
+        "upper_endpoint_error": [
+          0.16296044507479923,
+          0.11493577610180242,
+          0.21706136110685254
+        ],
+        "mean_absolute_endpoint_error": [
+          0.11853244896153799,
+          0.0864626822552049,
+          0.1536187509521868
+        ],
+        "mean_squared_endpoint_error": [
+          0.044978802143860526,
+          0.027198325053960228,
+          0.06489015799849508
+        ],
+        "observational_shortcut_error": [
+          0.10602273459263184,
+          0.07480507402404205,
+          0.1403712346639922
+        ],
+        "endpoint_error": [
+          2.1704734780247878e-05,
+          4.778263663141599e-07,
+          5.567194874110908e-05
+        ]
+      },
+      "population_observational_quality_mean": 0.672914840854614,
+      "constant_quality_higher_than_population_observation_count": 9
+    },
+    "backadj_minimal_sets": {
+      "worlds": 50,
+      "constant_name": "empty_set",
+      "constant_quality_mean": 0.8985714285714286,
+      "constant_quality_at_least_0.9_count": 32,
+      "constant_quality_at_least_0.95_count": 12,
+      "finite_heuristic_quality_mean_ci": [
+        0.9878571428571428,
+        0.9771428571428572,
+        0.9964285714285714
+      ],
+      "finite_heuristic_paired_gain_over_constant_mean_ci": [
+        0.08928571428571427,
+        0.06714285714285714,
+        0.11214285714285716
+      ],
+      "finite_heuristic_task_metric_mean_ci": {
+        "edit_distance": [
+          0.17,
+          0.05,
+          0.32
+        ],
+        "valid_adjustment_set": [
+          0.89,
+          0.81,
+          0.96
+        ]
+      },
+      "empty_set_valid_count": 12
+    },
+    "best_intervention": {
+      "worlds": 50,
+      "constant_name": "constant_state_0",
+      "constant_quality_mean": 0.6159647705403459,
+      "constant_quality_at_least_0.9_count": 18,
+      "constant_quality_at_least_0.95_count": 18,
+      "finite_heuristic_quality_mean_ci": [
+        0.6266750786369452,
+        0.5730707249382336,
+        0.6852413231018328
+      ],
+      "finite_heuristic_paired_gain_over_constant_mean_ci": [
+        0.010710308096599263,
+        -0.09507574398612356,
+        0.12294377321898112
+      ],
+      "finite_heuristic_task_metric_mean_ci": {
+        "optimal_probability": [
+          0.4267812958194221,
+          0.36344085656629943,
+          0.49169945184512076
+        ],
+        "chosen_probability": [
+          0.40493780062877216,
+          0.3451768329023096,
+          0.4663120947364645
+        ],
+        "minimum_probability": [
+          0.2974670846210399,
+          0.2356246594086211,
+          0.36331188952910515
+        ],
+        "maximum_probability": [
+          0.4984906487501019,
+          0.4331899713161266,
+          0.5634830541326106
+        ],
+        "probability_span": [
+          0.20102356412906208,
+          0.15153268303728745,
+          0.25532461493705527
+        ],
+        "regret": [
+          0.07870491761020279,
+          0.05874454128479789,
+          0.10196228412733528
+        ],
+        "normalized_regret": [
+          0.46198725709519783,
+          0.36636764502834984,
+          0.560328774824516
+        ],
+        "observational_choice": [
+          1.24,
+          0.94,
+          1.54
+        ],
+        "observational_shortcut_error": [
+          0.08309143336791897,
+          0.06204064469556508,
+          0.10657053661943595
+        ],
+        "observational_shortcut_normalized_regret": [
+          0.4981383668214242,
+          0.39653867301921875,
+          0.6014378097023904
+        ],
+        "optimal_action": [
+          0.23,
+          0.12,
+          0.35
+        ]
+      },
+      "population_observational_quality_mean": 0.6095586099439408,
+      "constant_quality_higher_than_population_observation_count": 16,
+      "population_observational_optimal_count": 10,
+      "constant_optimal_count": 18
+    },
+    "mediator_set": {
+      "worlds": 50,
+      "constant_name": "empty_structure",
+      "constant_quality_mean": 0.0,
+      "constant_quality_at_least_0.9_count": 0,
+      "constant_quality_at_least_0.95_count": 0,
+      "finite_heuristic_quality_mean_ci": [
+        0.42000554141421015,
+        0.32210497800702914,
+        0.5190125405017239
+      ],
+      "finite_heuristic_paired_gain_over_constant_mean_ci": [
+        0.42000554141421015,
+        0.32210497800702914,
+        0.5190125405017239
+      ],
+      "finite_heuristic_task_metric_mean_ci": {
+        "mediator_precision": [
+          0.4465,
+          0.33666666666666667,
+          0.5581666666666666
+        ],
+        "mediator_recall": [
+          0.52,
+          0.40333333333333327,
+          0.6383333333333333
+        ],
+        "mediator_f1": [
+          0.44469047619047614,
+          0.343785119047619,
+          0.5471446428571429
+        ],
+        "order_precision": [
+          0.390610453272218,
+          0.28818342564298444,
+          0.4960929017061369
+        ],
+        "order_recall": [
+          0.48379487179487185,
+          0.37145641025641024,
+          0.5987980769230767
+        ],
+        "order_f1": [
+          0.3953206066379441,
+          0.2995465868883438,
+          0.49288311547413705
+        ],
+        "mediators_exact_match": [
+          0.18,
+          0.09,
+          0.28
+        ],
+        "order_exact_match": [
+          0.16,
+          0.08,
+          0.25
+        ]
+      }
+    }
+  },
+  "input_sha256": {
+    "environment-summary.json": "ece29f762871f4ba94e53eead411a9b86cc2e52b626f9fc4f79e87884d765cb9",
+    "cohort-a-profiles.jsonl": "d30f4f66aa78f0a604cf3d5a54e4a67109594e72642a46929936a69e13086344",
+    "cohort-b-profiles.jsonl": "256366cdd4a5fc65b7a9efc54adfc331b6d20f562c8ce9d0aae054edcf46162a"
+  }
+}

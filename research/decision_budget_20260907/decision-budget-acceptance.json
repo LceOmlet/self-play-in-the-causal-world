@@ -1,0 +1,375 @@
+{
+  "passed": true,
+  "source_sha256": {
+    "world.py": "112a973e69c09dcbc8a0427a7e4d312137d9b7fc2257129b77f656b1436a1536",
+    "world_runtime.py": "f1159966eb12006d74133b834dc11f6ea5d22be27552cadae710b45a87350447",
+    "world_space.py": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+    "query_truth.py": "e47fb6b8c85b64ce4af830a8fba890cb05739eab5725363be56ff5cba41989cf",
+    "task_scoring.py": "145edfa037613d86e530683dfd970c7d3177d5c1b7d089f2009a87ad49d514fe",
+    "rewards.py": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+    "identification.py": "d553f197c7b06085e02c67a30af7a3d27c025da358cf64a08aadd4af3b8e4348",
+    "episode.py": "8ef6a0c407548618b55662612d7a7ee4054e9ecad8b61d595d64a952917892dc"
+  },
+  "budget": 131072,
+  "small_rational_risk_checks": 51,
+  "iid_model_cases": [
+    {
+      "delta": "1/128",
+      "causal_span": "1/64",
+      "et_v2_strength": 0.015626271752052265,
+      "scores": [
+        {
+          "sign": -1,
+          "action": 0,
+          "absolute_regret": "0",
+          "normalized_regret": "0",
+          "quality_exact": "1",
+          "quality": 1.0
+        },
+        {
+          "sign": -1,
+          "action": 1,
+          "absolute_regret": "1/64",
+          "normalized_regret": "1",
+          "quality_exact": "1592262918131443/73649856956059379",
+          "quality": 0.021619361991176863
+        },
+        {
+          "sign": 1,
+          "action": 0,
+          "absolute_regret": "1/64",
+          "normalized_regret": "1",
+          "quality_exact": "1592262918131443/73649856956059379",
+          "quality": 0.021619361991176863
+        },
+        {
+          "sign": 1,
+          "action": 1,
+          "absolute_regret": "0",
+          "normalized_regret": "0",
+          "quality_exact": "1",
+          "quality": 1.0
+        }
+      ],
+      "legal_laws": {
+        "legal_actions": 13,
+        "identical_single_marginals": 104,
+        "full_assignment_likelihood_ratios": 1792
+      },
+      "optimal_error_iid": "0.00003164062030478804171125035895697492438205302894753745075244443359192532",
+      "optimal_mean_quality_iid": "0.9999690434297192065517551126619800863106708847023632150797603972926678"
+    },
+    {
+      "delta": "1/16384",
+      "causal_span": "1/8192",
+      "et_v2_strength": 0.0001220703131063298,
+      "scores": [
+        {
+          "sign": -1,
+          "action": 0,
+          "absolute_regret": "0",
+          "normalized_regret": "0",
+          "quality_exact": "1",
+          "quality": 1.0
+        },
+        {
+          "sign": -1,
+          "action": 1,
+          "absolute_regret": "1/8192",
+          "normalized_regret": "1",
+          "quality_exact": "1592262918131443/73649856956059379",
+          "quality": 0.021619361991176863
+        },
+        {
+          "sign": 1,
+          "action": 0,
+          "absolute_regret": "1/8192",
+          "normalized_regret": "1",
+          "quality_exact": "1592262918131443/73649856956059379",
+          "quality": 0.021619361991176863
+        },
+        {
+          "sign": 1,
+          "action": 1,
+          "absolute_regret": "0",
+          "normalized_regret": "0",
+          "quality_exact": "1",
+          "quality": 1.0
+        }
+      ],
+      "legal_laws": {
+        "legal_actions": 13,
+        "identical_single_marginals": 104,
+        "full_assignment_likelihood_ratios": 1792
+      },
+      "optimal_error_iid": "0.4875351300535220798945692796315212624950955230154169043270341091163196",
+      "optimal_mean_quality_iid": "0.5230050684065205038813570732715883073829543167684649699983468749842162"
+    },
+    {
+      "delta": "1/1048576",
+      "causal_span": "1/524288",
+      "et_v2_strength": 1.9073486328078741e-06,
+      "scores": [
+        {
+          "sign": -1,
+          "action": 0,
+          "absolute_regret": "0",
+          "normalized_regret": "0",
+          "quality_exact": "1",
+          "quality": 1.0
+        },
+        {
+          "sign": -1,
+          "action": 1,
+          "absolute_regret": "1/524288",
+          "normalized_regret": "1",
+          "quality_exact": "1592262918131443/73649856956059379",
+          "quality": 0.021619361991176863
+        },
+        {
+          "sign": 1,
+          "action": 0,
+          "absolute_regret": "1/524288",
+          "normalized_regret": "1",
+          "quality_exact": "1592262918131443/73649856956059379",
+          "quality": 0.021619361991176863
+        },
+        {
+          "sign": 1,
+          "action": 1,
+          "absolute_regret": "0",
+          "normalized_regret": "0",
+          "quality_exact": "1",
+          "quality": 1.0
+        }
+      ],
+      "legal_laws": {
+        "legal_actions": 13,
+        "identical_single_marginals": 104,
+        "full_assignment_likelihood_ratios": 1792
+      },
+      "optimal_error_iid": "0.4998052047154744569774625175485275765451921628940299334922519040593039",
+      "optimal_mean_quality_iid": "0.5110002649303436423106150325984295150475774334861013177471268521636969"
+    }
+  ],
+  "finite_tape_certificate": {
+    "tape_key": "decision-budget-all-legal-streams-20260907",
+    "records": [
+      {
+        "action": null,
+        "draws": 131072,
+        "minimum_exact_distance": "104326594366342039304542593900263181483265310652001704575827193649248781/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 9.009820537420055e-07,
+        "minimum_index": 68446,
+        "stream_sha256": "df0a71ed817771d36151c2ea242311d01526531d90931ebaa0e1b3ba71d9700f",
+        "seconds": 1.7587032349547371
+      },
+      {
+        "action": [
+          2,
+          0
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "506042135867225795771779139196266978007548105841721563999304413163586827/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 4.370265181352639e-06,
+        "minimum_index": 100473,
+        "stream_sha256": "d9b27093f452bc82c5665035f36ee4f1147297bfa2d7f3e29daaf49a56acde00",
+        "seconds": 1.9557061860105023
+      },
+      {
+        "action": [
+          2,
+          1
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "387516761298919340906801544555371232029562516840471906037637393842433841/57896044618658097711785492504343953926634992332820282019728792003956564819968",
+        "minimum_float_distance": 6.6933201370300566e-06,
+        "minimum_index": 122547,
+        "stream_sha256": "62bfdf8fcb5831d1a85dd7f3ad786378855f3fc089e54493bda3db4c3c510b20",
+        "seconds": 1.9641253310255706
+      },
+      {
+        "action": [
+          3,
+          0
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "505248849049831229472480110930997955414246356068624680541602162335589925/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 4.3634142226078865e-06,
+        "minimum_index": 92187,
+        "stream_sha256": "1d28dd3725a4d431c859d0a623d9d7f53a443033333efa3e7ac814c6a5479f01",
+        "seconds": 1.9295071479864419
+      },
+      {
+        "action": [
+          3,
+          1
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "1432628000377068226420594065844855791251835075364480140666412785359917/14474011154664524427946373126085988481658748083205070504932198000989141204992",
+        "minimum_float_distance": 9.897933506142209e-08,
+        "minimum_index": 45247,
+        "stream_sha256": "cfc82703cd0984bba42cdd4a8dd1a58e97a4d8ff2f01309ef36638200c90e51c",
+        "seconds": 1.9523415000876412
+      },
+      {
+        "action": [
+          4,
+          0
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "7780600398776035974407286356657065801958302917541000531291416885268561/57896044618658097711785492504343953926634992332820282019728792003956564819968",
+        "minimum_float_distance": 1.3438915302810273e-07,
+        "minimum_index": 7783,
+        "stream_sha256": "5c5be5efc4b19726aa50a13e371b233440b3080d8d3eb490ce0705d5a5e73746",
+        "seconds": 1.97629042097833
+      },
+      {
+        "action": [
+          4,
+          1
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "14866941866050612592358762311435234930364176099880076554360846255167131/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 1.2839341589909736e-07,
+        "minimum_index": 88791,
+        "stream_sha256": "c8fb02954792296eab5cc50579d4f6469853aa981ea60ac713fca87ae26321ba",
+        "seconds": 1.974475680035539
+      },
+      {
+        "action": [
+          5,
+          0
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "314052264636029731174441777062175315340965159382398975911102251301089111/28948022309329048855892746252171976963317496166410141009864396001978282409984",
+        "minimum_float_distance": 1.0848833170040706e-05,
+        "minimum_index": 55738,
+        "stream_sha256": "a5376e581b68ed515f12e2df39447ae9937031aa9edd18535cdb6d6b6953b9f6",
+        "seconds": 1.9944664069917053
+      },
+      {
+        "action": [
+          5,
+          1
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "469364208691838714227448573357933991653058934062268055374843639805983263/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 4.053508420032159e-06,
+        "minimum_index": 96353,
+        "stream_sha256": "36d6c48034d24f07379494e6e07e621426bce82c1e97c3d966264d42403ef044",
+        "seconds": 1.9889989369548857
+      },
+      {
+        "action": [
+          6,
+          0
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "487776325437544475288723234018953270624898326775167148446317529879459713/57896044618658097711785492504343953926634992332820282019728792003956564819968",
+        "minimum_float_distance": 8.425037127335333e-06,
+        "minimum_index": 123617,
+        "stream_sha256": "f77a1b802029c4d5ff8a9cda94747b11ce43c7e715fedf492834f60fa6d7fa89",
+        "seconds": 2.0061242319643497
+      },
+      {
+        "action": [
+          6,
+          1
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "266472900069150324855326514433045303446965730037087730068245020050906839/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 2.30130488038105e-06,
+        "minimum_index": 8696,
+        "stream_sha256": "59338513d86a0219ef660518a9dde382d897f5f6c96af435d1fa344c367f1b06",
+        "seconds": 2.0000358959659934
+      },
+      {
+        "action": [
+          7,
+          0
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "196312380254755466101365702002759096080131861919074083555507058438790417/57896044618658097711785492504343953926634992332820282019728792003956564819968",
+        "minimum_float_distance": 3.39077361066753e-06,
+        "minimum_index": 125194,
+        "stream_sha256": "182c5bc76507d68b3dde063ca138999e87a3def5872d622539ad9c21d0744455",
+        "seconds": 1.9661092120222747
+      },
+      {
+        "action": [
+          7,
+          1
+        ],
+        "draws": 131072,
+        "minimum_exact_distance": "208491888833277189613399044576286404230657043897822848266066265227554439/115792089237316195423570985008687907853269984665640564039457584007913129639936",
+        "minimum_float_distance": 1.8005710943347353e-06,
+        "minimum_index": 7994,
+        "stream_sha256": "cb8f61242245315f4c8395f5c18aeac90aafecc0f20075104f4cb475b8bd87bb",
+        "seconds": 1.9719281359575689
+      }
+    ],
+    "total_draws": 1703936,
+    "minimum_exact_distance": "1432628000377068226420594065844855791251835075364480140666412785359917/14474011154664524427946373126085988481658748083205070504932198000989141204992",
+    "minimum_float_distance": 9.897933506142209e-08,
+    "chosen_delta_exact": "1/67108864",
+    "margin_over_delta": 6.642390735447407
+  },
+  "finite_tape_scores": [
+    {
+      "sign": -1,
+      "action": 0,
+      "absolute_regret": "0",
+      "normalized_regret": "0",
+      "quality_exact": "1",
+      "quality": 1.0
+    },
+    {
+      "sign": -1,
+      "action": 1,
+      "absolute_regret": "1/33554432",
+      "normalized_regret": "1",
+      "quality_exact": "1592262918131443/73649856956059379",
+      "quality": 0.021619361991176863
+    },
+    {
+      "sign": 1,
+      "action": 0,
+      "absolute_regret": "1/33554432",
+      "normalized_regret": "1",
+      "quality_exact": "1592262918131443/73649856956059379",
+      "quality": 0.021619361991176863
+    },
+    {
+      "sign": 1,
+      "action": 1,
+      "absolute_regret": "0",
+      "normalized_regret": "0",
+      "quality_exact": "1",
+      "quality": 1.0
+    }
+  ],
+  "finite_tape_full_budget_replay": [
+    {
+      "count_equal": 32666,
+      "action": 0,
+      "quality": 1.0,
+      "cost": 131072,
+      "queries": 1,
+      "feedback_sha256": "a1779de74fbce8c4b5feeadb7b42e80af88d219dfaacd4af40db35f85c6dfbbb",
+      "seconds": 8.533346583950333
+    },
+    {
+      "count_equal": 32666,
+      "action": 0,
+      "quality": 0.021619361991176863,
+      "cost": 131072,
+      "queries": 1,
+      "feedback_sha256": "a1779de74fbce8c4b5feeadb7b42e80af88d219dfaacd4af40db35f85c6dfbbb",
+      "seconds": 8.603642000001855
+    }
+  ],
+  "finite_tape_optimal_equal_prior_quality_exact": "37621059937095411/73649856956059379",
+  "finite_tape_optimal_equal_prior_quality": 0.5108096809955884,
+  "scope": "IID risk is for the declared statistical model; the separately exhaustive fixed-tape witness is conditional on this recorded tape, not an estimate of generated-task prevalence. No reward or generator changes."
+}
