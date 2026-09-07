@@ -1,0 +1,184 @@
+--- a/dapo/dapo_ray_trainer.py
++++ b/dapo/dapo_ray_trainer.py
+@@ -16,10 +16,12 @@
+ This trainer supports model-agonistic model initialization with huggingface
+ """
+ 
++import json
+ import os
+ import uuid
+ from collections import defaultdict
+ from copy import deepcopy
++from itertools import count
+ from pprint import pprint
+ 
+ import numpy as np
+@@ -48,7 +50,8 @@
+     """
+ 
+     def compute_kl_related_metrics(self, batch: DataProto, metrics: dict, timing_raw: dict):
+-        batch.batch["response_mask"] = compute_response_mask(batch)
++        if "response_mask" not in batch.batch.keys():
++            batch.batch["response_mask"] = compute_response_mask(batch)
+ 
+         # recompute old_log_probs
+         with marked_timer("old_log_prob", timing_raw, "blue"):
+@@ -78,6 +81,73 @@
+ 
+         return batch
+ 
++    def _save_checkpoint(self):
++        # This hook runs only after an actual update, before the base class
++        # publishes the latest-checkpoint tracker. No pending filtered batch is
++        # checkpointed as an optimizer update.
++        folder = os.path.join(
++            self.config.trainer.default_local_dir, f"global_step_{self.global_steps}")
++        os.makedirs(folder, exist_ok=True)
++        progress = {
++            "version": 1,
++            "completed_updates": self.global_steps,
++            "generated_batches": self.gen_steps,
++            "data_epoch": self.data_epoch,
++            "batches_per_epoch": len(self.train_dataloader),
++        }
++        path = os.path.join(folder, "dapo_progress.json")
++        with open(path + ".tmp", "w") as stream:
++            json.dump(progress, stream)
++        os.replace(path + ".tmp", path)
++        super()._save_checkpoint()
++
++    def _load_checkpoint(self):
++        folder = super()._load_checkpoint()
++        if not folder:
++            self.gen_steps = 0
++            self.data_epoch = 0
++            return
++        data_path = os.path.join(folder, "data.pt")
++        if not os.path.exists(data_path):
++            raise ValueError("DAPO continuation requires the saved data.pt sampler state")
++        data_state = torch.load(data_path, map_location="cpu", weights_only=False)
++        n = len(self.train_dataloader)
++        # This state schema is the installed StatefulDataLoader's num_workers=0
++        # path. Reject unsupported schemas rather than infer a cursor from U.
++        k = data_state.get("_num_yielded")
++        finished = data_state.get("_iterator_finished")
++        if n <= 0 or type(k) is not int or not 0 <= k <= n or type(finished) is not bool:
++            raise ValueError("Unsupported DAPO dataloader checkpoint cursor schema")
++        if finished and k != n:
++            raise ValueError("An exhausted DAPO iterator must have consumed its epoch")
++        path = os.path.join(folder, "dapo_progress.json")
++        if os.path.exists(path):
++            with open(path) as stream:
++                progress = json.load(stream)
++            required = ("version", "completed_updates", "generated_batches",
++                        "data_epoch", "batches_per_epoch")
++            if any(type(progress.get(key)) is not int for key in required):
++                raise ValueError("Invalid DAPO checkpoint progress schema")
++            if (progress["version"] != 1 or progress["completed_updates"] != self.global_steps
++                    or progress["batches_per_epoch"] != n or progress["data_epoch"] < 0
++                    or progress["generated_batches"] < self.global_steps
++                    or progress["generated_batches"] != progress["data_epoch"] * n + k):
++                raise ValueError("DAPO progress disagrees with the checkpoint step or data cursor")
++            self.gen_steps = progress["generated_batches"]
++            self.data_epoch = progress["data_epoch"] + int(finished)
++        else:
++            # Legacy checkpoints lack the epoch count. Accept only a provably
++            # first-epoch position: each completed update consumed at most M
++            # batches, U*M < N, and the saved cursor lies in [U, U*M].
++            filters = self.config.algorithm.filter_groups
++            maximum = filters.max_num_gen_batches if filters.enable else 1
++            if (maximum <= 0 or self.global_steps * maximum >= n or finished
++                    or not self.global_steps <= k <= self.global_steps * maximum):
++                raise ValueError("Legacy DAPO checkpoint has ambiguous generation/epoch progress; "
++                                 "recover it from verified generation records before resuming")
++            self.gen_steps = k
++            self.data_epoch = 0
++
+     def fit(self):
+         """
+         The training loop of PPO.
+@@ -98,10 +168,16 @@
+ 
+         self.global_steps = 0
+         self.gen_steps = 0
++        self.data_epoch = 0
+         self.max_steps_duration = 0
+ 
+         # load checkpoint before doing anything
+         self._load_checkpoint()
++        if self.global_steps >= self.total_training_steps:
++            print(f"Target already reached: {self.global_steps} completed updates")
++            return
++        if len(self.train_dataloader) <= 0:
++            raise ValueError("DAPO requires a nonempty training dataloader")
+         self.checkpoint_manager.update_weights()
+ 
+         # perform validation before training
+@@ -119,7 +195,6 @@
+ 
+         # we start from step 1
+         self.global_steps += 1
+-        self.gen_steps += 1
+         last_val_metrics = None
+ 
+         prev_step_profile = False
+@@ -134,10 +209,14 @@
+         batch = None
+         num_prompt_in_batch = 0
+         num_gen_batches = 0
+-        current_epoch = self.global_steps // len(self.train_dataloader)
+-
+-        for epoch in range(current_epoch, self.config.trainer.total_epochs):
++        # An explicit update target takes precedence over an epoch budget,
++        # exactly as it does when constructing the optimizer's step schedule.
++        epochs = (count(self.data_epoch) if self.config.trainer.total_training_steps is not None
++                  else range(self.data_epoch, self.config.trainer.total_epochs))
++        for epoch in epochs:
++            self.data_epoch = epoch
+             for batch_dict in self.train_dataloader:
++                self.gen_steps += 1
+                 if hasattr(self.actor_rollout_wg, "async_calls_finalize_fn_exec"):
+                     self.actor_rollout_wg.async_calls_finalize_fn_exec(blocking=False)
+                 metrics = {}
+@@ -279,7 +358,6 @@
+                             max_num_gen_batches = self.config.algorithm.filter_groups.max_num_gen_batches
+                             if max_num_gen_batches <= 0 or num_gen_batches < max_num_gen_batches:
+                                 print(f"{num_gen_batches=}. Keep generating...")
+-                                self.gen_steps += 1
+                                 is_last_step = self.global_steps >= self.total_training_steps
+                                 continue
+                             else:
+@@ -416,6 +494,8 @@
+                 timing_raw = defaultdict(float)  # clear timing
+ 
+                 metrics["train/num_gen_batches"] = num_gen_batches
++                metrics["training/generated_batches_total"] = self.gen_steps
++                metrics["training/data_epoch"] = self.data_epoch
+                 batch = None
+                 num_prompt_in_batch = 0
+                 num_gen_batches = 0
+@@ -432,13 +512,14 @@
+ 
+                 progress_bar.update(1)
+                 self.global_steps += 1
+-                self.gen_steps += 1
+-        # check if last step checkpint exists
+-        checkpoint_dir = os.path.join(self.config.trainer.default_local_dir, f"global_step_{self.global_steps}")
+-        if not os.path.exists(checkpoint_dir):
+-            # save last step checkpoint
+-            timing_raw = defaultdict(float)
+-            with marked_timer("save_checkpoint", timing_raw, "green"):
+-                self._save_checkpoint()
+-            metrics = {f"timing/{k}": v for k, v in timing_raw.items()}
+-            logger.log(data=metrics, step=self.global_steps)
++        # The counter points to the next update here. Exhausting an implicit
++        # epoch budget is not successful completion and must not publish that
++        # unexecuted step (or discard pending filtered batches in a checkpoint).
++        self.global_steps -= 1
++        if hasattr(self.actor_rollout_wg, "async_calls_finalize_fn_exec"):
++            self.actor_rollout_wg.async_calls_finalize_fn_exec(blocking=True)
++        progress_bar.close()
++        raise RuntimeError(f"DAPO epoch budget exhausted after {self.global_steps} actual updates; "
++                           f"target={self.total_training_steps}, "
++                           f"generated_batches={self.gen_steps}. "
++                           "Set an explicit total_training_steps to train to an update target.")

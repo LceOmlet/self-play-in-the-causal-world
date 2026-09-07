@@ -126,6 +126,25 @@ class OfficialSourceProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "original upstream fingerprint"):
             self.verify()
 
+    def test_base_trainer_exception_cannot_admit_an_arbitrary_patch(self):
+        relative = "verl/trainer/ppo/ray_trainer.py"
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"replacement trainer")
+        self.manifest["repositories"]["verl"]["files"][relative] = sha(b"official trainer")
+        patch = self.project / "runtime.patch"
+        patch.write_text(f"--- a/{relative}\n+++ b/{relative}\n")
+        entry = self.manifest["reviewed_runtime_patches"][0]
+        entry["sha256"] = sha(patch.read_bytes())
+        entry["files"] = {
+            relative: {
+                "upstream_sha256": sha(b"official trainer"),
+                "patched_sha256": sha(b"replacement trainer"),
+            }
+        }
+        with self.assertRaisesRegex(RuntimeError, "exact reviewed progress"):
+            self.verify()
+
 
 if __name__ == "__main__":
     unittest.main()

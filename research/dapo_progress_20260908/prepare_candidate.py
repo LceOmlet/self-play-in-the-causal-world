@@ -249,13 +249,18 @@ def main():
     ]:
         assert sha(source / relative) == expected
         original = tree(source)
-        before = (source / relative).read_text()
-        after = transform(before)
+        before = (source / relative).read_bytes().decode()
+        normalized = before.replace("\r\n", "\n")
+        assert "\r" not in normalized
+        assert before.count("\r\n") in (0, before.count("\n"))
+        after = transform(normalized)
         ast.parse(after)
+        if "\r\n" in before:
+            after = after.replace("\n", "\r\n")
         shutil.copytree(
             source, target, ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc")
         )
-        (target / relative).write_text(after)
+        (target / relative).write_bytes(after.encode())
         copied = tree(target)
         assert original.keys() == copied.keys()
         changed = [n for n in original if original[n] != copied[n]]
@@ -269,7 +274,7 @@ def main():
             )
         )
         patch_path = args.output / f"{name}-progress.patch"
-        patch_path.write_text(patch)
+        patch_path.write_bytes(patch.encode())
         report[name] = {
             "source": str(source),
             "candidate": str(target),

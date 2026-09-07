@@ -1,5 +1,11 @@
 官方 DAPO 的更新目标与检查点进度修复，2026-09-08
 
+来源接入进展：保留原源码 CRLF 的 candidate-v2 已通过三个精确补丁重建检查与全部 15 个 CPU 控制用例。新增显式 `CPT_WORLD_DAPO_SOURCE_PROFILE=progress-v1`；默认仍为 baseline。两种来源配置均完整通过 427 个固定上游文件、实际导入路径及 500／25 行数据的检查，交叉混用均被拒绝。新的精确补丁已列入可选择的来源清单，真实 GPU 恢复更新尚待执行；后文“尚未加入来源清单”是早期隔离状态。
+
+v1 生成器把 CRLF 统一为 LF，数值代码内容没有改变，但其补丁不能直接用于逐字节重建原文件。v2 保留原换行格式；verl 的源文件哈希为 `4ade49b9c8e80d51a21240e3f07df1fb1215afac365e9424af076b84e88f8e7b`，recipe 为 `b8e66a6037e3b2922f560c24eb10a94dc28a916579d2f163b506adb82559f491`。recipe 的正式补丁从原始固定 commit 同时加入原有 mask guard 和进度修复，不叠加不透明的重叠例外。来源校验只允许这些精确补丁哈希，不能借新增文件例外替换训练算法；8 个来源拒绝／兼容性单元测试通过。
+
+新证据在 `research/dapo_progress_20260908/candidate-v2/integration-evidence-v2.tar.gz`，SHA-256 为 `bb5ed291153ac3d411fe3135e3ed7ac022ed1d83563a71cc285fa2b23b308512`。它包括 180 个原始成员，以及首次来源检查误填 `val.parquet`、随后从现有 controller 读取真实 `validation.parquet` 后通过的记录。数据文件未修改。`resume_progress.py` 只负责配置、进程和原生状态验收，恢复训练仍由官方 `dapo.main_dapo` 执行。
+
 已在实际官方 `RayDAPOTrainer.fit`、`RayPPOTrainer._save_checkpoint/_load_checkpoint` 中复现进度控制缺陷，并实现隔离补丁。该补丁尚未加入生产来源清单，当前编译配置训练继续使用原运行源码。此前真实第 6 步恢复与 TIS 验收已经完成，但没有使用本次进度补丁，不能挪作它的 GPU 验收。
 
 确定根因及影响

@@ -1,0 +1,27 @@
+{
+  "scope": "Isolated upstream progress-only candidate; no GPU acceptance or production admission yet.",
+  "verl": {
+    "source": "/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1",
+    "candidate": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+    "changed_files": [
+      "verl/trainer/ppo/ray_trainer.py"
+    ],
+    "files_checked": 1264,
+    "before_sha256": "c930623489f724e9abbf1dab41ed617da1be2f0d60485d4c0ee5354c145dd809",
+    "after_sha256": "4ade49b9c8e80d51a21240e3f07df1fb1215afac365e9424af076b84e88f8e7b",
+    "patch_sha256": "affa3f5b34fa8d1a619136471652eb1aa0dce0cfb7fcea94423efdab2bcc7087",
+    "source_unchanged": true
+  },
+  "recipe": {
+    "source": "/home/chen/vendor/dapo-official-20260906/verl-recipe-mask-v1",
+    "candidate": "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2",
+    "changed_files": [
+      "dapo/dapo_ray_trainer.py"
+    ],
+    "files_checked": 8,
+    "before_sha256": "ce4a091c7987088694b9fddfd57c2988439f2ad2df580e5debf113b538e91cc0",
+    "after_sha256": "b8e66a6037e3b2922f560c24eb10a94dc28a916579d2f163b506adb82559f491",
+    "patch_sha256": "dad8ea6ef60b69a452d2b2046c73f7dd60bb6fb971c642122de1be5dd7f63745",
+    "source_unchanged": true
+  }
+}

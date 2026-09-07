@@ -1,5 +1,21 @@
 Official DAPO progress-control audit, 2026-09-08
 
+Latest source admission: candidate-v2 preserves the original CRLF bytes. Three
+`git apply` reconstruction checks and the 15 CPU control cases pass. The new
+explicit `progress-v1` source profile and the unchanged default `baseline` both
+verify all 427 pinned files, real imports and original train/validation hashes;
+cross-profile substitutions are rejected. Exact production-admissible patch
+files are in `patches/verl-dapo-progress-v1.patch` and
+`patches/verl-recipe-mask-progress-v1.patch`. The v1 candidate below is retained
+as historical evidence; actual GPU recovery with the admitted v2 source is
+still pending.
+
+`candidate-v2/integration-evidence-v2.tar.gz` records all 180 members of this
+phase, including the initial incorrect validation filename and its correction
+from the actual existing controller. `resume_progress.py` prepares, preserves
+and checks an early trusted native checkpoint, then controls only the process
+switch and the original verification deadline. It never implements training.
+
 `prepare_candidate.py` builds isolated source copies and exact patches of the
 pinned upstream classes. It checks the complete numerical update block and old
 logprob/mask method byte-for-byte, and compares every copied source file.

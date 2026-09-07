@@ -16,13 +16,22 @@ RUNTIME_PATCH_PATHS = {
     "verl": {
         "verl/tools/schemas.py",
         "verl/experimental/agent_loop/tool_agent_loop.py",
+        "verl/trainer/ppo/ray_trainer.py",
     },
     "verl-recipe": {"dapo/dapo_ray_trainer.py"},
 }
 
-# The recipe exception admits exactly the upstream-style action-mask guard,
-# not an arbitrary replacement of this trainer's algorithm code.
+# The exceptions admit exact reviewed mask/progress patches, never an arbitrary
+# replacement of either trainer's algorithm code.
 RECIPE_ACTION_MASK_PATCH_SHA256 = "a4541de892529cc29d8c03819c207c1786e9bb91b51a7d4a50896886075406e7"
+RECIPE_MASK_PROGRESS_PATCH_SHA256 = (
+    "f5d4ef0d43d8b07c733be33a9e63ac387b7cbccacdc670c29646874daf42944d"
+)
+VERL_PROGRESS_PATCH_SHA256 = "affa3f5b34fa8d1a619136471652eb1aa0dce0cfb7fcea94423efdab2bcc7087"
+SOURCE_PROFILES = {
+    "baseline": "upstream_sources.json",
+    "progress-v1": "upstream_sources_progress_v1.json",
+}
 
 
 def verify_repositories(manifest, roots, project):
@@ -39,9 +48,13 @@ def verify_repositories(manifest, roots, project):
             raise RuntimeError("Runtime patch escaped the project")
         if hashlib.sha256(patch_path.read_bytes()).hexdigest() != patch["sha256"]:
             raise RuntimeError("Reviewed runtime patch content changed")
-        if name == "verl-recipe" and patch["sha256"] != RECIPE_ACTION_MASK_PATCH_SHA256:
+        if name == "verl-recipe" and patch["sha256"] not in {
+            RECIPE_ACTION_MASK_PATCH_SHA256,
+            RECIPE_MASK_PROGRESS_PATCH_SHA256,
+        }:
             raise RuntimeError(
-                "Recipe patch must match the reviewed action-mask compatibility change"
+                "Recipe patch must match the reviewed action-mask compatibility "
+                "or exact mask/progress change"
             )
         declared = set(patch["files"])
         diff_paths = {
@@ -51,6 +64,12 @@ def verify_repositories(manifest, roots, project):
         }
         if diff_paths != declared or not declared <= RUNTIME_PATCH_PATHS.get(name, set()):
             raise RuntimeError("Runtime patch attempts to change undeclared or algorithm sources")
+        if (
+            name == "verl"
+            and "verl/trainer/ppo/ray_trainer.py" in declared
+            and patch["sha256"] != VERL_PROGRESS_PATCH_SHA256
+        ):
+            raise RuntimeError("Base trainer patch must match the exact reviewed progress change")
         for relative, hashes in patch["files"].items():
             if hashes["upstream_sha256"] != definition["files"][relative]:
                 raise RuntimeError("Runtime patch replaced the original upstream fingerprint")
@@ -80,13 +99,19 @@ def verify_repositories(manifest, roots, project):
 
 def verify():
     project = Path(__file__).resolve().parents[1]
-    manifest = json.loads((project / "configs/verl/upstream_sources.json").read_text())
+    profile = os.environ.get("CPT_WORLD_DAPO_SOURCE_PROFILE", "baseline")
+    if profile not in SOURCE_PROFILES:
+        raise RuntimeError(f"Unknown official DAPO source profile: {profile}")
+    manifest_path = project / "configs/verl" / SOURCE_PROFILES[profile]
+    manifest = json.loads(manifest_path.read_text())
     roots = {
         "verl": Path(os.environ["VERL_ROOT"]).resolve(),
         "verl-recipe": Path(os.environ["VERL_RECIPE_ROOT"]).resolve(),
     }
     repositories, patches = verify_repositories(manifest, roots, project)
     report = {
+        "source_profile": profile,
+        "source_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "repositories": repositories,
         "reviewed_runtime_patches": patches,
         "loaded": {},
@@ -112,6 +137,7 @@ def verify():
     for package in ["verl", "torch", "transformers", "vllm", "peft", "ray", "datasets"]:
         report["packages"][package] = importlib.metadata.version(package)
     import pyarrow.parquet as pq
+
     from cpt_world.identification import INTERACTION_SURFACE_VERSION
 
     report["environment_version"] = INTERACTION_SURFACE_VERSION

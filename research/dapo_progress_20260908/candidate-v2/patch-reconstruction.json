@@ -1,0 +1,18 @@
+[
+  {
+    "patch": "/home/chen/runs/dapo-progress-20260908/candidate-v2/verl-progress.patch",
+    "applied_sha256": "4ade49b9c8e80d51a21240e3f07df1fb1215afac365e9424af076b84e88f8e7b",
+    "exact_reconstruction": true
+  },
+  {
+    "patch": "/home/chen/runs/dapo-progress-20260908/candidate-v2/recipe-progress.patch",
+    "applied_sha256": "b8e66a6037e3b2922f560c24eb10a94dc28a916579d2f163b506adb82559f491",
+    "exact_reconstruction": true
+  },
+  {
+    "patch": "/home/chen/runs/dapo-progress-20260908/integration-v2/verl-recipe-mask-progress-v1.patch",
+    "patch_sha256": "f5d4ef0d43d8b07c733be33a9e63ac387b7cbccacdc670c29646874daf42944d",
+    "applied_sha256": "b8e66a6037e3b2922f560c24eb10a94dc28a916579d2f163b506adb82559f491",
+    "exact_reconstruction": true
+  }
+]
