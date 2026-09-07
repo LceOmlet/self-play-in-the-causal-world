@@ -1,0 +1,73 @@
+{
+  "archive": "generation-evidence.tar.gz",
+  "sha256": "64ff45a8040025bd94159068c654deabf849b3c8b307102ce37a9d89e2f6e674",
+  "bytes": 111265,
+  "remote_source": "/home/chen/runs/inference-efficiency-20260908/generation-evidence-20260908-004009",
+  "updates": [
+    1,
+    2
+  ],
+  "scope": "Two official updates, original per-trajectory task errors, raw timing evidence and partial next generation. Not a learning-effect or GPU optimization comparison.",
+  "members": {
+    "environment/environment-249121.jsonl": {
+      "bytes": 5342,
+      "sha256": "2cd3619e704f1412b9743e1196346573465f86088ac0edf6648e7791cd50900b"
+    },
+    "environment/environment-250243.jsonl": {
+      "bytes": 210001,
+      "sha256": "3a2b6162abae5e5bed479928858e2afbc5cc0cb330e6b882bafa3f606cec033a"
+    },
+    "generation-balance.json": {
+      "bytes": 2830,
+      "sha256": "b2e62c5f6eb12154ed980347a95269235a01034549487e7590d5e5ff80664480"
+    },
+    "launch.json": {
+      "bytes": 2497,
+      "sha256": "8d588b642b345e9684f6ba5e333fbbd7b27efe248b5aa395be84c31f854e814a"
+    },
+    "live-http-metrics.txt": {
+      "bytes": 4446,
+      "sha256": "478f0ee6bbe62c21e49b5ed22bf62f2739fe5ac44d31f96661e39d056700e4e4"
+    },
+    "official-timing-sources.json": {
+      "bytes": 10965,
+      "sha256": "4ee1d135bee1b2cd00fd988a0d54ebcf6cd6dabb8cf82c42db2b68c779bc3057"
+    },
+    "process.json": {
+      "bytes": 52,
+      "sha256": "1f746c33a67d03a899ca2d59d168239d3906e0e80966e3543dfc1f0331fc0886"
+    },
+    "production-source-check.json": {
+      "bytes": 126,
+      "sha256": "3dbcbea4c6bedcb8b942e450fa92f00fe94d668f0cd12c5ec6960cc3f00b73bc"
+    },
+    "progress.json": {
+      "bytes": 42541,
+      "sha256": "7665d56bf5cbe5e5760f1fb2cafc05838cc68c14d7b0cd6ee037e270a521a655"
+    },
+    "reader-acceptance.json": {
+      "bytes": 406,
+      "sha256": "3b9b7bd159f8f4605045a163f45a4058fff58ae3f12be64ba910a732a04c5d31"
+    },
+    "rollouts/1.jsonl": {
+      "bytes": 146216,
+      "sha256": "8a9c8f045c61370fe2e1cdaf5d45c17d7551587bf02f031fb770ea3cb8d78a10"
+    },
+    "rollouts/2.jsonl": {
+      "bytes": 134387,
+      "sha256": "5caff824e662ab96b449a572f7efacce0b3176cd4a74e52df4913b176ee48953"
+    },
+    "task-runner-source.json": {
+      "bytes": 421,
+      "sha256": "950326819e8fb10290fa73a7f6cd97df841a8810c37bf0eeb9545e9aa011817c"
+    },
+    "task-runner-stdout.log": {
+      "bytes": 76584,
+      "sha256": "529002596843db8be32bb62df45bb56a2dd7a4ed413af37753e714b762ffeb0e"
+    },
+    "train.log": {
+      "bytes": 160734,
+      "sha256": "e78118b4d85475812e3a485b87bbb8a4ba8c1fde601a7c0d39bddde8d7680f19"
+    }
+  }
+}

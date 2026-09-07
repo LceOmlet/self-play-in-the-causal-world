@@ -1,0 +1,17 @@
+{
+  "source_progress_sha256": "7665d56bf5cbe5e5760f1fb2cafc05838cc68c14d7b0cd6ee037e270a521a655",
+  "source_balance_sha256": "b2e62c5f6eb12154ed980347a95269235a01034549487e7590d5e5ff80664480",
+  "adapted_from": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\self-play-in-the-causal-world\\research\\rl_correctness_20260907\\official_execution\\original_plot_training_curves.py",
+  "updates": [
+    1,
+    2
+  ],
+  "trajectories": 8,
+  "scope": "Actual update timing and task errors; different worlds, not a learning-effect comparison.",
+  "artifacts": {
+    "generation-and-errors.pdf": "54de760267ebedf8c6667874c6b3d93899ced4c8afceaa74fb5c7c3ab7524159",
+    "generation-and-errors.png": "c2dd2f7fb7a27a5d0a4232e1b8bc9c12d340e27d807ab8306e615f954eb6a9d6",
+    "generation-and-errors.svg": "5b8a87bc55269651ae97f8a3d3fad77b794403a12738a3731c9ab2054b5d1208",
+    "trajectories.csv": "75738ea70dd9b4d84819b7466f968a8a35cbfebdeabc94cdec4265787bd59d81"
+  }
+}

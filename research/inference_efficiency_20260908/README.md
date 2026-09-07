@@ -54,3 +54,28 @@ flags and failed in argument parsing before composing that candidate. Commit
 `fbf1df3` fixes this inspection command; it does not alter the trainer. Both the
 failed first attempt and successful second attempt are retained in
 `configuration-evidence.tar.gz`, with hashes in `configuration-evidence.sha256.json`.
+
+Actual generation evidence: the trainer's own Ray stdout confirms two updates,
+while the driver log in the same snapshot only forwards the first metric record.
+The reader now identifies the live DAPOTaskRunner child of the recorded main PID,
+saves its stdout and source identity, and requires duplicate metrics to agree.
+All 108 first-step metrics match the prior archive; all eight retained rollouts
+match the original environment command sequences uniquely.
+
+`analyze_generation_balance.py` applies an interval-union bound to the official
+cumulative await timers. Step 2 spends at least 1163.31 seconds with only one
+pending trajectory, regardless of trajectory start offsets. This is a request
+concurrency bound, not GPU utilization or a measured optimization speedup.
+The next GPU comparison must include one active trajectory and long contexts.
+See `docs/generation-balance-20260908.md` for the derivation and task errors.
+`generation-evidence.tar.gz` preserves the raw snapshot and timing sources;
+`generation-evidence.sha256.json` records its hashes. The current `/metrics`
+endpoint contains no vLLM token counters; the actual config disables log stats.
+
+`plot_generation_evidence.py` reuses the earlier `original_plot_training_curves.py`
+style and renders the two-update snapshot to PNG, SVG and PDF, with trajectory
+CSV and source hashes in `figures/`. Rendering was done locally using the existing
+`audit/plot_dependencies` Matplotlib runtime and Microsoft YaHei font; no plotting
+packages were installed into the running training environment. The first local
+invocation lacked that existing dependency path, then succeeded with it supplied
+via `PYTHONPATH`. The figure is not a learning curve across matched tasks.
