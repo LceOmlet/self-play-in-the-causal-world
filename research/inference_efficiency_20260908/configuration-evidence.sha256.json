@@ -1,0 +1,89 @@
+{
+  "archive": "configuration-evidence.tar.gz",
+  "sha256": "02752f875cc77f0014ecd22f70920124d14a676374bc631619c9612d61295b9e",
+  "bytes": 45982,
+  "scope": "Official Qwen3.5-9B configuration acceptance only; no GPU execution or speed claim. Includes failed first inspection and read-only log-parser regression evidence.",
+  "source_head": "fd75d6bf7b786fc0b860f39ec73793ea007dcdf9",
+  "members": {
+    "configuration/compiled_adapter.stderr": {
+      "sha256": "bc999f35f6dd07516a95f9bb6f121f1d4572d53fcefd6b6115258c6cda2f5df0",
+      "bytes": 2180
+    },
+    "configuration/compiled_adapter.yaml": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "configuration/current.stderr": {
+      "sha256": "987237bd67144bbf2131925b89ae283584a090f947127ca90b990be22e5ce6e5",
+      "bytes": 1531
+    },
+    "configuration/current.yaml": {
+      "sha256": "e0db3c03289a17d2eb61de88ae8ec84ff9925dbc3e21fa4ecf49ce0436c9f7d4",
+      "bytes": 30526
+    },
+    "configuration/source-verification.json": {
+      "sha256": "bd7da83af6347d0f01c3de1cdc13bb0a69e8ae21a8fcb91dd3bfab50eba4613b",
+      "bytes": 5468
+    },
+    "configuration/source-verification.log": {
+      "sha256": "13018e1425b14ed271dd4996bc49547a41180e44b96f7ad2a65b4cce1c7b2e68",
+      "bytes": 4854
+    },
+    "configuration-v2/acceptance.json": {
+      "sha256": "6e64f9ebbbc971206a8a750665406e185121f37968a395378532325f829c027d",
+      "bytes": 4568
+    },
+    "configuration-v2/compiled_adapter.stderr": {
+      "sha256": "cc5936b9d258fc1a72c8b620f107dda8b8791fcdbfaa52e8b46fc9cefbd497bd",
+      "bytes": 1531
+    },
+    "configuration-v2/compiled_adapter.yaml": {
+      "sha256": "9d013fbb819ce586a00fd774d3f2ff426c5050088ac33a3b6d6649b4d371bf74",
+      "bytes": 30552
+    },
+    "configuration-v2/compiled_merged.stderr": {
+      "sha256": "43ce7c78fe8d822f40040606ea6638ec8368e03920d67516301a241aac623b66",
+      "bytes": 1531
+    },
+    "configuration-v2/compiled_merged.yaml": {
+      "sha256": "6f2ce3d246461ca4f3e4f1e207579f88a2b32b02d2157f3ef27e14846a6fa9c8",
+      "bytes": 30551
+    },
+    "configuration-v2/current.stderr": {
+      "sha256": "9eed3e6f8b7d29ad6c7e596d28c773ac672460ff7e82b431b65f072dcc31a955",
+      "bytes": 1531
+    },
+    "configuration-v2/current.yaml": {
+      "sha256": "5b87319b294ebe0fea8438379eaed61a668e51f2f12ddbd08c8c4c8ac0e2090b",
+      "bytes": 30532
+    },
+    "configuration-v2/source-verification.json": {
+      "sha256": "bd7da83af6347d0f01c3de1cdc13bb0a69e8ae21a8fcb91dd3bfab50eba4613b",
+      "bytes": 5468
+    },
+    "configuration-v2/source-verification.log": {
+      "sha256": "13018e1425b14ed271dd4996bc49547a41180e44b96f7ad2a65b4cce1c7b2e68",
+      "bytes": 4854
+    },
+    "configuration-validation.log": {
+      "sha256": "cfb8647317361a5a5516b31b2f075b52029a7d8f61acca3cbba4d01f447e7836",
+      "bytes": 3082
+    },
+    "configuration-validation-v2.log": {
+      "sha256": "8d7a32e5923098b9d5eb873724a09a8feb056b60b7299632e008c2166c48f30d",
+      "bytes": 2815
+    },
+    "parser-replay.json": {
+      "sha256": "f098741c05e22c9acc948b884002476ea466f81f8539a2fe34407819efddd95a",
+      "bytes": 372
+    },
+    "actual-model-config.json": {
+      "sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+      "bytes": 3126
+    },
+    "reader-regression/interleaved-train.log": {
+      "sha256": "e78118b4d85475812e3a485b87bbb8a4ba8c1fde601a7c0d39bddde8d7680f19",
+      "bytes": 160734
+    }
+  }
+}
