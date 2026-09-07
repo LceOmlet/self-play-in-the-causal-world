@@ -1,0 +1,15 @@
+{
+  "production_commit": "5ca41091acba09a918b3a696442c6ab689f72b11",
+  "numpy": "2.3.5",
+  "transformers": "5.9.0",
+  "source_sha256": {
+    "query_truth.py": "e47fb6b8c85b64ce4af830a8fba890cb05739eab5725363be56ff5cba41989cf",
+    "world_space.py": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+    "world_runtime.py": "f1159966eb12006d74133b834dc11f6ea5d22be27552cadae710b45a87350447",
+    "world.py": "112a973e69c09dcbc8a0427a7e4d312137d9b7fc2257129b77f656b1436a1536",
+    "task_scoring.py": "145edfa037613d86e530683dfd970c7d3177d5c1b7d089f2009a87ad49d514fe",
+    "rewards.py": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+    "identification.py": "d553f197c7b06085e02c67a30af7a3d27c025da358cf64a08aadd4af3b8e4348"
+  },
+  "original_policy_sha256": "975941c6cab97c2f261b2d4a37fdd7c9eba53aa336defc52ee52956a7fd1c8c2"
+}

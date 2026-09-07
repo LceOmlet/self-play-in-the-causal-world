@@ -1,0 +1,444 @@
+{
+  "scope": "One predeclared public-only heuristic, 50 existing production worlds, two tapes each. Confidence intervals resample worlds, averaging their tapes; they are diagnostic cohort intervals, not model learning or a worst-case guarantee.",
+  "groups": {
+    "all": {
+      "worlds": 50,
+      "episodes": 100,
+      "method_mean": {
+        "active_adjusted": {
+          "quality": 0.8641685095777326,
+          "optimal_rate": 0.7,
+          "regret": 0.021149732562916787,
+          "normalized_regret": 0.13296128585289893
+        },
+        "full_budget_passive": {
+          "quality": 0.6266750786369453,
+          "optimal_rate": 0.23,
+          "regret": 0.0787049176102028,
+          "normalized_regret": 0.4619872570951978
+        },
+        "same_samples_passive": {
+          "quality": 0.6364397406792023,
+          "optimal_rate": 0.25,
+          "regret": 0.07765098713796015,
+          "normalized_regret": 0.4500570667155387
+        },
+        "constant_state_0": {
+          "quality": 0.6159647705403427,
+          "optimal_rate": 0.36,
+          "regret": 0.09848276757069507,
+          "normalized_regret": 0.4499392537226863
+        }
+      },
+      "active_minus_full_passive_paired_mean_ci": {
+        "quality": [
+          0.23749343094078754,
+          0.1708342850424866,
+          0.3030704252855261
+        ],
+        "optimal_rate": [
+          0.47,
+          0.34,
+          0.6
+        ],
+        "regret": [
+          -0.05755518504728603,
+          -0.08207924601650006,
+          -0.03706354588601053
+        ],
+        "normalized_regret": [
+          -0.32902597124229893,
+          -0.43302181888298735,
+          -0.22745531783303816
+        ]
+      },
+      "valid_adjustment_episodes": 81,
+      "correct_with_valid_adjustment": 57,
+      "wrong_with_valid_adjustment": 24,
+      "wrong_with_invalid_adjustment": 6
+    },
+    "strong_discordant": {
+      "worlds": 40,
+      "episodes": 80,
+      "method_mean": {
+        "active_adjusted": {
+          "quality": 0.842265925833565,
+          "optimal_rate": 0.6375,
+          "regret": 0.026228097587293647,
+          "normalized_regret": 0.15871397257420494
+        },
+        "full_budget_passive": {
+          "quality": 0.5333438482961815,
+          "optimal_rate": 0.0375,
+          "regret": 0.09838114701275351,
+          "normalized_regret": 0.5774840713689973
+        },
+        "same_samples_passive": {
+          "quality": 0.545549675849003,
+          "optimal_rate": 0.0625,
+          "regret": 0.09706373392245018,
+          "normalized_regret": 0.5625713333944233
+        },
+        "constant_state_0": {
+          "quality": 0.6404643443174259,
+          "optimal_rate": 0.325,
+          "regret": 0.10101843383812104,
+          "normalized_regret": 0.4570483567459708
+        }
+      },
+      "active_minus_full_passive_paired_mean_ci": {
+        "quality": [
+          0.30892207753738343,
+          0.24353363724602956,
+          0.36960247675399754
+        ],
+        "optimal_rate": [
+          0.6,
+          0.4625,
+          0.7375
+        ],
+        "regret": [
+          -0.07215304942545986,
+          -0.10062853200048662,
+          -0.04821032172664655
+        ],
+        "normalized_regret": [
+          -0.4187700987947924,
+          -0.5317621735177268,
+          -0.3067727657549017
+        ]
+      },
+      "valid_adjustment_episodes": 67,
+      "correct_with_valid_adjustment": 43,
+      "wrong_with_valid_adjustment": 24,
+      "wrong_with_invalid_adjustment": 5
+    },
+    "concordant": {
+      "worlds": 10,
+      "episodes": 20,
+      "method_mean": {
+        "active_adjusted": {
+          "quality": 0.9517788445544039,
+          "optimal_rate": 0.95,
+          "regret": 0.0008362724654093323,
+          "normalized_regret": 0.02995053896767495
+        },
+        "full_budget_passive": {
+          "quality": 1.0,
+          "optimal_rate": 1.0,
+          "regret": 0.0,
+          "normalized_regret": 0.0
+        },
+        "same_samples_passive": {
+          "quality": 1.0,
+          "optimal_rate": 1.0,
+          "regret": 0.0,
+          "normalized_regret": 0.0
+        },
+        "constant_state_0": {
+          "quality": 0.51796647543201,
+          "optimal_rate": 0.5,
+          "regret": 0.0883401025009912,
+          "normalized_regret": 0.421502841629548
+        }
+      },
+      "active_minus_full_passive_paired_mean_ci": {
+        "quality": [
+          -0.048221155445596055,
+          -0.14466346633678814,
+          0.0
+        ],
+        "optimal_rate": [
+          -0.05,
+          -0.15,
+          0.0
+        ],
+        "regret": [
+          0.0008362724654093323,
+          0.0,
+          0.002508817396227997
+        ],
+        "normalized_regret": [
+          0.02995053896767495,
+          0.0,
+          0.08985161690302486
+        ]
+      },
+      "valid_adjustment_episodes": 14,
+      "correct_with_valid_adjustment": 14,
+      "wrong_with_valid_adjustment": 0,
+      "wrong_with_invalid_adjustment": 1
+    }
+  },
+  "valid_adjustment_wrong_cases": [
+    {
+      "seed_id": "SAMPLED-20024307383-best_intervention-decision-a11",
+      "replicate": 0,
+      "regret": 0.10694685614082128,
+      "quality": 0.5079716457490885,
+      "selected_variables": 5,
+      "observed_strata": 376,
+      "samples": 7905,
+      "true_best_missing_stratum_mass": 0.2012650221378866,
+      "true_best_below_five_mass": 0.5681214421252352
+    },
+    {
+      "seed_id": "SAMPLED-20024307383-best_intervention-decision-a11",
+      "replicate": 1,
+      "regret": 0.10694685614082128,
+      "quality": 0.5079716457490885,
+      "selected_variables": 5,
+      "observed_strata": 368,
+      "samples": 7905,
+      "true_best_missing_stratum_mass": 0.22732447817836748,
+      "true_best_below_five_mass": 0.5628083491461082
+    },
+    {
+      "seed_id": "SAMPLED-20034915273-best_intervention-decision-a12",
+      "replicate": 0,
+      "regret": 0.07919942432684648,
+      "quality": 0.540542414793046,
+      "selected_variables": 2,
+      "observed_strata": 6,
+      "samples": 3077,
+      "true_best_missing_stratum_mass": 0.6961325966850829,
+      "true_best_below_five_mass": 0.6961325966850829
+    },
+    {
+      "seed_id": "SAMPLED-20004700279-best_intervention-decision-a2",
+      "replicate": 0,
+      "regret": 0.08743013012815146,
+      "quality": 0.505463903552184,
+      "selected_variables": 3,
+      "observed_strata": 59,
+      "samples": 3687,
+      "true_best_missing_stratum_mass": 0.003254678600488202,
+      "true_best_below_five_mass": 0.03037700027122322
+    },
+    {
+      "seed_id": "SAMPLED-20012301901-best_intervention-decision-a0",
+      "replicate": 0,
+      "regret": 0.059412741992356355,
+      "quality": 0.5089134559319325,
+      "selected_variables": 3,
+      "observed_strata": 59,
+      "samples": 8604,
+      "true_best_missing_stratum_mass": 0.15330079033007904,
+      "true_best_below_five_mass": 0.23791259879125998
+    },
+    {
+      "seed_id": "SAMPLED-20012301901-best_intervention-decision-a0",
+      "replicate": 1,
+      "regret": 0.059412741992356355,
+      "quality": 0.5089134559319325,
+      "selected_variables": 3,
+      "observed_strata": 60,
+      "samples": 8604,
+      "true_best_missing_stratum_mass": 0.18456531845653185,
+      "true_best_below_five_mass": 0.24941887494188755
+    },
+    {
+      "seed_id": "SAMPLED-20017103684-best_intervention-decision-a4",
+      "replicate": 0,
+      "regret": 0.028062720616783665,
+      "quality": 0.6650697306111123,
+      "selected_variables": 2,
+      "observed_strata": 13,
+      "samples": 3845,
+      "true_best_missing_stratum_mass": 0.08738621586475942,
+      "true_best_below_five_mass": 0.08920676202860857
+    },
+    {
+      "seed_id": "SAMPLED-20017103684-best_intervention-decision-a4",
+      "replicate": 1,
+      "regret": 0.07643628413769665,
+      "quality": 0.4216396823255659,
+      "selected_variables": 2,
+      "observed_strata": 14,
+      "samples": 3845,
+      "true_best_missing_stratum_mass": 0.05721716514954487,
+      "true_best_below_five_mass": 0.08374512353706114
+    },
+    {
+      "seed_id": "SAMPLED-20023907187-best_intervention-decision-a0",
+      "replicate": 0,
+      "regret": 0.05887884496628251,
+      "quality": 0.5106401697841719,
+      "selected_variables": 4,
+      "observed_strata": 39,
+      "samples": 1282,
+      "true_best_missing_stratum_mass": 0.38923556942277693,
+      "true_best_below_five_mass": 0.6318252730109203
+    },
+    {
+      "seed_id": "SAMPLED-20023907187-best_intervention-decision-a0",
+      "replicate": 1,
+      "regret": 0.05887884496628251,
+      "quality": 0.5106401697841719,
+      "selected_variables": 4,
+      "observed_strata": 39,
+      "samples": 1282,
+      "true_best_missing_stratum_mass": 0.35491419656786277,
+      "true_best_below_five_mass": 0.4953198127925117
+    },
+    {
+      "seed_id": "SAMPLED-20019504753-best_intervention-decision-a3",
+      "replicate": 0,
+      "regret": 0.0587499360044319,
+      "quality": 0.5112779678877641,
+      "selected_variables": 4,
+      "observed_strata": 111,
+      "samples": 14340,
+      "true_best_missing_stratum_mass": 0.13856345885634583,
+      "true_best_below_five_mass": 0.28124128312412827
+    },
+    {
+      "seed_id": "SAMPLED-20019504753-best_intervention-decision-a3",
+      "replicate": 1,
+      "regret": 0.0587499360044319,
+      "quality": 0.5112779678877641,
+      "selected_variables": 4,
+      "observed_strata": 116,
+      "samples": 14340,
+      "true_best_missing_stratum_mass": 0.16847977684797763,
+      "true_best_below_five_mass": 0.3432357043235704
+    },
+    {
+      "seed_id": "SAMPLED-20025107892-best_intervention-decision-a2",
+      "replicate": 1,
+      "regret": 0.027836509502568718,
+      "quality": 0.6857614731617906,
+      "selected_variables": 4,
+      "observed_strata": 40,
+      "samples": 769,
+      "true_best_missing_stratum_mass": 0.5149544863459037,
+      "true_best_below_five_mass": 0.5604681404421324
+    },
+    {
+      "seed_id": "SAMPLED-45049663736-best_intervention-decision-a1",
+      "replicate": 0,
+      "regret": 0.08471367821944281,
+      "quality": 0.40039517266455393,
+      "selected_variables": 3,
+      "observed_strata": 20,
+      "samples": 2463,
+      "true_best_missing_stratum_mass": 0.04506699147381242,
+      "true_best_below_five_mass": 0.1266747868453106
+    },
+    {
+      "seed_id": "SAMPLED-45016951615-best_intervention-decision-a0",
+      "replicate": 0,
+      "regret": 0.07367600966801238,
+      "quality": 0.5278140567368281,
+      "selected_variables": 5,
+      "observed_strata": 308,
+      "samples": 5269,
+      "true_best_missing_stratum_mass": 0.5492503321313327,
+      "true_best_below_five_mass": 0.8208388688555692
+    },
+    {
+      "seed_id": "SAMPLED-45016951615-best_intervention-decision-a0",
+      "replicate": 1,
+      "regret": 0.07367600966801238,
+      "quality": 0.5278140567368281,
+      "selected_variables": 5,
+      "observed_strata": 290,
+      "samples": 5269,
+      "true_best_missing_stratum_mass": 0.639779844372746,
+      "true_best_below_five_mass": 0.7895236287720627
+    },
+    {
+      "seed_id": "SAMPLED-45028654607-best_intervention-decision-a0",
+      "replicate": 0,
+      "regret": 0.03229629508804627,
+      "quality": 0.5963150437706887,
+      "selected_variables": 5,
+      "observed_strata": 379,
+      "samples": 2195,
+      "true_best_missing_stratum_mass": 0.8387243735763046,
+      "true_best_below_five_mass": 0.9999999999999941
+    },
+    {
+      "seed_id": "SAMPLED-45046662177-best_intervention-decision-a0",
+      "replicate": 1,
+      "regret": 0.02192127638803687,
+      "quality": 0.7265449289286848,
+      "selected_variables": 4,
+      "observed_strata": 152,
+      "samples": 8193,
+      "true_best_missing_stratum_mass": 0.045160502868302206,
+      "true_best_below_five_mass": 0.19882826803368728
+    },
+    {
+      "seed_id": "SAMPLED-45024753412-best_intervention-decision-a1",
+      "replicate": 0,
+      "regret": 0.1845324727817107,
+      "quality": 0.5171260808475718,
+      "selected_variables": 2,
+      "observed_strata": 16,
+      "samples": 27649,
+      "true_best_missing_stratum_mass": 0.49734167600998225,
+      "true_best_below_five_mass": 0.49976491012333174
+    },
+    {
+      "seed_id": "SAMPLED-45024753412-best_intervention-decision-a1",
+      "replicate": 1,
+      "regret": 0.1845324727817107,
+      "quality": 0.5171260808475718,
+      "selected_variables": 2,
+      "observed_strata": 15,
+      "samples": 27649,
+      "true_best_missing_stratum_mass": 0.4201598611161344,
+      "true_best_below_five_mass": 0.5298564143368657
+    },
+    {
+      "seed_id": "SAMPLED-45023553081-best_intervention-decision-a0",
+      "replicate": 0,
+      "regret": 0.010095546998602267,
+      "quality": 0.9005895519235461,
+      "selected_variables": 5,
+      "observed_strata": 110,
+      "samples": 3511,
+      "true_best_missing_stratum_mass": 0.06351466818570208,
+      "true_best_below_five_mass": 0.5189404727997732
+    },
+    {
+      "seed_id": "SAMPLED-45023553081-best_intervention-decision-a0",
+      "replicate": 1,
+      "regret": 0.06968069380973657,
+      "quality": 0.567574885756317,
+      "selected_variables": 5,
+      "observed_strata": 101,
+      "samples": 3511,
+      "true_best_missing_stratum_mass": 0.049273711193392175,
+      "true_best_below_five_mass": 0.6644830532611798
+    },
+    {
+      "seed_id": "SAMPLED-45036157289-best_intervention-decision-a0",
+      "replicate": 0,
+      "regret": 0.0776829296057,
+      "quality": 0.6206191497764405,
+      "selected_variables": 2,
+      "observed_strata": 8,
+      "samples": 3458,
+      "true_best_missing_stratum_mass": 0.8577212261422789,
+      "true_best_below_five_mass": 0.8577212261422789
+    },
+    {
+      "seed_id": "SAMPLED-45036157289-best_intervention-decision-a0",
+      "replicate": 1,
+      "regret": 0.0776829296057,
+      "quality": 0.6206191497764405,
+      "selected_variables": 2,
+      "observed_strata": 8,
+      "samples": 3458,
+      "true_best_missing_stratum_mass": 0.8687102371312898,
+      "true_best_below_five_mass": 0.8687102371312898
+    }
+  ],
+  "cache_drift": {
+    "max_probability_absolute_drift": 2.220446049250313e-16,
+    "changed_optimal_states": 0
+  },
+  "all_public_replays_passed": true
+}

@@ -1,0 +1,114 @@
+{
+  "scope": "This calculation uses the revealed true Y parents after answers were committed. It isolates redundant conditioning and is not a new public-only success rate. No new observations or changed CPTs are used.",
+  "identity": "Y is independent of DVR given X and POF, because Pa(Y)={X,POF} and DVR is an ancestor of X. POF is a parent of X, hence is not its descendant; adjusting for POF alone blocks every backdoor into Y. Pooling DVR therefore preserves the target.",
+  "cases": [
+    {
+      "replicate": 0,
+      "same_observation_units": 27649,
+      "original_estimate": {
+        "values": [
+          0.10551110935906924,
+          0.5273060233811909,
+          0.4400230865266076
+        ],
+        "unobserved_stratum_mass": [
+          0.02155593330681037,
+          0.0027125755000180843,
+          0.49734167600998225
+        ],
+        "below_five_samples_stratum_mass": [
+          0.02600455712684003,
+          0.004123114760027488,
+          0.49976491012333174
+        ],
+        "passive_values_same_samples": [
+          0.07311236089505803,
+          0.6036833717017885,
+          0.4732633683158421
+        ],
+        "observed_strata": 16
+      },
+      "pooled_estimate": {
+        "values": [
+          0.10751553604133163,
+          0.521458161450304,
+          0.66500764883347
+        ],
+        "unobserved_stratum_mass": [
+          0.0,
+          0.0,
+          0.07866468950052444
+        ],
+        "below_five_samples_stratum_mass": [
+          0.02600455712684003,
+          0.0,
+          0.07866468950052444
+        ],
+        "passive_values_same_samples": [
+          0.07311236089505803,
+          0.6036833717017885,
+          0.4732633683158421
+        ],
+        "observed_strata": 4
+      },
+      "pooled_action": 2,
+      "true_optimal_action": 2,
+      "original_measured_joint_states": 144,
+      "pooled_measured_joint_states": 36
+    },
+    {
+      "replicate": 1,
+      "same_observation_units": 27649,
+      "original_estimate": {
+        "values": [
+          0.09562866517803001,
+          0.5297658425176226,
+          0.4787571127168376
+        ],
+        "unobserved_stratum_mass": [
+          0.005099641940033997,
+          0.0020977250533473183,
+          0.4201598611161344
+        ],
+        "below_five_samples_stratum_mass": [
+          0.026510904553510073,
+          0.003689102680024594,
+          0.5298564143368657
+        ],
+        "passive_values_same_samples": [
+          0.07011866235167206,
+          0.6054619613406632,
+          0.43831012962073934
+        ],
+        "observed_strata": 15
+      },
+      "pooled_estimate": {
+        "values": [
+          0.0987329834191576,
+          0.520447000908684,
+          0.43060472995251753
+        ],
+        "unobserved_stratum_mass": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "below_five_samples_stratum_mass": [
+          0.026510904553510073,
+          0.0,
+          0.4494556765163297
+        ],
+        "passive_values_same_samples": [
+          0.07011866235167206,
+          0.6054619613406632,
+          0.43831012962073934
+        ],
+        "observed_strata": 4
+      },
+      "pooled_action": 1,
+      "true_optimal_action": 2,
+      "original_measured_joint_states": 144,
+      "pooled_measured_joint_states": 36
+    }
+  ]
+}

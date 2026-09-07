@@ -1,0 +1,705 @@
+{
+  "scope": "Command-only reconstruction using the original task system/user text, act schema and model tokenizer. It omits model reasoning and is not an actual verl rollout, a lower bound for every possible strategy, or proof these tasks cannot fit the model context.",
+  "episodes": [
+    {
+      "public_file": "cohort-a-task-103-r0.public.json.gz",
+      "initial_tokens": 1394,
+      "total_tokens": 121223,
+      "tool_calls": 142,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-103-r1.public.json.gz",
+      "initial_tokens": 1394,
+      "total_tokens": 122030,
+      "tool_calls": 142,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-108-r0.public.json.gz",
+      "initial_tokens": 1436,
+      "total_tokens": 90444,
+      "tool_calls": 107,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-108-r1.public.json.gz",
+      "initial_tokens": 1436,
+      "total_tokens": 91069,
+      "tool_calls": 107,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-113-r0.public.json.gz",
+      "initial_tokens": 1213,
+      "total_tokens": 6024,
+      "tool_calls": 27,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-113-r1.public.json.gz",
+      "initial_tokens": 1213,
+      "total_tokens": 5999,
+      "tool_calls": 27,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-118-r0.public.json.gz",
+      "initial_tokens": 1167,
+      "total_tokens": 5067,
+      "tool_calls": 22,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-118-r1.public.json.gz",
+      "initial_tokens": 1167,
+      "total_tokens": 5091,
+      "tool_calls": 22,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-123-r0.public.json.gz",
+      "initial_tokens": 1268,
+      "total_tokens": 6740,
+      "tool_calls": 33,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-123-r1.public.json.gz",
+      "initial_tokens": 1268,
+      "total_tokens": 27593,
+      "tool_calls": 66,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-13-r0.public.json.gz",
+      "initial_tokens": 1135,
+      "total_tokens": 4361,
+      "tool_calls": 22,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-13-r1.public.json.gz",
+      "initial_tokens": 1135,
+      "total_tokens": 4361,
+      "tool_calls": 22,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-18-r0.public.json.gz",
+      "initial_tokens": 1258,
+      "total_tokens": 28230,
+      "tool_calls": 63,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-18-r1.public.json.gz",
+      "initial_tokens": 1258,
+      "total_tokens": 28910,
+      "tool_calls": 63,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-23-r0.public.json.gz",
+      "initial_tokens": 1283,
+      "total_tokens": 24407,
+      "tool_calls": 56,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-23-r1.public.json.gz",
+      "initial_tokens": 1283,
+      "total_tokens": 24308,
+      "tool_calls": 56,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-28-r0.public.json.gz",
+      "initial_tokens": 1254,
+      "total_tokens": 5882,
+      "tool_calls": 29,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-28-r1.public.json.gz",
+      "initial_tokens": 1254,
+      "total_tokens": 6021,
+      "tool_calls": 29,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-3-r0.public.json.gz",
+      "initial_tokens": 1387,
+      "total_tokens": 7913,
+      "tool_calls": 45,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-3-r1.public.json.gz",
+      "initial_tokens": 1387,
+      "total_tokens": 7913,
+      "tool_calls": 45,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-33-r0.public.json.gz",
+      "initial_tokens": 1401,
+      "total_tokens": 8426,
+      "tool_calls": 42,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-33-r1.public.json.gz",
+      "initial_tokens": 1401,
+      "total_tokens": 8428,
+      "tool_calls": 42,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-38-r0.public.json.gz",
+      "initial_tokens": 1289,
+      "total_tokens": 6787,
+      "tool_calls": 33,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-38-r1.public.json.gz",
+      "initial_tokens": 1289,
+      "total_tokens": 6777,
+      "tool_calls": 33,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-43-r0.public.json.gz",
+      "initial_tokens": 1452,
+      "total_tokens": 75856,
+      "tool_calls": 111,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-43-r1.public.json.gz",
+      "initial_tokens": 1452,
+      "total_tokens": 75795,
+      "tool_calls": 111,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-48-r0.public.json.gz",
+      "initial_tokens": 1302,
+      "total_tokens": 19584,
+      "tool_calls": 66,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-48-r1.public.json.gz",
+      "initial_tokens": 1302,
+      "total_tokens": 19536,
+      "tool_calls": 66,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-53-r0.public.json.gz",
+      "initial_tokens": 1127,
+      "total_tokens": 4118,
+      "tool_calls": 20,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-53-r1.public.json.gz",
+      "initial_tokens": 1127,
+      "total_tokens": 4120,
+      "tool_calls": 20,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-58-r0.public.json.gz",
+      "initial_tokens": 1421,
+      "total_tokens": 31078,
+      "tool_calls": 84,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-58-r1.public.json.gz",
+      "initial_tokens": 1421,
+      "total_tokens": 31015,
+      "tool_calls": 84,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-63-r0.public.json.gz",
+      "initial_tokens": 1261,
+      "total_tokens": 14376,
+      "tool_calls": 40,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-63-r1.public.json.gz",
+      "initial_tokens": 1261,
+      "total_tokens": 14356,
+      "tool_calls": 40,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-68-r0.public.json.gz",
+      "initial_tokens": 1215,
+      "total_tokens": 33071,
+      "tool_calls": 100,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-68-r1.public.json.gz",
+      "initial_tokens": 1215,
+      "total_tokens": 32858,
+      "tool_calls": 100,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-73-r0.public.json.gz",
+      "initial_tokens": 1354,
+      "total_tokens": 35293,
+      "tool_calls": 75,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-73-r1.public.json.gz",
+      "initial_tokens": 1354,
+      "total_tokens": 35792,
+      "tool_calls": 75,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-78-r0.public.json.gz",
+      "initial_tokens": 1382,
+      "total_tokens": 92404,
+      "tool_calls": 141,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-78-r1.public.json.gz",
+      "initial_tokens": 1382,
+      "total_tokens": 91974,
+      "tool_calls": 141,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-8-r0.public.json.gz",
+      "initial_tokens": 1442,
+      "total_tokens": 28164,
+      "tool_calls": 66,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-8-r1.public.json.gz",
+      "initial_tokens": 1442,
+      "total_tokens": 27945,
+      "tool_calls": 66,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-83-r0.public.json.gz",
+      "initial_tokens": 1200,
+      "total_tokens": 5441,
+      "tool_calls": 27,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-83-r1.public.json.gz",
+      "initial_tokens": 1200,
+      "total_tokens": 5451,
+      "tool_calls": 27,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-88-r0.public.json.gz",
+      "initial_tokens": 1301,
+      "total_tokens": 162517,
+      "tool_calls": 147,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-88-r1.public.json.gz",
+      "initial_tokens": 1301,
+      "total_tokens": 161926,
+      "tool_calls": 147,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-93-r0.public.json.gz",
+      "initial_tokens": 1464,
+      "total_tokens": 178556,
+      "tool_calls": 315,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-93-r1.public.json.gz",
+      "initial_tokens": 1464,
+      "total_tokens": 178687,
+      "tool_calls": 315,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-a-task-98-r0.public.json.gz",
+      "initial_tokens": 1302,
+      "total_tokens": 10853,
+      "tool_calls": 39,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-a-task-98-r1.public.json.gz",
+      "initial_tokens": 1302,
+      "total_tokens": 11496,
+      "tool_calls": 38,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-103-r0.public.json.gz",
+      "initial_tokens": 1291,
+      "total_tokens": 7205,
+      "tool_calls": 38,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-103-r1.public.json.gz",
+      "initial_tokens": 1291,
+      "total_tokens": 7207,
+      "tool_calls": 38,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-108-r0.public.json.gz",
+      "initial_tokens": 1167,
+      "total_tokens": 16380,
+      "tool_calls": 45,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-108-r1.public.json.gz",
+      "initial_tokens": 1167,
+      "total_tokens": 16239,
+      "tool_calls": 45,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-113-r0.public.json.gz",
+      "initial_tokens": 1387,
+      "total_tokens": 26417,
+      "tool_calls": 59,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-113-r1.public.json.gz",
+      "initial_tokens": 1387,
+      "total_tokens": 26591,
+      "tool_calls": 59,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-118-r0.public.json.gz",
+      "initial_tokens": 1479,
+      "total_tokens": 42554,
+      "tool_calls": 77,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-118-r1.public.json.gz",
+      "initial_tokens": 1479,
+      "total_tokens": 42451,
+      "tool_calls": 77,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-123-r0.public.json.gz",
+      "initial_tokens": 1345,
+      "total_tokens": 7690,
+      "tool_calls": 41,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-123-r1.public.json.gz",
+      "initial_tokens": 1345,
+      "total_tokens": 7415,
+      "tool_calls": 41,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-13-r0.public.json.gz",
+      "initial_tokens": 1482,
+      "total_tokens": 9732,
+      "tool_calls": 49,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-13-r1.public.json.gz",
+      "initial_tokens": 1482,
+      "total_tokens": 9745,
+      "tool_calls": 49,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-18-r0.public.json.gz",
+      "initial_tokens": 1284,
+      "total_tokens": 17561,
+      "tool_calls": 64,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-18-r1.public.json.gz",
+      "initial_tokens": 1284,
+      "total_tokens": 17434,
+      "tool_calls": 58,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-23-r0.public.json.gz",
+      "initial_tokens": 1362,
+      "total_tokens": 164694,
+      "tool_calls": 127,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-23-r1.public.json.gz",
+      "initial_tokens": 1362,
+      "total_tokens": 164655,
+      "tool_calls": 127,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-28-r0.public.json.gz",
+      "initial_tokens": 1377,
+      "total_tokens": 7881,
+      "tool_calls": 44,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-28-r1.public.json.gz",
+      "initial_tokens": 1377,
+      "total_tokens": 22319,
+      "tool_calls": 68,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-3-r0.public.json.gz",
+      "initial_tokens": 1362,
+      "total_tokens": 20795,
+      "tool_calls": 69,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-3-r1.public.json.gz",
+      "initial_tokens": 1362,
+      "total_tokens": 21271,
+      "tool_calls": 69,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-33-r0.public.json.gz",
+      "initial_tokens": 1473,
+      "total_tokens": 78518,
+      "tool_calls": 90,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-33-r1.public.json.gz",
+      "initial_tokens": 1473,
+      "total_tokens": 78367,
+      "tool_calls": 90,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-38-r0.public.json.gz",
+      "initial_tokens": 1272,
+      "total_tokens": 80551,
+      "tool_calls": 109,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-38-r1.public.json.gz",
+      "initial_tokens": 1272,
+      "total_tokens": 80119,
+      "tool_calls": 109,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-43-r0.public.json.gz",
+      "initial_tokens": 1371,
+      "total_tokens": 42626,
+      "tool_calls": 58,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-43-r1.public.json.gz",
+      "initial_tokens": 1371,
+      "total_tokens": 38291,
+      "tool_calls": 65,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-48-r0.public.json.gz",
+      "initial_tokens": 1413,
+      "total_tokens": 84105,
+      "tool_calls": 78,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-48-r1.public.json.gz",
+      "initial_tokens": 1413,
+      "total_tokens": 85059,
+      "tool_calls": 78,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-53-r0.public.json.gz",
+      "initial_tokens": 1397,
+      "total_tokens": 8615,
+      "tool_calls": 46,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-53-r1.public.json.gz",
+      "initial_tokens": 1397,
+      "total_tokens": 39362,
+      "tool_calls": 103,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-58-r0.public.json.gz",
+      "initial_tokens": 1215,
+      "total_tokens": 22061,
+      "tool_calls": 52,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-58-r1.public.json.gz",
+      "initial_tokens": 1215,
+      "total_tokens": 22359,
+      "tool_calls": 52,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-63-r0.public.json.gz",
+      "initial_tokens": 1359,
+      "total_tokens": 94285,
+      "tool_calls": 104,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-63-r1.public.json.gz",
+      "initial_tokens": 1359,
+      "total_tokens": 95199,
+      "tool_calls": 104,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-68-r0.public.json.gz",
+      "initial_tokens": 1343,
+      "total_tokens": 94651,
+      "tool_calls": 256,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-68-r1.public.json.gz",
+      "initial_tokens": 1343,
+      "total_tokens": 94842,
+      "tool_calls": 256,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-73-r0.public.json.gz",
+      "initial_tokens": 1455,
+      "total_tokens": 46528,
+      "tool_calls": 75,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-73-r1.public.json.gz",
+      "initial_tokens": 1455,
+      "total_tokens": 46819,
+      "tool_calls": 75,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-78-r0.public.json.gz",
+      "initial_tokens": 1288,
+      "total_tokens": 6777,
+      "tool_calls": 35,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-78-r1.public.json.gz",
+      "initial_tokens": 1288,
+      "total_tokens": 6777,
+      "tool_calls": 35,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-8-r0.public.json.gz",
+      "initial_tokens": 1417,
+      "total_tokens": 200909,
+      "tool_calls": 177,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-8-r1.public.json.gz",
+      "initial_tokens": 1417,
+      "total_tokens": 200792,
+      "tool_calls": 177,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-83-r0.public.json.gz",
+      "initial_tokens": 1227,
+      "total_tokens": 5836,
+      "tool_calls": 25,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-83-r1.public.json.gz",
+      "initial_tokens": 1227,
+      "total_tokens": 5885,
+      "tool_calls": 25,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-88-r0.public.json.gz",
+      "initial_tokens": 1419,
+      "total_tokens": 8490,
+      "tool_calls": 44,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-88-r1.public.json.gz",
+      "initial_tokens": 1419,
+      "total_tokens": 8457,
+      "tool_calls": 44,
+      "exceeds_32768": false
+    },
+    {
+      "public_file": "cohort-b-task-93-r0.public.json.gz",
+      "initial_tokens": 1416,
+      "total_tokens": 54378,
+      "tool_calls": 116,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-93-r1.public.json.gz",
+      "initial_tokens": 1416,
+      "total_tokens": 54700,
+      "tool_calls": 116,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-98-r0.public.json.gz",
+      "initial_tokens": 1295,
+      "total_tokens": 47293,
+      "tool_calls": 96,
+      "exceeds_32768": true
+    },
+    {
+      "public_file": "cohort-b-task-98-r1.public.json.gz",
+      "initial_tokens": 1295,
+      "total_tokens": 47444,
+      "tool_calls": 96,
+      "exceeds_32768": true
+    }
+  ]
+}
