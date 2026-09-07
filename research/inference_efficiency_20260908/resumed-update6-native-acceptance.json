@@ -1,0 +1,49 @@
+{
+  "time": 1788811274.6388848,
+  "source_checkpoint": "/home/chen/runs/inference-efficiency-20260908/resume-compiled-02/checkpoints/global_step_6",
+  "preserved_checkpoint": "/home/chen/runs/inference-efficiency-20260908/resumed-update6-acceptance/global_step_6",
+  "files": {
+    "data.pt": "f36af40df7960ec60b0f6913f65ebd39385a90d2513fdb2a01816f8b3149343b",
+    "actor/model_world_size_1_rank_0.pt": "d2b0c6e1edfa46fd4d6701bb320e327c0fad1b474c90b9063fb4eee22c0b832c",
+    "actor/fsdp_config.json": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f",
+    "actor/extra_state_world_size_1_rank_0.pt": "d76442a513ab3669fe209ad847fb41b078e16b03674e2a35226ab3b01079b2cc",
+    "actor/optim_world_size_1_rank_0.pt": "e160c904d2c046a5f947fbb428ece2383dff7c41df0b56a8dcbf9d2d67d872c6",
+    "actor/lora_train_meta.json": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445",
+    "actor/huggingface/chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "actor/huggingface/tokenizer_config.json": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+    "actor/huggingface/processor_config.json": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1",
+    "actor/huggingface/config.json": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7",
+    "actor/huggingface/tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+  },
+  "updates_before": 5,
+  "updates_after": 6,
+  "finite_lora_tensors": 496,
+  "lora_tensors_changed_since_step5": 496,
+  "optimizer_states_at_step6": 496,
+  "finite_optimizer_moments": 992,
+  "scheduler_last_epoch": 6,
+  "generated_batches_before": 6,
+  "generated_batches_after": 9,
+  "expected_next_rows": [
+    461,
+    178,
+    81,
+    158,
+    366,
+    437,
+    14,
+    75
+  ],
+  "restored_next_rows": [
+    461,
+    178,
+    81,
+    158,
+    366,
+    437,
+    14,
+    75
+  ],
+  "cuda_initialized": false,
+  "scope": "Read-only CPU verification of published native checkpoint after actual official GPU update. GPU loading and TIS are evidenced separately by actual worker logs; no bitwise in-memory restore claim."
+}

@@ -1,0 +1,30 @@
+{
+  "archive_sha256": "21a2245724cce10122ed1217e191a11091af7e0c0adf40b8bca5956cc242c745",
+  "archive_bytes": 247012,
+  "members": {
+    "gpu-comparison-01/common-history-details.json": "790bb47f63fbc11e3632ebde9d9c7c8aed21e45da0e0589099edb9dcc494153c",
+    "gpu-comparison-01/comparison.json": "0c8801cbe8c0fa8266f3e3c79e7414c73704dcd11e89bd123c25873950cd9232",
+    "gpu-comparison-01/timing.csv": "622a2554d0909c5668654f8b94e4ebedcbfa24d88edd4d63d77f9a8a19f658dc",
+    "gpu-comparison-01.log": "e46697eafa5b6bd57226d1f651378725f24996f49e6994671d66bbf1c9eff253",
+    "gpu-compiled-01/completion.json": "68b4ddf496644ea408fdf84e2ddf1b6122c718280fe2c74a6d36ae785badf66e",
+    "gpu-compiled-01/invocation.json": "66838f5160a7151fdb56d8eb659da96d8583f655751ac683a0aa8e4b86eda2e4",
+    "gpu-compiled-01/measurements.json": "bd54e012140a3a3480ceefdfe9d1e2c73f6dada8dc5eb7892933d44210389f74",
+    "gpu-compiled-01-process.json": "46f5c42461dcc732cef1b8265ed9449d15459c7df39a48977781ddf3946eaf95",
+    "gpu-compiled-01.log": "8425cdc1682969cf5b753b8e4a6545bc6a790e0aece03460efa6cf182885e449",
+    "gpu-eager-01/completion.json": "d2cffd96aada2abb2f73bdbba9c3faf2db5e9c0f394806048ee9e851148b269b",
+    "gpu-eager-01/invocation.json": "dbf2d1fd5afa35d54e306ad8af658c2bd7ef9fe77c22fb12ee476d88066f7799",
+    "gpu-eager-01/measurements.json": "8dde5fae8ad232d30a3ff18ed1da5eef71998f8e224a6d0ba16ed1acefef2af3",
+    "gpu-eager-01-process.json": "c06d7012688e31b542bff3993cd09955cf8123b99453f97b70da432590bb0a18",
+    "gpu-eager-01.log": "ad8bfe9b45ed1b57f76fce89e2b533d48ce44bc975aa40d8a658bcab76e72100",
+    "resumed-start-snapshot/first-task-event.json": "2f47899e60cd1ae21097c3c3c05c363e571a0f64fcdffe1deee60e31e93e9b90",
+    "resumed-start-snapshot/official-source-verification.json": "bd7da83af6347d0f01c3de1cdc13bb0a69e8ae21a8fcb91dd3bfab50eba4613b",
+    "resumed-start-snapshot/prepared.json": "88a8c78ce1216cc4ae5715ebb9e1039cfcf3d8c17831ee347d744d07bf9419da",
+    "resumed-start-snapshot/process.json": "2c95d427414e6a4b9b78f306f7fc375616bba89a22ff9301fc7ab14b84997bb1",
+    "resumed-start-snapshot/resolved.yaml": "24f6b23a8c0ee8c9743a36f7fbb85356c0a01eef141fcdcb2ba07d6e14800025",
+    "resumed-start-snapshot/status.json": "e4f548bf12e8fcd1bbaecc87cd213ba5bae8fb89286ba3c5a5dc5095bb47557b",
+    "resumed-start-snapshot/supervisor.json": "7ecef2af93e2787ac22730a0db275634d37ac79ed31086fc5842df1ca20ea7b6",
+    "resumed-start-snapshot/train.log": "29ff7d7b553197c3b58001a082d6a54c9057c8b81283cc165e6738977fa847c1",
+    "resumed-vllm-metrics-first.txt": "3df0bf9fd043aa0cf51d098f18ad5e7fbb0b561b699decc6e9f3dde670fce5b3"
+  },
+  "scope": "Completed equal-work GPU comparison and actual official native checkpoint loading/start. The resumed optimizer update and actor/rollout TIS remain to be verified."
+}

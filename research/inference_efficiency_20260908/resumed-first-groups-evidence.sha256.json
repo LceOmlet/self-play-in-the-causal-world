@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "3468699cd20632dcafd4cd5b727fb0ec3b83f6b14e26ba6c444c4c0c3b33ffaf",
+  "archive_bytes": 106382,
+  "members": {
+    "resumed-first-groups-capture.log": "129937f6fdf4f5c34e7172bdaab14f1c5fb889e631fedf79001958121a3526b3",
+    "resumed-first-groups-snapshot/environment/environment-356369.jsonl": "52e4246c233d157d1a2a77c0264c3abbc18c483096e9ad38ce7e7831ae4a3063",
+    "resumed-first-groups-snapshot/environment/environment-358842.jsonl": "4bb5c9a579a260a13e1ebc990f968a2216b416a9323b859a9a97218205974157",
+    "resumed-first-groups-snapshot/process.json": "2c95d427414e6a4b9b78f306f7fc375616bba89a22ff9301fc7ab14b84997bb1",
+    "resumed-first-groups-snapshot/progress.json": "c7337bf61c2e04d50917b52cea7b406e2e0859443edc4eaefab31fba7d9201f8",
+    "resumed-first-groups-snapshot/rollouts/6.jsonl": "f0fbe822f703d4ab1527ddbe97d0c5f944bb64153aa64b444785d131c3144d5b",
+    "resumed-first-groups-snapshot/task-runner-source.json": "e3f6ab4b17c330179a7f5f89487dc39d5c7b70c45beb5d905b9a99fdbaef9257",
+    "resumed-first-groups-snapshot/task-runner-stdout.log": "99f65679a8ffe902423a6829a6f0f620793dc7c05f98c809501d2d990de3d75a",
+    "resumed-first-groups-snapshot/train.log": "891aab003d78402a29a96df793cb70396a5ceac56bb73c8c558f2d9a7dd87d86"
+  },
+  "scope": "Read-only resumed-run prefix; filtered and in-flight groups are not optimizer updates."
+}

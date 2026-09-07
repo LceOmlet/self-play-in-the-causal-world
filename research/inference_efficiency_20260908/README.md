@@ -1,5 +1,32 @@
 Qwen3.5-9B inference configuration verification, 2026-09-08
 
+GPU comparison completed: all eight workload/cache conditions improve, by
+2.58–6.59x, with identical cached-token counts. Startup is 77.48 seconds eager
+versus 273.58 seconds compiled. Both runs completed every fixed-length request;
+the actual log records PIECEWISE and FULL graph capture. Probability equality is
+not claimed: only 7/40 request pairs have identical full outputs, and common-
+history sampled-logprob differences reach 0.47992. See
+`docs/gpu-compilation-comparison-20260908.md` and `gpu-compilation-evidence.tar.gz`.
+
+Actual official recovery has now loaded native update 5 (LoRA, optimizer, RNG,
+scheduler) in `resume-compiled-02`. Its first three observed tasks match saved
+sampler rows 496, 324 and 306. After filtering the first two groups, actual update
+6 completed on a counterfactual group: finite nonzero gradient norm 0.1225586,
+Token-TIS mean 1.0000582 and ESS fraction 0.9989741. Its 1,399.67-second step
+includes three generated groups, so it is not an equal-work speed comparison
+against the original one-group first step. Full actual update and trajectory
+evidence is in `resumed-first-groups-evidence.tar.gz` (all nine members verified).
+This is the active
+verification run; the original run stays stopped with its checkpoint preserved.
+The PNG/SVG compilation comparison was rendered and visually inspected locally.
+
+Native update 6 is additionally preserved on the server and audited in
+`resumed-update6-native-acceptance.json`: all 496 finite LoRA tensors changed
+since update 5; 496 Adam states and the scheduler are at step 6, with 992 finite
+moments. The data cursor advanced from six to nine generated batches, and the
+next eight restored rows equal the uninterrupted sampler. This is published
+checkpoint verification, not a bitwise observation of GPU memory restoration.
+
 Latest actual state (02:53): update 5 published its native checkpoint, with six
 generated batches consumed. The native file audit and eight-index sampler check
 passed; the full checkpoint was copied and hashed before the identified original

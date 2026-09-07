@@ -1,0 +1,8 @@
+{
+  "comparison_sha256": "0c8801cbe8c0fa8266f3e3c79e7414c73704dcd11e89bd123c25873950cd9232",
+  "plot_script_sha256": "3eb8340bbf5529abdb7e0a6ca6176ba0594fda2230e8658547fd946dd4f71046",
+  "files": {
+    "compilation-speed.png": "87cc8b81d0f57dd0c93e9d9caa0117b83d0d24f486344b342b37476a3e8d52b4",
+    "compilation-speed.svg": "d9118cadfb4de91e7a51f7e9a9d2bb1d49b287efaed75e4ec823a359cbd6426b"
+  }
+}
