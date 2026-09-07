@@ -1,0 +1,111 @@
+diff --git a/src/cpt_world/counterfactual_solver.py b/src/cpt_world/counterfactual_solver.py
+index ca5efc3..1c07075 100644
+--- a/src/cpt_world/counterfactual_solver.py
++++ b/src/cpt_world/counterfactual_solver.py
+@@ -3194,22 +3194,101 @@ class _SparseResponseModel:
+             ),
+         )
+ 
++    def _compile_numeric_terminal_factors(
++        self,
++    ) -> tuple[list[_SymbolicFactor], frozenset[int]] | None:
++        """Integrate shared variables absent from every unknown mechanism.
++
++        A certified terminal endpoint is already a numeric cost. Shared
++        variables read only by that cost and the shared CPTs can therefore be
++        summed out before multiplying any response kernel. The same kernel
++        variables remain shared across all surviving contexts.
++        """
++        if self.terminal_event_endpoint is None:
++            return None
++        boundary = {
++            parent
++            for node in self.mechanism_affected
++            for parent in self.world.parents[node]
++            if parent in self.shared
++        }
++        nuisance = frozenset(set(self.shared) - boundary)
++        if not nuisance:
++            return None
++        factors = [self._terminal_event_factor(), *(self._shared_factor(n) for n in self.shared)]
++        scopes = [factor.scope for factor in factors]
++        remaining = set(nuisance)
++        order = []
++        while remaining:
++            choices = []
++            for node in remaining:
++                token = (node, -1)
++                union = tuple(
++                    sorted({t for scope in scopes if token in scope for t in scope} - {token})
++                )
++                cells = int(np.prod([self.world.domains[t[0]] for t in union], dtype=object))
++                choices.append((cells, node, union))
++            _, node, union = min(choices)
++            scopes = [scope for scope in scopes if (node, -1) not in scope] + [union]
++            remaining.remove(node)
++            order.append(node)
++        unit_values = {(): 1.0}
++        unit_projection = _ProjectedFactor((), unit_values)
++        unit = _SymbolicFactor(
++            (),
++            unit_values,
++            unit_values,
++            unit_values,
++            left_projection=unit_projection,
++            right_projection=unit_projection,
++        )
++        for node in order:
++            factors = _eliminate_factor_tokens(
++                self.world,
++                self.model,
++                factors,
++                ((node, -1),),
++                unit,
++                outcome=self.outcome,
++                outcome_state=self.outcome_state,
++                outcome_events=self.outcome_events,
++                auxiliary_values=self.auxiliary_values,
++                probability_message_bounds=self.probability_message_bounds,
++                projected_message_bounds=self.projected_message_bounds,
++                projected_bound_diagnostics=self.projected_bound_diagnostics,
++            )
++        return factors, nuisance
++
+     def _build_twin_probability(self) -> tuple[Any, float]:
++        compiled = self._compile_numeric_terminal_factors()
+         factors = (
+-            [self._terminal_event_factor()]
+-            if self.terminal_event_endpoint is not None
+-            else []
++            [self._terminal_event_factor()] if self.terminal_event_endpoint is not None else []
+         )
++        eliminated_shared: frozenset[int] = frozenset()
++        if compiled is not None:
++            factors, eliminated_shared = compiled
+         relevant = set(self.shared) | set(self.mechanism_affected)
+         for node in reversed(_topological_order(self.world)):
+-            if node not in relevant:
++            if node not in relevant or node in eliminated_shared:
+                 continue
+             if node in self.affected:
+                 tokens = ((node, 0), (node, 1))
+                 local_factor = self._affected_factor(node)
+             else:
+                 tokens = ((node, -1),)
+-                local_factor = self._shared_factor(node)
++                if compiled is None:
++                    local_factor = self._shared_factor(node)
++                else:
++                    unit_values = {(): 1.0}
++                    projection = _ProjectedFactor((), unit_values)
++                    local_factor = _SymbolicFactor(
++                        (),
++                        unit_values,
++                        unit_values,
++                        unit_values,
++                        left_projection=projection,
++                        right_projection=projection,
++                    )
+             factors = _eliminate_factor_tokens(
+                 self.world,
+                 self.model,

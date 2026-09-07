@@ -1,0 +1,10 @@
+{
+  "candidate_mathematical_and_core_checks_passed": true,
+  "frozen_tasks_verified": 74,
+  "new_certified_tasks": 0,
+  "production_integration": false,
+  "reason": "No certification gain and mixed, repeatable end-to-end cost changes. Preserve the proven numeric reduction for further work.",
+  "production_src_and_tests_unchanged": true,
+  "training_started": false,
+  "goal_complete": false
+}

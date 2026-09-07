@@ -1,0 +1,3013 @@
+{
+  "complete": true,
+  "base_commit": "95b84544f70aabdca74d73de3523e29e50549354",
+  "compared": 74,
+  "before_counts": {
+    "ok": 51,
+    "timeout": 9,
+    "RuntimeError": 14
+  },
+  "after_counts": {
+    "ok": 51,
+    "timeout": 9,
+    "RuntimeError": 14
+  },
+  "regressions": [],
+  "endpoint_mismatches": [],
+  "newly_closed": [],
+  "candidate_source_sha256": "b73d9d91111a7c35d72b78314c96e823cdf521da9ffe43c82b3a7e230319e80d",
+  "inputs_sha256": {
+    "0": "14462b431855936e5037a776f737612e9734503c4b6c292f3fca91aabbfd2a4c",
+    "1": "9e4a8c18bdce6edc90a2f2682c7cb85056373e5f24d9dc5250c68c69df60ece7",
+    "2": "d2349f227bf65757d2ec70cc0a35fb602d3b2d532cca789df450fd54d4feefd6",
+    "3": "afe2a517dcf31df4f6853c837b17596819144e5159bd2d999c77b873d9eae2dd",
+    "4": "6bb1b708512812adec0532e907c9d3cd5b704945f30b8aac13a5f1d7a468517f",
+    "5": "bd4d8e9d669a4060ae1ce0b0f3bf707f39c399946c828af0996e9a02b1232488",
+    "6": "1b2e1ebe4a15595e2a172e7b3f08e2a833f5249732930027a8cbde1a97a5fd1a",
+    "7": "0a5ac0f46a01b4f618825d136cf7025ce3d5053759776b7953e4a1f5d9015b03",
+    "8": "f462ad92bfad873cc091930a0db2f0f36d97f9f65317cdf6a570716623b84c8e",
+    "9": "203ddae46b527c66098bc8e4cc3a58efa2ed6e7ea820eaf0be2cc58dbaa030c3",
+    "10": "afb69e1a5ffbaa7aef8f02d21be0ba54f337884f8f4d0747b18ab1974d019dc4",
+    "11": "3ed7fb24b76540105f08a05e49db5e86196b11914cb8763a0b5177ab95bffbe5",
+    "12": "bc62bc8709d3fb0a0c7d73d5872eaf7c7d18ca7dd707492676c29e071c5d3661",
+    "13": "d7f9ab943cde5a285870f87928a1ad08262bf2fbd98dc17fc256e1f5a31d042c",
+    "14": "7df7de7e31e001738dfa11627a91cdf75781d6cfb6fa72e2a3ef6f16fd0846cf",
+    "15": "a8459aa05c736c96ba4ff55be123936d7f4f9a0f86ad86b49ff0ce316f8a72ad",
+    "16": "c0834cd0ba03b1044a4dd07e32b55926635b9e47546352e9c152f1ebf16baf88",
+    "17": "1980b8e7188f53caf0fd5e0ce655add460f571c0bcf49928829bbf7446ffdfcd",
+    "18": "bc3d11f64702f447113b49b779159454c53c3a865f83dc8cecc0d12ec7287ca1",
+    "19": "8d3747923bfbe11ba9ce3385bdb1d515e657befc8d626a20789ccab7120d1b82",
+    "20": "fc9f8cbf9a68a87e15721c76723c5c7d9438daa4db332513297a03b1e0ec0af5",
+    "21": "7918b41923b079d41cb3c8b90eab4fa8d31bf6755f3f62c39d7400a7c592a21d",
+    "22": "3184c310d516c70b047732fc38b6adaee00adb429d84b190e0f180605b6da8c5",
+    "23": "78449e172a23e70adc681449ff268081d7fca39e7372d5cde57d86058ab0bb2d",
+    "24": "8b32acd1953f5a7d1477b07f6add7761ea6fc5c1beab91e793d9c259b32357f6",
+    "25": "dbe9ad4e91c5636a54c9a983b6f55ff0d4581ee557d752a90d627d64e91bc562",
+    "26": "1d34af40595416ee8c570a22dc5e047fbe63167ac76bb07b95fa5014d44a57f4",
+    "27": "c967274b6b4fb117bc73f56188f54b6397925053f6800a997a98e2c4cb6379a4",
+    "28": "8ffa47b1fe719e16da5b0a077e6bf790cfcd0c994357c5d5f37195011df48679",
+    "29": "0b5b297b3f4eebea24de73e528dd2dd498565c4a74e57b3b24eda6e47c7f9c91",
+    "30": "b33356b306b11b4d33828d9a2d559cb2478b52cbb3bfe2f449444a5bad38ad27",
+    "31": "82934b42083d220618aba364d5077946319a1f13a7cc7c548999caf9046a2c35",
+    "32": "8dde1e79ce3ad7e15d833530b7234a3a8fd6bfcc3d477d9d3a4bc7a37977bbee",
+    "33": "092a51ed3c12df6bd365498ef51a72fdc09580b8c408f81a2648021370f2f452",
+    "34": "4a7cc329b1363e93e049253672d130b464680afcbc34ad90d34081ed4fa72fbd",
+    "35": "2ac2a6c6749d2ffee34f5d9bedf6b342ccb19d4c9910d1605e28b26233dea66e",
+    "36": "87f4ea52c62a932704cdcea17016c4c64712068378f2304f44f0d3e0ae2e9974",
+    "37": "edf3eea4b3eb6fd9e6a925514cac5814207988d4a3121a3ed261bf4e6075e8ed",
+    "38": "7cc522d23419471544475fecb56d10243eed5d059bb8c652bcba1cef1af253e1",
+    "39": "18344ce1405f93c09d4fca58010f94f5b8628041f183e7022b0d451e8048852d",
+    "40": "2aba27494f90960108100eecdda6baac073e820a53082138d7d29bcc6632bdee",
+    "41": "282b172d1a11b3af155f4647e96c0fac75194b9cc80aa1aeca316d5d1b87343d",
+    "42": "abc92a4341ad17af98cbf9e2b8a986690f108ced4d448931f63b5b0ec5b59ab9",
+    "43": "eb9ab83255c4aa7f4fa5880709ebb2726ff65c8c79cd87be88219d359ec96c3f",
+    "44": "f2f9ee462b3c536eea632ef65fb2362465852b88efec960c3db9021a2d45c5c0",
+    "45": "18e17bef54cfebc18cb00146ae9f7342e4837023c59130d5cc8a77eb90e24d53",
+    "46": "8aa4a2e929cff64060235b9d05f8404ea2c84ad0116c9fb3d44b22892f8a2342",
+    "47": "aee70b68ffd45e77e0e54385b4c7ca8784d2d9022be16f20dc1abe2fb3c01d3f",
+    "48": "9772616b9bd9e1efdf2ecb27b76d3f150ea7c0e6f4300f7762a39bf286cdeeeb",
+    "49": "05e17b3f0f4c993bb19d9079145adab8c75acbbcecaeded43170593cd355673c",
+    "50": "ec7f4679049bad156e19e25ad34c143c0e7d6044d56ae380e79139bb7cc78bef",
+    "51": "4a1b4bb88918e568770ae402a396dcab345acf389deca6176920890c34618a0c",
+    "52": "94d382c6b6407787c7c3cea79e933e083ab2a805d3645fa4ed84b5edf7d7b3ec",
+    "53": "d901f994c6ed83804736fe560526adf763801f06efb4306130c6aa3a8662b6d1",
+    "54": "7d8e824a4754e16b4e4e417c95685e816f8a13cecd2a5c9f0cb3774a3f52bb69",
+    "55": "e3968c297a28c20b2d32fcdf211bafae4480f426051ff617ae2504e602382b70",
+    "56": "96b73822d8e1d09b5861bf9666b54253d526fe07f6c61903c938c19aae4cdae0",
+    "57": "a6242cf93acfa638656bf8c2ce687f7e271c8a9c1ecb6ca7e88ff88b3a4d6a35",
+    "58": "46ae609acf9f854a2482f82452e55018038b4ef083c144987f046080aba79628",
+    "59": "1872eeeaa144e8a7b7b4ee2c62bcafe84bad11d222101f2f07da0c5a011b0c1c",
+    "60": "8b0db4786b1502e51a078df7cba58f22107572718f202d6b63c1979f22140cfa",
+    "61": "c9a4561d3c73dd98d5299d5f53677b0fa36ffd605e52c6a237d3ddfbc7878cbb",
+    "62": "c621ba0aa470eb2cd8fb27a37d00c13280f4261620906374557f2cb9f78fdd85",
+    "63": "72cee352219dbb84e885bceba94de7c9b35eaf9f672a08015659e897b1e13ba3",
+    "64": "085c3fe30029d801f005f33575f4bb385dc2edf3678395064dbf71adcc66b54f",
+    "65": "0818d80ac9c700325f9a1979f09963738dbf7f73b9d4a5f305238f74228241bc",
+    "66": "bad56ceab962898916dc9b94965424f85223bc02ce7d5edf8be4d2f13aacd232",
+    "67": "cc504e6b0395dd354edc4976f3b88ef9b4cbafae16907e2150d4b4f0fd547bbf",
+    "68": "0b8dcfe07f1db5d0657ea84e884768bba1520cd740b5f32264a9eb9e39639762",
+    "69": "804d1bd4d815b359935d933abc557950514949dacc8a7253206eeda56a1a3bb7",
+    "70": "e20c5a435fc4b0db7a9cec6463526e636990c4d096242c7eac6cce1793b7e5e7",
+    "71": "fc1e583d5ba6d9a753627cc11748d01dfca20ace8ec0eb43044ab4ff85504c03",
+    "72": "dee1dfbc8583dc33c7cd9cbc3706e31e8f11858edfa140f0a1ec79d70ea00d8a",
+    "73": "63f790bca7eec94637753d1fbc5d670aed0b05729973fb61bc1de256bb78a657"
+  },
+  "records": [
+    {
+      "index": 0,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.1468070207002623,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25219723500777036,
+        "rss_kib": 42724,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.1468070207002623,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30331919505260885,
+        "rss_kib": 44968,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 1,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.064486474031582,
+        "rss_kib": 395584,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.064564403961413,
+        "rss_kib": 184480,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0.869750365964137,
+        "error": null
+      }
+    },
+    {
+      "index": 2,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.097955152974464,
+        "rss_kib": 620208,
+        "models_built": 1,
+        "max_variables": 45077,
+        "max_auxiliaries": 5696,
+        "model_build_seconds": 4.041256467928179,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.100294810021296,
+        "rss_kib": 619368,
+        "models_built": 1,
+        "max_variables": 45037,
+        "max_auxiliaries": 5656,
+        "model_build_seconds": 3.883712899987586,
+        "numeric_compilation_seconds": 0.0034094740403816104,
+        "error": null
+      }
+    },
+    {
+      "index": 3,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7787083784635989,
+          "upper": 0.929789423529014,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25256558309774846,
+        "rss_kib": 42640,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7787083784635989,
+          "upper": 0.929789423529014,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25266143202316016,
+        "rss_kib": 43924,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 4,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.992835127937891,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20237131498288363,
+        "rss_kib": 42836,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.992835127937891,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30215452308766544,
+        "rss_kib": 44812,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 5,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0008690386934477794,
+          "upper": 0.0446044232139271,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20236178499180824,
+        "rss_kib": 42920,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0008690386934477794,
+          "upper": 0.0446044232139271,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2529297700384632,
+        "rss_kib": 44616,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 6,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.063631657976657,
+        "rss_kib": 315328,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.061977833975106,
+        "rss_kib": 311968,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 9.862100705504417e-05,
+        "error": null
+      }
+    },
+    {
+      "index": 7,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.023942061163552963,
+          "upper": 0.12194139004755591,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 3.8220744538434e-05,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.28903101303149,
+        "rss_kib": 88180,
+        "models_built": 2,
+        "max_variables": 355,
+        "max_auxiliaries": 105,
+        "model_build_seconds": 0.04670152300968766,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.023942061163552963,
+          "upper": 0.12194039514005545,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 3.7225837037959165e-05,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.3399679199792445,
+        "rss_kib": 88384,
+        "models_built": 2,
+        "max_variables": 355,
+        "max_auxiliaries": 105,
+        "model_build_seconds": 0.03762576007284224,
+        "numeric_compilation_seconds": 0.0017761769704520702,
+        "error": null
+      },
+      "endpoint_difference": 9.949075004678232e-07,
+      "endpoint_allowance": 7.545658157639317e-05
+    },
+    {
+      "index": 8,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 6.6490184860304,
+        "rss_kib": 109920,
+        "models_built": 1,
+        "max_variables": 1673,
+        "max_auxiliaries": 121,
+        "model_build_seconds": 0.13301278091967106,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.0023305235669207197, dual=0.0013346773712538406"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 6.700392640079372,
+        "rss_kib": 110032,
+        "models_built": 1,
+        "max_variables": 1673,
+        "max_auxiliaries": 121,
+        "model_build_seconds": 0.12496667704544961,
+        "numeric_compilation_seconds": 7.041404023766518e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.0023305235669207197, dual=0.0013346773712538406"
+      }
+    },
+    {
+      "index": 9,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.097428306937218,
+        "rss_kib": 451840,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.09737066901289,
+        "rss_kib": 454400,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 4.271103534847498e-05,
+        "error": null
+      }
+    },
+    {
+      "index": 10,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.2901806810405105,
+        "rss_kib": 95176,
+        "models_built": 1,
+        "max_variables": 490,
+        "max_auxiliaries": 97,
+        "model_build_seconds": 0.04351757699623704,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=maximize, primal=3.649242012035223e-11, dual=0.2014052793508773"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.391536134062335,
+        "rss_kib": 95508,
+        "models_built": 1,
+        "max_variables": 490,
+        "max_auxiliaries": 97,
+        "model_build_seconds": 0.041212565964087844,
+        "numeric_compilation_seconds": 4.790897946804762e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=maximize, primal=3.649242012035223e-11, dual=0.2014052793508773"
+      }
+    },
+    {
+      "index": 11,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.2454867506247344,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2527106840861961,
+        "rss_kib": 44588,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.2454867506247344,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3028559349477291,
+        "rss_kib": 44148,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 12,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.063579011010006,
+        "rss_kib": 366116,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.045572704984806,
+        "rss_kib": 124436,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      }
+    },
+    {
+      "index": 13,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.098372373962775,
+        "rss_kib": 788896,
+        "models_built": 2,
+        "max_variables": 10644,
+        "max_auxiliaries": 5345,
+        "model_build_seconds": 3.6061146488646045,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.149018007097766,
+        "rss_kib": 789068,
+        "models_built": 2,
+        "max_variables": 10644,
+        "max_auxiliaries": 5345,
+        "model_build_seconds": 3.505955914966762,
+        "numeric_compilation_seconds": 9.668082930147648e-05,
+        "error": null
+      }
+    },
+    {
+      "index": 14,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.553164405272091,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 0.00033521008829974876,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 7.559701177990064,
+        "rss_kib": 307660,
+        "models_built": 2,
+        "max_variables": 5463,
+        "max_auxiliaries": 2818,
+        "model_build_seconds": 1.9573230820242316,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.5532740204692312,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 0.00044482528543998457,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 7.860523415030912,
+        "rss_kib": 266172,
+        "models_built": 2,
+        "max_variables": 5325,
+        "max_auxiliaries": 2680,
+        "model_build_seconds": 2.2682299750158563,
+        "numeric_compilation_seconds": 0.561376171070151,
+        "error": null
+      },
+      "endpoint_difference": 0.00010961519714025592,
+      "endpoint_allowance": 0.0007800453737397333
+    },
+    {
+      "index": 15,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.252798771020025,
+        "rss_kib": 42644,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2526829370763153,
+        "rss_kib": 43892,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 16,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.08842915933871784,
+          "upper": 0.3128945115277868,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.8571988859912381,
+        "rss_kib": 105048,
+        "models_built": 2,
+        "max_variables": 1403,
+        "max_auxiliaries": 1281,
+        "model_build_seconds": 0.3833497210871428,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.08842915919558533,
+          "upper": 0.3128945115278937,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.107907944940962,
+        "rss_kib": 93988,
+        "models_built": 2,
+        "max_variables": 755,
+        "max_auxiliaries": 633,
+        "model_build_seconds": 0.31197300006169826,
+        "numeric_compilation_seconds": 0.1461433790391311,
+        "error": null
+      },
+      "endpoint_difference": 1.4313250584763182e-10,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 17,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.05278021540042705,
+          "upper": 0.31935749614189507,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5051221830071881,
+        "rss_kib": 136680,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.05278021540042705,
+          "upper": 0.31935749614189507,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5546996520133689,
+        "rss_kib": 137076,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 18,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20236149593256414,
+        "rss_kib": 42852,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25296329497359693,
+        "rss_kib": 43324,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 19,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.339721814030781,
+        "rss_kib": 117240,
+        "models_built": 1,
+        "max_variables": 1214,
+        "max_auxiliaries": 493,
+        "model_build_seconds": 0.09203503292519599,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.19206948885079647, dual=0.19177666893597822"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.440850468003191,
+        "rss_kib": 117556,
+        "models_built": 1,
+        "max_variables": 1214,
+        "max_auxiliaries": 493,
+        "model_build_seconds": 0.09424812893848866,
+        "numeric_compilation_seconds": 3.9650010876357555e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.19206948885079647, dual=0.19177666893597822"
+      }
+    },
+    {
+      "index": 20,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.07396451078138687,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.252960474928841,
+        "rss_kib": 46000,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.07396451078138687,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3027640040963888,
+        "rss_kib": 46068,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 21,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0007066879911624899,
+          "upper": 0.011352615536126667,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2528246350120753,
+        "rss_kib": 44644,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0007066879911624899,
+          "upper": 0.011352615536126667,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3029980899300426,
+        "rss_kib": 44976,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 22,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7628962904389378,
+          "upper": 0.8687708936364078,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25288266595453024,
+        "rss_kib": 59652,
+        "models_built": 2,
+        "max_variables": 142,
+        "max_auxiliaries": 13,
+        "model_build_seconds": 0.02157658094074577,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7628962904389378,
+          "upper": 0.8687708936364078,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.35311588807962835,
+        "rss_kib": 61676,
+        "models_built": 2,
+        "max_variables": 142,
+        "max_auxiliaries": 13,
+        "model_build_seconds": 0.021562027977779508,
+        "numeric_compilation_seconds": 0.00013555993791669607,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 23,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.09186425814970918,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20236165798269212,
+        "rss_kib": 42804,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.09186425814970918,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3034096519695595,
+        "rss_kib": 45180,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 24,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1026494203087426,
+          "upper": 0.2526769671296099,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25283452204894274,
+        "rss_kib": 49380,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1026494203087426,
+          "upper": 0.2526769671296099,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3034323190804571,
+        "rss_kib": 49276,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 25,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.5946151399931944,
+          "upper": 0.8936986990567354,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 3.174432878033258,
+        "rss_kib": 81484,
+        "models_built": 12,
+        "max_variables": 282,
+        "max_auxiliaries": 91,
+        "model_build_seconds": 0.21501969173550606,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.5946151399931944,
+          "upper": 0.8936986990567354,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 3.224930456955917,
+        "rss_kib": 82600,
+        "models_built": 12,
+        "max_variables": 282,
+        "max_auxiliaries": 91,
+        "model_build_seconds": 0.20790754375047982,
+        "numeric_compilation_seconds": 0.038229637197218835,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 26,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.19695836544366627,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25269872101489455,
+        "rss_kib": 44680,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.19695836544366627,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2529058939544484,
+        "rss_kib": 43196,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 27,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.011418657108515315,
+          "upper": 0.22794255911955125,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.7069944470422342,
+        "rss_kib": 194004,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.011418657108515315,
+          "upper": 0.22794255911955125,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.7568864449858665,
+        "rss_kib": 194260,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 28,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 6.0450172000564635,
+        "rss_kib": 88668,
+        "models_built": 2,
+        "max_variables": 254,
+        "max_auxiliaries": 97,
+        "model_build_seconds": 0.04583805298898369,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.14149071910982502, dual=0.14794416710419644"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.642650651047006,
+        "rss_kib": 87432,
+        "models_built": 2,
+        "max_variables": 254,
+        "max_auxiliaries": 97,
+        "model_build_seconds": 0.04235059500206262,
+        "numeric_compilation_seconds": 0.0009808649774640799,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.14149071910982502, dual=0.14794416710419644"
+      }
+    },
+    {
+      "index": 29,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.09881705030943105,
+          "upper": 0.357080650346488,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 3.324903163011186,
+        "rss_kib": 75212,
+        "models_built": 2,
+        "max_variables": 202,
+        "max_auxiliaries": 53,
+        "model_build_seconds": 0.026747307972982526,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.09881705030943105,
+          "upper": 0.357080650346488,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 3.7271173229673877,
+        "rss_kib": 75404,
+        "models_built": 2,
+        "max_variables": 202,
+        "max_auxiliaries": 53,
+        "model_build_seconds": 0.03148520609829575,
+        "numeric_compilation_seconds": 0.0023813260486349463,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 30,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.289174708072096,
+        "rss_kib": 82356,
+        "models_built": 1,
+        "max_variables": 279,
+        "max_auxiliaries": 123,
+        "model_build_seconds": 0.02452024503145367,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.006144294939227638, dual=0.013095595162205204"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.339829821954481,
+        "rss_kib": 82780,
+        "models_built": 1,
+        "max_variables": 279,
+        "max_auxiliaries": 123,
+        "model_build_seconds": 0.023436299059540033,
+        "numeric_compilation_seconds": 4.2158993892371655e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.006144294939227638, dual=0.013095595162205204"
+      }
+    },
+    {
+      "index": 31,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.706122156110674,
+          "upper": 0.81378650068687,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25242739904206246,
+        "rss_kib": 44748,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.706122156110674,
+          "upper": 0.81378650068687,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3025637810351327,
+        "rss_kib": 44376,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 32,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.3144850836784472,
+          "upper": 0.8777681656468268,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 7.945723338313959e-05,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.276512488955632,
+        "rss_kib": 80068,
+        "models_built": 1,
+        "max_variables": 161,
+        "max_auxiliaries": 56,
+        "model_build_seconds": 0.017389490036293864,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.31456231711475313,
+          "upper": 0.8777681656468268,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 2.2237970771767975e-06,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.288238362991251,
+        "rss_kib": 80656,
+        "models_built": 1,
+        "max_variables": 161,
+        "max_auxiliaries": 56,
+        "model_build_seconds": 0.016594539978541434,
+        "numeric_compilation_seconds": 4.398799501359463e-05,
+        "error": null
+      },
+      "endpoint_difference": 7.72334363059457e-05,
+      "endpoint_allowance": 8.169103046031639e-05
+    },
+    {
+      "index": 33,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.339788061915897,
+        "rss_kib": 111344,
+        "models_built": 1,
+        "max_variables": 1135,
+        "max_auxiliaries": 769,
+        "model_build_seconds": 0.08008567697834224,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.010159861721431098, dual=0.00392226864887093"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.391111792996526,
+        "rss_kib": 111512,
+        "models_built": 1,
+        "max_variables": 1135,
+        "max_auxiliaries": 769,
+        "model_build_seconds": 0.08601058798376471,
+        "numeric_compilation_seconds": 4.334794357419014e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.010159861721431098, dual=0.00392226864887093"
+      }
+    },
+    {
+      "index": 34,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 6.404135855962522,
+        "rss_kib": 284936,
+        "models_built": 1,
+        "max_variables": 8598,
+        "max_auxiliaries": 8021,
+        "model_build_seconds": 0.9974658620776609,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.6496388398166058, dual=0.5372854031767081"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 6.504346103989519,
+        "rss_kib": 282272,
+        "models_built": 1,
+        "max_variables": 8598,
+        "max_auxiliaries": 8021,
+        "model_build_seconds": 0.9984577179420739,
+        "numeric_compilation_seconds": 5.6548044085502625e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.6496388398166058, dual=0.5372854031767081"
+      }
+    },
+    {
+      "index": 35,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.319138323941751,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20236764510627836,
+        "rss_kib": 42760,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.319138323941751,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25314540893305093,
+        "rss_kib": 44620,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 36,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.5087640829248959,
+          "upper": 0.6265817469349998,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25281418894883245,
+        "rss_kib": 44740,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.5087640829248959,
+          "upper": 0.6265817469349998,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25261193001642823,
+        "rss_kib": 44752,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 37,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6491803483824741,
+          "upper": 0.6650252707125185,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2526935280766338,
+        "rss_kib": 42756,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6491803483824741,
+          "upper": 0.6650252707125185,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30293210910167545,
+        "rss_kib": 45056,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 38,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.13625412855961005,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25284812797326595,
+        "rss_kib": 45228,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.13625412855961005,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30255840299651027,
+        "rss_kib": 44840,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 39,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.063031557947397,
+        "rss_kib": 285996,
+        "models_built": 2,
+        "max_variables": 2764,
+        "max_auxiliaries": 1275,
+        "model_build_seconds": 0.5758608840405941,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.064398608054034,
+        "rss_kib": 230824,
+        "models_built": 2,
+        "max_variables": 2764,
+        "max_auxiliaries": 1275,
+        "model_build_seconds": 0.37893137300852686,
+        "numeric_compilation_seconds": 0.0009173169964924455,
+        "error": null
+      }
+    },
+    {
+      "index": 40,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.16332877430880696,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25281855498906225,
+        "rss_kib": 44572,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.16332877430880696,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30271071603056043,
+        "rss_kib": 44212,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 41,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.02945119333856172,
+          "upper": 0.23426886476906836,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25289517897181213,
+        "rss_kib": 59408,
+        "models_built": 2,
+        "max_variables": 22,
+        "max_auxiliaries": 3,
+        "model_build_seconds": 0.014230986125767231,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.02945119333856172,
+          "upper": 0.23426886476906836,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30274562595877796,
+        "rss_kib": 53076,
+        "models_built": 2,
+        "max_variables": 22,
+        "max_auxiliaries": 3,
+        "model_build_seconds": 0.014791263034567237,
+        "numeric_compilation_seconds": 0.003435007994994521,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 42,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.28852169692982,
+        "rss_kib": 86284,
+        "models_built": 2,
+        "max_variables": 702,
+        "max_auxiliaries": 304,
+        "model_build_seconds": 0.051093522110022604,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.1986449820624593, dual=0.20362435867336107"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.389462764025666,
+        "rss_kib": 86540,
+        "models_built": 2,
+        "max_variables": 702,
+        "max_auxiliaries": 304,
+        "model_build_seconds": 0.050429480033926666,
+        "numeric_compilation_seconds": 0.0051923299906775355,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.1986449820624593, dual=0.20362435867336107"
+      }
+    },
+    {
+      "index": 43,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.046818508999422,
+        "rss_kib": 182636,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.098018583026715,
+        "rss_kib": 383852,
+        "models_built": 1,
+        "max_variables": 28605,
+        "max_auxiliaries": 8816,
+        "model_build_seconds": 3.4227740480564535,
+        "numeric_compilation_seconds": 0.8745313009712845,
+        "error": null
+      }
+    },
+    {
+      "index": 44,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.09947900529297928,
+          "upper": 0.1453001088168249,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2527649779804051,
+        "rss_kib": 44632,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.09947900529297928,
+          "upper": 0.1453001088168249,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25276509299874306,
+        "rss_kib": 43348,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 45,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.14016293100855048,
+          "upper": 0.16668198706085402,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2023028980474919,
+        "rss_kib": 42848,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.14016293100855048,
+          "upper": 0.16668198706085402,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3027493980480358,
+        "rss_kib": 44592,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 46,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.2681157088716053,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5046429330250248,
+        "rss_kib": 69640,
+        "models_built": 2,
+        "max_variables": 129,
+        "max_auxiliaries": 49,
+        "model_build_seconds": 0.017717914073728025,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.2681157088716053,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.554574629990384,
+        "rss_kib": 69952,
+        "models_built": 2,
+        "max_variables": 129,
+        "max_auxiliaries": 49,
+        "model_build_seconds": 0.018526131054386497,
+        "numeric_compilation_seconds": 0.001014669076539576,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 47,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.05246235255599181,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25287022604607046,
+        "rss_kib": 42664,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.05246235255599181,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2530409520259127,
+        "rss_kib": 44772,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 48,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7002873148744562,
+          "upper": 0.8746351303507177,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.1101836150046438,
+        "rss_kib": 304776,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7002873148744562,
+          "upper": 0.8746351303507177,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.160613689920865,
+        "rss_kib": 305388,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 49,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6245605066509129,
+          "upper": 0.6355786380551807,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2024530239868909,
+        "rss_kib": 42704,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6245605066509129,
+          "upper": 0.6355786380551807,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25255967304110527,
+        "rss_kib": 44780,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 50,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.945974973961711,
+        "rss_kib": 200744,
+        "models_built": 2,
+        "max_variables": 1527,
+        "max_auxiliaries": 786,
+        "model_build_seconds": 0.39047760504763573,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.026766979537492016, dual=0.03169380706881465"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.745789319975302,
+        "rss_kib": 198580,
+        "models_built": 2,
+        "max_variables": 1527,
+        "max_auxiliaries": 786,
+        "model_build_seconds": 0.3730917649809271,
+        "numeric_compilation_seconds": 0.1334645600290969,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.026766979537492016, dual=0.03169380706881465"
+      }
+    },
+    {
+      "index": 51,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0005634841430499011,
+          "upper": 0.1962390811170222,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25281926803290844,
+        "rss_kib": 44576,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0005634841430499011,
+          "upper": 0.1962390811170222,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3026724240044132,
+        "rss_kib": 44232,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 52,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.9150183870347752,
+          "upper": 0.9985845269388668,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25258934998419136,
+        "rss_kib": 58932,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.9150183870347752,
+          "upper": 0.9985845269388668,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3527101690415293,
+        "rss_kib": 44256,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 53,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.18554603916500517,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3032645219936967,
+        "rss_kib": 61468,
+        "models_built": 2,
+        "max_variables": 182,
+        "max_auxiliaries": 101,
+        "model_build_seconds": 0.045956492074765265,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.18554603916500514,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3033706919522956,
+        "rss_kib": 60152,
+        "models_built": 2,
+        "max_variables": 106,
+        "max_auxiliaries": 25,
+        "model_build_seconds": 0.036011610995046794,
+        "numeric_compilation_seconds": 0.014526883023791015,
+        "error": null
+      },
+      "endpoint_difference": 2.7755575615628914e-17,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 54,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.0051117355527650725,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2527621480403468,
+        "rss_kib": 42644,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.0051117355527650725,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25318810902535915,
+        "rss_kib": 44668,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 55,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.2754378082619519,
+          "upper": 0.6600586246960097,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25288722792174667,
+        "rss_kib": 45460,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.2754378082619519,
+          "upper": 0.6600586246960097,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2525689259637147,
+        "rss_kib": 43052,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 56,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.15218354674831291,
+          "upper": 0.15615259348069987,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2528978089103475,
+        "rss_kib": 46176,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.15218354674831291,
+          "upper": 0.15615259348069987,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3029383700340986,
+        "rss_kib": 46444,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 57,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.016457291779361435,
+          "upper": 0.1729450909900568,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3535737410420552,
+        "rss_kib": 72828,
+        "models_built": 2,
+        "max_variables": 228,
+        "max_auxiliaries": 50,
+        "model_build_seconds": 0.027062998968176544,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.016457291779361432,
+          "upper": 0.1729450909900568,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3541211320552975,
+        "rss_kib": 73140,
+        "models_built": 2,
+        "max_variables": 228,
+        "max_auxiliaries": 50,
+        "model_build_seconds": 0.025670665898360312,
+        "numeric_compilation_seconds": 0.003508474910631776,
+        "error": null
+      },
+      "endpoint_difference": 3.469446951953614e-18,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 58,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.4874038220072205,
+          "upper": 0.5674645480089232,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 0.0006815794348480887,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 10.627420583041385,
+        "rss_kib": 144852,
+        "models_built": 2,
+        "max_variables": 952,
+        "max_auxiliaries": 651,
+        "model_build_seconds": 0.20125376782380044,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.4874038220072205,
+          "upper": 0.5674645480089232,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 0.0006815794348480887,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 10.578850449994206,
+        "rss_kib": 145692,
+        "models_built": 2,
+        "max_variables": 952,
+        "max_auxiliaries": 651,
+        "model_build_seconds": 0.20416592399124056,
+        "numeric_compilation_seconds": 8.698005694895983e-05,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 0.0013631688696961774
+    },
+    {
+      "index": 59,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.846833171905018,
+        "rss_kib": 156108,
+        "models_built": 2,
+        "max_variables": 2291,
+        "max_auxiliaries": 255,
+        "model_build_seconds": 0.3151198719860986,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.0, dual=1e+20"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.898397141019814,
+        "rss_kib": 156516,
+        "models_built": 2,
+        "max_variables": 2291,
+        "max_auxiliaries": 255,
+        "model_build_seconds": 0.31845588400028646,
+        "numeric_compilation_seconds": 8.688110392540693e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.0, dual=1e+20"
+      }
+    },
+    {
+      "index": 60,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.38920578896068,
+        "rss_kib": 115728,
+        "models_built": 1,
+        "max_variables": 925,
+        "max_auxiliaries": 118,
+        "model_build_seconds": 0.0689505550544709,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.21260614824144297, dual=0.09520621171902699"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.491247114958242,
+        "rss_kib": 114508,
+        "models_built": 1,
+        "max_variables": 925,
+        "max_auxiliaries": 118,
+        "model_build_seconds": 0.07109695300459862,
+        "numeric_compilation_seconds": 3.789400216192007e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.21260614824144297, dual=0.09520621171902699"
+      }
+    },
+    {
+      "index": 61,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 9.315418601967394,
+        "rss_kib": 521920,
+        "models_built": 2,
+        "max_variables": 7927,
+        "max_auxiliaries": 5318,
+        "model_build_seconds": 3.2151030499953777,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.009724806905472236, dual=0.0885483925017877"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 8.5235154699767,
+        "rss_kib": 471068,
+        "models_built": 2,
+        "max_variables": 7927,
+        "max_auxiliaries": 5318,
+        "model_build_seconds": 2.7320459799375385,
+        "numeric_compilation_seconds": 1.0929040778428316,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.009724806905472236, dual=0.0885483925017877"
+      }
+    },
+    {
+      "index": 62,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.23435390479780494,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2521566239884123,
+        "rss_kib": 44540,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.23435390479780494,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30323297798167914,
+        "rss_kib": 44804,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 63,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.2740870310899435,
+          "upper": 0.4972715136793546,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25255557789932936,
+        "rss_kib": 44828,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.2740870310899435,
+          "upper": 0.4972715136793546,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2522526930551976,
+        "rss_kib": 43208,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 64,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0720310585216789,
+          "upper": 0.5859249642094656,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25226547406055033,
+        "rss_kib": 45776,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0720310585216789,
+          "upper": 0.5859249642094656,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3024335459340364,
+        "rss_kib": 46104,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 65,
+      "before": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.103864374919794,
+        "rss_kib": 586396,
+        "models_built": 2,
+        "max_variables": 14292,
+        "max_auxiliaries": 7941,
+        "model_build_seconds": 4.834444118896499,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "timeout",
+        "truth": null,
+        "seconds": 11.101375623955391,
+        "rss_kib": 588232,
+        "models_built": 2,
+        "max_variables": 14292,
+        "max_auxiliaries": 7941,
+        "model_build_seconds": 4.833283397019841,
+        "numeric_compilation_seconds": 0.00010171614121645689,
+        "error": null
+      }
+    },
+    {
+      "index": 66,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.2898229520069435,
+        "rss_kib": 104012,
+        "models_built": 1,
+        "max_variables": 684,
+        "max_auxiliaries": 126,
+        "model_build_seconds": 0.04770499106962234,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.09539200671069992, dual=0.07684737458817503"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 5.389877661014907,
+        "rss_kib": 104452,
+        "models_built": 1,
+        "max_variables": 684,
+        "max_auxiliaries": 126,
+        "model_build_seconds": 0.05017949698958546,
+        "numeric_compilation_seconds": 4.697893746197224e-05,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.09539200671069992, dual=0.07684737458817503"
+      }
+    },
+    {
+      "index": 67,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.04555137426891006,
+          "upper": 0.12902031530372723,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25279648799914867,
+        "rss_kib": 44520,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.04555137426891006,
+          "upper": 0.12902031530372723,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25276528601534665,
+        "rss_kib": 44584,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 68,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.05264545711753141,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20245449792128056,
+        "rss_kib": 42828,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.05264545711753141,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25241611106321216,
+        "rss_kib": 44688,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 69,
+      "before": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 8.159849133924581,
+        "rss_kib": 232500,
+        "models_built": 2,
+        "max_variables": 5317,
+        "max_auxiliaries": 2463,
+        "model_build_seconds": 0.7200498479651287,
+        "numeric_compilation_seconds": 0,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=maximize, primal=0.004374846654765176, dual=1e+20"
+      },
+      "after": {
+        "status": "RuntimeError",
+        "truth": null,
+        "seconds": 10.528186710900627,
+        "rss_kib": 225240,
+        "models_built": 2,
+        "max_variables": 5317,
+        "max_auxiliaries": 2463,
+        "model_build_seconds": 0.6146331039490178,
+        "numeric_compilation_seconds": 0.05773544299881905,
+        "error": "SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=maximize, primal=0.004374846654765176, dual=1e+20"
+      }
+    },
+    {
+      "index": 70,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.12383921207751196,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25274648098275065,
+        "rss_kib": 44592,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.12383921207751196,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.25217852694913745,
+        "rss_kib": 43932,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 71,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.03664058480218745,
+          "upper": 0.5695527771308029,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2531021429458633,
+        "rss_kib": 42800,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.03664058480218745,
+          "upper": 0.5695527771308029,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.304247833089903,
+        "rss_kib": 45564,
+        "models_built": 0,
+        "max_variables": 0,
+        "max_auxiliaries": 0,
+        "model_build_seconds": 0,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 72,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.009416321281784656,
+          "upper": 0.1295605817926961,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5046767130261287,
+        "rss_kib": 70092,
+        "models_built": 1,
+        "max_variables": 341,
+        "max_auxiliaries": 103,
+        "model_build_seconds": 0.022774636978283525,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.009416321281784656,
+          "upper": 0.1295605817926961,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.6055321570020169,
+        "rss_kib": 71172,
+        "models_built": 1,
+        "max_variables": 341,
+        "max_auxiliaries": 103,
+        "model_build_seconds": 0.022609981941059232,
+        "numeric_compilation_seconds": 4.234304651618004e-05,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    },
+    {
+      "index": 73,
+      "before": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.09044041873426467,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5549708480248228,
+        "rss_kib": 68188,
+        "models_built": 2,
+        "max_variables": 86,
+        "max_auxiliaries": 16,
+        "model_build_seconds": 0.015003749052993953,
+        "numeric_compilation_seconds": 0,
+        "error": null
+      },
+      "after": {
+        "status": "ok",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.09044041873426467,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.6045406119665131,
+        "rss_kib": 68528,
+        "models_built": 2,
+        "max_variables": 86,
+        "max_auxiliaries": 16,
+        "model_build_seconds": 0.01497628097422421,
+        "numeric_compilation_seconds": 0.00010728905908763409,
+        "error": null
+      },
+      "endpoint_difference": 0.0,
+      "endpoint_allowance": 1e-08
+    }
+  ]
+}

@@ -1,0 +1,352 @@
+{
+  "passed": true,
+  "cases": 15,
+  "records": [
+    {
+      "contexts": 3,
+      "variant": 0,
+      "exact_cut_value": 2,
+      "response_lp_value": 2.0,
+      "independent_pair_upper": 3,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 3,
+      "variant": 1,
+      "exact_cut_value": 6,
+      "response_lp_value": 6.0,
+      "independent_pair_upper": 8,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 3,
+      "variant": 2,
+      "exact_cut_value": 2,
+      "response_lp_value": 2.0,
+      "independent_pair_upper": 2,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 4,
+      "variant": 0,
+      "exact_cut_value": 4,
+      "response_lp_value": 4.0,
+      "independent_pair_upper": 6,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 4,
+      "variant": 1,
+      "exact_cut_value": 10,
+      "response_lp_value": 10.0,
+      "independent_pair_upper": 14,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "contexts": 4,
+      "variant": 2,
+      "exact_cut_value": 10,
+      "response_lp_value": 10.0,
+      "independent_pair_upper": 13,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 5,
+      "variant": 0,
+      "exact_cut_value": 6,
+      "response_lp_value": 6.0,
+      "independent_pair_upper": 10,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 5,
+      "variant": 1,
+      "exact_cut_value": 15,
+      "response_lp_value": 15.0,
+      "independent_pair_upper": 20,
+      "half_complement_witness": [
+        [
+          0,
+          1,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "contexts": 5,
+      "variant": 2,
+      "exact_cut_value": 15,
+      "response_lp_value": 15.0,
+      "independent_pair_upper": 20,
+      "half_complement_witness": [
+        [
+          0,
+          1,
+          0,
+          1,
+          0
+        ],
+        [
+          1,
+          0,
+          1,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "contexts": 6,
+      "variant": 0,
+      "exact_cut_value": 9,
+      "response_lp_value": 9.0,
+      "independent_pair_upper": 15,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 6,
+      "variant": 1,
+      "exact_cut_value": 22,
+      "response_lp_value": 22.0,
+      "independent_pair_upper": 30,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          0,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 6,
+      "variant": 2,
+      "exact_cut_value": 23,
+      "response_lp_value": 23.0,
+      "independent_pair_upper": 30,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          1,
+          1,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "contexts": 7,
+      "variant": 0,
+      "exact_cut_value": 12,
+      "response_lp_value": 12.0,
+      "independent_pair_upper": 21,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "contexts": 7,
+      "variant": 1,
+      "exact_cut_value": 32,
+      "response_lp_value": 32.0,
+      "independent_pair_upper": 41,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          1,
+          1,
+          0,
+          0
+        ],
+        [
+          1,
+          1,
+          0,
+          0,
+          0,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "contexts": 7,
+      "variant": 2,
+      "exact_cut_value": 31,
+      "response_lp_value": 31.0,
+      "independent_pair_upper": 43,
+      "half_complement_witness": [
+        [
+          0,
+          0,
+          1,
+          0,
+          1,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          0,
+          1,
+          0,
+          1,
+          0
+        ]
+      ]
+    }
+  ],
+  "scope": "Response-polytope identity; not a claim about the exact difficulty of frozen CPTs."
+}
