@@ -1,0 +1,162 @@
+{
+  "official_source": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/trainer/ppo/core_algos.py",
+  "official_source_sha256": "4ddf7d6e8b06c396f192ea537c4bd0c2d75772378a04fcec4c9646149c5ae086",
+  "script_sha256": "713b620ff84337cb9041702d26af2f212d36d6f771704148109c37a828ebef5d",
+  "input_sha256": {
+    "/home/chen/runs/inference-efficiency-20260908/post-pause-snapshot/progress.json": "5f5aaea9f99f2e4892e0fcbc5f789b4121f3e2c745da1a86ed3a9149fa0f39fa",
+    "/home/chen/runs/dapo-progress-20260908/compiled-through15-snapshot/progress.json": "74041f218ca824ab4e0a82058d2c9f5336769410d2120b1f03ba9912035cca8f",
+    "/home/chen/runs/dapo-progress-20260908/progress-through21-snapshot/progress.json": "936f2f67150b6fc67338eaa3d3581dd7abe46784660f0598c4aaa7db8ba95284"
+  },
+  "epsilon": 1e-06,
+  "reward_denominator": 14,
+  "groups": [
+    {
+      "step": 1,
+      "requests": [
+        "f74c5957155e4aa882d2fa6ae864f581",
+        "5c1f69991763447eb301a29dd2e20f9c",
+        "0951ba93698347febe86e8656f54c747",
+        "51ddaa6c5ed64cd6b5ec4260ad11bf17"
+      ],
+      "edit_distances": [
+        2.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "qualities": [
+        0.8571428571428571,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "official_quality_advantage_float32": [
+        -1.4999792575836182,
+        0.49999281764030457,
+        0.49999281764030457,
+        0.49999281764030457
+      ],
+      "official_negative_distance_advantage_float32": [
+        -1.4999985694885254,
+        0.4999995231628418,
+        0.4999995231628418,
+        0.4999995231628418
+      ],
+      "formula_max_error_float64": 6.661338147750939e-16,
+      "quality_vs_negative_distance_max_difference_float32": 1.9311904907226562e-05,
+      "exact_epsilon_scale_difference_bound": 1.9499707504114445e-05
+    },
+    {
+      "step": 2,
+      "requests": [
+        "ddfe093e269849d9a3dd083aa3f6166c",
+        "469293765954457da31f946e7dcb0de4",
+        "fbed03f783f8471f9e3228fc9b0ff09e",
+        "66c82139b42b4946a6b46156da37d0a5"
+      ],
+      "edit_distances": [
+        3.0,
+        3.0,
+        2.0,
+        3.0
+      ],
+      "qualities": [
+        0.7857142857142857,
+        0.7857142857142857,
+        0.8571428571428571,
+        0.7857142857142857
+      ],
+      "official_quality_advantage_float32": [
+        -0.49998727440834045,
+        -0.49998727440834045,
+        1.4999568462371826,
+        -0.49998727440834045
+      ],
+      "official_negative_distance_advantage_float32": [
+        -0.4999989867210388,
+        -0.4999989867210388,
+        1.4999970197677612,
+        -0.4999989867210388
+      ],
+      "formula_max_error_float64": 1.609823385706477e-15,
+      "quality_vs_negative_distance_max_difference_float32": 4.017353057861328e-05,
+      "exact_epsilon_scale_difference_bound": 3.8998830032915076e-05
+    },
+    {
+      "step": 12,
+      "requests": [
+        "6cb6770bbcad4d1aa1c24e34a3fe54a8",
+        "002e9d6f1d504c74b6e117a67870dcb6",
+        "ca0820507d814abd88f327a47cc3fb70",
+        "2ad0e602af0548f8b36030e78eb37f58"
+      ],
+      "edit_distances": [
+        3.0,
+        2.0,
+        3.0,
+        2.0
+      ],
+      "qualities": [
+        0.7857142857142857,
+        0.8571428571428571,
+        0.7857142857142857,
+        0.8571428571428571
+      ],
+      "official_quality_advantage_float32": [
+        -0.866003692150116,
+        0.8660051226615906,
+        -0.866003692150116,
+        0.8660051226615906
+      ],
+      "official_negative_distance_advantage_float32": [
+        -0.8660238981246948,
+        0.8660238981246948,
+        -0.8660238981246948,
+        0.8660238981246948
+      ],
+      "formula_max_error_float64": 1.1102230246251565e-16,
+      "quality_vs_negative_distance_max_difference_float32": 2.0205974578857422e-05,
+      "exact_epsilon_scale_difference_bound": 1.9499493387481987e-05
+    },
+    {
+      "step": 15,
+      "requests": [
+        "ad19899ee3f54558afb638fdd26f7f4a",
+        "13ec6150159449aeaa625e105addc060",
+        "ee017927dcbc4e6b83993eece6d4f6e3",
+        "ff344b6e79104946ad16b00f99c0ebe3"
+      ],
+      "edit_distances": [
+        0.0,
+        2.0,
+        1.0,
+        2.0
+      ],
+      "qualities": [
+        1.0,
+        0.8571428571428571,
+        0.9285714285714286,
+        0.8571428571428571
+      ],
+      "official_quality_advantage_float32": [
+        1.3055628538131714,
+        -0.7833386063575745,
+        0.26111170649528503,
+        -0.7833386063575745
+      ],
+      "official_negative_distance_advantage_float32": [
+        1.3055810928344727,
+        -0.7833486199378967,
+        0.2611162066459656,
+        -0.7833486199378967
+      ],
+      "formula_max_error_float64": 5.551115123125783e-16,
+      "quality_vs_negative_distance_max_difference_float32": 1.823902130126953e-05,
+      "exact_epsilon_scale_difference_bound": 1.7726994998365705e-05
+    }
+  ],
+  "incomplete_or_penalized_groups_excluded": [
+    17
+  ],
+  "scope": "Actual retained backdoor groups with completed answers and no length penalty. Official outcome-advantage call on CPU scalar rewards, not replay of full GPU loss. Affine reward compression does not imply equally compressed standardized advantages. This does not establish task learnability or surrogate equivalence to exact-set accuracy."
+}

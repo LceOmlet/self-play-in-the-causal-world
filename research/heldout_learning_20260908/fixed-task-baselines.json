@@ -1,0 +1,2332 @@
+{
+  "validation_sha256": "4508652e399973610611368545a92b1c0a2be8faa4fe1f3ec547fac8e3183900",
+  "script_sha256": "8280c5e175c38ddf9ea59e4057ee8f590ed79d596c27fd60102baa74fb020d36",
+  "records": [
+    {
+      "index": 0,
+      "tape_key": "trl-grpo:SAMPLED-3000000-ate-target_query-a6",
+      "query_type": "ate",
+      "query": {
+        "type": "ate",
+        "treatment": "SSF",
+        "outcome": "FWJ",
+        "treatment_value": "state_1",
+        "baseline_value": "state_0"
+      },
+      "truth_file_sha256": "30934223ac05abd92dcc6034aa49a4580b52be817cfa050d353ad1fff59b8571",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          -0.10671324934363888,
+          0.21737753133110801,
+          -0.08975979840464834,
+          -0.02621576373112325,
+          0.005311280148302511
+        ]
+      },
+      "baselines": {
+        "zero_effect": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.0,
+              "state_1": 0.0,
+              "state_2": 0.0,
+              "state_3": 0.0,
+              "state_4": 0.0
+            }
+          },
+          "quality": 0.5055762945720583,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              -0.10671324934363888,
+              0.21737753133110801,
+              -0.08975979840464834,
+              -0.02621576373112325,
+              0.005311280148302511
+            ],
+            "prediction": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_errors": [
+              0.10671324934363888,
+              0.21737753133110801,
+              0.08975979840464834,
+              0.02621576373112325,
+              0.005311280148302511
+            ],
+            "l1_error": 0.445377622958821,
+            "total_variation_error": 0.2226888114794105,
+            "squared_error": 0.013482601217509486,
+            "observational_shortcut": [
+              -0.08647016750253182,
+              0.20447474143490807,
+              -0.0010468956887304012,
+              0.07044311087842664,
+              -0.1874007891220725
+            ],
+            "observational_shortcut_error": 0.2056148591665749,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": -0.08647016750253182,
+              "state_1": 0.20447474143490807,
+              "state_2": -0.0010468956887304012,
+              "state_3": 0.07044311087842664,
+              "state_4": -0.1874007891220725
+            }
+          },
+          "quality": 0.5254970228527339,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              -0.10671324934363888,
+              0.21737753133110801,
+              -0.08975979840464834,
+              -0.02621576373112325,
+              0.005311280148302511
+            ],
+            "prediction": [
+              -0.08647016750253182,
+              0.20447474143490807,
+              -0.0010468956887304012,
+              0.07044311087842664,
+              -0.1874007891220725
+            ],
+            "component_errors": [
+              0.020243081841107055,
+              0.012902789896199945,
+              0.08871290271591795,
+              0.09665887460954989,
+              0.192712069270375
+            ],
+            "l1_error": 0.41122971833314986,
+            "total_variation_error": 0.20561485916657493,
+            "squared_error": 0.010985424628213933,
+            "observational_shortcut": [
+              -0.08647016750253182,
+              0.20447474143490807,
+              -0.0010468956887304012,
+              0.07044311087842664,
+              -0.1874007891220725
+            ],
+            "observational_shortcut_error": 0.2056148591665749,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 1,
+      "tape_key": "trl-grpo:SAMPLED-3000001-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability",
+      "query": {
+        "type": "individual_counterfactual_probability",
+        "treatment": "ETV",
+        "outcome": "SKI",
+        "factual_value": "state_2",
+        "counterfactual_value": "state_4",
+        "factual_outcome_state": "state_0",
+        "outcome_state": "state_1"
+      },
+      "truth_file_sha256": "b46ef1825b014ca0f84ce19eb216d9cbdf84c203ee2b7402e7849506cae7c5fd",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.1447174407763179,
+        "upper": 0.3856008441027138,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "baselines": {
+        "zero_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "quality": 0.08215912026095305,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.1447174407763179,
+              "upper": 0.3856008441027138,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.1447174407763179,
+                0.1447174407763179
+              ],
+              "certified_upper_range": [
+                0.3856008441027138,
+                0.3856008441027138
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "lower_endpoint_error": 0.1447174407763179,
+            "upper_endpoint_error": 0.3856008441027138,
+            "mean_absolute_endpoint_error": 0.2651591424395158,
+            "mean_squared_endpoint_error": 0.08481557431878622,
+            "observational_shortcut": {
+              "lower": 0.1433256722780697,
+              "upper": 0.38748553062868185
+            },
+            "observational_shortcut_error": 0.0016382275121081297,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "ignorance_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 1.0
+          },
+          "quality": 0.05885368295741983,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.1447174407763179,
+              "upper": 0.3856008441027138,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.1447174407763179,
+                0.1447174407763179
+              ],
+              "certified_upper_range": [
+                0.3856008441027138,
+                0.3856008441027138
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "lower_endpoint_error": 0.1447174407763179,
+            "upper_endpoint_error": 0.6143991558972862,
+            "mean_absolute_endpoint_error": 0.37955829833680205,
+            "mean_squared_endpoint_error": 0.19921473021607244,
+            "observational_shortcut": {
+              "lower": 0.1433256722780697,
+              "upper": 0.38748553062868185
+            },
+            "observational_shortcut_error": 0.0016382275121081297,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 2,
+      "tape_key": "trl-grpo:SAMPLED-3000002-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets",
+      "query": {
+        "type": "backadj_minimal_sets",
+        "treatment": "JND",
+        "outcome": "EJH"
+      },
+      "truth_file_sha256": "1d03624229e4a940bc99a0296bb1bbcc287eb7c705745778b3a302a7c4440e87",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "baselines": {
+        "empty_set": {
+          "answer": {
+            "type": "answer",
+            "adjustment_set": []
+          },
+          "quality": 0.9285714285714286,
+          "metrics": {
+            "kind": "backadj",
+            "prediction": [],
+            "nearest_valid_adjustment_set": [
+              "V0"
+            ],
+            "edit_distance": 1,
+            "valid_adjustment_set": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 3,
+      "tape_key": "trl-grpo:SAMPLED-4500010500006-best_intervention-decision-a2",
+      "query_type": "best_intervention",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "RWN",
+        "outcome": "DJV",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "20dd24a85a9adb8b4bfcf1ffb1c30debb945ec21e60ea779f3bfe21f50467e81",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V1",
+        "value": 0,
+        "probability": 0.08859110724934856,
+        "candidate_probabilities": [
+          0.08859110724934856,
+          0.0919496904896551,
+          0.09215960636620713,
+          0.09227978457365058
+        ]
+      },
+      "baselines": {
+        "state_0": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 1.0,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V1",
+              "value": 0
+            },
+            "chosen": {
+              "target": "V1",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V1",
+              "value": 0
+            },
+            "optimal_probability": 0.08859110724934856,
+            "chosen_probability": 0.08859110724934856,
+            "candidate_probabilities": [
+              0.08859110724934856,
+              0.0919496904896551,
+              0.09215960636620713,
+              0.09227978457365058
+            ],
+            "minimum_probability": 0.08859110724934856,
+            "maximum_probability": 0.09227978457365058,
+            "probability_span": 0.003688677324302017,
+            "regret": 0.0,
+            "normalized_regret": 0.0,
+            "observational_shortcut": [
+              0.08811270689662164,
+              0.0918682274409506,
+              0.0921592625432309,
+              0.09263266207994701
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.0,
+            "observational_shortcut_normalized_regret": 0.0,
+            "optimal_action": true,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 1.0,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V1",
+              "value": 0
+            },
+            "chosen": {
+              "target": "V1",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V1",
+              "value": 0
+            },
+            "optimal_probability": 0.08859110724934856,
+            "chosen_probability": 0.08859110724934856,
+            "candidate_probabilities": [
+              0.08859110724934856,
+              0.0919496904896551,
+              0.09215960636620713,
+              0.09227978457365058
+            ],
+            "minimum_probability": 0.08859110724934856,
+            "maximum_probability": 0.09227978457365058,
+            "probability_span": 0.003688677324302017,
+            "regret": 0.0,
+            "normalized_regret": 0.0,
+            "observational_shortcut": [
+              0.08811270689662164,
+              0.0918682274409506,
+              0.0921592625432309,
+              0.09263266207994701
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.0,
+            "observational_shortcut_normalized_regret": 0.0,
+            "optimal_action": true,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 4,
+      "tape_key": "trl-grpo:SAMPLED-3000004-mediator_set-discovery-a1",
+      "query_type": "mediator_set",
+      "query": {
+        "type": "mediator_set",
+        "treatment": "IQG",
+        "outcome": "SNW"
+      },
+      "truth_file_sha256": "5c8ba01f088a024900af6075163167a5131179ca7085b3aebaba0ff6fb23e703",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V5"
+        ],
+        "order": [
+          [
+            "V4",
+            "V5"
+          ],
+          [
+            "V5",
+            "V2"
+          ]
+        ]
+      },
+      "baselines": {
+        "empty_structure": {
+          "answer": {
+            "type": "answer",
+            "mediators": [],
+            "order": []
+          },
+          "quality": 0.0,
+          "metrics": {
+            "kind": "mediator",
+            "mediator_precision": 0.0,
+            "mediator_recall": 0.0,
+            "mediator_f1": 0.0,
+            "order_precision": 0.0,
+            "order_recall": 0.0,
+            "order_f1": 0.0,
+            "mediators_exact_match": false,
+            "order_exact_match": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 5,
+      "tape_key": "trl-grpo:SAMPLED-3000005-ate-target_query-a0",
+      "query_type": "ate",
+      "query": {
+        "type": "ate",
+        "treatment": "JGK",
+        "outcome": "POT",
+        "treatment_value": "state_0",
+        "baseline_value": "state_1"
+      },
+      "truth_file_sha256": "843b5db563de45ef169b6e554941461fa0684c43dcbe89246d46801d4a6bf5a5",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          -0.05793833268271206,
+          -0.1703170154151064,
+          0.2678943301275408,
+          -0.027675955266384097,
+          -0.011963026763338241
+        ]
+      },
+      "baselines": {
+        "zero_effect": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.0,
+              "state_1": 0.0,
+              "state_2": 0.0,
+              "state_3": 0.0,
+              "state_4": 0.0
+            }
+          },
+          "quality": 0.43013667211909157,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              -0.05793833268271206,
+              -0.1703170154151064,
+              0.2678943301275408,
+              -0.027675955266384097,
+              -0.011963026763338241
+            ],
+            "prediction": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_errors": [
+              0.05793833268271206,
+              0.1703170154151064,
+              0.2678943301275408,
+              0.027675955266384097,
+              0.011963026763338241
+            ],
+            "l1_error": 0.5357886602550817,
+            "total_variation_error": 0.2678943301275408,
+            "squared_error": 0.021008236151538656,
+            "observational_shortcut": [
+              -0.12128026113989498,
+              -0.12348735626481269,
+              0.15605178463804356,
+              -0.032602836331992235,
+              0.12131866909865634
+            ],
+            "observational_shortcut_error": 0.1801113550122883,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": -0.12128026113989498,
+              "state_1": -0.12348735626481269,
+              "state_2": 0.15605178463804356,
+              "state_3": -0.032602836331992235,
+              "state_4": 0.12131866909865634
+            }
+          },
+          "quality": 0.5288986956588867,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              -0.05793833268271206,
+              -0.1703170154151064,
+              0.2678943301275408,
+              -0.027675955266384097,
+              -0.011963026763338241
+            ],
+            "prediction": [
+              -0.12128026113989498,
+              -0.12348735626481269,
+              0.15605178463804356,
+              -0.032602836331992235,
+              0.12131866909865634
+            ],
+            "component_errors": [
+              0.06334192845718292,
+              0.04682965915029372,
+              0.11184254548949726,
+              0.004926881065608138,
+              0.13328169586199456
+            ],
+            "l1_error": 0.3602227100245766,
+            "total_variation_error": 0.1801113550122883,
+            "squared_error": 0.007300451293452341,
+            "observational_shortcut": [
+              -0.12128026113989498,
+              -0.12348735626481269,
+              0.15605178463804356,
+              -0.032602836331992235,
+              0.12131866909865634
+            ],
+            "observational_shortcut_error": 0.1801113550122883,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 6,
+      "tape_key": "trl-grpo:SAMPLED-3000007-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability",
+      "query": {
+        "type": "individual_counterfactual_probability",
+        "treatment": "JTL",
+        "outcome": "WNW",
+        "factual_value": "state_0",
+        "counterfactual_value": "state_1",
+        "factual_outcome_state": "state_0",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "f141a26b86ad5071768c7e70a448d89994d5665ecc80fee21c0978cbbf9164a9",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.8896534920655462,
+        "upper": 0.9543090972213478,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "baselines": {
+        "zero_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "quality": 0.2256842524405189,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.8896534920655462,
+              "upper": 0.9543090972213478,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.8896534920655462,
+                0.8896534920655462
+              ],
+              "certified_upper_range": [
+                0.9543090972213478,
+                0.9543090972213478
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "lower_endpoint_error": 0.8896534920655462,
+            "upper_endpoint_error": 0.9543090972213478,
+            "mean_absolute_endpoint_error": 0.921981294643447,
+            "mean_squared_endpoint_error": 0.8510945944919224,
+            "observational_shortcut": {
+              "lower": 0.44209202983307666,
+              "upper": 1.0
+            },
+            "observational_shortcut_error": 0.24662618250556087,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "ignorance_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 1.0
+          },
+          "quality": 0.3649170608978263,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.8896534920655462,
+              "upper": 0.9543090972213478,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.8896534920655462,
+                0.8896534920655462
+              ],
+              "certified_upper_range": [
+                0.9543090972213478,
+                0.9543090972213478
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "lower_endpoint_error": 0.8896534920655462,
+            "upper_endpoint_error": 0.045690902778652176,
+            "mean_absolute_endpoint_error": 0.4676721974220992,
+            "mean_squared_endpoint_error": 0.3967854972705746,
+            "observational_shortcut": {
+              "lower": 0.44209202983307666,
+              "upper": 1.0
+            },
+            "observational_shortcut_error": 0.24662618250556087,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 7,
+      "tape_key": "trl-grpo:SAMPLED-3000008-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets",
+      "query": {
+        "type": "backadj_minimal_sets",
+        "treatment": "PSF",
+        "outcome": "UJU"
+      },
+      "truth_file_sha256": "f86a0e86392b6c8dc18cfb31d675702e2ebe87e89cfbfb53006845433c2eb02d",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "baselines": {
+        "empty_set": {
+          "answer": {
+            "type": "answer",
+            "adjustment_set": []
+          },
+          "quality": 1.0,
+          "metrics": {
+            "kind": "backadj",
+            "prediction": [],
+            "nearest_valid_adjustment_set": [],
+            "edit_distance": 0,
+            "valid_adjustment_set": true,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 8,
+      "tape_key": "trl-grpo:SAMPLED-4500163501530-best_intervention-decision-a6",
+      "query_type": "best_intervention",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "EEP",
+        "outcome": "TLP",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "51e94368db026db17860c44c1746d33ef5202b61c97e19234679196c2361bed1",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V14",
+        "value": 1,
+        "probability": 0.49471287951868503,
+        "candidate_probabilities": [
+          0.5562209438512159,
+          0.49471287951868503,
+          0.4983466613659543,
+          0.5629363243763877
+        ]
+      },
+      "baselines": {
+        "state_0": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.5060532243147139,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V14",
+              "value": 1
+            },
+            "chosen": {
+              "target": "V14",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V14",
+              "value": 0
+            },
+            "optimal_probability": 0.49471287951868503,
+            "chosen_probability": 0.5562209438512159,
+            "candidate_probabilities": [
+              0.5562209438512159,
+              0.49471287951868503,
+              0.4983466613659543,
+              0.5629363243763877
+            ],
+            "minimum_probability": 0.49471287951868503,
+            "maximum_probability": 0.5629363243763877,
+            "probability_span": 0.06822344485770271,
+            "regret": 0.061508064332530865,
+            "normalized_regret": 0.9015678475459796,
+            "observational_shortcut": [
+              0.46752241617432344,
+              0.4935249600670192,
+              0.673116059933455,
+              0.5170340787256608
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.061508064332530865,
+            "observational_shortcut_normalized_regret": 0.9015678475459796,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.5060532243147139,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V14",
+              "value": 1
+            },
+            "chosen": {
+              "target": "V14",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V14",
+              "value": 0
+            },
+            "optimal_probability": 0.49471287951868503,
+            "chosen_probability": 0.5562209438512159,
+            "candidate_probabilities": [
+              0.5562209438512159,
+              0.49471287951868503,
+              0.4983466613659543,
+              0.5629363243763877
+            ],
+            "minimum_probability": 0.49471287951868503,
+            "maximum_probability": 0.5629363243763877,
+            "probability_span": 0.06822344485770271,
+            "regret": 0.061508064332530865,
+            "normalized_regret": 0.9015678475459796,
+            "observational_shortcut": [
+              0.46752241617432344,
+              0.4935249600670192,
+              0.673116059933455,
+              0.5170340787256608
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.061508064332530865,
+            "observational_shortcut_normalized_regret": 0.9015678475459796,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 9,
+      "tape_key": "trl-grpo:SAMPLED-3000010-mediator_set-discovery-a0",
+      "query_type": "mediator_set",
+      "query": {
+        "type": "mediator_set",
+        "treatment": "DJF",
+        "outcome": "EPQ"
+      },
+      "truth_file_sha256": "7bdb0059ce674cac437566a3de4fc182ae9bce1867d43d4dbfd46b02428e4b3e",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V0"
+        ],
+        "order": [
+          [
+            "V0",
+            "V5"
+          ],
+          [
+            "V2",
+            "V0"
+          ]
+        ]
+      },
+      "baselines": {
+        "empty_structure": {
+          "answer": {
+            "type": "answer",
+            "mediators": [],
+            "order": []
+          },
+          "quality": 0.0,
+          "metrics": {
+            "kind": "mediator",
+            "mediator_precision": 0.0,
+            "mediator_recall": 0.0,
+            "mediator_f1": 0.0,
+            "order_precision": 0.0,
+            "order_recall": 0.0,
+            "order_f1": 0.0,
+            "mediators_exact_match": false,
+            "order_exact_match": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 10,
+      "tape_key": "trl-grpo:SAMPLED-3000011-ate-target_query-a12",
+      "query_type": "ate",
+      "query": {
+        "type": "ate",
+        "treatment": "DFV",
+        "outcome": "DVP",
+        "treatment_value": "state_2",
+        "baseline_value": "state_1"
+      },
+      "truth_file_sha256": "0e3631f7807c51d9c44b39ca71d31cccc2603da1f094b3081bc60dfe956c9a82",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          -0.5667748375190158,
+          0.566774837519016
+        ]
+      },
+      "baselines": {
+        "zero_effect": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.0,
+              "state_1": 0.0
+            }
+          },
+          "quality": 0.03752443612153448,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              -0.5667748375190158,
+              0.566774837519016
+            ],
+            "prediction": [
+              0.0,
+              0.0
+            ],
+            "component_errors": [
+              0.5667748375190158,
+              0.566774837519016
+            ],
+            "l1_error": 1.1335496750380318,
+            "total_variation_error": 0.5667748375190159,
+            "squared_error": 0.3212337164447069,
+            "observational_shortcut": [
+              -0.5667748375190158,
+              0.5667748375190158
+            ],
+            "observational_shortcut_error": 1.2011843916604658e-16,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": -0.5667748375190158,
+              "state_1": 0.5667748375190158
+            }
+          },
+          "quality": 0.999999999999995,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              -0.5667748375190158,
+              0.566774837519016
+            ],
+            "prediction": [
+              -0.5667748375190158,
+              0.5667748375190158
+            ],
+            "component_errors": [
+              0.0,
+              2.220446049250313e-16
+            ],
+            "l1_error": 2.220446049250313e-16,
+            "total_variation_error": 1.1102230246251565e-16,
+            "squared_error": 2.465190328815662e-32,
+            "observational_shortcut": [
+              -0.5667748375190158,
+              0.5667748375190158
+            ],
+            "observational_shortcut_error": 1.2011843916604658e-16,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 11,
+      "tape_key": "trl-grpo:SAMPLED-3000012-individual_counterfactual_probability-target_query-a24",
+      "query_type": "individual_counterfactual_probability",
+      "query": {
+        "type": "individual_counterfactual_probability",
+        "treatment": "VGD",
+        "outcome": "PFJ",
+        "factual_value": "state_2",
+        "counterfactual_value": "state_3",
+        "factual_outcome_state": "state_1",
+        "outcome_state": "state_2"
+      },
+      "truth_file_sha256": "074b24103211ba808e0f79a20ea3e4bea265357142ee023afeedb6ff173e527e",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0,
+        "upper": 0.6822674795935452,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "baselines": {
+        "zero_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "quality": 0.06087795849046796,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.0,
+              "upper": 0.6822674795935452,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.0,
+                0.0
+              ],
+              "certified_upper_range": [
+                0.6822674795935452,
+                0.6822674795935452
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "lower_endpoint_error": 0.0,
+            "upper_endpoint_error": 0.6822674795935452,
+            "mean_absolute_endpoint_error": 0.3411337397967726,
+            "mean_squared_endpoint_error": 0.2327444568554643,
+            "observational_shortcut": {
+              "lower": 0.0,
+              "upper": 0.6823008390038622
+            },
+            "observational_shortcut_error": 1.667970515853188e-05,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "ignorance_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 1.0
+          },
+          "quality": 0.12218898961251272,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.0,
+              "upper": 0.6822674795935452,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.0,
+                0.0
+              ],
+              "certified_upper_range": [
+                0.6822674795935452,
+                0.6822674795935452
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "lower_endpoint_error": 0.0,
+            "upper_endpoint_error": 0.31773252040645483,
+            "mean_absolute_endpoint_error": 0.15886626020322742,
+            "mean_squared_endpoint_error": 0.05047697726191912,
+            "observational_shortcut": {
+              "lower": 0.0,
+              "upper": 0.6823008390038622
+            },
+            "observational_shortcut_error": 1.667970515853188e-05,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 12,
+      "tape_key": "trl-grpo:SAMPLED-3000013-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets",
+      "query": {
+        "type": "backadj_minimal_sets",
+        "treatment": "LUS",
+        "outcome": "OFG"
+      },
+      "truth_file_sha256": "75822499951153f209448a42275adda12039ba4d9c44d40be18cb1e594a57d56",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "baselines": {
+        "empty_set": {
+          "answer": {
+            "type": "answer",
+            "adjustment_set": []
+          },
+          "quality": 0.8571428571428571,
+          "metrics": {
+            "kind": "backadj",
+            "prediction": [],
+            "nearest_valid_adjustment_set": [
+              "V0",
+              "V6"
+            ],
+            "edit_distance": 2,
+            "valid_adjustment_set": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 13,
+      "tape_key": "trl-grpo:SAMPLED-4500139501113-best_intervention-decision-a0",
+      "query_type": "best_intervention",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "ESQ",
+        "outcome": "NHS",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "5bc1ca7485ed07726391f764c20d585b1aa21017dfbd7b86c5037bf877617623",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V7",
+        "value": 1,
+        "probability": 0.2980528821387763,
+        "candidate_probabilities": [
+          0.30632640482366086,
+          0.2980528821387763,
+          0.3952129240915854
+        ]
+      },
+      "baselines": {
+        "state_0": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.9230946011600962,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V7",
+              "value": 1
+            },
+            "chosen": {
+              "target": "V7",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V7",
+              "value": 0
+            },
+            "optimal_probability": 0.2980528821387763,
+            "chosen_probability": 0.30632640482366086,
+            "candidate_probabilities": [
+              0.30632640482366086,
+              0.2980528821387763,
+              0.3952129240915854
+            ],
+            "minimum_probability": 0.2980528821387763,
+            "maximum_probability": 0.3952129240915854,
+            "probability_span": 0.09716004195280914,
+            "regret": 0.008273522684884571,
+            "normalized_regret": 0.0851535520013777,
+            "observational_shortcut": [
+              0.6154412562508084,
+              0.33590078952602587,
+              0.2488869631337203
+            ],
+            "observational_choice": 2,
+            "observational_shortcut_error": 0.09716004195280914,
+            "observational_shortcut_normalized_regret": 1.0,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "value": "state_2"
+          },
+          "quality": 0.505463903552184,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V7",
+              "value": 1
+            },
+            "chosen": {
+              "target": "V7",
+              "value": 2
+            },
+            "prediction": {
+              "target": "V7",
+              "value": 2
+            },
+            "optimal_probability": 0.2980528821387763,
+            "chosen_probability": 0.3952129240915854,
+            "candidate_probabilities": [
+              0.30632640482366086,
+              0.2980528821387763,
+              0.3952129240915854
+            ],
+            "minimum_probability": 0.2980528821387763,
+            "maximum_probability": 0.3952129240915854,
+            "probability_span": 0.09716004195280914,
+            "regret": 0.09716004195280914,
+            "normalized_regret": 1.0,
+            "observational_shortcut": [
+              0.6154412562508084,
+              0.33590078952602587,
+              0.2488869631337203
+            ],
+            "observational_choice": 2,
+            "observational_shortcut_error": 0.09716004195280914,
+            "observational_shortcut_normalized_regret": 1.0,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 14,
+      "tape_key": "trl-grpo:SAMPLED-3000015-mediator_set-discovery-a4",
+      "query_type": "mediator_set",
+      "query": {
+        "type": "mediator_set",
+        "treatment": "WPI",
+        "outcome": "QJN"
+      },
+      "truth_file_sha256": "5dfc9930c07e7507592f3398fbcf9468040a2e35afbc77e3ff933bd256edab9f",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V1",
+          "V6",
+          "V12"
+        ],
+        "order": [
+          [
+            "V1",
+            "V6"
+          ],
+          [
+            "V1",
+            "V8"
+          ],
+          [
+            "V6",
+            "V8"
+          ],
+          [
+            "V10",
+            "V1"
+          ],
+          [
+            "V10",
+            "V6"
+          ],
+          [
+            "V10",
+            "V8"
+          ],
+          [
+            "V10",
+            "V12"
+          ],
+          [
+            "V12",
+            "V6"
+          ]
+        ]
+      },
+      "baselines": {
+        "empty_structure": {
+          "answer": {
+            "type": "answer",
+            "mediators": [],
+            "order": []
+          },
+          "quality": 0.0,
+          "metrics": {
+            "kind": "mediator",
+            "mediator_precision": 0.0,
+            "mediator_recall": 0.0,
+            "mediator_f1": 0.0,
+            "order_precision": 0.0,
+            "order_recall": 0.0,
+            "order_f1": 0.0,
+            "mediators_exact_match": false,
+            "order_exact_match": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 15,
+      "tape_key": "trl-grpo:SAMPLED-3000016-ate-target_query-a0",
+      "query_type": "ate",
+      "query": {
+        "type": "ate",
+        "treatment": "JLU",
+        "outcome": "SHT",
+        "treatment_value": "state_3",
+        "baseline_value": "state_2"
+      },
+      "truth_file_sha256": "8d84cd643390eaef4e4bb2c577a204b6da859acba0b7a62473c363c064d6b37c",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          0.018330567447183463,
+          0.0313964320832818,
+          -0.07670135153651955,
+          0.01968704376832031,
+          0.007287308237734005
+        ]
+      },
+      "baselines": {
+        "zero_effect": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.0,
+              "state_1": 0.0,
+              "state_2": 0.0,
+              "state_3": 0.0,
+              "state_4": 0.0
+            }
+          },
+          "quality": 0.25979229105718904,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              0.018330567447183463,
+              0.0313964320832818,
+              -0.07670135153651955,
+              0.01968704376832031,
+              0.007287308237734005
+            ],
+            "prediction": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_errors": [
+              0.018330567447183463,
+              0.0313964320832818,
+              0.07670135153651955,
+              0.01968704376832031,
+              0.007287308237734005
+            ],
+            "l1_error": 0.15340270307303913,
+            "total_variation_error": 0.07670135153651957,
+            "squared_error": 0.0015291055063424248,
+            "observational_shortcut": [
+              0.018946668524287558,
+              0.03519731227709158,
+              -0.07629538146252862,
+              0.01490025337272993,
+              0.007251147288419553
+            ],
+            "observational_shortcut_error": 0.004822951344904818,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.018946668524287558,
+              "state_1": 0.03519731227709158,
+              "state_2": -0.07629538146252862,
+              "state_3": 0.01490025337272993,
+              "state_4": 0.007251147288419553
+            }
+          },
+          "quality": 0.8480624728359621,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              0.018330567447183463,
+              0.0313964320832818,
+              -0.07670135153651955,
+              0.01968704376832031,
+              0.007287308237734005
+            ],
+            "prediction": [
+              0.018946668524287558,
+              0.03519731227709158,
+              -0.07629538146252862,
+              0.01490025337272993,
+              0.007251147288419553
+            ],
+            "component_errors": [
+              0.0006161010771040948,
+              0.0038008801938097803,
+              0.00040597007399093,
+              0.004786790395590381,
+              3.616094931445206e-05
+            ],
+            "l1_error": 0.009645902689809638,
+            "total_variation_error": 0.004822951344904819,
+            "squared_error": 7.581150478290427e-06,
+            "observational_shortcut": [
+              0.018946668524287558,
+              0.03519731227709158,
+              -0.07629538146252862,
+              0.01490025337272993,
+              0.007251147288419553
+            ],
+            "observational_shortcut_error": 0.004822951344904818,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 16,
+      "tape_key": "trl-grpo:SAMPLED-3000017-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability",
+      "query": {
+        "type": "individual_counterfactual_probability",
+        "treatment": "UDR",
+        "outcome": "HPK",
+        "factual_value": "state_0",
+        "counterfactual_value": "state_1",
+        "factual_outcome_state": "state_0",
+        "outcome_state": "state_1"
+      },
+      "truth_file_sha256": "a84aba638ffb68e983379619617afd4273b4da5cea397ca3d192936ba646c39c",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.1716984461893785,
+        "upper": 0.6735114510618724,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "baselines": {
+        "zero_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "quality": 0.3908796922683196,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.1716984461893785,
+              "upper": 0.6735114510618724,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.1716984461893785,
+                0.1716984461893785
+              ],
+              "certified_upper_range": [
+                0.6735114510618724,
+                0.6735114510618724
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "lower_endpoint_error": 0.1716984461893785,
+            "upper_endpoint_error": 0.6735114510618724,
+            "mean_absolute_endpoint_error": 0.4226049486256254,
+            "mean_squared_endpoint_error": 0.2415490155676579,
+            "observational_shortcut": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "observational_shortcut_error": 0.24909349756375304,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "ignorance_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 1.0
+          },
+          "quality": 0.5212355977002563,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.1716984461893785,
+              "upper": 0.6735114510618724,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.1716984461893785,
+                0.1716984461893785
+              ],
+              "certified_upper_range": [
+                0.6735114510618724,
+                0.6735114510618724
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "lower_endpoint_error": 0.1716984461893785,
+            "upper_endpoint_error": 0.3264885489381276,
+            "mean_absolute_endpoint_error": 0.24909349756375304,
+            "mean_squared_endpoint_error": 0.06803756450578553,
+            "observational_shortcut": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "observational_shortcut_error": 0.24909349756375304,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 17,
+      "tape_key": "trl-grpo:SAMPLED-3000018-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets",
+      "query": {
+        "type": "backadj_minimal_sets",
+        "treatment": "QSR",
+        "outcome": "RTO"
+      },
+      "truth_file_sha256": "0888d2cc731cd6e6972ef703376af1e47b3ab6451c6634a2a716e7860a798561",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "baselines": {
+        "empty_set": {
+          "answer": {
+            "type": "answer",
+            "adjustment_set": []
+          },
+          "quality": 0.8571428571428571,
+          "metrics": {
+            "kind": "backadj",
+            "prediction": [],
+            "nearest_valid_adjustment_set": [
+              "V4",
+              "V8"
+            ],
+            "edit_distance": 2,
+            "valid_adjustment_set": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 18,
+      "tape_key": "trl-grpo:SAMPLED-4500331506196-best_intervention-decision-a0",
+      "query_type": "best_intervention",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "LLM",
+        "outcome": "TVQ",
+        "objective": "minimize",
+        "outcome_state": "state_1"
+      },
+      "truth_file_sha256": "6952baf6b4e82239fa76907130e193c61063ed42f1acaef09782c5a667e0db70",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V0",
+        "value": 1,
+        "probability": 0.7201353084830834,
+        "candidate_probabilities": [
+          0.7972568223305884,
+          0.7201353084830834
+        ]
+      },
+      "baselines": {
+        "state_0": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.505463903552184,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V0",
+              "value": 1
+            },
+            "chosen": {
+              "target": "V0",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V0",
+              "value": 0
+            },
+            "optimal_probability": 0.7201353084830834,
+            "chosen_probability": 0.7972568223305884,
+            "candidate_probabilities": [
+              0.7972568223305884,
+              0.7201353084830834
+            ],
+            "minimum_probability": 0.7201353084830834,
+            "maximum_probability": 0.7972568223305884,
+            "probability_span": 0.07712151384750499,
+            "regret": 0.07712151384750499,
+            "normalized_regret": 1.0,
+            "observational_shortcut": [
+              0.6234529752607787,
+              0.708120287529442
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.07712151384750499,
+            "observational_shortcut_normalized_regret": 1.0,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.505463903552184,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V0",
+              "value": 1
+            },
+            "chosen": {
+              "target": "V0",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V0",
+              "value": 0
+            },
+            "optimal_probability": 0.7201353084830834,
+            "chosen_probability": 0.7972568223305884,
+            "candidate_probabilities": [
+              0.7972568223305884,
+              0.7201353084830834
+            ],
+            "minimum_probability": 0.7201353084830834,
+            "maximum_probability": 0.7972568223305884,
+            "probability_span": 0.07712151384750499,
+            "regret": 0.07712151384750499,
+            "normalized_regret": 1.0,
+            "observational_shortcut": [
+              0.6234529752607787,
+              0.708120287529442
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.07712151384750499,
+            "observational_shortcut_normalized_regret": 1.0,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 19,
+      "tape_key": "trl-grpo:SAMPLED-3000020-mediator_set-discovery-a2",
+      "query_type": "mediator_set",
+      "query": {
+        "type": "mediator_set",
+        "treatment": "FNI",
+        "outcome": "RMO"
+      },
+      "truth_file_sha256": "7fd21b33a61171d50589b208209717fc3f9536c6d9a6227a967dae63d0ca90d8",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V6",
+          "V10"
+        ],
+        "order": [
+          [
+            "V0",
+            "V6"
+          ],
+          [
+            "V0",
+            "V10"
+          ],
+          [
+            "V6",
+            "V10"
+          ],
+          [
+            "V10",
+            "V7"
+          ]
+        ]
+      },
+      "baselines": {
+        "empty_structure": {
+          "answer": {
+            "type": "answer",
+            "mediators": [],
+            "order": []
+          },
+          "quality": 0.0,
+          "metrics": {
+            "kind": "mediator",
+            "mediator_precision": 0.0,
+            "mediator_recall": 0.0,
+            "mediator_f1": 0.0,
+            "order_precision": 0.0,
+            "order_recall": 0.0,
+            "order_f1": 0.0,
+            "mediators_exact_match": false,
+            "order_exact_match": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 20,
+      "tape_key": "trl-grpo:SAMPLED-3000021-ate-target_query-a2",
+      "query_type": "ate",
+      "query": {
+        "type": "ate",
+        "treatment": "KFV",
+        "outcome": "NFS",
+        "treatment_value": "state_1",
+        "baseline_value": "state_0"
+      },
+      "truth_file_sha256": "315b3a9c07f12d8f600fd0c87132bf68af251ce4155e2ff2b4fbcabb3373f130",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          0.04864420483816073,
+          -0.04864420483816079
+        ]
+      },
+      "baselines": {
+        "zero_effect": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.0,
+              "state_1": 0.0
+            }
+          },
+          "quality": 0.3123647641337359,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              0.04864420483816073,
+              -0.04864420483816079
+            ],
+            "prediction": [
+              0.0,
+              0.0
+            ],
+            "component_errors": [
+              0.04864420483816073,
+              0.04864420483816079
+            ],
+            "l1_error": 0.09728840967632152,
+            "total_variation_error": 0.04864420483816076,
+            "squared_error": 0.0023662586643369427,
+            "observational_shortcut": [
+              0.04864420483816077,
+              -0.04864420483816077
+            ],
+            "observational_shortcut_error": 2.7755575615628914e-17,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "effect": {
+              "state_0": 0.04864420483816077,
+              "state_1": -0.04864420483816077
+            }
+          },
+          "quality": 0.9999999999999988,
+          "metrics": {
+            "kind": "target_query",
+            "truth": [
+              0.04864420483816073,
+              -0.04864420483816079
+            ],
+            "prediction": [
+              0.04864420483816077,
+              -0.04864420483816077
+            ],
+            "component_errors": [
+              4.163336342344337e-17,
+              1.3877787807814457e-17
+            ],
+            "l1_error": 5.551115123125783e-17,
+            "total_variation_error": 2.7755575615628914e-17,
+            "squared_error": 9.62964972193618e-34,
+            "observational_shortcut": [
+              0.04864420483816077,
+              -0.04864420483816077
+            ],
+            "observational_shortcut_error": 2.7755575615628914e-17,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 21,
+      "tape_key": "trl-grpo:SAMPLED-3000022-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability",
+      "query": {
+        "type": "individual_counterfactual_probability",
+        "treatment": "RSO",
+        "outcome": "POE",
+        "factual_value": "state_0",
+        "counterfactual_value": "state_2",
+        "factual_outcome_state": "state_0",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "b9c01041392ee6e3780645cd3e387a2619c744165bbc47ad1393f8c3f2ff56b4",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0,
+        "upper": 0.0034467550810268347,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "baselines": {
+        "zero_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 0.0
+          },
+          "quality": 0.9276513879927385,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.0,
+              "upper": 0.0034467550810268347,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.0,
+                0.0
+              ],
+              "certified_upper_range": [
+                0.0034467550810268347,
+                0.0034467550810268347
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "lower_endpoint_error": 0.0,
+            "upper_endpoint_error": 0.0034467550810268347,
+            "mean_absolute_endpoint_error": 0.0017233775405134173,
+            "mean_squared_endpoint_error": 5.940060294292151e-06,
+            "observational_shortcut": {
+              "lower": 0.0,
+              "upper": 0.0034467550810268347
+            },
+            "observational_shortcut_error": 4.321873821563584e-20,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "ignorance_interval": {
+          "answer": {
+            "type": "answer",
+            "lower": 0.0,
+            "upper": 1.0
+          },
+          "quality": 0.042463880311642464,
+          "metrics": {
+            "kind": "counterfactual_roi",
+            "truth": {
+              "lower": 0.0,
+              "upper": 0.0034467550810268347,
+              "certification": "exact",
+              "endpoint_error": 0.0,
+              "certified_lower_range": [
+                0.0,
+                0.0
+              ],
+              "certified_upper_range": [
+                0.0034467550810268347,
+                0.0034467550810268347
+              ]
+            },
+            "prediction": {
+              "lower": 0.0,
+              "upper": 1.0
+            },
+            "lower_endpoint_error": 0.0,
+            "upper_endpoint_error": 0.9965532449189731,
+            "mean_absolute_endpoint_error": 0.49827662245948656,
+            "mean_squared_endpoint_error": 0.49655918497926743,
+            "observational_shortcut": {
+              "lower": 0.0,
+              "upper": 0.0034467550810268347
+            },
+            "observational_shortcut_error": 4.321873821563584e-20,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 22,
+      "tape_key": "trl-grpo:SAMPLED-3000023-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets",
+      "query": {
+        "type": "backadj_minimal_sets",
+        "treatment": "IQE",
+        "outcome": "GFK"
+      },
+      "truth_file_sha256": "208d6f9c26331ba23f41221486931e8acf83766b945a55a49d40052f1657cd8b",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "baselines": {
+        "empty_set": {
+          "answer": {
+            "type": "answer",
+            "adjustment_set": []
+          },
+          "quality": 0.8571428571428571,
+          "metrics": {
+            "kind": "backadj",
+            "prediction": [],
+            "nearest_valid_adjustment_set": [
+              "V4",
+              "V6"
+            ],
+            "edit_distance": 2,
+            "valid_adjustment_set": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 23,
+      "tape_key": "trl-grpo:SAMPLED-4500076500326-best_intervention-decision-a0",
+      "query_type": "best_intervention",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "VWP",
+        "outcome": "GMG",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "6d542c9017970b9f2e75d61b601f770b98da1b7616b5ae678f7833e8e308bb5a",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V1",
+        "value": 2,
+        "probability": 0.35679060730309764,
+        "candidate_probabilities": [
+          0.4851170973864082,
+          0.3622705429225305,
+          0.35679060730309764,
+          0.6108390681726652
+        ]
+      },
+      "baselines": {
+        "state_0": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.5107023321725853,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V1",
+              "value": 2
+            },
+            "chosen": {
+              "target": "V1",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V1",
+              "value": 0
+            },
+            "optimal_probability": 0.35679060730309764,
+            "chosen_probability": 0.4851170973864082,
+            "candidate_probabilities": [
+              0.4851170973864082,
+              0.3622705429225305,
+              0.35679060730309764,
+              0.6108390681726652
+            ],
+            "minimum_probability": 0.35679060730309764,
+            "maximum_probability": 0.6108390681726652,
+            "probability_span": 0.25404846086956756,
+            "regret": 0.12832649008331054,
+            "normalized_regret": 0.5051260284910577,
+            "observational_shortcut": [
+              0.11876896877550591,
+              0.3261348474588579,
+              0.3321840957072396,
+              0.6843739523269833
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.12832649008331054,
+            "observational_shortcut_normalized_regret": 0.5051260284910577,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        },
+        "population_observation": {
+          "answer": {
+            "type": "answer",
+            "value": "state_0"
+          },
+          "quality": 0.5107023321725853,
+          "metrics": {
+            "kind": "decision",
+            "optimal": {
+              "target": "V1",
+              "value": 2
+            },
+            "chosen": {
+              "target": "V1",
+              "value": 0
+            },
+            "prediction": {
+              "target": "V1",
+              "value": 0
+            },
+            "optimal_probability": 0.35679060730309764,
+            "chosen_probability": 0.4851170973864082,
+            "candidate_probabilities": [
+              0.4851170973864082,
+              0.3622705429225305,
+              0.35679060730309764,
+              0.6108390681726652
+            ],
+            "minimum_probability": 0.35679060730309764,
+            "maximum_probability": 0.6108390681726652,
+            "probability_span": 0.25404846086956756,
+            "regret": 0.12832649008331054,
+            "normalized_regret": 0.5051260284910577,
+            "observational_shortcut": [
+              0.11876896877550591,
+              0.3261348474588579,
+              0.3321840957072396,
+              0.6843739523269833
+            ],
+            "observational_choice": 0,
+            "observational_shortcut_error": 0.12832649008331054,
+            "observational_shortcut_normalized_regret": 0.5051260284910577,
+            "optimal_action": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    },
+    {
+      "index": 24,
+      "tape_key": "trl-grpo:SAMPLED-3000025-mediator_set-discovery-a2",
+      "query_type": "mediator_set",
+      "query": {
+        "type": "mediator_set",
+        "treatment": "QHP",
+        "outcome": "ONE"
+      },
+      "truth_file_sha256": "e2e8a757b7a0522998e07cd6261a51bb80c885951d5b4a99ba0d8a3c23d98e9d",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V0"
+        ],
+        "order": [
+          [
+            "V0",
+            "V1"
+          ],
+          [
+            "V8",
+            "V0"
+          ],
+          [
+            "V8",
+            "V1"
+          ]
+        ]
+      },
+      "baselines": {
+        "empty_structure": {
+          "answer": {
+            "type": "answer",
+            "mediators": [],
+            "order": []
+          },
+          "quality": 0.0,
+          "metrics": {
+            "kind": "mediator",
+            "mediator_precision": 0.0,
+            "mediator_recall": 0.0,
+            "mediator_f1": 0.0,
+            "order_precision": 0.0,
+            "order_recall": 0.0,
+            "order_f1": 0.0,
+            "mediators_exact_match": false,
+            "order_exact_match": false,
+            "reward_scalarization": "terminal-quality-v10"
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "ate": {
+      "zero_effect": {
+        "quality_mean": 0.30907889160072183,
+        "quality_values": [
+          0.5055762945720583,
+          0.43013667211909157,
+          0.03752443612153448,
+          0.25979229105718904,
+          0.3123647641337359
+        ],
+        "metrics": {
+          "total_variation_error": [
+            0.2226888114794105,
+            0.2678943301275408,
+            0.5667748375190159,
+            0.07670135153651957,
+            0.04864420483816076
+          ]
+        }
+      },
+      "population_observation": {
+        "quality_mean": 0.7804916382695153,
+        "quality_values": [
+          0.5254970228527339,
+          0.5288986956588867,
+          0.999999999999995,
+          0.8480624728359621,
+          0.9999999999999988
+        ],
+        "metrics": {
+          "total_variation_error": [
+            0.20561485916657493,
+            0.1801113550122883,
+            1.1102230246251565e-16,
+            0.004822951344904819,
+            2.7755575615628914e-17
+          ]
+        }
+      }
+    },
+    "individual_counterfactual_probability": {
+      "zero_interval": {
+        "quality_mean": 0.3374504822905996,
+        "quality_values": [
+          0.08215912026095305,
+          0.2256842524405189,
+          0.06087795849046796,
+          0.3908796922683196,
+          0.9276513879927385
+        ],
+        "metrics": {
+          "mean_absolute_endpoint_error": [
+            0.2651591424395158,
+            0.921981294643447,
+            0.3411337397967726,
+            0.4226049486256254,
+            0.0017233775405134173
+          ]
+        }
+      },
+      "ignorance_interval": {
+        "quality_mean": 0.2219318422959315,
+        "quality_values": [
+          0.05885368295741983,
+          0.3649170608978263,
+          0.12218898961251272,
+          0.5212355977002563,
+          0.042463880311642464
+        ],
+        "metrics": {
+          "mean_absolute_endpoint_error": [
+            0.37955829833680205,
+            0.4676721974220992,
+            0.15886626020322742,
+            0.24909349756375304,
+            0.49827662245948656
+          ]
+        }
+      }
+    },
+    "backadj_minimal_sets": {
+      "empty_set": {
+        "quality_mean": 0.9,
+        "quality_values": [
+          0.9285714285714286,
+          1.0,
+          0.8571428571428571,
+          0.8571428571428571,
+          0.8571428571428571
+        ],
+        "metrics": {
+          "edit_distance": [
+            1,
+            0,
+            2,
+            2,
+            2
+          ],
+          "valid_adjustment_set": [
+            false,
+            true,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    "best_intervention": {
+      "state_0": {
+        "quality_mean": 0.6890628122399158,
+        "quality_values": [
+          1.0,
+          0.5060532243147139,
+          0.9230946011600962,
+          0.505463903552184,
+          0.5107023321725853
+        ],
+        "metrics": {
+          "regret": [
+            0.0,
+            0.061508064332530865,
+            0.008273522684884571,
+            0.07712151384750499,
+            0.12832649008331054
+          ],
+          "normalized_regret": [
+            0.0,
+            0.9015678475459796,
+            0.0851535520013777,
+            1.0,
+            0.5051260284910577
+          ],
+          "optimal_action": [
+            true,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      },
+      "population_observation": {
+        "quality_mean": 0.6055366727183334,
+        "quality_values": [
+          1.0,
+          0.5060532243147139,
+          0.505463903552184,
+          0.505463903552184,
+          0.5107023321725853
+        ],
+        "metrics": {
+          "regret": [
+            0.0,
+            0.061508064332530865,
+            0.09716004195280914,
+            0.07712151384750499,
+            0.12832649008331054
+          ],
+          "normalized_regret": [
+            0.0,
+            0.9015678475459796,
+            1.0,
+            1.0,
+            0.5051260284910577
+          ],
+          "optimal_action": [
+            true,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    },
+    "mediator_set": {
+      "empty_structure": {
+        "quality_mean": 0.0,
+        "quality_values": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "metrics": {
+          "mediators_exact_match": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "order_exact_match": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      }
+    }
+  },
+  "scope": "All original 25 fixed validation tasks, no selection by model result. Constants use the public schema only. Population-observation values use hidden world probabilities, not finite-budget public solutions or model performance. No claim about population prevalence or learning gains."
+}
