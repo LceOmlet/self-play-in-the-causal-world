@@ -5,6 +5,7 @@ only the declared inference settings differ from the actual submitted command.
 It is not a GPU compatibility, speed, probability, or learning acceptance test.
 """
 
+import argparse
 import hashlib
 import importlib.util
 import json
@@ -18,7 +19,7 @@ PROJECT = Path('/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92a
 VERL = Path('/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1')
 RECIPE = Path('/home/chen/vendor/dapo-official-20260906/verl-recipe-mask-v1')
 RUN = Path('/home/chen/runs/training-submission-20260907/run-01')
-OUT = Path('/home/chen/runs/inference-efficiency-20260908/configuration')
+DEFAULT_OUT = Path('/home/chen/runs/inference-efficiency-20260908/configuration')
 
 
 def flatten(value, prefix=''):
@@ -29,6 +30,9 @@ def flatten(value, prefix=''):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output', type=Path, default=DEFAULT_OUT)
+    OUT = parser.parse_args().output
     OUT.mkdir(parents=True, exist_ok=False)
     script = PROJECT / 'research/training_submission_20260907/control.py'
     spec = importlib.util.spec_from_file_location('submitted_controller', script)
@@ -47,7 +51,7 @@ def main():
                            if not arg.startswith('++ray_kwargs.ray_init.runtime_env.env_vars.')]
     command = [sys.executable, '-m', 'dapo.main_dapo',
                f'hydra.searchpath=[file://{VERL}/verl/trainer/config,file://{PROJECT}/configs/verl]',
-               '+profiles@_global_=cpt_world_dapo', *submitted_overrides, '--cfg', 'job', '--resolve']
+               '+profiles@_global_=cpt_world_dapo', *submitted_overrides]
     variants_path = Path(__file__).with_name('variants.json')
     variants = json.loads(variants_path.read_text())['variants']
     subprocess.run([sys.executable, str(PROJECT/'scripts/verify_official_dapo.py'),
@@ -57,7 +61,7 @@ def main():
     configs = {}
     commands = {}
     for name, overrides in variants.items():
-        invoked = command + overrides
+        invoked = command + overrides + ['--cfg', 'job', '--resolve']
         completed = subprocess.run(invoked, env=env, cwd=VERL, capture_output=True, text=True)
         (OUT/f'{name}.yaml').write_text(completed.stdout)
         (OUT/f'{name}.stderr').write_text(completed.stderr)
