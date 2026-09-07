@@ -36,6 +36,11 @@ def main():
     from verl.trainer.ppo.ray_trainer import RayPPOTrainer
     from verl.trainer.ppo.utils import create_rl_sampler
 
+    actual_method_source = Path(RayPPOTrainer._load_checkpoint.__code__.co_filename).resolve()
+    assert actual_method_source == (args.verl_root / 'verl/trainer/ppo/ray_trainer.py').resolve()
+    assert Path(create_rl_sampler.__code__.co_filename).resolve() == (
+        args.verl_root / 'verl/trainer/ppo/utils.py').resolve()
+
     original = OmegaConf.load(CONFIG)
     n = pq.ParquetFile(DATA).metadata.num_rows
     assert n == 500 and original.data.shuffle and original.data.seed == 42
@@ -101,6 +106,7 @@ def main():
         'defect_reproduced': not args.expect_fixed,
         'all_stream_cases_match': all(row['matches_uninterrupted_stream'] for row in results),
         'actual_upstream_method': 'RayPPOTrainer._load_checkpoint',
+        'actual_method_source': str(actual_method_source),
         'gpu_checkpoint_rpc_mocked': True, 'real_sampler_factory': 'verl.trainer.ppo.utils.create_rl_sampler',
         'dataset': {'path': str(DATA), 'sha256': hashlib.sha256(DATA.read_bytes()).hexdigest(), 'rows': n},
         'source': {'path': str(source), 'sha256': hashlib.sha256(source.read_bytes()).hexdigest()},
