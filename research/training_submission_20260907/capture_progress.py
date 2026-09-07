@@ -46,26 +46,32 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--reuse-snapshot', action='store_true')
     args = parser.parse_args()
-    args.output.mkdir(parents=True, exist_ok=False)
+    if args.reuse_snapshot:
+        assert args.output.is_dir()
+    else:
+        args.output.mkdir(parents=True, exist_ok=False)
     analysis_path = Path(__file__).resolve().parent.parent / 'base_signal_diagnostic_20260907/analyze_events.py'
     spec = importlib.util.spec_from_file_location('existing_event_analysis', analysis_path)
     existing = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(existing)
 
-    files = [args.run / name for name in ('launch.json', 'process.json', 'exit.json', 'train.log')]
-    files += list((args.run / 'environment').glob('*.jsonl'))
-    files += list((args.run / 'rollouts').glob('*.jsonl'))
-    files += list((args.run / 'validation').glob('*.jsonl'))
+    source_root = args.output if args.reuse_snapshot else args.run
+    files = [source_root / name for name in ('launch.json', 'process.json', 'exit.json', 'train.log')]
+    files += list((source_root / 'environment').glob('*.jsonl'))
+    files += list((source_root / 'rollouts').glob('*.jsonl'))
+    files += list((source_root / 'validation').glob('*.jsonl'))
     fingerprints = {}
     for source in sorted(files):
         if not source.exists():
             continue
-        relative = source.relative_to(args.run)
+        relative = source.relative_to(source_root)
         data = read_complete(source) if source.suffix in ('.jsonl', '.log') else source.read_bytes()
         target = args.output / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(data)
+        if not args.reuse_snapshot:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
         fingerprints[str(relative)] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
 
     events, _ = existing.read_events(args.output)
@@ -84,7 +90,20 @@ def main():
     for source in sorted((args.output / 'rollouts').glob('*.jsonl'), key=lambda p: int(p.stem)):
         for line in source.read_text(encoding='utf-8').splitlines():
             row = json.loads(line)
-            request = row['request_id']
+            request = row.get('request_id')
+            join_method = 'official_request_id'
+            if request is None:
+                # This pinned runtime's actual dump omits request IDs. Match the
+                # entire executed JSON command sequence, never score/order alone.
+                calls = re.findall(r'<tool_call>\s*<function=act>\s*<parameter=command>\s*(.*?)\s*</parameter>\s*</function>\s*</tool_call>', row['output'], re.DOTALL)
+                try:
+                    commands = [json.loads(call) for call in calls]
+                except json.JSONDecodeError:
+                    commands = []
+                candidates = [key for key, trace in by_request.items()
+                              if commands and commands == [event['command'] for event in trace]]
+                request = candidates[0] if len(candidates) == 1 else None
+                join_method = 'unique_full_command_sequence' if request else 'unresolved'
             trajectory = trajectories.get(request)
             raw = float(row['raw_reward'])
             penalty = float(row['overlong_reward'])
@@ -96,6 +115,7 @@ def main():
                 assert not row['completed'] and raw == 0
             retained.append({
                 'step': row['step'], 'request_id': request,
+                'event_join_method': join_method,
                 'raw_quality': raw, 'official_overlong_reward': penalty,
                 'shaped_reward_from_components': raw + penalty,
                 'original_dump_score': row['score'], 'completed': bool(row['completed']),
