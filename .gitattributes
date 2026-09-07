@@ -36,3 +36,4 @@ research/training_submission_20260907/** -text whitespace=cr-at-eol
 research/inference_efficiency_20260908/** -text whitespace=cr-at-eol
 research/inference_efficiency_20260908/figures/*.svg -diff -whitespace
 research/checkpoint_continuity_20260908/** -text whitespace=cr-at-eol
+research/checkpoint_continuity_20260908/*.patch -whitespace

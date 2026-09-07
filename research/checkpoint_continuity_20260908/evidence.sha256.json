@@ -1,0 +1,132 @@
+{
+  "archive": "evidence.tar.gz",
+  "sha256": "45a051e1409b94e2f92caa9128f157fdd45c461422de23d0604e7867d088544a",
+  "bytes": 75120,
+  "scope": "Actual saved-state equality and official adapter export; CPU-only original/candidate data-resume probes. Fixture data.pt files are not model checkpoints. GPU continuation unverified.",
+  "members": {
+    "saved-state.log": {
+      "bytes": 986,
+      "sha256": "243317bacfa532f4d8648625f297e831c42abaf0f8f775a8bb300e0eea9176dc"
+    },
+    "saved-state-v2.log": {
+      "bytes": 1906,
+      "sha256": "732309cd004ce6de2ed183a624875ff3d5201604c78147322973feea073b1047"
+    },
+    "data-resume.log": {
+      "bytes": 5017,
+      "sha256": "21300c7cef24b38a13555b2e001b7d9352c77c80500dcf4f803eccd539a3ecbe"
+    },
+    "data-resume-v2.log": {
+      "bytes": 5373,
+      "sha256": "52a1a473cd7c29f54f6d64c5b8d5affdf28243f7ad45df66b41ab423186d3808"
+    },
+    "data-resume-fixed.log": {
+      "bytes": 4933,
+      "sha256": "9b9015e335946ef89079672b43f3f89a63d0982a67017f5851e9f8d780cc7221"
+    },
+    "data-resume-fixed-v2.log": {
+      "bytes": 5090,
+      "sha256": "d4fcfb008c183d0178c841a6685157952bdd49b386f3808ef559f50114a670fa"
+    },
+    "candidate-source.json": {
+      "bytes": 717,
+      "sha256": "728aafba4309c2420c51ddd3827aff7f5a7b8df4a90a1715c7928710f556d43b"
+    },
+    "data-resume-only.patch": {
+      "bytes": 1639,
+      "sha256": "935314de43c7c8dacfb2e43eb411d710824830456ba29b2d4830e2b0e6a47446"
+    },
+    "saved-state-v2/acceptance.json": {
+      "bytes": 4012,
+      "sha256": "655c8c056d8f2ba6d427d1c7a78bf94e823d3ad1cc628beac3c29886395fa9cd"
+    },
+    "saved-state-v2/lora_adapter/adapter_config.json": {
+      "bytes": 1350,
+      "sha256": "f27058964c6dfb8a13bba725aeffd1befafcac005c6e3ec650500f4110ed6e61"
+    },
+    "data-resume/resume-probe.json": {
+      "bytes": 2406,
+      "sha256": "aeb946120c235cea11f5d74864b0de38241ed09ae41f31e997c9d7efc0a0f84c"
+    },
+    "data-resume/current_early_checkpoint_shape/global_step_5/data.pt": {
+      "bytes": 6868,
+      "sha256": "4c45df0b8e7b26281da3864269c368198cca7188a1fd307c420755507358895f"
+    },
+    "data-resume/filtered_updates_at_false_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "6dddb5200d5d1c36d478f020ac046b144d5fd19846b60814d745aa17c356f2a2"
+    },
+    "data-resume/unfiltered_true_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "71248c4838c8cb26b9faa6a0857dc2a864ea55d3ad5ba99cabcf20da3b55956d"
+    },
+    "data-resume-v2/resume-probe.json": {
+      "bytes": 2741,
+      "sha256": "159612463980f8172ef002a001919d3c69acae1078680e22aa7fde92adf11948"
+    },
+    "data-resume-v2/current_early_checkpoint_shape/global_step_5/data.pt": {
+      "bytes": 6868,
+      "sha256": "4c45df0b8e7b26281da3864269c368198cca7188a1fd307c420755507358895f"
+    },
+    "data-resume-v2/filtered_updates_at_false_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "6dddb5200d5d1c36d478f020ac046b144d5fd19846b60814d745aa17c356f2a2"
+    },
+    "data-resume-v2/unfiltered_true_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "71248c4838c8cb26b9faa6a0857dc2a864ea55d3ad5ba99cabcf20da3b55956d"
+    },
+    "data-resume-fixed/resume-probe.json": {
+      "bytes": 2623,
+      "sha256": "ae9b37510f4d466aa6aeeaae3a0049f53118b68dca4f2e8180f6e75f28b94d1a"
+    },
+    "data-resume-fixed/current_early_checkpoint_shape/global_step_5/data.pt": {
+      "bytes": 6868,
+      "sha256": "4c45df0b8e7b26281da3864269c368198cca7188a1fd307c420755507358895f"
+    },
+    "data-resume-fixed/filtered_updates_at_false_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "6dddb5200d5d1c36d478f020ac046b144d5fd19846b60814d745aa17c356f2a2"
+    },
+    "data-resume-fixed/unfiltered_true_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "71248c4838c8cb26b9faa6a0857dc2a864ea55d3ad5ba99cabcf20da3b55956d"
+    },
+    "data-resume-fixed-v2/resume-probe.json": {
+      "bytes": 2755,
+      "sha256": "d4f3baab19323375ee7f02a530dbb0538f5bf36d1475666b145200f560372cbc"
+    },
+    "data-resume-fixed-v2/current_early_checkpoint_shape/global_step_5/data.pt": {
+      "bytes": 6868,
+      "sha256": "4c45df0b8e7b26281da3864269c368198cca7188a1fd307c420755507358895f"
+    },
+    "data-resume-fixed-v2/filtered_updates_at_false_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "6dddb5200d5d1c36d478f020ac046b144d5fd19846b60814d745aa17c356f2a2"
+    },
+    "data-resume-fixed-v2/unfiltered_true_epoch_boundary/global_step_500/data.pt": {
+      "bytes": 6868,
+      "sha256": "71248c4838c8cb26b9faa6a0857dc2a864ea55d3ad5ba99cabcf20da3b55956d"
+    },
+    "sources/original-ray_trainer.py": {
+      "bytes": 92859,
+      "sha256": "c930623489f724e9abbf1dab41ed617da1be2f0d60485d4c0ee5354c145dd809"
+    },
+    "sources/candidate-ray_trainer.py": {
+      "bytes": 90791,
+      "sha256": "1cf0e40d759f2df1472deb81ba75e952cd084c36ac06412c57977b7d4e7bf0e4"
+    },
+    "sources/current-dapo_ray_trainer.py": {
+      "bytes": 23185,
+      "sha256": "ce4a091c7987088694b9fddfd57c2988439f2ad2df580e5debf113b538e91cc0"
+    },
+    "current-run-status.json": {
+      "bytes": 315,
+      "sha256": "ba43ee67b38c4083faf285acc529e48225fe05f01755f774664a94482077e808"
+    },
+    "current-task-runner-stdout.log": {
+      "bytes": 86995,
+      "sha256": "db390a9f18006ec3d53e61ac06452531815a66db8550a2a64f24031322cedbf1"
+    }
+  }
+}
