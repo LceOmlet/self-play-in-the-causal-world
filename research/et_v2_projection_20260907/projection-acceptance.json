@@ -1,0 +1,222 @@
+{
+  "base_commit": "9f8a343fca62febfb3f962b5e264d7f399f3f161",
+  "projection_cases": [
+    {
+      "domains": [
+        2
+      ],
+      "child_domain": 2,
+      "positions": [
+        0
+      ],
+      "old": {
+        "median_seconds": 4.357192665338516e-05,
+        "times": [
+          7.353001274168491e-05,
+          3.462808672338724e-05,
+          4.357192665338516e-05
+        ],
+        "peak_python_bytes": 3600
+      },
+      "new": {
+        "median_seconds": 2.5801011361181736e-05,
+        "times": [
+          3.761297557502985e-05,
+          2.5801011361181736e-05,
+          2.1863961592316628e-05
+        ],
+        "peak_python_bytes": 3664
+      },
+      "max_abs_error": 0.0,
+      "speedup": 1.6887681666207943,
+      "peak_allocation_ratio": 0.982532751091703
+    },
+    {
+      "domains": [
+        5
+      ],
+      "child_domain": 5,
+      "positions": [
+        0
+      ],
+      "old": {
+        "median_seconds": 7.204804569482803e-05,
+        "times": [
+          8.672801777720451e-05,
+          5.8737932704389095e-05,
+          7.204804569482803e-05
+        ],
+        "peak_python_bytes": 5640
+      },
+      "new": {
+        "median_seconds": 4.4720014557242393e-05,
+        "times": [
+          5.340494681149721e-05,
+          4.4720014557242393e-05,
+          4.163698758929968e-05
+        ],
+        "peak_python_bytes": 5528
+      },
+      "max_abs_error": 0.0,
+      "speedup": 1.6110917317033806,
+      "peak_allocation_ratio": 1.020260492040521
+    },
+    {
+      "domains": [
+        2,
+        3,
+        4
+      ],
+      "child_domain": 3,
+      "positions": [
+        0,
+        2
+      ],
+      "old": {
+        "median_seconds": 0.00031585502438247204,
+        "times": [
+          0.00036316702608019114,
+          0.00031585502438247204,
+          0.000290223048068583
+        ],
+        "peak_python_bytes": 16720
+      },
+      "new": {
+        "median_seconds": 0.00018708303105086088,
+        "times": [
+          0.0002110479399561882,
+          0.00018708303105086088,
+          0.00014702300541102886
+        ],
+        "peak_python_bytes": 10776
+      },
+      "max_abs_error": 5.551115123125783e-17,
+      "speedup": 1.6883146622560485,
+      "peak_allocation_ratio": 1.5515961395694136
+    },
+    {
+      "domains": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "child_domain": 4,
+      "positions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "old": {
+        "median_seconds": 0.015816512051969767,
+        "times": [
+          0.015816512051969767,
+          0.01620409602764994,
+          0.015466116019524634
+        ],
+        "peak_python_bytes": 589192
+      },
+      "new": {
+        "median_seconds": 0.004524113028310239,
+        "times": [
+          0.004562919028103352,
+          0.004363537998870015,
+          0.004524113028310239
+        ],
+        "peak_python_bytes": 254360
+      },
+      "max_abs_error": 3.3306690738754696e-16,
+      "speedup": 3.4960470600526197,
+      "peak_allocation_ratio": 2.3163704985060543
+    },
+    {
+      "domains": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "child_domain": 5,
+      "positions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "old": {
+        "median_seconds": 0.43667044991161674,
+        "times": [
+          0.432036001002416,
+          0.43667044991161674,
+          0.4440612660255283
+        ],
+        "peak_python_bytes": 4367924
+      },
+      "new": {
+        "median_seconds": 0.07327246898785233,
+        "times": [
+          0.07327246898785233,
+          0.0717035619309172,
+          0.0802031559869647
+        ],
+        "peak_python_bytes": 2180900
+      },
+      "max_abs_error": 5.967448757360216e-16,
+      "speedup": 5.959543276534209,
+      "peak_allocation_ratio": 2.0028080150396623
+    }
+  ],
+  "passed": true,
+  "worlds": {
+    "count": 64,
+    "old_seconds": 3.7758107850095257,
+    "new_seconds": 2.459288483019918,
+    "speedup": 1.5353265023926617,
+    "max_cpt_error": 1.887379141862766e-15,
+    "same_rng_after_every_world": true,
+    "same_structures": true,
+    "max_abs_log_cpt_error": 8.881784197001252e-15
+  },
+  "tasks": {
+    "count": 25,
+    "old_seconds": 8.87917768000625,
+    "new_seconds": 7.120820650015958,
+    "speedup": 1.2469317957034,
+    "max_cpt_error": 6.106226635438361e-16,
+    "world_builds": 107,
+    "same_rng_after_every_build": true,
+    "same_selected_tasks_and_non_cpt_fields": true,
+    "seed_ids": [
+      "SAMPLED-0-ate-target_query-a0",
+      "SAMPLED-0-individual_counterfactual_probability-target_query-a4",
+      "SAMPLED-0-backadj_minimal_sets-discovery-a13",
+      "SAMPLED-0-best_intervention-decision-a7",
+      "SAMPLED-0-mediator_set-discovery-a1",
+      "SAMPLED-1-ate-target_query-a0",
+      "SAMPLED-1-individual_counterfactual_probability-target_query-a0",
+      "SAMPLED-1-backadj_minimal_sets-discovery-a0",
+      "SAMPLED-118-best_intervention-decision-a0",
+      "SAMPLED-1-mediator_set-discovery-a0",
+      "SAMPLED-2-ate-target_query-a0",
+      "SAMPLED-2-individual_counterfactual_probability-target_query-a2",
+      "SAMPLED-2-backadj_minimal_sets-discovery-a0",
+      "SAMPLED-273-best_intervention-decision-a0",
+      "SAMPLED-2-mediator_set-discovery-a0",
+      "SAMPLED-3-ate-target_query-a8",
+      "SAMPLED-3-individual_counterfactual_probability-target_query-a17",
+      "SAMPLED-3-backadj_minimal_sets-discovery-a0",
+      "SAMPLED-186-best_intervention-decision-a2",
+      "SAMPLED-3-mediator_set-discovery-a0",
+      "SAMPLED-4-ate-target_query-a13",
+      "SAMPLED-4-individual_counterfactual_probability-target_query-a1",
+      "SAMPLED-4-backadj_minimal_sets-discovery-a5",
+      "SAMPLED-100-best_intervention-decision-a0",
+      "SAMPLED-4-mediator_set-discovery-a0"
+    ]
+  },
+  "candidate_world_space_sha256": "b4984a18d9a13650231c75663cec5131ba697628e9fa09a9dc4d2d8bb5a41e13",
+  "scope": "Paired fixed fixtures; Python allocation peaks, not whole-process RSS or training throughput."
+}

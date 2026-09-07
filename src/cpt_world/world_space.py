@@ -33,7 +33,7 @@ import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from fractions import Fraction
-from itertools import combinations
+from itertools import combinations, product
 from pathlib import Path
 from typing import Any
 
@@ -233,7 +233,12 @@ def _parent_interaction_projection(
     parent_domains: Sequence[int],
     parent_positions: Sequence[int],
 ) -> tuple[tuple[float, ...], ...]:
-    """Return one pure categorical ANOVA interaction component."""
+    """Return one pure ANOVA block by commuting axis projections.
+
+    Average the unused axes once, then centre each selected axis on the compact
+    table. Expanding the product of these commuting centring operators gives
+    the inclusion-exclusion formula without its 2**len(positions) marginals.
+    """
 
     positions = tuple(parent_positions)
     if not positions:
@@ -241,20 +246,59 @@ def _parent_interaction_projection(
     if tuple(sorted(set(positions))) != positions:
         raise ValueError("parent_positions must be strictly increasing")
 
-    marginals: list[tuple[int, tuple[tuple[float, ...], ...]]] = []
-    for subset_size in range(len(positions) + 1):
-        sign = -1 if (len(positions) - subset_size) % 2 else 1
-        for subset in combinations(positions, subset_size):
-            marginals.append(
-                (sign, _parent_subset_marginal_projection(table, parent_domains, subset))
-            )
-
-    return tuple(
-        tuple(
-            math.fsum(sign * marginal[row_index][child_state] for sign, marginal in marginals)
-            for child_state in range(len(table[0]))
+    marginal = _parent_subset_marginal_projection(table, parent_domains, positions)
+    if len(parent_domains) == 1:
+        # Here P = I - M already has only two terms. Avoid compact-layout
+        # setup and retain the original marginal summation for this case.
+        mean = _parent_subset_marginal_projection(table, parent_domains, ())[0]
+        return tuple(
+            tuple(math.fsum((-base, value)) for base, value in zip(mean, row, strict=True))
+            for row in marginal
         )
-        for row_index in range(len(table))
+    full_strides = tuple(
+        math.prod(parent_domains[position + 1 :]) for position in range(len(parent_domains))
+    )
+    selected_domains = tuple(parent_domains[position] for position in positions)
+    selected_strides = tuple(
+        math.prod(selected_domains[axis + 1 :]) for axis in range(len(positions))
+    )
+    # Every unused-axis assignment shares this same marginal row. Keep one
+    # representative per selected context while applying the centring passes.
+    projected = tuple(
+        marginal[
+            sum(
+                state * full_strides[position]
+                for state, position in zip(states, positions, strict=True)
+            )
+        ]
+        for states in product(*(range(domain) for domain in selected_domains))
+    )
+    child_domain = len(table[0])
+    for domain, suffix_count in zip(selected_domains, selected_strides, strict=True):
+        centred: list[tuple[float, ...]] = [()] * len(projected)
+        for start in range(0, len(projected), domain * suffix_count):
+            for suffix in range(suffix_count):
+                indices = tuple(start + state * suffix_count + suffix for state in range(domain))
+                means = tuple(
+                    math.fsum(projected[index][child] for index in indices) / domain
+                    for child in range(child_domain)
+                )
+                for index in indices:
+                    centred[index] = tuple(
+                        value - mean for value, mean in zip(projected[index], means, strict=True)
+                    )
+        projected = tuple(centred)
+    # Immutable rows can be shared when broadcasting back to canonical CPT order.
+    return tuple(
+        projected[
+            sum(
+                (row // full_strides[position] % domain) * stride
+                for position, domain, stride in zip(
+                    positions, selected_domains, selected_strides, strict=True
+                )
+            )
+        ]
+        for row in range(len(table))
     )
 
 

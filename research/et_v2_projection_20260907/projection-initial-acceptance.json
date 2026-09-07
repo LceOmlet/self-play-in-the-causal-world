@@ -1,0 +1,160 @@
+{
+  "base_commit": "9f8a343fca62febfb3f962b5e264d7f399f3f161",
+  "projection_cases": [
+    {
+      "domains": [
+        2,
+        3,
+        4
+      ],
+      "child_domain": 3,
+      "positions": [
+        0,
+        2
+      ],
+      "old": {
+        "median_seconds": 0.0003433880629017949,
+        "times": [
+          0.00040601904038339853,
+          0.00029369303956627846,
+          0.0003433880629017949
+        ],
+        "peak_python_bytes": 16720
+      },
+      "new": {
+        "median_seconds": 0.00016485003288835287,
+        "times": [
+          0.00023676699493080378,
+          0.00016485003288835287,
+          0.00016432697884738445
+        ],
+        "peak_python_bytes": 10736
+      },
+      "max_abs_error": 5.551115123125783e-17,
+      "speedup": 2.0830330263528642,
+      "peak_allocation_ratio": 1.5573770491803278
+    },
+    {
+      "domains": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "child_domain": 4,
+      "positions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "old": {
+        "median_seconds": 0.015297948033548892,
+        "times": [
+          0.015802655019797385,
+          0.015278693055734038,
+          0.015297948033548892
+        ],
+        "peak_python_bytes": 589192
+      },
+      "new": {
+        "median_seconds": 0.0044724809704348445,
+        "times": [
+          0.004394749994389713,
+          0.0045168299693614244,
+          0.0044724809704348445
+        ],
+        "peak_python_bytes": 254320
+      },
+      "max_abs_error": 3.3306690738754696e-16,
+      "speedup": 3.4204612908753242,
+      "peak_allocation_ratio": 2.3167348222711546
+    },
+    {
+      "domains": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "child_domain": 5,
+      "positions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "old": {
+        "median_seconds": 0.4322038480313495,
+        "times": [
+          0.4378210810245946,
+          0.4322038480313495,
+          0.43078056804370135
+        ],
+        "peak_python_bytes": 4367924
+      },
+      "new": {
+        "median_seconds": 0.07143526209983975,
+        "times": [
+          0.07131460099481046,
+          0.07143526209983975,
+          0.07789919606875628
+        ],
+        "peak_python_bytes": 2180860
+      },
+      "max_abs_error": 5.967448757360216e-16,
+      "speedup": 6.050287145685703,
+      "peak_allocation_ratio": 2.0028447493190757
+    }
+  ],
+  "passed": true,
+  "worlds": {
+    "count": 64,
+    "old_seconds": 3.773419613018632,
+    "new_seconds": 2.4666542150080204,
+    "speedup": 1.529772430225435,
+    "max_cpt_error": 1.887379141862766e-15,
+    "same_rng_after_every_world": true,
+    "same_structures": true
+  },
+  "tasks": {
+    "count": 25,
+    "old_seconds": 8.872770503978245,
+    "new_seconds": 7.037130620912649,
+    "speedup": 1.2608506196560454,
+    "max_cpt_error": 6.106226635438361e-16,
+    "world_builds": 107,
+    "same_rng_after_every_build": true,
+    "same_selected_tasks_and_non_cpt_fields": true,
+    "seed_ids": [
+      "SAMPLED-0-ate-target_query-a0",
+      "SAMPLED-0-individual_counterfactual_probability-target_query-a4",
+      "SAMPLED-0-backadj_minimal_sets-discovery-a13",
+      "SAMPLED-0-best_intervention-decision-a7",
+      "SAMPLED-0-mediator_set-discovery-a1",
+      "SAMPLED-1-ate-target_query-a0",
+      "SAMPLED-1-individual_counterfactual_probability-target_query-a0",
+      "SAMPLED-1-backadj_minimal_sets-discovery-a0",
+      "SAMPLED-118-best_intervention-decision-a0",
+      "SAMPLED-1-mediator_set-discovery-a0",
+      "SAMPLED-2-ate-target_query-a0",
+      "SAMPLED-2-individual_counterfactual_probability-target_query-a2",
+      "SAMPLED-2-backadj_minimal_sets-discovery-a0",
+      "SAMPLED-273-best_intervention-decision-a0",
+      "SAMPLED-2-mediator_set-discovery-a0",
+      "SAMPLED-3-ate-target_query-a8",
+      "SAMPLED-3-individual_counterfactual_probability-target_query-a17",
+      "SAMPLED-3-backadj_minimal_sets-discovery-a0",
+      "SAMPLED-186-best_intervention-decision-a2",
+      "SAMPLED-3-mediator_set-discovery-a0",
+      "SAMPLED-4-ate-target_query-a13",
+      "SAMPLED-4-individual_counterfactual_probability-target_query-a1",
+      "SAMPLED-4-backadj_minimal_sets-discovery-a5",
+      "SAMPLED-100-best_intervention-decision-a0",
+      "SAMPLED-4-mediator_set-discovery-a0"
+    ]
+  },
+  "scope": "Paired fixed fixtures; Python allocation peaks, not whole-process RSS or training throughput."
+}

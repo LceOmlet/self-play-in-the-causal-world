@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "exact_basis_checks": [
+    {
+      "domains": [
+        2,
+        3
+      ],
+      "child": 3,
+      "basis_vectors": 10,
+      "mutually_orthogonal": true,
+      "weighted_contrast_identity": true
+    },
+    {
+      "domains": [
+        2,
+        3,
+        2
+      ],
+      "child": 4,
+      "basis_vectors": 33,
+      "mutually_orthogonal": true,
+      "weighted_contrast_identity": true
+    }
+  ],
+  "symbolic_cartesian_jacobians": [
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ],
+  "base_clr_jacobian_dimensions": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "actual_kernel_cases": 96,
+  "max_scale_error": 2.220446049250313e-16,
+  "max_logscore_error": 1.2878587085651816e-14,
+  "binary_density_reduction": true,
+  "scope": "General density proven by change of variables; finite symbolic/exact and actual-kernel checks support it. No new sampler law."
+}
