@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "91015f5a5ea337ec2004cbffbd2d30f40c1135f0e0697d1bfa74107341bb0b84",
+  "archive_bytes": 110193,
+  "members": {
+    "benchmark_compilation.py": "6a298938eee6f128a529c9543747a83b4d44d385f3a25e1a82d06bf2e2a345c1",
+    "benchmark-inputs-v1/inputs.json": "e7b699133b2257b8ff9784e47936432b98d10d50fd1c2b7861bfc9cf3c5939e4",
+    "benchmark-inputs-v1/preparation.json": "7a5d7b74e988e557ef4b96eb8e9f60778545d3cf245defaab478da01107a1f3a",
+    "benchmark-preparation.log": "79e7ef3650bb58b60671bd4da8bff15fc68a9f3f701aa9034ea18c2ea35931ae",
+    "benchmark-api-validation.json": "130e5037a62b487f07c0a53bbf8ae0eb40fd06c0b29cd45c24aef326863d4029",
+    "benchmark-occupied-guard.log": "ae7162f27b3c439eefafece8dc4be5962ddb6406cce0624642feb8b11d1f6771",
+    "benchmark-preparation-status.json": "8b09bf996aa9d5532c9614848e2a35be0d3e194075432632ca37300d36e14e7a",
+    "benchmark-preparation-worker.out": "b0083da16119796d04834cdba4cdb988a59d4a1550f01ac649437584ec5e07fb",
+    "recipe-counter-audit.json": "7faa160dc3898e324fa23ced1a1aea6beb91d534fd40a6b65de12d418f296074"
+  },
+  "scope": "CPU fixture and API preparation only; no GPU timing or training change."
+}

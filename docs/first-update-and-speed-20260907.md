@@ -27,6 +27,8 @@
 
 2026-09-08 已对实际 Qwen3.5-9B 完成三套配置的官方入口解析与官方配置校验：当前 eager／运行时 LoRA、开启编译／CUDA Graph、进一步使用官方 `model.lora.merge=true`。完整配置差异仅为声明的两个或三个推理开关，模型、数据、采样、奖励、优化器及 DAPO 均保持相同。该模型文本部分为 32 层，其中 24 层线性注意力、8 层全注意力；通用 Qwen2 测试不能替代它的 GPU 验收。目前没有新的 GPU 计时或非零适配器同步验收结果，不能宣称提速已实现。配置、成功和失败记录见 `research/inference_efficiency_20260908/README.md`。
 
+02:10:47 的实际进程快照仍为四次已记录更新；第 5 步首个生成批次保留题组数为零，官方日志明确继续补采样。前四步均为一个生成批次，所以动态过滤解释了第 5 步的额外等待，不能解释前四步已经很慢。固定非零 LoRA、相同输入 token、相同输出长度的官方 vLLM 计时脚本已通过 CPU 输入准备及实际安装 API 校验，包含单路／四路和 2K／24K 上下文；尚未取得 GPU 计时，不将准备工作报告为已提速。
+
 证据入口
 
 `research/training_submission_20260907/first-update.tar.gz` 保存首次更新日志、官方 rollout 原文、原始环境事件及快照分析；哈希在 `first-update.sha256.json`。`compare_speed.py` 重放旧日志与新快照的时间统计，结果为 `speed-comparison.json`。旧日志及哈希已经归档于 `research/task_value_learning_20260907`。

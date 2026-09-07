@@ -79,3 +79,33 @@ CSV and source hashes in `figures/`. Rendering was done locally using the existi
 packages were installed into the running training environment. The first local
 invocation lacked that existing dependency path, then succeeded with it supplied
 via `PYTHONPATH`. The figure is not a learning curve across matched tasks.
+
+`benchmark_compilation.py` now prepares and measures equal-work inference through
+official `vllm.LLM.generate`. CPU preparation succeeded on the real tokenizer:
+four reencoded rollout lengths are 6912, 15326, 26788 and 5818 tokens. Sliding
+excerpts of the longest record provide identical 2048/24576-token inputs for
+one/four requests, with distinct first cache blocks. These are timing fixtures,
+not recovered original action-token counts or additional task solutions.
+
+Both variants use the same bitwise-verified nonzero adapter, BF16, 32768 context,
+four-sequence engine limit, prefix caching and 8192-token scheduler budget.
+The only variant differences are eager mode and capture sizes [1,2,4]. Each
+request generates exactly 256 tokens with official SamplingParams; ignoring EOS
+is confined to this timing workload. Per-shape warmup precedes two cold-prefix /
+reused-prefix pairs. Logs retain generated token IDs, selected-token logprobs,
+actual cached-token counts, startup time and generation wall time. Wall throughput
+includes prefill and host overhead; it is not raw decode throughput.
+
+CPU checks bound both option dictionaries to the actual installed EngineArgs
+signature and validated official CompilationConfig, LoRAConfig and SamplingParams;
+CUDA remained uninitialized. Invoking the actual benchmark entry point while
+training occupies the GPU correctly refused before creating an output directory
+or a model. There is still **no GPU timing result**. The standalone benchmark
+also does not exercise verl weight synchronization, training-side probability
+recomputation, TIS or checkpoint loading; those remain actual-trainer checks.
+Prepared inputs and CPU records are in `benchmark-preparation-evidence.tar.gz`.
+The 02:10:47 local-time snapshot still has four logged updates and no checkpoint;
+the trainer reports zero retained prompts after the first generation batch for
+update 5 and continues sampling. Updates 1–4 each used one generation batch.
+This observed filtering cost explains additional waiting in update 5, not the
+already slow generation in the preceding updates. The training remains live.
