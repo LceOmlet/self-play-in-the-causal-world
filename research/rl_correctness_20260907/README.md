@@ -13,7 +13,7 @@
 | 二态 ET-V2 密度 | 150 次实际内核核对与二维、三维符号 Jacobian 检验；更高维多态机制仍有推导义务。 |
 | 最优合法实验 | 特定弱边双世界在预算 131,072 下，最佳可达等先验错误率约 48.9788%。这是最坏情形反例，不是困难题占比。 |
 | 官方 DAPO run-01 | **失败**：recipe 覆盖 action mask，导致工具 token 进入训练。局部公式检查的临时通过结论已撤销，相关检查点禁止初始化。 |
-| 官方 DAPO run-02 | 显式修复 action mask 后，从原始基座进行一次隔离更新。仍以实际 `execution-acceptance.json` 为准；文件不存在时表示尚未完成验收。一次更新不能证明收敛或长期能力改善。 |
+| 官方 DAPO run-02 | 已从原始基座完成一次隔离更新并通过实际张量验收，见 `official_execution/run-02-mask-v1-audit-only/execution-acceptance.json`。19,830 个动作 token、4,018 个工具 token 的掩码传播已逐段核对。一次更新不能证明收敛或长期能力改善。 |
 
 完整活动清单和剩余义务见 [goal](../../docs/rl-correctness-goal-20260907.md)。
 

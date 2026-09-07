@@ -1,0 +1,263 @@
+{
+  "passed": true,
+  "official_updates": 1,
+  "trainable_tensors": 496,
+  "changed_tensors": 248,
+  "changed_name_groups": {
+    "B": 248
+  },
+  "frozen_tensors_without_grad": 760,
+  "initial_lora_B_all_zero": true,
+  "grad_norm_before_clip": 0.21484375,
+  "groups_generated": 1,
+  "max_first_step_adam_rounding_units": 1.64838804707303,
+  "groups_discarded": 0,
+  "total_action_tokens": 19830,
+  "raw_quality": [
+    0.4042777121067047,
+    0.43486863374710083,
+    0.9553104639053345,
+    0.4348719120025635
+  ],
+  "overlong_shaping": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+  ],
+  "losses": [
+    {
+      "actual": 0.2797532379627228,
+      "reference": 0.279753249283901,
+      "actor_rows": [
+        0
+      ],
+      "valid_tokens": 9629,
+      "global_tokens": 19830.0,
+      "max_current_old_difference": 0.0
+    },
+    {
+      "actual": 0.03887070342898369,
+      "reference": 0.038870702288333434,
+      "actor_rows": [
+        1
+      ],
+      "valid_tokens": 1674,
+      "global_tokens": 19830.0,
+      "max_current_old_difference": 0.0
+    },
+    {
+      "actual": -0.2986401617527008,
+      "reference": -0.29864017246342256,
+      "actor_rows": [
+        2
+      ],
+      "valid_tokens": 3954,
+      "global_tokens": 19830.0,
+      "max_current_old_difference": 0.0
+    },
+    {
+      "actual": 0.10631414502859116,
+      "reference": 0.10631414476225176,
+      "actor_rows": [
+        3
+      ],
+      "valid_tokens": 4573,
+      "global_tokens": 19830.0,
+      "max_current_old_difference": 0.0
+    }
+  ],
+  "tis": {
+    "mean": 1.0000727458608554,
+    "clipped_fraction": 0.0,
+    "effective_sample_size": 19812.323564990384,
+    "max_abs_logprob_difference": 2.821403741836548
+  },
+  "trajectories": [
+    {
+      "request_id": "50973352ad9f40bb8a645e3c50f00c5a",
+      "response_tokens": 2146,
+      "action_tokens": 1674,
+      "tool_tokens": 472,
+      "completed": true,
+      "assistant_turns": 6,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.43486863744267845,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.0933,
+            0.2698,
+            -0.3631
+          ],
+          "component_errors": [
+            0.09519500875060302,
+            0.28146368078541656,
+            0.37665868953601966
+          ],
+          "l1_error": 0.7533173790720392,
+          "total_variation_error": 0.3766586895360196,
+          "squared_error": 0.0767185538984313,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 640,
+        "queries_used": 3
+      }
+    },
+    {
+      "request_id": "5fe4d90b97e346a3af1cda04c09aa9f9",
+      "response_tokens": 5799,
+      "action_tokens": 3954,
+      "tool_tokens": 1845,
+      "completed": true,
+      "assistant_turns": 21,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.9553104898893425,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_errors": [
+            0.0018950087506030278,
+            0.011663680785416575,
+            0.013558689536019686
+          ],
+          "l1_error": 0.027117379072039288,
+          "total_variation_error": 0.013558689536019644,
+          "squared_error": 0.0001078235231877092,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 65536,
+        "queries_used": 16
+      }
+    },
+    {
+      "request_id": "5b970c0e3b964467ae2f4f54c6d67b75",
+      "response_tokens": 5228,
+      "action_tokens": 4573,
+      "tool_tokens": 655,
+      "completed": true,
+      "assistant_turns": 8,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.43487189980932633,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.093254,
+            0.269841,
+            -0.363095
+          ],
+          "component_errors": [
+            0.09514900875060303,
+            0.28150468078541657,
+            0.3766536895360197
+          ],
+          "l1_error": 0.7533073790720393,
+          "total_variation_error": 0.37665368953601963,
+          "squared_error": 0.07672207367047264,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 512,
+        "queries_used": 3
+      }
+    },
+    {
+      "request_id": "cbcf71caf9664e64a216332c9ab3db7f",
+      "response_tokens": 10675,
+      "action_tokens": 9629,
+      "tool_tokens": 1046,
+      "completed": true,
+      "assistant_turns": 9,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.40427770278797515,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            -0.05996,
+            -0.38069,
+            0.44065
+          ],
+          "component_errors": [
+            0.05806499124939697,
+            0.3690263192145834,
+            0.4270913104639803
+          ],
+          "l1_error": 0.8541826209279607,
+          "total_variation_error": 0.42709131046398036,
+          "squared_error": 0.10731965165189872,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 1792,
+        "queries_used": 5
+      }
+    }
+  ],
+  "limitations": [
+    "One actual update, not evidence of capability improvement.",
+    "Frozen parameters checked by requires_grad/absent gradients and optimizer semantics; no full 9B before/after hash.",
+    "Model gradients captured for finite updates; no independent full-model backward implementation."
+  ]
+}

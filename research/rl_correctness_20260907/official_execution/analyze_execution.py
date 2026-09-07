@@ -91,10 +91,23 @@ assert all(uid in groups for uid, item in all_groups.items() if item['eligible']
 losses = read('policy_loss')
 assert len(losses) == 4
 loss_records = []
+loss_actor_rows = []
 for entry in losses:
     old_log, log, advantage = [entry[key].double() for key in ('old_log_prob', 'log_prob', 'advantages')]
     selected = entry['response_mask'].bool()
     weight = entry['rollout_is_weights'].double()
+    assert old_log.shape[1] == old.shape[1]
+    matched_rows = []
+    for micro_row in range(old_log.shape[0]):
+        candidates = [row for row in range(old.shape[0])
+                      if torch.equal(old_log[micro_row], old[row].double())]
+        assert len(candidates) == 1, 'Loss row must map uniquely to actual actor data'
+        row, = candidates
+        assert torch.equal(selected[micro_row], mask[row]), 'Action mask changed before loss'
+        close(advantage[micro_row], tensors['advantages'][row], atol=0, rtol=0)
+        close(weight[micro_row], tensors['rollout_is_weights'][row], atol=0, rtol=0)
+        matched_rows.append(row)
+    loss_actor_rows.extend(matched_rows)
     ratio = (log-old_log).clamp(-20, 20).exp()
     chosen = torch.where(advantage >= 0, ratio.clamp(max=1.28), ratio.clamp(min=.8, max=10))
     info = entry['config']['global_batch_info']
@@ -104,9 +117,11 @@ for entry in losses:
     close(entry['result'][0], expected_loss, atol=3e-5, rtol=3e-4)
     assert entry['loss_agg_mode'] == 'token-mean'
     loss_records.append({'actual': float(entry['result'][0]), 'reference': float(expected_loss),
+                         'actor_rows': matched_rows,
                          'valid_tokens': int(selected.sum()), 'global_tokens': denominator,
                          'max_current_old_difference': float((log-old_log)[selected].abs().max())})
 assert sum(item['valid_tokens'] for item in loss_records) == mask.sum().item()
+assert sorted(loss_actor_rows) == list(range(old.shape[0])), 'Every actor row must enter loss exactly once'
 
 pre, post = before[0], after[0]
 assert pre['optimizer_type'] == post['optimizer_type'] == 'torch.optim.adamw.AdamW'
@@ -196,12 +211,14 @@ for trajectory in trajectories:
         b = entry['batch']['tensors']
         for row in range(b['responses'].shape[0]):
             if b['responses'][row, :len(ids)].tolist() == ids:
-                matches.append((b, row))
+                matches.append((b, row, entry['batch']['non_tensors']))
     assert len(matches) == 1
-    b, row = matches[0]
+    b, row, extras = matches[0]
     assert b['response_mask'][row, :len(ids)].tolist() == tmask
     close(b['rollout_log_probs'][row, :len(ids)], logs, atol=1e-6)
     assert b['attention_mask'][row, -b['responses'].shape[1]:].sum() == len(ids)
+    environment = output['extra_fields'].get('cpt_world', {})
+    close(extras['acc'][row], environment['raw_reward'], atol=1e-7, rtol=1e-7)
     trajectory_records.append({'request_id': request, 'response_tokens': len(ids),
                                'action_tokens': sum(tmask), 'tool_tokens': len(ids)-sum(tmask),
                                'completed': completed, 'assistant_turns': len(gs),

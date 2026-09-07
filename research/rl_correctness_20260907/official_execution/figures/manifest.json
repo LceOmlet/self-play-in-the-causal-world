@@ -1,0 +1,14 @@
+{
+  "source": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\rl_correctness_goal_20260907\\official_execution\\run-02-mask-v1-audit-only\\execution-acceptance.json",
+  "source_sha256": "04e4612cfe78889df4f92977a943939580c4334544de0454fca56dc6870c3adf",
+  "adapted_from": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\rl_server_20260906_1725\\plot_training_curves.py",
+  "training_steps": 1,
+  "trajectories": 4,
+  "scope": "Execution audit. Pre-update rollouts only. No convergence or post-update capability claim.",
+  "artifacts": {
+    "verified-update-trajectories.csv": "adeaae2aa52ffbe29fe7f6543fc1570bce0c868fe10e711515e545b3594bc68f",
+    "verified-update.pdf": "655388bce3c111237aba56f1430f89a78058c759323c5269174d245d26afda4d",
+    "verified-update.png": "22a74d2beab0b91029a4dc44f0500c681e56fb4772e5b4cf4604ee0cebcff251",
+    "verified-update.svg": "c0a8a8463111a50923584f540d34057de61b53bffba113f85b85fa3653c78d72"
+  }
+}

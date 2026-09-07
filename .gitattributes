@@ -13,3 +13,5 @@ research/rl_correctness_20260907/** -text whitespace=cr-at-eol
 # Original captured logs and the original plot script retain incidental spacing.
 research/rl_correctness_20260907/**/checks.log -whitespace
 research/rl_correctness_20260907/official_execution/original_plot_training_curves.py -whitespace
+# Matplotlib exports are rendered artifacts, with generated path/glyph spacing.
+research/rl_correctness_20260907/official_execution/figures/*.svg -diff -whitespace

@@ -24,3 +24,6 @@
 真实运行修正了此前的验收盲点：run-01 中虽然每个公式与其输入一致，recipe 却在 `compute_kl_related_metrics` 入口把原始 response_mask 覆盖为 attention mask。验收现在要求用实际 response token 序列定位每一行，逐项核对 `AgentLoopOutput → pre_filter_batch → actor_batch → microbatch loss` 的掩码传播；不能只分别核对两端的局部公式。run-01 的局部通过文件已撤销，实际结论为失败，其检查点禁止继续初始化。11,437 个动作 token 中混入了 2,976 个工具 token；33.61 的最大 log-prob 差异来自工具 token，真实动作最大差异为 0.558。
 
 已新增 `verl-recipe-action-mask-v1.patch`，采用固定官方 RayPPOTrainer 的既有 guard 保留动作掩码。补丁明确修改 recipe 的数据接口，因此不能再把 recipe 整个文件称为逐字未修改；算法公式和官方训练入口保持原样。来源校验保留原哈希，同时将这个例外绑定到唯一的补丁 SHA256。run-02 从原始基座重新验证该修改，不使用 run-01 检查点；其结果尚待实际更新完成。
+
+
+run-02 已完成并通过实际张量检查，详见 ../../docs/dapo-execution-audit-20260907.md。该更新的实际掩码、质量、优势、重要性权重、loss 和一次 Adam 参数更新均已核对；非零 overlong shaping、动态丢弃和 TIS 上截断没有在这一次运行中发生，其证据仍来自标准函数测试或历史实际执行。长期训练与任务分布校准尚未完成。

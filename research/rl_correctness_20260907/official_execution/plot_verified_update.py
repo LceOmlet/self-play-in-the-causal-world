@@ -21,10 +21,13 @@ source = HERE/'run-02-mask-v1-audit-only/execution-acceptance.json'
 acceptance = json.loads(source.read_text(encoding='utf-8'))
 assert acceptance['passed'] and acceptance['official_updates'] == 1
 rows = []
+zero_predictions = []
 for index, trajectory in enumerate(acceptance['trajectories'], 1):
     env = trajectory['environment']
     assert env['query_type'] == 'ate' and env['completed']
     score = env['terminal_score']
+    if all(float(value) == 0 for value in score['prediction']):
+        zero_predictions.append((index, env['raw_reward']))
     penalty = -max(trajectory['response_tokens']-(30720-4096), 0)/4096
     rows.append({'trajectory': index, 'request_id': trajectory['request_id'],
                  'quality': env['raw_reward'], 'shaped_reward': env['raw_reward']+penalty,
@@ -59,6 +62,7 @@ ax = axes[0, 1]
 ax.bar(x-.17, [r['ate_tv_error'] for r in rows], width=.32, color=orange, label='总变差误差')
 ax.bar(x+.17, [r['ate_rmse'] for r in rows], width=.32, color=teal, label='分量均方根误差')
 ax.set(title='对隐藏因果真值的实际误差', ylabel='误差 ↓', xticks=x, xlabel='轨迹编号')
+ax.set_ylim(0, max(max(r['ate_tv_error'], r['ate_rmse']) for r in rows)*1.35)
 ax.legend(frameon=False, fontsize=9)
 
 ax = axes[1, 0]
@@ -79,6 +83,10 @@ ax.set_xscale('symlog', linthresh=1)
 ax.set(title='实际标量观测开销与误差', xlabel='计费标量观测数', ylabel='总变差误差 ↓')
 fig.text(.07, .045, '一个训练步不足以判断收敛。上述轨迹均由更新前策略生成，不能用它们推断训练后的能力变化。',
          fontsize=10, color=existing.MUTED)
+if zero_predictions:
+    index, quality = zero_predictions[0]
+    fig.text(.07, .020, f'轨迹 {index} 返回零向量，质量为 {quality:.3f}；这是本题的常数基线，不能单凭高奖励判断推理能力。',
+             fontsize=10, color=existing.MUTED)
 fig.subplots_adjust(left=.07, right=.97, top=.86, bottom=.13, hspace=.39, wspace=.25)
 for extension in ('png', 'svg', 'pdf'):
     fig.savefig(out/f'verified-update.{extension}', dpi=170)
@@ -86,6 +94,7 @@ plt.close(fig)
 manifest = {'source': str(source), 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
             'adapted_from': str(OLD), 'training_steps': 1, 'trajectories': len(rows),
             'scope': 'Execution audit. Pre-update rollouts only. No convergence or post-update capability claim.',
-            'artifacts': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.iterdir()) if p.is_file()}}
+            'artifacts': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.iterdir())
+                          if p.is_file() and p.name != 'manifest.json'}}
 (out/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
 print(json.dumps(manifest, ensure_ascii=False, indent=2))

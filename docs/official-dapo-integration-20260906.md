@@ -10,8 +10,10 @@ with an attention mask. The audit failed despite exiting zero; its checkpoint
 is disqualified and the incomplete component-level acceptance was withdrawn.
 The current recipe applies the pinned official RayPPOTrainer's existing guard
 to preserve a supplied action mask. A fresh run, `run-02-mask-v1-audit-only`,
-is validating this repair from the original base. Its execution acceptance must
-pass before claiming that this actual update is correct. Numerical equality
+completed the repair audit from the original base and passed actual
+trajectory-to-loss, gradient and first-step Adam checks. See the
+[2026-09-07 execution report](dapo-execution-audit-20260907.md) for evidence and
+the limits of this single-update result. Numerical equality
 between rollout and actor is not a correctness requirement; the earlier blanket
 rejection of numerical mismatch was too strong.
 
