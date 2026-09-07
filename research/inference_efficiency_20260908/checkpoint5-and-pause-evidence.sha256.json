@@ -1,0 +1,29 @@
+{
+  "archive_sha256": "5f0b5ef79e0f57eb9e04165ed62051e47c6b8153a2d4d7ea3a89deabe24a3a37",
+  "archive_bytes": 229058,
+  "members": {
+    "gpu-eager-01-process.json": "c06d7012688e31b542bff3993cd09955cf8123b99453f97b70da432590bb0a18",
+    "post-pause-capture-v2.log": "8f2ba1919540ea3018a14ad2456f7c535c0edc3e073382abc6af347e753f01d1",
+    "post-pause-capture.log": "d9efccc7feec10b73984181e8163c157beea073ed0f5163019c16d484a3940f3",
+    "post-pause-snapshot/environment/environment-249121.jsonl": "90f0d82abba70070ca69adb207d3edc58bce3071376c314b6c1fcbe0358bae6f",
+    "post-pause-snapshot/environment/environment-250243.jsonl": "29a4387419a4a02983d1cb2cda863dab2cb614434ce75e951563b2aa464cd0b1",
+    "post-pause-snapshot/exit.json": "7765169897a8d3cc2ccced0e2d369f128208626b139eaffe4203321af2f9bd62",
+    "post-pause-snapshot/launch.json": "8d588b642b345e9684f6ba5e333fbbd7b27efe248b5aa395be84c31f854e814a",
+    "post-pause-snapshot/process.json": "1f746c33a67d03a899ca2d59d168239d3906e0e80966e3543dfc1f0331fc0886",
+    "post-pause-snapshot/progress.json": "5f5aaea9f99f2e4892e0fcbc5f789b4121f3e2c745da1a86ed3a9149fa0f39fa",
+    "post-pause-snapshot/rollouts/1.jsonl": "8a9c8f045c61370fe2e1cdaf5d45c17d7551587bf02f031fb770ea3cb8d78a10",
+    "post-pause-snapshot/rollouts/2.jsonl": "5caff824e662ab96b449a572f7efacce0b3176cd4a74e52df4913b176ee48953",
+    "post-pause-snapshot/rollouts/3.jsonl": "c585f674bdb841d0b4833221802489ac51ecfc3dff0c6f7c0a777aa053c6d8cc",
+    "post-pause-snapshot/rollouts/4.jsonl": "5b378817cb383632f7cda53f805e23e5d206e9150c483914ff3761e7ec606d34",
+    "post-pause-snapshot/rollouts/5.jsonl": "6bb270b1e4f63beb7c3a2a1af3595687660a813575bdd2c55132e6681062f9b5",
+    "post-pause-snapshot/task-runner-source.json": "3be986086812ef8199e6485d41d99b6dabe52df9c807cfea703a5ba5518ef815",
+    "post-pause-snapshot/task-runner-stdout.log": "619c23dabd0521dddcd50aa6b95f7dbcd547adc50bc9a7b9f695cabb22f607fb",
+    "post-pause-snapshot/train.log": "ba0160ba9fdf5b14edf074fdef51c9d6de3d5e1ec6606a00ccbd85b8289a7482",
+    "preserve-and-pause.log": "95b9e16bc1cabb545ed6d5a04a59d8855d6d564c01b1fce6c392f526413c84f0",
+    "preserved/acceptance.json": "e0942ba7556a2b8691b71eb56a9fe6354e8a17c13a8bdc90c682bf613ca7cad5",
+    "preserved/global_step_5/actor/fsdp_config.json": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f",
+    "preserved/global_step_5/actor/lora_train_meta.json": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445",
+    "training-paused-for-benchmark.json": "667530a0ce32ee7c4a9f5a388453783f09d9689f29076aa9b47b582f4e053e73"
+  },
+  "scope": "Completed update 5, native checkpoint content/data audit and actual identified process-tree pause. Large native weights remain in the preserved directory; their hashes are recorded."
+}

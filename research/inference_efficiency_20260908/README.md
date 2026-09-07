@@ -1,5 +1,21 @@
 Qwen3.5-9B inference configuration verification, 2026-09-08
 
+Latest actual state (02:53): update 5 published its native checkpoint, with six
+generated batches consumed. The native file audit and eight-index sampler check
+passed; the full checkpoint was copied and hashed before the identified original
+training process tree was stopped. The sole GPU is now running the eager timing
+baseline. `checkpoint5-and-pause-evidence.tar.gz` records this transition; large
+native weights remain in the preserved server directory. Actual training resume
+and the compiled speed comparison are still pending. Earlier preparation-only
+statements below describe the preceding stages.
+
+`compare_compilation.py` reads both completed GPU runs, requires equal inputs,
+weights, sampling, source and library versions, and checks the complete engine
+option diff. It compares the two measured repetitions for each workload and
+cache phase. Selected-token logprobs are compared only on identical generated
+histories before the first divergence, never on later coincidentally equal tokens.
+It cannot stand in for the actual verl synchronization, TIS and resumed update.
+
 The actual model is `/home/chen/models/Qwen/Qwen3.5-9B`, architecture
 `Qwen3_5ForConditionalGeneration`: 32 text layers, 24 linear-attention and eight
 full-attention layers. Both historical and current runs use that base model;
