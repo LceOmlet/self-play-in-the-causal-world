@@ -22,6 +22,13 @@ to its first passive histogram. `task-value-witnesses.json` identifies two
 selected real, solvable strong-reversal tasks and their public trace hashes;
 the full earlier cohort, including failures, remains archived separately.
 
+The first actual update and partial subsequent generation are frozen separately
+in `first-update.tar.gz`, with hash `first-update.sha256.json`. `capture_progress.py`
+reads existing logs only and joins official dumps to tool events by complete
+command sequences when the runtime omits request IDs. `compare_speed.py` compares
+the first update with the archived legacy log; see `speed-comparison.json` and
+`docs/first-update-and-speed-20260907.md` for metrics and causal limits.
+
 `freeze_evidence.py` produces these immutable archives on the training host:
 
 - `certified-data.tar.gz`: all 525 serialized worlds/truths, official parquet
