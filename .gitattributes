@@ -34,3 +34,4 @@ research/active_decision_diagnostic_20260907/** -text whitespace=cr-at-eol
 research/base_signal_diagnostic_20260907/** -text whitespace=cr-at-eol
 research/training_submission_20260907/** -text whitespace=cr-at-eol
 research/inference_efficiency_20260908/** -text whitespace=cr-at-eol
+research/inference_efficiency_20260908/figures/*.svg -diff -whitespace
