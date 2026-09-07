@@ -33,7 +33,10 @@ def metrics_from_log(data):
         # Ray can append the next worker's message without a separating newline.
         # Its explicit process prefix ends this metric record; keep the preceding
         # numeric value intact and do not parse the worker's warning as metrics.
-        body = re.split(r'\([A-Za-z_][\w:.]* pid=\d+\)', match[2], maxsplit=1)[0]
+        # Ray's native signal handler can also append its shutdown banner to
+        # the last metric without a newline. Cut only explicit log boundaries.
+        boundary = r'\([A-Za-z_][\w:.]* pid=\d+\)|\*\*\* SIG[A-Z0-9]+ received at time='
+        body = re.split(boundary, match[2], maxsplit=1)[0]
         for item in body.split(' - '):
             key, separator, value = item.partition(':')
             if separator:
