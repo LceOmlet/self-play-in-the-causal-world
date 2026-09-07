@@ -109,3 +109,38 @@ the trainer reports zero retained prompts after the first generation batch for
 update 5 and continues sampling. Updates 1–4 each used one generation batch.
 This observed filtering cost explains additional waiting in update 5, not the
 already slow generation in the preceding updates. The training remains live.
+
+`resume_runtime.py` prepares isolated eager/compiled recovery commands through
+the official Hydra entry point and `validate_config`. Both preparations passed
+in `resume-eager-02` and `resume-compiled-02`. The first preparation's diff check
+also saw the derived trace experiment name and Ray environment entries omitted
+by the previous inspection; that failed attempt is preserved. The comparison
+now uses those environment entries from the actual submitted command.
+
+The recovery launcher preserves the original 500-update/20-epoch verification
+and its original wall-clock deadline. It uses native `resume_mode=resume_path`,
+enables official vLLM statistics, and saves each update to make the first resumed
+checkpoint available promptly. No smaller update cap is added. This is not the
+final 10,000-update run, whose epoch/resume requirements remain outstanding.
+
+Before releasing the GPU, `preserve_and_pause` requires the official completed
+checkpoint tracker at step 5, finite model and optimizer tensors, optimizer and
+scheduler counters at 5, and a saved first-epoch data position between 5 and 50.
+It compares eight restored sampler indices with the uninterrupted stream, copies
+and hashes the complete native checkpoint, revalidates the exact original PID,
+then terminates only its owned process tree. The termination helper was tested
+on a separately created parent/child pair: they exited, an unrelated sentinel
+remained live, and the actual trainer remained live. Native checkpoint auditing,
+the real pause, GPU benchmarks and actual resume have **not yet executed**.
+
+The additional raw snapshot uniquely joins all 16 retained trajectories. Update
+4 contains one exact mediator/order answer (quality 1) and three incorrect answers
+(0.225, 0.25, 0.225). The filtered decision group consists of four identical
+second-best actions, `state_2`; both the causal and population-observational
+optimum are `state_3`. This is a concordant task, not a strong-reversal failure.
+For update 3's ATE task, all four model TV errors exceed the zero-vector error
+0.03262952; the population observational shortcut error is 0.10714027. Three
+model answers beat that observational shortcut, but this alone does not beat the
+constant baseline. These real examples distinguish task signal from demonstrated
+learning. Raw files and prepared recovery commands are archived in
+`runtime-switch-preparation.tar.gz`.
