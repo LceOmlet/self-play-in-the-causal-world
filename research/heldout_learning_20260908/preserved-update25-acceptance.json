@@ -1,0 +1,55 @@
+{
+  "time": 1788820562.8726978,
+  "source": "/home/chen/runs/dapo-progress-20260908/resume-progress-01/checkpoints/global_step_25",
+  "preserved": "/home/chen/runs/heldout-learning-20260908/preserved/global_step_25",
+  "files": {
+    "data.pt": "c7c5409207eb7304e8854dfdcd01e4c73a5870d2ad3b290476e8bebe45757239",
+    "dapo_progress.json": "2d172ebaa7c19266cb4e93e0557aee092d565bd4103d504075544af88dadcd48",
+    "actor/model_world_size_1_rank_0.pt": "2eeb367081e18caf7eb4a90bddf80d4454e3b1de3d360939a7fc1f70133022a4",
+    "actor/fsdp_config.json": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f",
+    "actor/extra_state_world_size_1_rank_0.pt": "23ba4c2ab32afe14cdf45f0fe49ec8071103191dd047352a2ab2f66d26829599",
+    "actor/optim_world_size_1_rank_0.pt": "d24c11f20978ea78582d346ba7bd5613bae38660a5682c247e6bd9f8619d9bd2",
+    "actor/lora_train_meta.json": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445",
+    "actor/huggingface/chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "actor/huggingface/tokenizer_config.json": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+    "actor/huggingface/processor_config.json": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1",
+    "actor/huggingface/config.json": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7",
+    "actor/huggingface/tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+  },
+  "finite_lora_tensors": 496,
+  "optimizer_states_at_step25": 496,
+  "finite_optimizer_moments": 992,
+  "scheduler_step": 25,
+  "progress": {
+    "version": 1,
+    "completed_updates": 25,
+    "generated_batches": 29,
+    "data_epoch": 0,
+    "batches_per_epoch": 500
+  },
+  "expected_next_rows": [
+    93,
+    162,
+    169,
+    219,
+    318,
+    15,
+    444,
+    383
+  ],
+  "restored_next_rows": [
+    93,
+    162,
+    169,
+    219,
+    318,
+    15,
+    444,
+    383
+  ],
+  "training_process": {
+    "pid": 400557,
+    "create_time": 1788815230.7
+  },
+  "scope": "Published native update25 preserved while training remains live. CPU tensor/counter checks and actual official checkpoint data-load method; GPU weight-loading RPC mocked only for the separate CPU sampler check. No completed validation or bitwise GPU restore claim."
+}

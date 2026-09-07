@@ -1,5 +1,15 @@
 Fixed-task interpretation and matched official evaluation preparation.
 
+Update25 has now been preserved and verified:496 finite LoRA tensors,496 Adam
+states at25,992 finite moments, scheduler25, generation/data cursor29. The
+actual official data-load method restores the next8 rows identically on CPU;
+only the GPU weight RPC is mocked in this separate check. The live TaskRunner
+has entered greedy validation at global step25; this is not a completed pass.
+`preserved-update25-acceptance.json` records native file hashes and the retained
+server path. `update25-validation-started-evidence.tar.gz` preserves21 members
+(468,190 bytes), SHA-256
+`31a6ad4a0cc25402adb00de2c23001eac2f3706758874055360d2c5dafc9c301`.
+
 `audit_fixed_tasks.py` uses all 25 original validation tasks, verifies the dataset,
 admission record and frozen truth hashes, and submits constant and population
 observation answers to the production environment/scorer. Population observation
