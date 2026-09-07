@@ -1,0 +1,15 @@
+{
+  "scope": "Official configuration candidates for the actual Qwen3.5-9B runtime. No production change until GPU execution, probability and update checks pass.",
+  "variants": {
+    "current": [],
+    "compiled_adapter": [
+      "actor_rollout_ref.rollout.enforce_eager=false",
+      "actor_rollout_ref.rollout.cudagraph_capture_sizes=[1,2,4]"
+    ],
+    "compiled_merged": [
+      "actor_rollout_ref.rollout.enforce_eager=false",
+      "actor_rollout_ref.rollout.cudagraph_capture_sizes=[1,2,4]",
+      "actor_rollout_ref.model.lora.merge=true"
+    ]
+  }
+}
