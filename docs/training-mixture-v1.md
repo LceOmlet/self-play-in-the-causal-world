@@ -5,6 +5,10 @@
 RL training assigns equal mass to the five task families admitted by
 `TASK_FAMILY_QUERY_TYPES`:
 
+For the official DAPO entry point, these are the input proposal weights.
+Official dynamic filtering changes the distribution of accepted update groups;
+it must not be reported as preserving a 20% accepted fraction per family.
+
 | Task family | Training mass |
 | --- | ---: |
 | `ate` | 20% |
@@ -34,9 +38,11 @@ samplers:
   `{0, ..., floor(n / 3)}` before same-size structural retries;
 - all current families have two readonly query anchors, leaving `n - 2`
   non-anchor variables eligible for hard intervention;
-- conditional on `n`, `K ~ Uniform{1, ..., n - 2}`, followed by a uniform
-  `K`-subset of the eligible variables;
-- independently, `M ~ Uniform{1, ..., n}`.
+- all non-anchor variables are legal intervention targets and the maximum
+  joint measurement width is n, subject to the
+  [population identification contract](population-identification-v1.md);
+- the previous independent `M0 ~ Uniform{1, ..., n}` draw determines scalar
+  budget `M0 * 2^e` only; opening permissions does not enlarge that budget.
 
 Roles, state anchors, structures, mechanisms, and task truths retain their
 existing family-conditional distributions. In particular, v1 does not

@@ -1,0 +1,758 @@
+{
+  "before": {
+    "ok": 51,
+    "timeout": 9,
+    "RuntimeError": 14
+  },
+  "after": {
+    "ok": 51,
+    "timeout": 9,
+    "RuntimeError": 14
+  },
+  "old_accepted_preserved": true,
+  "regressions": [],
+  "old_accepted_bounds_compatible": true,
+  "newly_accepted": [],
+  "max_endpoint_difference": 7.72334363059457e-05,
+  "direct_lp_certificates": [
+    {
+      "index": 17,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.08229082205798477,
+      "after_seconds": 0.2621086658909917,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 5.551115123125783e-17,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 27,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 1.4918432460399345,
+      "after_seconds": 0.4727799310348928,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 9.797206934614167e-10,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 48,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 6.689703037030995,
+      "after_seconds": 0.8505103989737108,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 2.1648414211372646e-05,
+      "reported_error_sum": 2.1667521238531196e-05
+    },
+    {
+      "index": 52,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.016313917934894562,
+      "after_seconds": 0.012285273056477308,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 1.1102230246251565e-16,
+      "reported_error_sum": 0.0
+    }
+  ],
+  "direct_before_seconds": 8.280151023063809,
+  "direct_after_seconds": 1.5976842689560726,
+  "candidate_sha256": "4249c54301fe001ecb109749a41f293ff514f04b9e004af8b174e9c7b5e263b3",
+  "records": [
+    {
+      "index": 0,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0021924750180915,
+      "after_seconds": 0.002070417976938188,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 1,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 2,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 3,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0008321270579472184,
+      "after_seconds": 0.0009025170002132654,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 4,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0005655380664393306,
+      "after_seconds": 0.0006186389364302158,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 5,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0008033739868551493,
+      "after_seconds": 0.0008965919259935617,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 6,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 7,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 5.0549069789703935,
+      "after_seconds": 5.055982143967412,
+      "backend": "terminal_event_endpoint_decomposition",
+      "endpoint_difference": 3.432768556854704e-06,
+      "reported_error_sum": 7.987425763372164e-05
+    },
+    {
+      "index": 8,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 6.395544280996546,
+      "after_seconds": 6.401470451033674,
+      "backend": null
+    },
+    {
+      "index": 9,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 10,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.045688095968217,
+      "after_seconds": 5.047706866986118,
+      "backend": null
+    },
+    {
+      "index": 11,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0014907399890944362,
+      "after_seconds": 0.001539053046144545,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 12,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 13,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 14,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 7.180022857966833,
+      "after_seconds": 7.200365801923908,
+      "backend": "direct_treatment_terminal_elimination",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0006704201765994975
+    },
+    {
+      "index": 15,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.00135146698448807,
+      "after_seconds": 0.0010751410154625773,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 16,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.6674049639841542,
+      "after_seconds": 0.6478180419653654,
+      "backend": "direct_treatment_terminal_elimination",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 17,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.08229082205798477,
+      "after_seconds": 0.2621086658909917,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 5.551115123125783e-17,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 18,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0012438499834388494,
+      "after_seconds": 0.0012893930543214083,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 19,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.133320478023961,
+      "after_seconds": 5.129474631045014,
+      "backend": null
+    },
+    {
+      "index": 20,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.007415800006128848,
+      "after_seconds": 0.007134672021493316,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 21,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.001716717961244285,
+      "after_seconds": 0.0015343779232352972,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 22,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.03485716495197266,
+      "after_seconds": 0.03291215095669031,
+      "backend": "direct_treatment_terminal_elimination",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 23,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0009041179437190294,
+      "after_seconds": 0.0008433799957856536,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 24,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.012098032049834728,
+      "after_seconds": 0.012041033012792468,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 25,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 3.0817711600102484,
+      "after_seconds": 2.940045860945247,
+      "backend": "shared_root_separator_decomposition",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 26,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0029164740117266774,
+      "after_seconds": 0.002980835037305951,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 27,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 1.4918432460399345,
+      "after_seconds": 0.4727799310348928,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 9.797206934614167e-10,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 28,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.783490421017632,
+      "after_seconds": 5.790890836040489,
+      "backend": null
+    },
+    {
+      "index": 29,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 3.082594276056625,
+      "after_seconds": 3.1002878170693293,
+      "backend": "terminal_event_endpoint_decomposition",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 30,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.027765450067818,
+      "after_seconds": 5.028997557004914,
+      "backend": null
+    },
+    {
+      "index": 31,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0020727289374917746,
+      "after_seconds": 0.001991146942600608,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 32,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 5.033966638962738,
+      "after_seconds": 5.034704318968579,
+      "backend": "terminal_event_endpoint_decomposition+layered_endpoint",
+      "endpoint_difference": 7.72334363059457e-05,
+      "reported_error_sum": 8.168103046031639e-05
+    },
+    {
+      "index": 33,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.089844285976142,
+      "after_seconds": 5.091477932059206,
+      "backend": null
+    },
+    {
+      "index": 34,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 6.1894893809221685,
+      "after_seconds": 6.17014719301369,
+      "backend": null
+    },
+    {
+      "index": 35,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0010326509363949299,
+      "after_seconds": 0.001133739948272705,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 36,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.001418313942849636,
+      "after_seconds": 0.0016131839947775006,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 37,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0009195760358124971,
+      "after_seconds": 0.00090625393204391,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 38,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.004277502070181072,
+      "after_seconds": 0.004234584979712963,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 39,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 40,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0008524860022589564,
+      "after_seconds": 0.0008791140280663967,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 41,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.02215187205001712,
+      "after_seconds": 0.022040203912183642,
+      "backend": "direct_treatment_terminal_elimination",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 42,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.05686194205191,
+      "after_seconds": 5.058251801063307,
+      "backend": null
+    },
+    {
+      "index": 43,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 44,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0015808360185474157,
+      "after_seconds": 0.0015590349212288857,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 45,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.001300527947023511,
+      "after_seconds": 0.0014379789354279637,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 46,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.26091522607021034,
+      "after_seconds": 0.2582405919674784,
+      "backend": "terminal_event_endpoint_decomposition",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 47,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0011971270432695746,
+      "after_seconds": 0.0012224519159644842,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 48,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 6.689703037030995,
+      "after_seconds": 0.8505103989737108,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 2.1648414211372646e-05,
+      "reported_error_sum": 2.1667521238531196e-05
+    },
+    {
+      "index": 49,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0013434190768748522,
+      "after_seconds": 0.0012625741073861718,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 50,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.585278339101933,
+      "after_seconds": 5.633137389086187,
+      "backend": null
+    },
+    {
+      "index": 51,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0011315500596538186,
+      "after_seconds": 0.0010727639310061932,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 52,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.016313917934894562,
+      "after_seconds": 0.012285273056477308,
+      "backend": "indirect_mediator_diagonal_transport",
+      "endpoint_difference": 1.1102230246251565e-16,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 53,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.05524866993073374,
+      "after_seconds": 0.05622384499292821,
+      "backend": "direct_treatment_terminal_elimination",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 54,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0006679738871753216,
+      "after_seconds": 0.0006992870476096869,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 55,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0011860299855470657,
+      "after_seconds": 0.0012584029464051127,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 56,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0007195079233497381,
+      "after_seconds": 0.0006971650291234255,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 57,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.10238792700693011,
+      "after_seconds": 0.10315472504589707,
+      "backend": "terminal_event_endpoint_decomposition",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 58,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 10.412513950956054,
+      "after_seconds": 10.359313000924885,
+      "backend": "direct_treatment_terminal_elimination",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0013631588696961774
+    },
+    {
+      "index": 59,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.556289533968084,
+      "after_seconds": 5.549576819059439,
+      "backend": null
+    },
+    {
+      "index": 60,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.187885232036933,
+      "after_seconds": 5.145691371988505,
+      "backend": null
+    },
+    {
+      "index": 61,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 9.019228830002248,
+      "after_seconds": 9.031884627998807,
+      "backend": null
+    },
+    {
+      "index": 62,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0009106420911848545,
+      "after_seconds": 0.0008674541022628546,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 63,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0031608319841325283,
+      "after_seconds": 0.0031659960513934493,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 64,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.020329633029177785,
+      "after_seconds": 0.020648183999583125,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 65,
+      "before": "timeout",
+      "after": "timeout",
+      "before_seconds": null,
+      "after_seconds": null,
+      "backend": null
+    },
+    {
+      "index": 66,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 5.050889629055746,
+      "after_seconds": 5.052082373993471,
+      "backend": null
+    },
+    {
+      "index": 67,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.000961033976636827,
+      "after_seconds": 0.0010470740962773561,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 68,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.006235515000298619,
+      "after_seconds": 0.0009892130037769675,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 69,
+      "before": "RuntimeError",
+      "after": "RuntimeError",
+      "before_seconds": 7.746669029002078,
+      "after_seconds": 7.857734368997626,
+      "backend": null
+    },
+    {
+      "index": 70,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.0010556950001046062,
+      "after_seconds": 0.0010447149397805333,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 71,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.001476865028962493,
+      "after_seconds": 0.001639442052692175,
+      "backend": null,
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 72,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.29774632293265313,
+      "after_seconds": 0.3002144789788872,
+      "backend": "terminal_event_endpoint_decomposition+layered_endpoint",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    },
+    {
+      "index": 73,
+      "before": "ok",
+      "after": "ok",
+      "before_seconds": 0.30878824298270047,
+      "after_seconds": 0.307746249018237,
+      "backend": "terminal_event_endpoint_decomposition",
+      "endpoint_difference": 0.0,
+      "reported_error_sum": 0.0
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+diff --git a/verl/tools/schemas.py b/verl/tools/schemas.py
+--- a/verl/tools/schemas.py
++++ b/verl/tools/schemas.py
+@@ -95,12 +95,15 @@
+     function: OpenAIFunctionCallSchema
+ 
+ 
+-class ToolResponse(BaseModel):
++class ToolResponse(BaseModel):
+     """The response from a tool execution."""
+ 
+     text: str | None = None
+     image: list[Any] | None = None
+-    video: list[Any] | None = None
++    video: list[Any] | None = None
++    # The tool has completed the environment episode. Keep the action that
++    # invoked it, but do not append terminal feedback or generate another turn.
++    terminate: bool = Field(default=False, strict=True)
+ 
+     @model_validator(mode="before")
+     @classmethod
+diff --git a/verl/experimental/agent_loop/tool_agent_loop.py b/verl/experimental/agent_loop/tool_agent_loop.py
+--- a/verl/experimental/agent_loop/tool_agent_loop.py
++++ b/verl/experimental/agent_loop/tool_agent_loop.py
+@@ -309,9 +309,13 @@
+         for tool_call in agent_data.tool_calls[: self.max_parallel_calls]:
+             tasks.append(self._call_tool(tool_call, agent_data.tools_kwargs, agent_data))
+ 
+-        with simple_timer("tool_calls", agent_data.metrics):
+-            responses = await asyncio.gather(*tasks)
+-
++        with simple_timer("tool_calls", agent_data.metrics):
++            responses = await asyncio.gather(*tasks)
++
++        if any(response.terminate for response, _, _ in responses):
++            agent_data.tool_rewards.extend(reward for _, reward, _ in responses if reward is not None)
++            return AgentState.TERMINATED
++
+         # Process tool responses and update multi_modal_data
+         # Removed: agent_data.new_images_this_turn = []
+         for tool_index, (tool_response, tool_reward, _) in enumerate(responses):
+@@ -498,7 +502,7 @@
+                 tool_response_text = tool_response_text[:length] + "...(truncated)..." + tool_response_text[-length:]
+ 
+         # Create ToolResponse from tool execution result
+-        tool_response_kwargs = {"text": tool_response_text}
++        tool_response_kwargs = {"text": tool_response_text, "terminate": tool_execution_response.terminate}
+ 
+         # Add multimedia data if present
+         for attr_name in ["image", "video"]:

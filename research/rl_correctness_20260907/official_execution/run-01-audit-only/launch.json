@@ -1,0 +1,27 @@
+{
+  "purpose": "Isolated actual-path correctness audit; not capability evaluation or production training",
+  "audit_only_checkpoint": true,
+  "base_model": "/home/chen/models/Qwen/Qwen3.5-9B",
+  "initial_adapter": null,
+  "command": [
+    "bash",
+    "/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831/scripts/run_official_dapo.sh",
+    "data.gen_batch_size=1",
+    "trainer.total_training_steps=1",
+    "trainer.resume_mode=disable",
+    "actor_rollout_ref.model.lora_adapter_path=null",
+    "trainer.experiment_name=correctness-20260907-one-update",
+    "++ray_kwargs.ray_init.runtime_env.env_vars.CPT_DAPO_OBSERVATION_DIR=/home/chen/runs/rl-correctness-goal-20260907/official_execution/run-01-audit-only/observation",
+    "++ray_kwargs.ray_init.runtime_env.env_vars.CPT_WORLD_VERL_AUDIT_DIR=/home/chen/runs/rl-correctness-goal-20260907/official_execution/run-01-audit-only/environment",
+    "++ray_kwargs.ray_init.runtime_env.env_vars.CPT_WORLD_EXPECTED_SOURCE=/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831/src/cpt_world",
+    "++ray_kwargs.ray_init.runtime_env.env_vars.VERL_ROOT=/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1",
+    "++ray_kwargs.ray_init.runtime_env.env_vars.VERL_RECIPE_ROOT=/home/chen/vendor/dapo-official-20260906/verl-recipe",
+    "++ray_kwargs.ray_init.runtime_env.env_vars.PYTHONPATH=/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831/src:/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831:/home/chen/vendor/dapo-official-20260906/verl-recipe:/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1:/home/chen/runs/rl-correctness-goal-20260907/official_execution/observer"
+  ],
+  "start_time": 1788760573.690631,
+  "data": {
+    "/home/chen/runs/official-dapo-integration-20260906/data-v1/integration-train.parquet": "4d093268da03fbfe665494ef7c2ecad1efa0d2d83137b9fd0c36e9b3537ae82f",
+    "/home/chen/runs/environment-validation-20260907/heldout-250.parquet": "362b9b15461e4317ab7902258995c303821aaa0b0d2096e08aa721a10ad8b944"
+  },
+  "observer_sha256": "7ebb3893ecf2f56381fe2b866e043e83cf8e9c0be35a66021d25a2e723fa875f"
+}

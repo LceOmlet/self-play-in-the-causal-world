@@ -17,6 +17,7 @@ from grpo_kernel_check import enable_local_fla_kernels, require_gdn_kernels_acti
 from grpo_logprob_guard import require_finite_sampling_logprobs
 from peft import LoraConfig
 from trl import GRPOConfig, GRPOTrainer
+from verify_rl_owners import require_rl_owners
 
 import cpt_world
 from cpt_world import (
@@ -136,7 +137,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--save-steps", type=int, default=10)
     parser.add_argument("--save-total-limit", type=int, default=200)
-    parser.add_argument("--resume-from-checkpoint")
+    initialization = parser.add_mutually_exclusive_group()
+    initialization.add_argument("--resume-from-checkpoint")
+    initialization.add_argument(
+        "--initial-adapter",
+        help="Load existing LoRA weights with a fresh optimizer (also used for isolated audits).",
+    )
     parser.add_argument(
         "--use-liger-kernel",
         action=argparse.BooleanOptionalAction,
@@ -146,8 +152,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main(*, callbacks=None) -> None:
     cli = parse_args()
+    print("RL_OWNERS=" + json.dumps(require_rl_owners(), separators=(",", ":")), flush=True)
     print(
         "CPT_WORLD_RUNTIME="
         + json.dumps(require_cpt_world_training_contract(), separators=(",", ":")),
@@ -221,7 +228,9 @@ def main() -> None:
         min_p=None,
         beta=0.0,
         num_iterations=1,
-        scale_rewards="none",
+        scale_rewards="group",
+        epsilon=0.2,
+        epsilon_high=0.28,
         loss_type="dapo",
         mask_truncated_completions=False,
         learning_rate=1e-6,
@@ -264,7 +273,10 @@ def main() -> None:
         reward_funcs=build_cpt_world_advantage_utility(),
         peft_config=peft_config,
         environment_factory=CPTWorldEnvironment,
+        callbacks=callbacks,
     )
+    if cli.initial_adapter is not None:
+        trainer.model.load_adapter(cli.initial_adapter, adapter_name="default", is_trainable=True)
     if trainer.reward_func_names != ["CPTWorldAdvantageUtility", "CPTWorldEnvironment"]:
         raise RuntimeError(
             "TRL reward-source order changed; refusing to guess advantage utility weights"
@@ -378,4 +390,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(
+        "Historical TRL training is retired. Use scripts/run_official_dapo.sh "
+        "with the official verl environment and the original base model."
+    )

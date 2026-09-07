@@ -1,0 +1,32 @@
+{
+  "official_functions": {
+    "compute_grpo_outcome_advantage": "/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1/verl/trainer/ppo/core_algos.py",
+    "compute_policy_loss_vanilla": "/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1/verl/trainer/ppo/core_algos.py",
+    "compute_rollout_correction_and_add_to_batch": "/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1/verl/trainer/ppo/rollout_corr_helper.py"
+  },
+  "grouped_advantages_match": true,
+  "masked_tokens_have_zero_gradient": true,
+  "importance_weights_match": true,
+  "weights_detached": true,
+  "response_mask_unchanged_without_rs": true,
+  "valid_tokens": 14.0,
+  "effective_weight_sample_size": 9.698783910196447,
+  "records": [
+    {
+      "microbatch_rows": 1,
+      "loss": 1.7116637949475628,
+      "max_gradient_error": 1.1102230246251565e-16
+    },
+    {
+      "microbatch_rows": 2,
+      "loss": 1.7116637949475626,
+      "max_gradient_error": 1.1102230246251565e-16
+    },
+    {
+      "microbatch_rows": 4,
+      "loss": 1.7116637949475628,
+      "max_gradient_error": 1.1102230246251565e-16
+    }
+  ],
+  "real_model_execution": false
+}

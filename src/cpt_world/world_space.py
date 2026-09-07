@@ -38,6 +38,7 @@ from pathlib import Path
 from typing import Any
 
 from .episode import OBSERVATION_BUDGET_EXPONENTS, OBSERVATIONS_PER_BANDWIDTH_UNIT
+from .identification import INTERACTION_SURFACE_VERSION, validate_population_identification
 from .registry import (
     HIDING_MODES,
     QUERY_TYPES,
@@ -1915,14 +1916,11 @@ def _randomized_interaction_surface(
     anchors: Mapping[str, int | str],
     *,
     seed_id: str,
-) -> tuple[dict[str, bool], int, int]:
-    """Draw K, M, and the power-of-two per-bandwidth sample exponent.
+) -> tuple[dict[str, bool], int, int, int]:
+    """Open all non-anchor interventions and joint measurements; retain old B.
 
-    Query anchors remain readonly.  Conditional on the remaining candidate
-    variables, the width is uniform over every nonempty size and the subset is
-    uniform within that size.  Observation bandwidth is an independent
-    uniform draw over ``1..n``.  This is a private stage of the existing seed
-    pipeline, not a second task sampler.
+    The old independent M draw now determines budget only. Raising the allowed
+    joint measurement width must not silently increase scalar resources.
     """
 
     base = default_manipulability(world, query_type, anchors)
@@ -1930,18 +1928,13 @@ def _randomized_interaction_surface(
     if not candidates:
         raise ValueError("query leaves no non-anchor intervention candidate")
 
-    width_rng = _axis_rng(seed_id, "manipulability")
-    width = width_rng.randint(1, len(candidates))
-    selected = frozenset(width_rng.sample(candidates, width))
-    manipulability = {name: name in selected for name in world.variables}
-    observation_bandwidth = _axis_rng(seed_id, "observation-bandwidth").randint(
-        1, len(world.variables)
-    )
+    budget_width = _axis_rng(seed_id, "observation-bandwidth").randint(1, len(world.variables))
     observation_budget_exponent = _axis_rng(
         seed_id,
         "observation-budget-exponent",
     ).choice(OBSERVATION_BUDGET_EXPONENTS)
-    return manipulability, observation_bandwidth, observation_budget_exponent
+    observation_budget = budget_width * (1 << observation_budget_exponent)
+    return base, len(world.variables), observation_budget_exponent, observation_budget
 
 
 def anonymize_world(
@@ -1996,6 +1989,8 @@ def assemble_seed(
     readable: Mapping[str, bool] | None = None,
     observation_bandwidth: int | None = None,
     observation_budget_exponent: int | None = None,
+    observation_budget: int | None = None,
+    interaction_surface_version: str | None = None,
 ) -> Mapping[str, Any]:
     """Assemble an anonymous candidate seed or fail closed.
 
@@ -2129,6 +2124,21 @@ def assemble_seed(
                 f"{OBSERVATION_BUDGET_EXPONENTS}"
             )
 
+    if observation_budget is not None:
+        from .episode import Budget
+
+        Budget(observation_budget)
+    if interaction_surface_version is not None:
+        if interaction_surface_version != INTERACTION_SURFACE_VERSION:
+            raise ValueError("Unknown interaction surface contract")
+        source = int(selected_anchors.get("treatment", selected_anchors.get("decision_target")))
+        outcome = int(selected_anchors["outcome"])
+        validate_population_identification(
+            world, source, outcome, manipulability_map, readable_map, observation_bandwidth
+        )
+        if observation_budget is None:
+            raise ValueError("The identification contract requires an explicit scalar budget")
+
     visible = hide_world(visible_variables, query_visible, hiding_modes)
     assembled: dict[str, Any] = {
         "seed_id": seed_id,
@@ -2161,6 +2171,10 @@ def assemble_seed(
         assembled["observation_bandwidth"] = observation_bandwidth
     if observation_budget_exponent is not None:
         assembled["observation_budget_exponent"] = observation_budget_exponent
+    if observation_budget is not None:
+        assembled["observation_budget"] = observation_budget
+    if interaction_surface_version is not None:
+        assembled["interaction_surface_version"] = interaction_surface_version
     return assembled
 
 
@@ -2247,6 +2261,7 @@ def assemble_sampled_anchor_tasks(
         manipulability,
         observation_bandwidth,
         observation_budget_exponent,
+        observation_budget,
     ) = _randomized_interaction_surface(
         task_world,
         query_type,
@@ -2263,6 +2278,8 @@ def assemble_sampled_anchor_tasks(
         manipulability=manipulability,
         observation_bandwidth=observation_bandwidth,
         observation_budget_exponent=observation_budget_exponent,
+        observation_budget=observation_budget,
+        interaction_surface_version=INTERACTION_SURFACE_VERSION,
     )
     render_seed_prompt(base_assembled)
     return ((task_world, base_assembled),)

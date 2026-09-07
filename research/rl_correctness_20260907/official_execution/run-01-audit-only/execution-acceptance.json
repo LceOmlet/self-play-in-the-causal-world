@@ -1,0 +1,43 @@
+{
+  "passed": false,
+  "reason": "Official DAPO recipe unconditionally overwrites the tool action mask with attention mask.",
+  "owner": "dapo/dapo_ray_trainer.py:51 compute_kl_related_metrics",
+  "rows": [
+    {
+      "row": 0,
+      "actual_action_tokens": 2552,
+      "overwritten_mask_tokens": 2850,
+      "tool_tokens_wrongly_in_loss": 298,
+      "max_abs_logprob_delta_action_tokens": 0.34330272674560547,
+      "max_abs_logprob_delta_tool_tokens": 26.95390510559082
+    },
+    {
+      "row": 1,
+      "actual_action_tokens": 2462,
+      "overwritten_mask_tokens": 3138,
+      "tool_tokens_wrongly_in_loss": 676,
+      "max_abs_logprob_delta_action_tokens": 0.47199010848999023,
+      "max_abs_logprob_delta_tool_tokens": 33.60947036743164
+    },
+    {
+      "row": 2,
+      "actual_action_tokens": 3549,
+      "overwritten_mask_tokens": 5286,
+      "tool_tokens_wrongly_in_loss": 1737,
+      "max_abs_logprob_delta_action_tokens": 0.5579209923744202,
+      "max_abs_logprob_delta_tool_tokens": 29.40681266784668
+    },
+    {
+      "row": 3,
+      "actual_action_tokens": 2874,
+      "overwritten_mask_tokens": 3139,
+      "tool_tokens_wrongly_in_loss": 265,
+      "max_abs_logprob_delta_action_tokens": 0.3977384567260742,
+      "max_abs_logprob_delta_tool_tokens": 25.607698440551758
+    }
+  ],
+  "checkpoints_disqualified": true,
+  "actual_action_tokens": 11437,
+  "incorrect_denominator": 14413,
+  "tool_tokens_wrongly_in_loss": 2976
+}

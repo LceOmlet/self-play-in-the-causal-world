@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "tests": 3,
+  "seconds": 7.60,
+  "exit_code": 0,
+  "target": "mask_project_stage/tests/test_official_dapo_action_mask.py",
+  "recipe": "/home/chen/vendor/dapo-official-20260906/verl-recipe-mask-v1",
+  "patched_source_sha256": "ce4a091c7987088694b9fddfd57c2988439f2ad2df580e5debf113b538e91cc0",
+  "cases": ["preserve existing action mask through old-log-probability owner and union", "single-turn missing-mask fallback", "preserve existing all-zero mask"]
+}

@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "This historical TRL launcher is retired. Use scripts/run_official_dapo.sh with the independent official verl environment and original base model. Old RL checkpoints are disqualified." >&2
+exit 2
+
+# Historical invocation retained below solely to interpret archived run logs.
+
 PROJECT_DIR=${1:-/home/chen/projects/self-play-in-the-causal-world}
 MODEL_DIR=${2:-/home/chen/models/Qwen/Qwen3.5-9B}
 ENV_DIR=${3:-/home/chen/.venvs/dolens-rl}

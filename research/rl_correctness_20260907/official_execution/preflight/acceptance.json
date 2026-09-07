@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "time": 1788760470.7749689,
+  "observed_events": 11,
+  "kinds": [
+    "grpo",
+    "policy_loss",
+    "tis",
+    "tool_transition"
+  ],
+  "observer_sha256": "7ebb3893ecf2f56381fe2b866e043e83cf8e9c0be35a66021d25a2e723fa875f"
+}

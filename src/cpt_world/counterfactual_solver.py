@@ -339,6 +339,143 @@ class _ExactResponseLP:
         return float(self.model.getPrimalbound()), elapsed
 
 
+def _indirect_mediator_joint_bounds(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    *,
+    mediator: int,
+    baseline_value: int,
+    treatment_value: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    time_limit_seconds: float | None,
+) -> CounterfactualBoundsResult | None:
+    """Solve the class with simultaneously extremal transport diagonals.
+
+    For two mediator states, disjoint terminal events read only the two
+    off-diagonal entries; identical events read the diagonal or fixed masses.
+    For three mediator states and a binary terminal-event quotient, every
+    response event set is a singleton or its complement, so its rectangle
+    also depends on just one diagonal entry and fixed marginals. All diagonal
+    minima (or maxima) are simultaneously attainable by a transport. One
+    such transport therefore optimizes every terminal response, for every
+    shared terminal context. The remaining complete-response problems are
+    linear, while the original mechanism independence is retained.
+    """
+    from math import prod
+
+    from .query_truth import worldspec_projected_interventional_distribution
+
+    states = world.domains[mediator]
+    if states > 3 or treatment not in world.parents[mediator]:
+        return None
+    left_event, right_event = map(frozenset, outcome_events)
+    if left_event != right_event and not left_event.isdisjoint(right_event):
+        return None
+    if baseline_value == treatment_value:
+        return None
+    quotient = _coarsen_terminal_event_outcome(world, outcome, outcome_events)
+    if quotient is not None:
+        world, outcome_events = quotient
+    if states == 3 and world.domains[outcome] > 2:
+        return None
+    same_event = outcome_events[0] == outcome_events[1]
+    mediator_shared = tuple(p for p in world.parents[mediator] if p != treatment)
+    outcome_shared = tuple(p for p in world.parents[outcome] if p != mediator)
+    shared = tuple(sorted(set(mediator_shared) | set(outcome_shared)))
+    response_count = world.domains[outcome] ** states
+    assignment_count = prod(world.domains[p] for p in shared)
+    if assignment_count * response_count * states**2 > _MAX_LAYERED_OBJECTIVE_EVALUATIONS:
+        return None
+    started = time.perf_counter()
+    law = (
+        worldspec_projected_interventional_distribution(world, {}, shared)
+        if shared
+        else (((), 1.0),)
+    )
+    records = []
+    transports = {}
+    terminals = {}
+    for assignment, probability in law:
+        if float(probability) <= 0.0:
+            continue
+        values = dict(zip(shared, assignment, strict=True))
+        upstream = tuple(values[p] for p in mediator_shared)
+        downstream = tuple(values[p] for p in outcome_shared)
+        records.append((upstream, downstream, float(probability)))
+        if upstream not in transports:
+            marginals = []
+            for action in (baseline_value, treatment_value):
+                context = tuple(
+                    action if p == treatment else values[p] for p in world.parents[mediator]
+                )
+                marginals.append(
+                    tuple(map(float, world.cpt[mediator][_row_index(world, mediator, context)]))
+                )
+            transports[upstream] = _ExactResponseLP(tuple(marginals))
+        if downstream not in terminals:
+            marginals = []
+            for state in range(states):
+                context = tuple(
+                    state if p == mediator else values[p] for p in world.parents[outcome]
+                )
+                marginals.append(
+                    tuple(map(float, world.cpt[outcome][_row_index(world, outcome, context)]))
+                )
+            terminals[downstream] = _ExactResponseLP(tuple(marginals))
+    responses = tuple(product(range(world.domains[outcome]), repeat=states))
+    array = np.asarray(responses, dtype=np.intp)
+    left = np.isin(array, outcome_events[0]).astype(float)
+    right = np.isin(array, outcome_events[1]).astype(float)
+    trace_cost = {(i, j): float(i == j) for i in range(states) for j in range(states)}
+    solve_seconds = 0.0
+    bounds = []
+    for sense in ("minimize", "maximize"):
+        deadline = None if time_limit_seconds is None else time.perf_counter() + time_limit_seconds
+        transport_sense = (
+            sense if same_event else ("maximize" if sense == "minimize" else "minimize")
+        )
+        response_costs = {}
+        for upstream, owner in transports.items():
+            remaining = None if deadline is None else deadline - time.perf_counter()
+            _, elapsed = owner.optimize(
+                trace_cost, sense=transport_sense, time_limit_seconds=remaining
+            )
+            solve_seconds += elapsed
+            coupling = np.asarray(
+                [
+                    [float(owner.model.getVal(owner.weights[(i, j)])) for j in range(states)]
+                    for i in range(states)
+                ]
+            )
+            response_costs[upstream] = np.einsum("ri,ij,rj->r", left, coupling, right)
+        objectives = {key: np.zeros(response_count) for key in terminals}
+        for upstream, downstream, probability in records:
+            objectives[downstream] += probability * response_costs[upstream]
+        endpoint = 0.0
+        for downstream, owner in terminals.items():
+            remaining = None if deadline is None else deadline - time.perf_counter()
+            costs = dict(zip(responses, map(float, objectives[downstream]), strict=True))
+            value, elapsed = owner.optimize(costs, sense=sense, time_limit_seconds=remaining)
+            solve_seconds += elapsed
+            endpoint += value
+        bounds.append(endpoint)
+    return CounterfactualBoundsResult(
+        lower=bounds[0],
+        upper=bounds[1],
+        build_seconds=max(0.0, time.perf_counter() - started - solve_seconds),
+        solve_seconds=solve_seconds,
+        affected_nodes=2,
+        pair_kernel_entries=len(transports) * states**2,
+        generated_columns=0,
+        response_blocks=len(transports) + len(terminals),
+        dynamic_response_blocks=0,
+        max_response_contexts=max(2, states),
+        auxiliary_variables=0,
+        backend="indirect_mediator_diagonal_transport",
+    )
+
+
 class _ExactPricedResponseLP:
     """Exact response LP using dual constraints and the owner's MAP pricer."""
 
@@ -595,7 +732,9 @@ def _one_mediator_joint_bounds(
 ) -> CounterfactualBoundsResult | None:
     """Close the exact two-world query with one unconditioned mediator.
 
-    The supported twin graph is ``X -> M -> Y`` with the direct ``X -> Y``
+    Pure indirect chains first use the proven diagonal-transport owner when
+    its structural conditions hold. The direct case is ``X -> M -> Y`` with
+    the direct ``X -> Y``
     edge, no additional parent of ``M``, and arbitrary unaffected parents of
     ``Y``.  For each shared-parent assignment, all cross-arm outcome-event
     Frechet endpoints are jointly attainable.  Eliminating the outcome
@@ -612,6 +751,17 @@ def _one_mediator_joint_bounds(
     if len(affected) != 2 or affected[-1] != outcome:
         return None
     mediator = affected[0]
+    if treatment not in world.parents[outcome] and mediator in world.parents[outcome]:
+        return _indirect_mediator_joint_bounds(
+            world,
+            treatment,
+            outcome,
+            mediator=mediator,
+            baseline_value=baseline_value,
+            treatment_value=treatment_value,
+            outcome_events=outcome_events,
+            time_limit_seconds=time_limit_seconds,
+        )
     if world.parents[mediator] != (treatment,):
         return None
     if treatment not in world.parents[outcome] or mediator not in world.parents[outcome]:
@@ -791,6 +941,22 @@ def _two_mediator_joint_bounds(
         if parent not in {treatment, first, second}
     )
     all_shared = tuple(sorted(set(first_shared) | set(second_shared) | set(outcome_shared)))
+    # With strictly positive CPTs every shared assignment has positive mass.
+    # The bipartite context graph then has one component for each assignment
+    # of first_shared intersect second_shared. Each component contains the
+    # Cartesian assignments of first_shared minus second_shared. A positive
+    # d-by-d transport polytope has dimension (d-1)^2 and at least dimension+1
+    # vertices. Apply the existing enumeration guard before enumerating the
+    # vertices when this mathematical lower bound already exceeds it.
+    if all(float(p) > 0.0 for rows in world.cpt.values() for row in rows for p in row):
+        upstream_contexts = int(
+            np.prod(
+                [world.domains[parent] for parent in first_shared if parent not in second_shared]
+            )
+        )
+        minimum_vertices = (world.domains[first] - 1) ** 2 + 1
+        if minimum_vertices**upstream_contexts > _MAX_LAYERED_UPSTREAM_VERTICES:
+            return None
     second_context_count = world.domains[first] * (
         2 if treatment in world.parents[second] else 1
     )
@@ -2472,6 +2638,8 @@ class _SparseResponseModel:
             for node in order
             if node in ancestors and node not in affected_set and node != treatment
         )
+        self.shared_factor_overrides: dict[int, _SymbolicFactor] = {}
+        self._compile_shared_boundary()
         self.contexts: dict[int, tuple[tuple[int, ...], ...]] = {}
         self.context_indices: dict[int, dict[tuple[int, ...], int]] = {}
         self.context_rows: dict[int, dict[tuple[int, ...], tuple[Any, ...]]] = {}
@@ -2517,6 +2685,75 @@ class _SparseResponseModel:
         self._add_initial_completion()
         self.last_certification = "exact"
         self.last_endpoint_error = 0.0
+
+    def _compile_shared_boundary(self) -> None:
+        """Integrate nuisance shared ancestors before introducing unknowns.
+
+        Every unknown mechanism reads shared variables only through its
+        declared parents. Therefore sum_s P(s) F(s_boundary, q) equals
+        sum_b P(b) F(b, q), with exactly the same shared response variables q.
+        Factor the numeric boundary law into normalized conditionals in the
+        existing topological order so all conditional-message bounds remain
+        valid. Only materialize a boundary table no larger than the original
+        shared CPT inputs; wider boundaries retain the original factorization.
+        """
+        from math import prod
+
+        from .query_truth import (
+            _probability_sum,
+            _uses_exact_probabilities,
+            worldspec_projected_interventional_distribution,
+        )
+
+        boundary_set = {
+            parent
+            for node in self.affected
+            for parent in self.world.parents[node]
+            if parent in self.shared
+        }
+        boundary = tuple(node for node in self.shared if node in boundary_set)
+        if boundary == self.shared:
+            return
+        if not boundary:
+            self.shared = ()
+            return
+        table_cells = prod(self.world.domains[node] for node in boundary)
+        original_cells = sum(
+            len(self.world.cpt[node]) * self.world.domains[node] for node in self.shared
+        )
+        if table_cells > original_cells:
+            return
+        law = worldspec_projected_interventional_distribution(self.world, {}, boundary)
+        exact = _uses_exact_probabilities(self.world)
+        masses = dict(law)
+        conditionals: dict[int, dict[tuple[int, ...], float]] = {}
+        for position in reversed(range(len(boundary))):
+            grouped: dict[tuple[int, ...], list[Any]] = {}
+            for assignment, probability in masses.items():
+                grouped.setdefault(assignment[:-1], []).append(probability)
+            previous = {
+                prefix: _probability_sum(tuple(values), exact=exact)
+                for prefix, values in grouped.items()
+            }
+            node = boundary[position]
+            conditionals[node] = {
+                assignment: (
+                    float(probability / previous[assignment[:-1]])
+                    if previous[assignment[:-1]] > 0
+                    else 1.0 / self.world.domains[node]
+                )
+                for assignment, probability in masses.items()
+            }
+            masses = previous
+        for position, node in enumerate(boundary):
+            scope = tuple((parent, -1) for parent in boundary[: position + 1])
+            values = conditionals[node]
+            projection = _ProjectedFactor(scope, values)
+            self.shared_factor_overrides[node] = _SymbolicFactor(
+                scope, values, values, values,
+                left_projection=projection, right_projection=projection,
+            )
+        self.shared = boundary
 
     def _enable_static_presolve(self) -> None:
         """Enable owner presolve only after every response column is explicit."""
@@ -2785,6 +3022,8 @@ class _SparseResponseModel:
         raise RuntimeError("affected node has no exact response-coupling owner")
 
     def _shared_factor(self, node: int) -> _SymbolicFactor:
+        if node in self.shared_factor_overrides:
+            return self.shared_factor_overrides[node]
         parents = self.world.parents[node]
         scope = tuple((parent, -1) for parent in parents) + ((node, -1),)
 

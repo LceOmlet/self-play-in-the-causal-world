@@ -1,0 +1,29 @@
+{
+  "packages": {
+    "trl": "1.10.0",
+    "transformers": "5.15.1",
+    "liger-kernel": "0.8.2",
+    "torch": "2.11.0",
+    "peft": "0.20.0",
+    "vllm": "0.26.0",
+    "accelerate": "1.14.0"
+  },
+  "module_sha256": {
+    "trl.trainer.grpo_trainer": "38189ac6ffffc027966c8c7cf86d568c0bcffa5e091ad727463e009a38c106f5",
+    "trl.trainer.grpo_config": "6c78f3a8dae872e8e1d5c9746c24abf11f1108eaa7cd864c37f6b79fa9b78bb8",
+    "trl.trainer.utils": "b8e491b12bec74688b2ef3956259d8a65d9b9e827990a5e2df9cec757b8f1e90",
+    "trl.generation.vllm_generation": "7a91eb42c7c9614c23a20af0e7f8d6a37d1de5442cee7086cef3551a2b1ad2d4",
+    "liger_kernel.chunked_loss.grpo_loss": "b4ea24c05ac63f9981de71d0d931087661a63c1f4255363aefa4a75b22b67aa6",
+    "liger_kernel.chunked_loss.fused_linear_ppo": "6a60cfc2a484a90bbca40f825e073ffcf4676940638bc6fa5258154fb19a5481",
+    "transformers.trainer": "6ea719d4f225c6fcbccfcd2137cdfb304426c93c4dd65983ae4186f6e8fb3d8d",
+    "accelerate.accelerator": "47088e0ab3bf21eec97e16afa14595e1db511f6ead9ab85c4eaa5f6f66fe5e61"
+  },
+  "upstream_loss": {
+    "package": "trl",
+    "version": "1.12.0",
+    "source_url": "https://github.com/huggingface/trl/blob/v1.12.0/trl/trainer/grpo_trainer.py",
+    "method": "GRPOTrainer.compute_liger_loss",
+    "source_sha256": "7adcac0dac85b016d5b2a796917475df201de62c1dd11b656bc3529ad0b529d9",
+    "applied_as": "Verbatim method backport into installed owning TRL class; no custom dynamic sampling"
+  }
+}

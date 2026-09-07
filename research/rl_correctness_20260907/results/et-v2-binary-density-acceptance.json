@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "actual_kernel_checks": 150,
+  "max_coefficient_error": 8.881784197001252e-16,
+  "symbolic_jacobian_dimensions": [
+    2,
+    3
+  ],
+  "integrated_into_sampler": false
+}

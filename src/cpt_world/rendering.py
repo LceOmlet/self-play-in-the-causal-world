@@ -19,10 +19,11 @@ from .episode import (
     budget_for_observation_bandwidth,
     observations_per_bandwidth_unit,
 )
+from .identification import INTERACTION_SURFACE_VERSION
 from .registry import HIDING_MODES
 from .world_space import world_state_names
 
-RENDERER_VERSION = "cpt-world-seed-renderer-v3"
+RENDERER_VERSION = "cpt-world-seed-renderer-v4"
 SYSTEM_MESSAGE = (
     "You are evaluated on active causal experimentation. "
     "Return exactly one legal JSON command and no prose."
@@ -44,6 +45,7 @@ class _RenderContext:
     budget: Budget
     measure_max: int | None
     observation_budget_exponent: int
+    interaction_surface_version: str | None = None
 
     def visible_labels(self) -> tuple[str, ...]:
         return tuple(str(item["label"]) for item in self.variables)
@@ -451,6 +453,21 @@ def _render_prompt(ctx: _RenderContext) -> str:
     lines.append("Query:")
     lines.extend(f"- {line}" for line in query_lines)
 
+    if ctx.interaction_surface_version == INTERACTION_SURFACE_VERSION:
+        source = ctx.resolve_label(ctx.query.get("treatment", ctx.query.get("decision_target")))
+        outcome = ctx.resolve_label(ctx.query["outcome"])
+        lines.extend(
+            [
+                "",
+                "Public causal assumptions:",
+                "- All causal variables are listed; there are no hidden confounders.",
+                "- Every conditional state probability is strictly positive.",
+                "- Every graph edge changes its child's distribution "
+                "in at least one parent context.",
+                f"- {source} is an ancestor of {outcome} in the acyclic causal graph.",
+            ]
+        )
+
     lines.append("")
     lines.append("Experiments:")
     legal_targets, readable_labels = _validated_action_surface(ctx)
@@ -559,6 +576,7 @@ def _render_context(
         budget = budget_for_observation_bandwidth(
             measure_max,
             exponent=observation_budget_exponent,
+            max_observations=seed.get("observation_budget"),
         )
     if not isinstance(budget, Budget):
         raise TypeError("budget must be a Budget")
@@ -597,6 +615,7 @@ def _render_context(
         budget=budget,
         measure_max=measure_max,
         observation_budget_exponent=observation_budget_exponent,
+        interaction_surface_version=seed.get("interaction_surface_version"),
     )
 
 

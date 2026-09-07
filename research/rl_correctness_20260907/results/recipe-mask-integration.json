@@ -1,0 +1,27 @@
+[
+  {
+    "path": "configs/verl/upstream_sources.json",
+    "before": "00890bed67f5f93a652fa61469b3eb8f9230acc9ea5321cc6638cdc729a980eb",
+    "after": "b4ba9933527b7bd2fe994c0dfc2ada17ea7e64d9d1124ed71a77a9654f6599f9"
+  },
+  {
+    "path": "scripts/run_official_dapo.sh",
+    "before": "0493a02ee3aea4796d6450032ba4134827620e2566364eb71d7d9b89d2ff1659",
+    "after": "c08692a5c805f42f5a36cfe5eecc9c6b265b457c68915b7571101423f20e7df7"
+  },
+  {
+    "path": "scripts/verify_official_dapo.py",
+    "before": "4391f85de91b3e126a30226634c0435adeafe3b53ed711344415a1a82fd5c74f",
+    "after": "385411179254e676597fee510b1bdc206cd590bb32736c4fac6444fe6de647f4"
+  },
+  {
+    "path": "patches/verl-recipe-action-mask-v1.patch",
+    "before": null,
+    "after": "a4541de892529cc29d8c03819c207c1786e9bb91b51a7d4a50896886075406e7"
+  },
+  {
+    "path": "tests/test_official_dapo_action_mask.py",
+    "before": null,
+    "after": "29294d89344630b682884b0cd9dae3d435ffc4cf35dcaf547b30b0ff688d0ba9"
+  }
+]

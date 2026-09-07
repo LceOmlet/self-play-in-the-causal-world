@@ -1,0 +1,12 @@
+--- a/dapo/dapo_ray_trainer.py
++++ b/dapo/dapo_ray_trainer.py
+@@ -48,7 +48,8 @@
+     """
+ 
+     def compute_kl_related_metrics(self, batch: DataProto, metrics: dict, timing_raw: dict):
+-        batch.batch["response_mask"] = compute_response_mask(batch)
++        if "response_mask" not in batch.batch.keys():
++            batch.batch["response_mask"] = compute_response_mask(batch)
+ 
+         # recompute old_log_probs
+         with marked_timer("old_log_prob", timing_raw, "blue"):

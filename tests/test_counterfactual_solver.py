@@ -4,8 +4,6 @@ import unittest
 from fractions import Fraction
 from unittest.mock import MagicMock, patch
 
-from pyscipopt import SCIP_RESULT, Model
-
 from cpt_world import (
     WorldSpec,
     reference_counterfactual_transition_bounds,
@@ -29,6 +27,7 @@ from cpt_world.query_truth import (
     interventional_frechet_transition_outer_bounds,
     interventional_probability,
 )
+from pyscipopt import SCIP_RESULT, Model
 
 
 def _uniform_multivalued_chain() -> WorldSpec:
@@ -671,7 +670,8 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         self.assertAlmostEqual(actual.lower, float(expected[0]), places=8)
         self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
 
-    def test_shared_root_separator_matches_general_owner(self) -> None:
+    @patch("cpt_world.counterfactual_solver._indirect_mediator_joint_bounds", return_value=None)
+    def test_shared_root_separator_matches_general_owner(self, _indirect) -> None:
         world = _shared_root_separator_world()
         factual_probability = float(interventional_probability(world, {0: 0}, 3, 0))
         counterfactual_probability = float(
@@ -717,7 +717,8 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         )
         self.assertEqual(actual.backend, "shared_root_separator_decomposition")
 
-    def test_shared_root_separator_survives_an_extra_shared_ancestor(self) -> None:
+    @patch("cpt_world.counterfactual_solver._indirect_mediator_joint_bounds", return_value=None)
+    def test_shared_root_separator_survives_an_extra_shared_ancestor(self, _indirect) -> None:
         world = _shared_root_with_extra_ancestor_world()
         factual_probability = float(interventional_probability(world, {0: 0}, 4, 0))
         counterfactual_probability = float(
@@ -791,7 +792,8 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         ]
         self.assertEqual(allowances, [4.0, 3.5])
 
-    def test_disjoint_terminal_lower_decomposition_matches_reference(self) -> None:
+    @patch("cpt_world.counterfactual_solver._indirect_mediator_joint_bounds", return_value=None)
+    def test_disjoint_terminal_lower_decomposition_matches_reference(self, _indirect) -> None:
         world = _non_direct_terminal_world()
         expected = reference_individual_counterfactual_probability_bounds(
             world,
@@ -816,7 +818,8 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
         self.assertEqual(actual.backend, "terminal_event_endpoint_decomposition")
 
-    def test_identical_terminal_upper_decomposition_matches_reference(self) -> None:
+    @patch("cpt_world.counterfactual_solver._indirect_mediator_joint_bounds", return_value=None)
+    def test_identical_terminal_upper_decomposition_matches_reference(self, _indirect) -> None:
         world = _non_direct_terminal_world()
         expected = reference_individual_counterfactual_probability_bounds(
             world,

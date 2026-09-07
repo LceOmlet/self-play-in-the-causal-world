@@ -178,9 +178,7 @@ def _training_row(
     best_intervention_balance_slot: int | None = None,
 ) -> tuple[dict[str, Any], WorldSpec, dict[str, Any]]:
     if best_intervention_balance_slot is not None and query_type != "best_intervention":
-        raise ValueError(
-            "best_intervention_balance_slot is only valid for best_intervention rows"
-        )
+        raise ValueError("best_intervention_balance_slot is only valid for best_intervention rows")
     (seed,) = iter_sampled_seeds(
         grammar,
         query_types=(query_type,),
@@ -211,6 +209,7 @@ def _training_row(
         "anchor_index": anchor_index,
         "tape_key": f"trl-grpo:{seed['seed_id']}",
         "terminal_truth_json": "",
+        "environment_version": regenerated_seed["interaction_surface_version"],
     }
     return row, world, dict(seed)
 
@@ -291,9 +290,7 @@ def _iter_random_balanced_training_rows(
                     truth = compute_counterfactual_truth_isolated(
                         world,
                         seed,
-                        endpoint_time_limit_seconds=(
-                            counterfactual_endpoint_time_limit_seconds
-                        ),
+                        endpoint_time_limit_seconds=(counterfactual_endpoint_time_limit_seconds),
                         diagnostic_dir=(
                             Path(diagnostic_dir)
                             if (

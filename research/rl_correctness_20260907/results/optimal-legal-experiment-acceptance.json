@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "scalar_budget": 131072,
+  "independent_informative_pairs": 65536,
+  "delta": "1/10000",
+  "legal_actions_checked": 13,
+  "identical_single_scalar_marginals": 104,
+  "full_likelihood_ratio_checks": 1536,
+  "real_protocol_checks": [
+    {
+      "legal": true,
+      "scalar_cost": 2
+    },
+    {
+      "legal": true,
+      "scalar_cost": 2
+    }
+  ],
+  "optimal_measurement": "do(M=0), measure (X,Z); each informative unit costs exactly 2 scalars",
+  "sufficient_statistic": "C = 1[X=Z], Bernoulli(1/2) versus Bernoulli(1/2+delta)",
+  "integer_certified_likelihood_threshold": 32772,
+  "type_i_error": 0.48909279507902764,
+  "type_ii_error": 0.4904835439898537,
+  "optimal_equal_prior_error_numeric": 0.48978816953444065,
+  "binomial_tail_precision_digits": 60,
+  "kl_per_scalar_upper_bound": 1.0000000200000005e-08,
+  "pinsker_error_lower_bound": 0.487199999872,
+  "scope": "Exact Bayes decision formula for the existing two-world witness; binomial tails evaluated numerically. No sampler prevalence claim."
+}

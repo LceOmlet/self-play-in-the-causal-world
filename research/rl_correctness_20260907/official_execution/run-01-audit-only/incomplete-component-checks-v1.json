@@ -1,0 +1,253 @@
+{
+  "passed": false,
+  "official_updates": 1,
+  "trainable_tensors": 496,
+  "changed_tensors": 248,
+  "changed_name_groups": {
+    "B": 248
+  },
+  "frozen_tensors_without_grad": 760,
+  "initial_lora_B_all_zero": true,
+  "grad_norm_before_clip": 1.0,
+  "groups_generated": 1,
+  "max_first_step_adam_rounding_units": 1.64838804707303,
+  "groups_discarded": 0,
+  "total_action_tokens": 14413,
+  "raw_quality": [
+    0.3898840844631195,
+    0.43486863374710083,
+    0.4935128390789032,
+    0.43486863374710083
+  ],
+  "overlong_shaping": [
+    -0.0,
+    -0.0,
+    -0.0,
+    -0.0
+  ],
+  "losses": [
+    {
+      "actual": 0.21679814159870148,
+      "reference": 0.21679815689264803,
+      "valid_tokens": 2850,
+      "global_tokens": 14413.0,
+      "max_current_old_difference": 0.0
+    },
+    {
+      "actual": 0.016371168196201324,
+      "reference": 0.016371168027689984,
+      "valid_tokens": 3138,
+      "global_tokens": 14413.0,
+      "max_current_old_difference": 0.0
+    },
+    {
+      "actual": -0.41245415806770325,
+      "reference": -0.4124541695292784,
+      "valid_tokens": 5286,
+      "global_tokens": 14413.0,
+      "max_current_old_difference": 0.0
+    },
+    {
+      "actual": 0.016905605792999268,
+      "reference": 0.016905605555000883,
+      "valid_tokens": 3139,
+      "global_tokens": 14413.0,
+      "max_current_old_difference": 0.0
+    }
+  ],
+  "tis": {
+    "mean": 0.9217017267593032,
+    "clipped_fraction": 0.0,
+    "effective_sample_size": 13382.111640694862,
+    "max_abs_logprob_difference": 33.60947036743164
+  },
+  "trajectories": [
+    {
+      "request_id": "ed44d24101044603ad91b390737aa30f",
+      "response_tokens": 3138,
+      "action_tokens": 2462,
+      "tool_tokens": 676,
+      "completed": true,
+      "assistant_turns": 7,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.43486863744267845,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.0933,
+            0.2698,
+            -0.3631
+          ],
+          "component_errors": [
+            0.09519500875060302,
+            0.28146368078541656,
+            0.37665868953601966
+          ],
+          "l1_error": 0.7533173790720392,
+          "total_variation_error": 0.3766586895360196,
+          "squared_error": 0.0767185538984313,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 1280,
+        "queries_used": 5
+      }
+    },
+    {
+      "request_id": "536e2005273f4a138d3e7c27dfbb3f9a",
+      "response_tokens": 2850,
+      "action_tokens": 2552,
+      "tool_tokens": 298,
+      "completed": true,
+      "assistant_turns": 4,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.38988409781021394,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.06,
+            0.38,
+            -0.44
+          ],
+          "component_errors": [
+            0.061895008750603026,
+            0.3916636807854166,
+            0.4535586895360197
+          ],
+          "l1_error": 0.9071173790720393,
+          "total_variation_error": 0.45355868953601963,
+          "squared_error": 0.12098230526941647,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 512,
+        "queries_used": 2
+      }
+    },
+    {
+      "request_id": "ccab68150c2a4832bd4aeaa73372e144",
+      "response_tokens": 3139,
+      "action_tokens": 2874,
+      "tool_tokens": 265,
+      "completed": true,
+      "assistant_turns": 4,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.43486863744267845,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.0933,
+            0.2698,
+            -0.3631
+          ],
+          "component_errors": [
+            0.09519500875060302,
+            0.28146368078541656,
+            0.37665868953601966
+          ],
+          "l1_error": 0.7533173790720392,
+          "total_variation_error": 0.3766586895360196,
+          "squared_error": 0.0767185538984313,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 256,
+        "queries_used": 1
+      }
+    },
+    {
+      "request_id": "faf0e759f37e4540b40b6fc3e47dddca",
+      "response_tokens": 5286,
+      "action_tokens": 3549,
+      "tool_tokens": 1737,
+      "completed": true,
+      "assistant_turns": 15,
+      "environment": {
+        "query_type": "ate",
+        "sample_index": 0,
+        "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+        "raw_reward": 0.4935128356179792,
+        "completed": true,
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.0018950087506030278,
+            -0.011663680785416575,
+            0.013558689536019686
+          ],
+          "prediction": [
+            0.0165,
+            0.2674,
+            -0.2839
+          ],
+          "component_errors": [
+            0.01839500875060303,
+            0.2790636807854166,
+            0.29745868953601967
+          ],
+          "l1_error": 0.5949173790720393,
+          "total_variation_error": 0.29745868953601967,
+          "squared_error": 0.05556552875364193,
+          "observational_shortcut": [
+            -0.00029790733706755104,
+            0.25448102844769244,
+            -0.25418312111062485
+          ],
+          "observational_shortcut_error": 0.26774181064664454,
+          "reward_scalarization": "terminal-quality-v10"
+        },
+        "observations_used": 26000,
+        "queries_used": 13
+      }
+    }
+  ],
+  "limitations": [
+    "One actual update, not evidence of capability improvement.",
+    "Frozen parameters checked by requires_grad/absent gradients and optimizer semantics; no full 9B before/after hash.",
+    "Model gradients captured for finite updates; no independent full-model backward implementation."
+  ],
+  "superseded": true,
+  "reason": "Incomplete checker compared trajectory to pre-filter mask but omitted propagation into actor batch. Not an accepted training run."
+}

@@ -1,0 +1,16 @@
+tools:
+  - class_name: cpt_world.verl_environment.CPTWorldTool
+    config:
+      type: native
+    tool_schema:
+      type: function
+      function:
+        name: act
+        description: Execute one CPT-World experiment or terminal answer.
+        parameters:
+          type: object
+          properties:
+            command:
+              type: object
+              description: The exact command JSON object required by the task protocol.
+          required: [command]

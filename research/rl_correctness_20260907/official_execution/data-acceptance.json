@@ -1,0 +1,918 @@
+{
+  "passed": true,
+  "data_sha256": "4d093268da03fbfe665494ef7c2ecad1efa0d2d83137b9fd0c36e9b3537ae82f",
+  "counts": {
+    "ate": 4,
+    "individual_counterfactual_probability": 4,
+    "backadj_minimal_sets": 4,
+    "best_intervention": 4,
+    "mediator_set": 4
+  },
+  "records": [
+    {
+      "index": 0,
+      "family": "ate",
+      "sample_index": 0,
+      "tape_key": "trl-grpo:SAMPLED-0-ate-target_query-a0",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          -0.0018950087506030278,
+          -0.011663680785416575,
+          0.013558689536019686
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "target_query",
+        "truth": [
+          -0.0018950087506030278,
+          -0.011663680785416575,
+          0.013558689536019686
+        ],
+        "prediction": [
+          -0.0018950087506030278,
+          -0.011663680785416575,
+          0.013558689536019686
+        ],
+        "component_errors": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "l1_error": 0.0,
+        "total_variation_error": 0.0,
+        "squared_error": 0.0,
+        "observational_shortcut": [
+          -0.00029790733706755104,
+          0.25448102844769244,
+          -0.25418312111062485
+        ],
+        "observational_shortcut_error": 0.26774181064664454,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 1,
+      "family": "individual_counterfactual_probability",
+      "sample_index": 1,
+      "tape_key": "trl-grpo:SAMPLED-1-individual_counterfactual_probability-target_query-a0",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0,
+        "upper": 0.10942566313347117,
+        "certification": "epsilon_sharp",
+        "interval_source": "epsilon_sharp_markovian_outer",
+        "endpoint_error": 2.971370731669084e-06,
+        "endpoint_tolerance": 0.001
+      },
+      "cached": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0,
+        "upper": 0.10942566313347117,
+        "certification": "epsilon_sharp",
+        "interval_source": "epsilon_sharp_markovian_outer",
+        "endpoint_error": 2.971370731669084e-06,
+        "endpoint_tolerance": 0.001
+      },
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "counterfactual_roi",
+        "truth": {
+          "lower": 0.0,
+          "upper": 0.10942566313347117,
+          "certification": "epsilon_sharp",
+          "endpoint_error": 2.971370731669084e-06,
+          "certified_lower_range": [
+            0.0,
+            2.971370731669084e-06
+          ],
+          "certified_upper_range": [
+            0.1094226917627395,
+            0.10942566313347117
+          ]
+        },
+        "prediction": {
+          "lower": 0.0,
+          "upper": 0.10942566313347117
+        },
+        "lower_endpoint_error": 0.0,
+        "upper_endpoint_error": 0.0,
+        "mean_absolute_endpoint_error": 0.0,
+        "mean_squared_endpoint_error": 0.0,
+        "observational_shortcut": {
+          "lower": 0.0,
+          "upper": 0.20494965415441443
+        },
+        "observational_shortcut_error": 0.04776199551047163,
+        "certification": "epsilon_sharp",
+        "endpoint_error": 2.971370731669084e-06,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 2,
+      "family": "backadj_minimal_sets",
+      "sample_index": 2,
+      "tape_key": "trl-grpo:SAMPLED-2-backadj_minimal_sets-discovery-a0",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "backadj",
+        "prediction": [
+          "V5",
+          "V6"
+        ],
+        "nearest_valid_adjustment_set": [
+          "V5",
+          "V6"
+        ],
+        "edit_distance": 0,
+        "valid_adjustment_set": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 3,
+      "family": "best_intervention",
+      "sample_index": 6,
+      "tape_key": "trl-grpo:SAMPLED-6-best_intervention-decision-a2",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V2",
+        "value": 0,
+        "probability": 0.022090754058850786,
+        "candidate_probabilities": [
+          0.022090754058850786,
+          0.09531322620074513
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 0
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 0
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 0
+        },
+        "optimal_probability": 0.022090754058850786,
+        "chosen_probability": 0.022090754058850786,
+        "candidate_probabilities": [
+          0.022090754058850786,
+          0.09531322620074513
+        ],
+        "minimum_probability": 0.022090754058850786,
+        "maximum_probability": 0.09531322620074513,
+        "probability_span": 0.07322247214189434,
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "observational_shortcut": [
+          0.022090754058850783,
+          0.09531322620074512
+        ],
+        "observational_choice": 0,
+        "observational_shortcut_error": 0.0,
+        "observational_shortcut_normalized_regret": 0.0,
+        "optimal_action": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 4,
+      "family": "mediator_set",
+      "sample_index": 4,
+      "tape_key": "trl-grpo:SAMPLED-4-mediator_set-discovery-a0",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V6"
+        ],
+        "order": [
+          [
+            "V4",
+            "V6"
+          ],
+          [
+            "V6",
+            "V1"
+          ]
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "mediator",
+        "mediator_precision": 1.0,
+        "mediator_recall": 1.0,
+        "mediator_f1": 1.0,
+        "order_precision": 1.0,
+        "order_recall": 1.0,
+        "order_f1": 1.0,
+        "mediators_exact_match": true,
+        "order_exact_match": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 5,
+      "family": "ate",
+      "sample_index": 5,
+      "tape_key": "trl-grpo:SAMPLED-5-ate-target_query-a0",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          0.7788256039121797,
+          0.024233525246969735,
+          -0.018853391713932986,
+          -0.6403433604117632,
+          -0.14386237703345328
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "target_query",
+        "truth": [
+          0.7788256039121797,
+          0.024233525246969735,
+          -0.018853391713932986,
+          -0.6403433604117632,
+          -0.14386237703345328
+        ],
+        "prediction": [
+          0.7788256039121797,
+          0.024233525246969735,
+          -0.018853391713932986,
+          -0.6403433604117632,
+          -0.14386237703345328
+        ],
+        "component_errors": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "l1_error": 0.0,
+        "total_variation_error": 0.0,
+        "squared_error": 0.0,
+        "observational_shortcut": [
+          0.7788512251887648,
+          0.024686653041749784,
+          -0.020396006193790416,
+          -0.6326929358667752,
+          -0.15044893616994895
+        ],
+        "observational_shortcut_error": 0.008129173616353116,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 6,
+      "family": "individual_counterfactual_probability",
+      "sample_index": 7,
+      "tape_key": "trl-grpo:SAMPLED-7-individual_counterfactual_probability-target_query-a4",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.2488962912446121,
+        "upper": 0.8215595120242954,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "cached": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.2488962912446121,
+        "upper": 0.8215595120242954,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "counterfactual_roi",
+        "truth": {
+          "lower": 0.2488962912446121,
+          "upper": 0.8215595120242954,
+          "certification": "exact",
+          "endpoint_error": 0.0,
+          "certified_lower_range": [
+            0.2488962912446121,
+            0.2488962912446121
+          ],
+          "certified_upper_range": [
+            0.8215595120242954,
+            0.8215595120242954
+          ]
+        },
+        "prediction": {
+          "lower": 0.2488962912446121,
+          "upper": 0.8215595120242954
+        },
+        "lower_endpoint_error": 0.0,
+        "upper_endpoint_error": 0.0,
+        "mean_absolute_endpoint_error": 0.0,
+        "mean_squared_endpoint_error": 0.0,
+        "observational_shortcut": {
+          "lower": 0.0,
+          "upper": 0.8215595120242956
+        },
+        "observational_shortcut_error": 0.1244481456223061,
+        "certification": "exact",
+        "endpoint_error": 0.0,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 7,
+      "family": "backadj_minimal_sets",
+      "sample_index": 8,
+      "tape_key": "trl-grpo:SAMPLED-8-backadj_minimal_sets-discovery-a1",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "backadj",
+        "prediction": [
+          "V1",
+          "V3",
+          "V4"
+        ],
+        "nearest_valid_adjustment_set": [
+          "V1",
+          "V3",
+          "V4"
+        ],
+        "edit_distance": 0,
+        "valid_adjustment_set": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 8,
+      "family": "best_intervention",
+      "sample_index": 1118,
+      "tape_key": "trl-grpo:SAMPLED-1118-best_intervention-decision-a0",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V7",
+        "value": 3,
+        "probability": 0.34539328448841916,
+        "candidate_probabilities": [
+          0.011265690501848979,
+          0.20112000949689685,
+          0.12421976483981347,
+          0.34539328448841916
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V7",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V7",
+          "value": 3
+        },
+        "prediction": {
+          "target": "V7",
+          "value": 3
+        },
+        "optimal_probability": 0.34539328448841916,
+        "chosen_probability": 0.34539328448841916,
+        "candidate_probabilities": [
+          0.011265690501848979,
+          0.20112000949689685,
+          0.12421976483981347,
+          0.34539328448841916
+        ],
+        "minimum_probability": 0.011265690501848979,
+        "maximum_probability": 0.34539328448841916,
+        "probability_span": 0.33412759398657016,
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "observational_shortcut": [
+          0.0028310043352391054,
+          0.23740472531957707,
+          0.1109378406106256,
+          0.22044203743220991
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.14427327499152232,
+        "observational_shortcut_normalized_regret": 0.4317909612617065,
+        "optimal_action": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 9,
+      "family": "mediator_set",
+      "sample_index": 10,
+      "tape_key": "trl-grpo:SAMPLED-10-mediator_set-discovery-a1",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V1",
+          "V5"
+        ],
+        "order": [
+          [
+            "V1",
+            "V5"
+          ],
+          [
+            "V5",
+            "V4"
+          ],
+          [
+            "V6",
+            "V1"
+          ],
+          [
+            "V6",
+            "V5"
+          ]
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "mediator",
+        "mediator_precision": 1.0,
+        "mediator_recall": 1.0,
+        "mediator_f1": 1.0,
+        "order_precision": 1.0,
+        "order_recall": 1.0,
+        "order_f1": 1.0,
+        "mediators_exact_match": true,
+        "order_exact_match": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 10,
+      "family": "ate",
+      "sample_index": 11,
+      "tape_key": "trl-grpo:SAMPLED-11-ate-target_query-a0",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          6.293577861861063e-05,
+          -0.00018894338510200281,
+          0.00011985218926352514,
+          -0.001024245807079771,
+          0.001030401224299593
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "target_query",
+        "truth": [
+          6.293577861861063e-05,
+          -0.00018894338510200281,
+          0.00011985218926352514,
+          -0.001024245807079771,
+          0.001030401224299593
+        ],
+        "prediction": [
+          6.293577861861063e-05,
+          -0.00018894338510200281,
+          0.00011985218926352514,
+          -0.001024245807079771,
+          0.001030401224299593
+        ],
+        "component_errors": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "l1_error": 0.0,
+        "total_variation_error": 0.0,
+        "squared_error": 0.0,
+        "observational_shortcut": [
+          -0.0006312392209539968,
+          0.010684988168773989,
+          0.000925383173979192,
+          -0.00996890798451489,
+          -0.001010224137284293
+        ],
+        "observational_shortcut_error": 0.011679462538591635,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 11,
+      "family": "individual_counterfactual_probability",
+      "sample_index": 12,
+      "tape_key": "trl-grpo:SAMPLED-12-individual_counterfactual_probability-target_query-a25",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0010986227935160836,
+        "upper": 0.8115569776410887,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "cached": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0010986227935160836,
+        "upper": 0.8115569776410888,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "counterfactual_roi",
+        "truth": {
+          "lower": 0.0010986227935160836,
+          "upper": 0.8115569776410888,
+          "certification": "exact",
+          "endpoint_error": 0.0,
+          "certified_lower_range": [
+            0.0010986227935160836,
+            0.0010986227935160836
+          ],
+          "certified_upper_range": [
+            0.8115569776410888,
+            0.8115569776410888
+          ]
+        },
+        "prediction": {
+          "lower": 0.0010986227935160836,
+          "upper": 0.8115569776410888
+        },
+        "lower_endpoint_error": 0.0,
+        "upper_endpoint_error": 0.0,
+        "mean_absolute_endpoint_error": 0.0,
+        "mean_squared_endpoint_error": 0.0,
+        "observational_shortcut": {
+          "lower": 0.0,
+          "upper": 0.9470602043579638
+        },
+        "observational_shortcut_error": 0.06830092475519552,
+        "certification": "exact",
+        "endpoint_error": 0.0,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 12,
+      "family": "backadj_minimal_sets",
+      "sample_index": 13,
+      "tape_key": "trl-grpo:SAMPLED-13-backadj_minimal_sets-discovery-a10",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "backadj",
+        "prediction": [],
+        "nearest_valid_adjustment_set": [],
+        "edit_distance": 0,
+        "valid_adjustment_set": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 13,
+      "family": "best_intervention",
+      "sample_index": 105,
+      "tape_key": "trl-grpo:SAMPLED-105-best_intervention-decision-a1",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V4",
+        "value": 0,
+        "probability": 0.12190144484875776,
+        "candidate_probabilities": [
+          0.12190144484875776,
+          0.19315338171018082,
+          0.15756544982858528,
+          0.21330466477998591
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V4",
+          "value": 0
+        },
+        "chosen": {
+          "target": "V4",
+          "value": 0
+        },
+        "prediction": {
+          "target": "V4",
+          "value": 0
+        },
+        "optimal_probability": 0.12190144484875776,
+        "chosen_probability": 0.12190144484875776,
+        "candidate_probabilities": [
+          0.12190144484875776,
+          0.19315338171018082,
+          0.15756544982858528,
+          0.21330466477998591
+        ],
+        "minimum_probability": 0.12190144484875776,
+        "maximum_probability": 0.21330466477998591,
+        "probability_span": 0.09140321993122816,
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "observational_shortcut": [
+          0.14106631080503085,
+          0.07327235611652057,
+          0.2095366807151046,
+          0.2734692273203018
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.07125193686142306,
+        "observational_shortcut_normalized_regret": 0.7795342102284041,
+        "optimal_action": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 14,
+      "family": "mediator_set",
+      "sample_index": 15,
+      "tape_key": "trl-grpo:SAMPLED-15-mediator_set-discovery-a3",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V2"
+        ],
+        "order": [
+          [
+            "V2",
+            "V9"
+          ],
+          [
+            "V10",
+            "V2"
+          ]
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "mediator",
+        "mediator_precision": 1.0,
+        "mediator_recall": 1.0,
+        "mediator_f1": 1.0,
+        "order_precision": 1.0,
+        "order_recall": 1.0,
+        "order_f1": 1.0,
+        "mediators_exact_match": true,
+        "order_exact_match": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 15,
+      "family": "ate",
+      "sample_index": 16,
+      "tape_key": "trl-grpo:SAMPLED-16-ate-target_query-a14",
+      "truth": {
+        "type": "ate",
+        "effect": [
+          -0.1944167193479237,
+          0.1944167193479237
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "target_query",
+        "truth": [
+          -0.1944167193479237,
+          0.1944167193479237
+        ],
+        "prediction": [
+          -0.1944167193479237,
+          0.1944167193479237
+        ],
+        "component_errors": [
+          0.0,
+          0.0
+        ],
+        "l1_error": 0.0,
+        "total_variation_error": 0.0,
+        "squared_error": 0.0,
+        "observational_shortcut": [
+          -0.2039844828252101,
+          0.2039844828252101
+        ],
+        "observational_shortcut_error": 0.009567763477286372,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 16,
+      "family": "individual_counterfactual_probability",
+      "sample_index": 19,
+      "tape_key": "trl-grpo:SAMPLED-19-individual_counterfactual_probability-target_query-a0",
+      "truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0004523687531380162,
+        "upper": 0.07660446679616513,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "cached": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0004523687531380146,
+        "upper": 0.07660446665399272,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      },
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "counterfactual_roi",
+        "truth": {
+          "lower": 0.0004523687531380146,
+          "upper": 0.07660446665399272,
+          "certification": "exact",
+          "endpoint_error": 0.0,
+          "certified_lower_range": [
+            0.0004523687531380146,
+            0.0004523687531380146
+          ],
+          "certified_upper_range": [
+            0.07660446665399272,
+            0.07660446665399272
+          ]
+        },
+        "prediction": {
+          "lower": 0.0004523687531380146,
+          "upper": 0.07660446665399272
+        },
+        "lower_endpoint_error": 0.0,
+        "upper_endpoint_error": 0.0,
+        "mean_absolute_endpoint_error": 0.0,
+        "mean_squared_endpoint_error": 0.0,
+        "observational_shortcut": {
+          "lower": 0.0,
+          "upper": 0.10621904146257599
+        },
+        "observational_shortcut_error": 0.015033471780860647,
+        "certification": "exact",
+        "endpoint_error": 0.0,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 17,
+      "family": "backadj_minimal_sets",
+      "sample_index": 20,
+      "tape_key": "trl-grpo:SAMPLED-20-backadj_minimal_sets-discovery-a0",
+      "truth": {
+        "type": "backadj_minimal_sets"
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "backadj",
+        "prediction": [
+          "V1",
+          "V5",
+          "V6"
+        ],
+        "nearest_valid_adjustment_set": [
+          "V1",
+          "V5",
+          "V6"
+        ],
+        "edit_distance": 0,
+        "valid_adjustment_set": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 18,
+      "family": "best_intervention",
+      "sample_index": 2123,
+      "tape_key": "trl-grpo:SAMPLED-2123-best_intervention-decision-a0",
+      "truth": {
+        "type": "best_intervention",
+        "target": "V13",
+        "value": 0,
+        "probability": 0.35963058025832795,
+        "candidate_probabilities": [
+          0.35963058025832795,
+          0.41466941519209377,
+          0.4143168290020958,
+          0.3997061307733346
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V13",
+          "value": 0
+        },
+        "chosen": {
+          "target": "V13",
+          "value": 0
+        },
+        "prediction": {
+          "target": "V13",
+          "value": 0
+        },
+        "optimal_probability": 0.35963058025832795,
+        "chosen_probability": 0.35963058025832795,
+        "candidate_probabilities": [
+          0.35963058025832795,
+          0.41466941519209377,
+          0.4143168290020958,
+          0.3997061307733346
+        ],
+        "minimum_probability": 0.35963058025832795,
+        "maximum_probability": 0.41466941519209377,
+        "probability_span": 0.05503883493376582,
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "observational_shortcut": [
+          0.42087419539751,
+          0.4576792303154404,
+          0.11239632267671328,
+          0.12199312191652158
+        ],
+        "observational_choice": 2,
+        "observational_shortcut_error": 0.054686248743767873,
+        "observational_shortcut_normalized_regret": 0.9935938653057926,
+        "optimal_action": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "index": 19,
+      "family": "mediator_set",
+      "sample_index": 22,
+      "tape_key": "trl-grpo:SAMPLED-22-mediator_set-discovery-a0",
+      "truth": {
+        "type": "mediator_set",
+        "mediators": [
+          "V3"
+        ],
+        "order": [
+          [
+            "V0",
+            "V3"
+          ],
+          [
+            "V3",
+            "V4"
+          ]
+        ]
+      },
+      "cached": null,
+      "oracle_reward": 1.0,
+      "terminal_score": {
+        "kind": "mediator",
+        "mediator_precision": 1.0,
+        "mediator_recall": 1.0,
+        "mediator_f1": 1.0,
+        "order_precision": 1.0,
+        "order_recall": 1.0,
+        "order_f1": 1.0,
+        "mediators_exact_match": true,
+        "order_exact_match": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    }
+  ],
+  "interpretation": "Known diagnostic data. Oracle answers use private truth solely to audit scoring, never as rollout actions."
+}

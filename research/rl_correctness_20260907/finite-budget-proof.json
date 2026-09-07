@@ -1,0 +1,146 @@
+{
+  "delta_exact": "1/10000",
+  "nodes": 8,
+  "scalar_budget": 131072,
+  "public_prompts_identical": true,
+  "both_pass_production_contract": true,
+  "truths": [
+    {
+      "type": "mediator_set",
+      "mediators": [
+        "M"
+      ],
+      "order": [
+        [
+          "X",
+          "M"
+        ],
+        [
+          "M",
+          "Y"
+        ]
+      ]
+    },
+    {
+      "type": "mediator_set",
+      "mediators": [
+        "M",
+        "Z"
+      ],
+      "order": [
+        [
+          "X",
+          "M"
+        ],
+        [
+          "X",
+          "Z"
+        ],
+        [
+          "M",
+          "Y"
+        ],
+        [
+          "Z",
+          "Y"
+        ]
+      ]
+    }
+  ],
+  "all_legal_one_unit_laws": [
+    {
+      "action": {},
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "1": 0
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "1": 1
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "2": 0
+      },
+      "tv_exact": "0",
+      "chi2_exact": "0"
+    },
+    {
+      "action": {
+        "2": 1
+      },
+      "tv_exact": "0",
+      "chi2_exact": "0"
+    },
+    {
+      "action": {
+        "4": 0
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "4": 1
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "5": 0
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "5": 1
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "6": 0
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "6": 1
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "7": 0
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    },
+    {
+      "action": {
+        "7": 1
+      },
+      "tv_exact": "1/10000",
+      "chi2_exact": "1/25000000"
+    }
+  ],
+  "transcript_kl_upper_bound_exact": "2048/390625",
+  "transcript_tv_upper_bound": 0.0512,
+  "equal_prior_Z_membership_error_lower_bound": 0.4744,
+  "scope": "Worst-case witness in the declared positive/minimal causal class; does not estimate its frequency in the sampler.",
+  "math_reference": "https://stanford.edu/class/stats311/lecture-notes.pdf"
+}

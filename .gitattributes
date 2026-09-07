@@ -6,3 +6,10 @@
 *.sh text eol=lf
 *.toml text eol=lf
 *.yml text eol=lf
+# Reviewed upstream patches are verified byte-for-byte, including source EOLs.
+*.patch -text -whitespace
+# Preserve archived audit bytes so their recorded SHA-256 values survive clones.
+research/rl_correctness_20260907/** -text whitespace=cr-at-eol
+# Original captured logs and the original plot script retain incidental spacing.
+research/rl_correctness_20260907/**/checks.log -whitespace
+research/rl_correctness_20260907/official_execution/original_plot_training_curves.py -whitespace

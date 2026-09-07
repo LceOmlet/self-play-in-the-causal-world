@@ -32,6 +32,23 @@ class CounterfactualIntervalCertificate:
     certification: str
     endpoint_error: float
 
+    def __post_init__(self) -> None:
+        # Every conditional probability lies in [0, 1]. Floating-point sums
+        # and the final conditioning division can overshoot a boundary by an
+        # ulp; the answer parser correctly refuses such values. Project only
+        # roundoff-sized violations, and reject inconsistent certificates.
+        for name in ("lower", "upper"):
+            value = getattr(self, name)
+            tolerance = 0.0 if isinstance(value, Fraction) else _PROBABILITY_TOLERANCE
+            if not isfinite(float(value)) or not -tolerance <= value <= 1 + tolerance:
+                raise ValueError("counterfactual certificate endpoint outside [0, 1]")
+            if value < 0 or value > 1:
+                object.__setattr__(self, name, min(1.0, max(0.0, value)))
+        if self.lower > self.upper:
+            raise ValueError("counterfactual certificate endpoints are reversed")
+        if not isfinite(self.endpoint_error) or self.endpoint_error < 0:
+            raise ValueError("counterfactual certificate error must be finite and nonnegative")
+
 
 def _uses_exact_probabilities(world: WorldSpec) -> bool:
     return all(
@@ -228,13 +245,68 @@ def _variable_elimination_distribution(
     interventions: Mapping[int, int],
     measure: tuple[int, ...],
 ) -> tuple[tuple[tuple[int, ...], Probability], ...]:
-    factors = _interventional_factors(world, interventions)
-    hidden = set(range(len(world.variables))) - set(measure)
+    fixed = _validate_interventions(world, interventions)
+    exact = _uses_exact_probabilities(world)
+    # Sum normalized descendants away before allocating factors. Incoming
+    # edges of intervened nodes are absent in the hard-do graph.
+    relevant = set(measure)
+    pending = list(measure)
+    while pending:
+        node = pending.pop()
+        if node in fixed:
+            continue
+        for parent in world.parents.get(node, ()):
+            if parent not in relevant:
+                relevant.add(parent)
+                pending.append(parent)
+    selected_factors: list[_Factor] = []
+    for node in sorted(relevant):
+        if node in fixed:
+            if node in measure:
+                selected_factors.append(
+                    _Factor(
+                        (node,),
+                        tuple(
+                            (
+                                Fraction(int(state == fixed[node]))
+                                if exact
+                                else float(state == fixed[node])
+                            )
+                            for state in range(world.domains[node])
+                        ),
+                    )
+                )
+            continue
+        scope = (*world.parents.get(node, ()), node)
+        values = tuple(p for row in world.cpt[node] for p in row)
+        if len(values) != prod(world.domains[v] for v in scope):
+            raise RuntimeError("internal error: CPT factor shape is inconsistent")
+        free = tuple(v for v in scope if v not in fixed)
+        if free != scope:
+            strides = tuple(
+                prod(world.domains[v] for v in scope[i + 1 :]) for i in range(len(scope))
+            )
+            offset = sum(
+                fixed[v] * stride for v, stride in zip(scope, strides, strict=True) if v in fixed
+            )
+            free_strides = tuple(
+                stride for v, stride in zip(scope, strides, strict=True) if v not in fixed
+            )
+            values = tuple(
+                values[
+                    offset
+                    + sum(a * stride for a, stride in zip(assignment, free_strides, strict=True))
+                ]
+                for assignment in product(*(range(world.domains[v]) for v in free))
+            )
+        selected_factors.append(_Factor(free, values))
+    factors = tuple(selected_factors)
+    hidden = relevant - set(measure) - set(fixed)
     while hidden:
         variable = min(hidden, key=lambda item: _elimination_key(world, factors, item))
         involving = tuple(factor for factor in factors if variable in factor.variables)
         untouched = tuple(factor for factor in factors if variable not in factor.variables)
-        factors = (*untouched, _sum_out(world, _multiply_factors(world, involving), variable))
+        factors = (*untouched, _contract_eliminating(world, involving, variable, exact=exact))
         hidden.remove(variable)
     result = _multiply_factors(world, factors)
     assignments = tuple(product(*(range(world.domains[node]) for node in measure)))
@@ -243,6 +315,49 @@ def _variable_elimination_distribution(
     )
     _require_normalized(probabilities, exact=_uses_exact_probabilities(world))
     return tuple(zip(assignments, probabilities, strict=True))
+
+
+def _contract_eliminating(
+    world: WorldSpec,
+    factors: tuple[_Factor, ...],
+    variable: int,
+    *,
+    exact: bool,
+) -> _Factor:
+    """Fuse a factor product and its sum; retain only the outgoing message.
+
+    For any fixed output assignment the multiplication and summation order
+    match _sum_out(_multiply_factors(...)). Compile mixed-radix strides once.
+    """
+    remaining = tuple(sorted({v for f in factors for v in f.variables} - {variable}))
+    positions = {v: i for i, v in enumerate(remaining)}
+    layouts = []
+    for factor in factors:
+        strides = tuple(
+            prod(world.domains[v] for v in factor.variables[i + 1 :])
+            for i in range(len(factor.variables))
+        )
+        offsets = tuple(
+            (positions[v], stride)
+            for v, stride in zip(factor.variables, strides, strict=True)
+            if v != variable
+        )
+        state_stride = strides[factor.variables.index(variable)]
+        layouts.append((factor.values, offsets, state_stride))
+    output = []
+    for assignment in product(*(range(world.domains[v]) for v in remaining)):
+        access = tuple(
+            (values, sum(assignment[pos] * stride for pos, stride in offsets), state_stride)
+            for values, offsets, state_stride in layouts
+        )
+        terms = []
+        for state in range(world.domains[variable]):
+            value = Fraction(1) if exact else 1.0
+            for values, offset, stride in access:
+                value *= values[offset + state * stride]
+            terms.append(value)
+        output.append(_probability_sum(tuple(terms), exact=exact))
+    return _Factor(remaining, tuple(output))
 
 
 def _topological_order(world: WorldSpec) -> tuple[int, ...]:

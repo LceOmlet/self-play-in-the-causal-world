@@ -1,5 +1,46 @@
 # Pinned upstream patches
 
+## Current official verl DAPO path
+
+Only `scripts/run_official_dapo.sh` is the current training entry. It uses the
+official DAPO recipe with two explicit compatibility patches:
+
+- `verl-tool-termination-v1.patch`: propagate real environment termination and
+  retain the terminal action without adding tool feedback or another model turn.
+- `verl-recipe-action-mask-v1.patch`: preserve the tool loop's existing action
+  mask in `compute_kl_related_metrics`; use the official RayPPOTrainer guard to
+  synthesize a mask only when none exists. The unpatched recipe incorrectly put
+  2,976 tool tokens into a real audit update's 14,413-token denominator.
+
+The original 427 upstream hashes, reviewed runtime file hashes and patch hashes
+are recorded in `configs/verl/upstream_sources.json`. The verifier additionally
+pins the recipe patch hash in code. Git treats patch files as binary to preserve
+their original line endings and SHA-256 values. The recipe file is therefore
+explicitly patched; its algorithms are still owned by the official sources.
+See [integration status](../docs/official-dapo-integration-20260906.md) and
+[research evidence](../research/rl_correctness_20260907/README.md).
+
+## Historical TRL records — not the current training path
+
+All TRL instructions below document earlier work only. Do not apply them to the
+official verl environment, and do not use their checkpoints or locally derived
+dynamic-sampling code as evidence for the current DAPO implementation.
+
+### DAPO loss: verbatim upstream fix, no custom sampling
+
+`trl-1.10.0-dapo-token-normalization.patch` now backports the exact
+`GRPOTrainer.compute_liger_loss` method from the official TRL 1.12.0 wheel
+into the installed 1.10.0 owner after the two earlier performance patches.
+It replaces the previous locally derived normalization patch. The input
+trainer SHA is `1e34e9f6b0d92577837c3ee7d7b25b0aa841d8d7a6408ba67e976aba3e84a7af`;
+the result is `38189ac6ffffc027966c8c7cf86d568c0bcffa5e091ad727463e009a38c106f5`.
+The complete version/hash manifest is `rl-owner-manifest.json`.
+
+The custom dynamic-sampling patch has been withdrawn. Do not apply archived
+copies: they are not part of the current training path. Native TRL's DAPO
+loss alone does not implement the full DAPO dynamic-sampling recipe.
+See `docs/dapo-normalization-fix-20260906.md` for scope and validation limits.
+
 ## TRL 1.10.0 fused old-policy log probabilities
 
 `trl-1.10.0-qwen35-fused-old-logps.patch` changes the owning TRL

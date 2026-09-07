@@ -22,6 +22,7 @@ from math import prod
 from typing import Any
 
 from .episode import Budget, budget_for_observation_bandwidth
+from .identification import INTERACTION_SURFACE_VERSION, validate_population_identification
 from .query_truth import sample_worldspec_assignment
 from .rendering import (
     render_seed_initial_messages,
@@ -587,6 +588,21 @@ class WorldSpecEpisode:
             raise ValueError("max_graph_nodes must be an integer covering the episode world")
         _runtime_view(seed, world)
         resolved_measure_max = resolve_observation_bandwidth(seed, measure_max)
+        if seed.get("interaction_surface_version") == INTERACTION_SURFACE_VERSION:
+            inverse = {
+                label: world.variables.index(name)
+                for name, label in seed["visible_schema"]["variable_labels"].items()
+            }
+            query = seed["query"]
+            source = inverse[query.get("treatment", query.get("decision_target"))]
+            validate_population_identification(
+                world,
+                source,
+                inverse[query["outcome"]],
+                seed["manipulability"],
+                seed["readable"],
+                resolved_measure_max,
+            )
         observation_budget_exponent = resolve_observation_budget_exponent(seed)
         if budget is None:
             if resolved_measure_max is None:
@@ -594,6 +610,7 @@ class WorldSpecEpisode:
             resolved_budget = budget_for_observation_bandwidth(
                 resolved_measure_max,
                 exponent=observation_budget_exponent,
+                max_observations=seed.get("observation_budget"),
             )
         else:
             resolved_budget = budget

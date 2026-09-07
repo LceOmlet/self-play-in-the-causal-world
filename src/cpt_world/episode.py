@@ -42,8 +42,9 @@ def budget_for_observation_bandwidth(
     observation_bandwidth: int,
     *,
     exponent: int = min(OBSERVATION_BUDGET_EXPONENTS),
+    max_observations: int | None = None,
 ) -> Budget:
-    """Apply ``B = observation_bandwidth * 2**exponent``."""
+    """Use an explicit scalar budget, or the legacy ``B = M * 2**exponent``."""
 
     if (
         isinstance(observation_bandwidth, bool)
@@ -51,6 +52,9 @@ def budget_for_observation_bandwidth(
         or observation_bandwidth <= 0
     ):
         raise ValueError("observation_bandwidth must be a positive integer")
+    unit = observations_per_bandwidth_unit(exponent)
     return Budget(
-        max_observations=(observation_bandwidth * observations_per_bandwidth_unit(exponent))
+        max_observations=(
+            observation_bandwidth * unit if max_observations is None else max_observations
+        )
     )

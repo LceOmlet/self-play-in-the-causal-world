@@ -1,0 +1,13 @@
+{
+  "repository": "verl-recipe",
+  "base_commit": "ee3aef1690d6bb5e6448052c4842e8efb7a3f76c",
+  "path": "patches/verl-recipe-action-mask-v1.patch",
+  "sha256": "a4541de892529cc29d8c03819c207c1786e9bb91b51a7d4a50896886075406e7",
+  "reason": "Preserve the official tool action mask when recomputing old log probabilities, matching the pinned official RayPPOTrainer guard. No advantage, filtering, loss, importance-weight or optimizer formula changes.",
+  "files": {
+    "dapo/dapo_ray_trainer.py": {
+      "upstream_sha256": "5d3e76c0cd5a9b9e01b1a796d36659e6ad3104739fe9bdc4ae4953603cf47a2c",
+      "patched_sha256": "ce4a091c7987088694b9fddfd57c2988439f2ad2df580e5debf113b538e91cc0"
+    }
+  }
+}

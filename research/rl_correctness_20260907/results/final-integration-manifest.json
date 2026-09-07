@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-07T05:25:55.861277+00:00",
+  "production_training_started": false,
+  "official_algorithm_changed": false,
+  "files": {
+    "src/cpt_world/counterfactual_solver.py": {
+      "before": "c7a4100f07ab0cc4a2f40a01bfafeef6c2ac200a8b762c6756345b417a34b2f2",
+      "after": "4249c54301fe001ecb109749a41f293ff514f04b9e004af8b174e9c7b5e263b3",
+      "final_after_lint": "4249c54301fe001ecb109749a41f293ff514f04b9e004af8b174e9c7b5e263b3"
+    },
+    "tests/test_counterfactual_solver.py": {
+      "before": "9e1386038b6ae5361c7eb17242f18164a054ed0c910e0c239161ef550fa921cb",
+      "after": "61f193047d979d4c416469bdda59d480e6ec010ea82b3813f58721bc890e1a54",
+      "final_after_lint": "a864e2e82dfb2007358fc59b17b1166169d36bce4fc112d633d3b5b08fa687fd"
+    },
+    "tests/test_indirect_diagonal_transport.py": {
+      "before": null,
+      "after": "d288e1fd74e02b11ae2b49811bc5838d29d51fd53a63e1e77183331fdd7e58d5",
+      "final_after_lint": "d288e1fd74e02b11ae2b49811bc5838d29d51fd53a63e1e77183331fdd7e58d5"
+    }
+  }
+}

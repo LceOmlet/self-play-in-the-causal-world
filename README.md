@@ -10,9 +10,17 @@ The current milestone provides the environment, the shared task-generation and
 interaction pipeline, the frozen
 [Terminal-Quality Reward v10](docs/terminal-quality-reward-v10.md), the
 [uniform task-family training mixture](docs/training-mixture-v1.md), and an
-executable GRPO post-training entry point. It does not yet freeze a self-play
+official verl DAPO post-training integration. It does not yet freeze a self-play
 data-generation algorithm, difficulty bands, or a final benchmark aggregation
 mixture.
+
+The active correctness work is tracked in the
+[2026-09-07 goal and remaining proof obligations](docs/rl-correctness-goal-20260907.md).
+[Reproducible research and execution evidence](research/rl_correctness_20260907/README.md)
+include successful checks and disqualified runs. The current training entry is
+`scripts/run_official_dapo.sh`; historical TRL patches and scripts are retained
+for provenance only. Long training remains stopped, and old checkpoints must
+not initialize new training. An isolated audit is not evidence of learning gains.
 
 ## Paper
 
@@ -47,9 +55,11 @@ They are not a second sampler and do not define the generated task distribution.
 
 Every legal terminal answer receives one continuous quality value between zero
 and one. An unfinished episode or an illegal terminal answer receives zero. The
-environment owns this value, and the GRPO adapter passes it through unchanged.
+environment owns this value, and the tool adapter passes it through unchanged.
 Experimental cost, query count, trajectory length, token usage, and wall-clock
 time are recorded separately and never folded into terminal quality.
+The official DAPO optimizer adds its own soft overlong penalty; its shaped
+training reward must be distinguished from the environment's raw quality.
 
 | Task | Error used by the reward | Meaning of the terminal quality |
 | --- | --- | --- |
@@ -157,12 +167,15 @@ grid. In the current implementation:
   same-size structures until a role with that value exists;
 - task-family answerability remains an optional diagnostic and is not applied
   as a generation label, filter, or admission check;
-- conditional on the eligible non-anchor intervention variables, the legal
-  hard-do width `K` is uniform from one through the number of eligible
-  variables, and the subset is uniform conditional on that width;
-- `M` is sampled independently and uniformly from one through the node count.
+- every non-anchor variable is available for hard intervention, and all
+  variables can be measured jointly;
+- the actual world and permissions must satisfy the constructive
+  [population identification contract](docs/population-identification-v1.md),
+  including positivity, causal minimality and a public source-ancestry prior;
+- a budget width `M0` is drawn independently and uniformly from one through
+  the node count, using the former measurement-width RNG draw;
 - an exponent is sampled independently and uniformly from `11`, `12`, `13`,
-  and `14`; the scalar-observation budget is `M * 2^exponent`.
+  and `14`; the explicit scalar-observation budget remains `M0 * 2^exponent`.
 
 Thus `K` and `M` change the evidence surface without redefining whether the
 underlying world/query instance has an answer.
@@ -242,15 +255,18 @@ outcome probability. This is the two-standard-error resolution of the minimum
 The terminal score remains normalized causal regret; this admission condition
 only removes observational reversals that are statistical near-ties.
 
-## GRPO post-training
+## Official DAPO post-training
 
-`scripts/train_grpo_resource_smoke.py` consumes the balanced five-family stream
-and the environment-owned v10 terminal quality. Its startup preflight rejects a
-different reward version, a transformed utility, or an unexpected task-family
-registry before loading the model. `scripts/run_remote_grpo_training.sh`
-provides the reproducible launcher used by the current post-training runs.
+`scripts/run_official_dapo.sh` executes the unmodified official verl DAPO recipe.
+`scripts/prepare_verl_cpt_data.py` materializes the existing balanced task stream
+as standard parquet. See [source provenance, objective and verification
+status](docs/official-dapo-integration-20260906.md). This entry point uses an
+independent environment without TRL. The historical TRL launcher is retired,
+and old RL checkpoints are disqualified as initialization and evaluation
+evidence. Formal training remains stopped while algorithm and environment
+correctness are addressed.
 
-This is an executable GRPO workflow, not a frozen self-play algorithm. A future
+This integration does not freeze a self-play algorithm. A future
 self-play contract must specify how new worlds or curricula are proposed, how
 opponents or generators are updated, and how generated episodes enter the
 training distribution.

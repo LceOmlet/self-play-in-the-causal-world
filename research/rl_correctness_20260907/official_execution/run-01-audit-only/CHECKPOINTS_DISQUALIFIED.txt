@@ -1,0 +1,1 @@
+Mask overwrite observed in real execution. Every checkpoint in this run is failure evidence only. Never initialize or resume training from it.
