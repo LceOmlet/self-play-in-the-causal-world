@@ -67,7 +67,9 @@ def main():
         if not source.exists():
             continue
         relative = source.relative_to(source_root)
-        data = read_complete(source) if source.suffix in ('.jsonl', '.log') else source.read_bytes()
+        # Ray may leave a fully printed metric line without a trailing newline.
+        # JSONL needs complete records; the console log must preserve every byte.
+        data = read_complete(source) if source.suffix == '.jsonl' else source.read_bytes()
         target = args.output / relative
         if not args.reuse_snapshot:
             target.parent.mkdir(parents=True, exist_ok=True)
