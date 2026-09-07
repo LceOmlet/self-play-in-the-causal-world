@@ -66,7 +66,8 @@ def main():
     for saved, observed in zip(optimizer['param_groups'], post['param_groups'], strict=True):
         assert len(saved['params']) == len(observed['params'])
         id_to_name.update(zip(saved['params'], observed['params'], strict=True))
-        assert {k: v for k, v in saved.items() if k != 'params'} == {
+        # The execution observer stores tuple-valued metadata as lists.
+        assert json.loads(json.dumps({k: v for k, v in saved.items() if k != 'params'})) == {
             k: v for k, v in observed.items() if k != 'params'}
     frozen_placeholders = []
     moment_tensors = 0
@@ -78,10 +79,10 @@ def main():
                 assert torch.equal(local(value), expected), (name, key)
                 moment_tensors += key in ('exp_avg', 'exp_avg_sq')
         else:
-            # Upstream checkpoint serialization adds empty frozen-state entries.
+            # Upstream checkpoint serialization includes empty dicts for frozen
+            # parameters. They contain no step counter or optimizer moments.
             assert name in {item['name'] for item in post['frozen']}
-            assert float(local(state['step'])) == 0
-            assert local(state['exp_avg']).numel() == local(state['exp_avg_sq']).numel() == 0
+            assert state == {}
             frozen_placeholders.append(name)
     assert set(post['state']) == set(model) and moment_tensors == 992
     assert len(frozen_placeholders) == 760
@@ -123,7 +124,7 @@ def main():
         'passed_saved_state_and_export': True,
         'model_tensors_identical_to_post_adam': len(model),
         'optimizer_moment_tensors_identical_to_post_adam': moment_tensors,
-        'frozen_zero_sized_optimizer_placeholders': len(frozen_placeholders),
+        'frozen_empty_optimizer_entries': len(frozen_placeholders),
         'nonzero_lora_B_tensors': sum(bool(local(t).count_nonzero()) for n, t in model.items() if 'lora_B' in n),
         'dtypes': dict(Counter(str(t.dtype) for t in model.values())),
         'lr_scheduler_last_epoch': extra['lr_scheduler']['last_epoch'],
