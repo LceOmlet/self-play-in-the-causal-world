@@ -1929,16 +1929,20 @@ def _best_intervention_observational_relation(
     lower-bounds the causal loss of every observationally optimal action.
     """
 
-    from .query_truth import (
-        interventional_probability,
-        worldspec_projected_interventional_distribution,
-    )
+    causal_values = _best_intervention_causal_values(world, anchors)
+    return _best_intervention_relation_from_causal_values(world, anchors, causal_values)
+
+
+def _best_intervention_causal_values(
+    world: WorldSpec,
+    anchors: Mapping[str, int | str],
+) -> tuple[Probability, ...]:
+    from .query_truth import interventional_probability
 
     decision = int(anchors["decision_target"])
     outcome = int(anchors["outcome"])
     outcome_state = int(anchors["outcome_state"])
-    objective = str(anchors["objective"])
-    causal_values = tuple(
+    return tuple(
         interventional_probability(
             world,
             {decision: action},
@@ -1947,6 +1951,19 @@ def _best_intervention_observational_relation(
         )
         for action in range(world.domains[decision])
     )
+
+
+def _best_intervention_relation_from_causal_values(
+    world: WorldSpec,
+    anchors: Mapping[str, int | str],
+    causal_values: tuple[Probability, ...],
+) -> tuple[bool, float]:
+    from .query_truth import worldspec_projected_interventional_distribution
+
+    decision = int(anchors["decision_target"])
+    outcome = int(anchors["outcome"])
+    outcome_state = int(anchors["outcome_state"])
+    objective = str(anchors["objective"])
     causal_best = min(causal_values) if objective == "minimize" else max(causal_values)
     causal_states = frozenset(
         action for action, value in enumerate(causal_values) if value == causal_best
@@ -1988,6 +2005,29 @@ def _best_intervention_observational_relation(
     if gap < 0.0:
         raise RuntimeError("observational reversal produced negative causal regret")
     return True, gap
+
+
+def _best_intervention_proposal_is_admitted(
+    world: WorldSpec,
+    anchors: Mapping[str, int | str],
+    *,
+    desired_discordant: bool,
+) -> bool:
+    """Evaluate the existing acceptance event, omitting unnecessary inference."""
+
+    causal_values = _best_intervention_causal_values(world, anchors)
+    if desired_discordant:
+        # Every action's causal regret is at most the causal-value range.
+        # Match the relation's final float conversion, including exact fixtures.
+        causal_range = float(max(causal_values) - min(causal_values))
+        if causal_range < BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP:
+            return False
+    discordant, absolute_causal_loss = _best_intervention_relation_from_causal_values(
+        world, anchors, causal_values
+    )
+    if desired_discordant:
+        return discordant and absolute_causal_loss >= BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP
+    return not discordant
 
 
 def _balanced_proposal_seed(slot: int, attempt: int) -> int:
@@ -2449,23 +2489,15 @@ def iter_sampled_seeds(
                             f"SAMPLED-{proposal_index}-{query_type}-{task_head}-a{anchor_index}"
                         ),
                     )
-                    discordant, absolute_causal_loss = _best_intervention_observational_relation(
-                        task_world,
-                        anchors,
-                    )
                     balance_slot = (
                         sample_index
                         if best_intervention_balance_start is None
                         else best_intervention_balance_start + output_offset
                     )
                     desired_discordant = balance_slot % 5 != 0
-                    if desired_discordant:
-                        admitted = (
-                            discordant
-                            and absolute_causal_loss >= BEST_INTERVENTION_STRONG_REVERSAL_MIN_GAP
-                        )
-                    else:
-                        admitted = not discordant
+                    admitted = _best_intervention_proposal_is_admitted(
+                        task_world, anchors, desired_discordant=desired_discordant
+                    )
                     if not admitted:
                         attempt += 1
                         continue

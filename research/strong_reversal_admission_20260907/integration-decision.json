@@ -1,0 +1,13 @@
+{
+  "integrated": true,
+  "base_commit": "aa86218d0280b8abdfd34bdc07788501cad17d10",
+  "world_space_sha256": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+  "proof": "For every observational optimum set, causal regret <= max(v)-min(v); reject only when the same rounded range is strictly below the existing threshold.",
+  "complete_task_and_proposal_equality": true,
+  "sampling_law_changed": false,
+  "acceptance_probability_changed": false,
+  "training_started": false,
+  "remaining_counterfactual_uncertified": 23,
+  "test_summary": "107 passed, 3349 subtests passed",
+  "timing_scope": "Three fixed generation cases, two executions per path with reversed order; not all configurations or training throughput."
+}

@@ -23,3 +23,5 @@ research/backdoor_mincut_20260907/baseline-profile.txt -whitespace
 # Preserve the rejected symbolic compiler candidate and complete replay evidence.
 research/symbolic_contraction_20260907/** -text whitespace=cr-at-eol
 research/symbolic_contraction_20260907/*.patch -whitespace
+# Strong-reversal admission proof and fixed complete-generation comparison.
+research/strong_reversal_admission_20260907/** -text whitespace=cr-at-eol
