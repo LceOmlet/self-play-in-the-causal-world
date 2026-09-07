@@ -1,0 +1,94 @@
+{
+  "inspection_time": 1788796571.1239104,
+  "sources": {
+    "/home/chen/.venvs/dolens-rl/lib/python3.12/site-packages/trl/generation/vllm_generation.py": {
+      "sha256": "7a91eb42c7c9614c23a20af0e7f8d6a37d1de5442cee7086cef3551a2b1ad2d4",
+      "excerpts": [
+        {
+          "needle": "quantization = None",
+          "line": 352,
+          "source": "            # Ensure distributed rendezvous variables are set without colliding across concurrent runs\n            ensure_master_addr_port()\n\n            quantization = None\n            if is_bitsandbytes_available():\n                for _, module in model.named_modules():\n                    if isinstance(module, bnb.nn.Linear4bit):\n                        quantization = \"bitsandbytes\"\n                        break\n                    elif isinstance(module, bnb.nn.Linear8bitLt):\n                        raise ValueError(\"vLLM does not support in-flight 8-bit quantization.\")\n\n            # Build LLM initialization kwargs\n            self.llm = LLM(\n                model=model.name_or_path,\n                tensor_parallel_size=self.tensor_parallel_size,\n                gpu_memory_utilization=self.gpu_memory_utilization,\n                max_model_len=self.max_model_length,\n                max_num_seqs=self.max_num_seqs,"
+        },
+        {
+          "needle": "model.merge_adapter()",
+          "line": 481,
+          "source": "            # merging adapters in a sharded manner is not supported.\n            # TODO: does this work with FSDP?\n            with self._dist.gather_params(list(model.parameters())):\n                model.merge_adapter()\n\n                # Update vLLM weights while parameters are gathered\n                if self._dist.is_fsdp:  # note if using FSDP, gather_params is a no-op\n                    # For PEFT with FSDP we need to use the memory efficient post-order traversal\n                    self._sync_fsdp_params_to_vllm(model)\n                else:\n                    # DeepSpeed ZeRO-3 with PEFT\n                    for name, param in model.named_parameters():\n                        # When using PEFT, we need to recover the original parameter name\n                        name = name.removeprefix(\"base_model.model.\").replace(\".base_layer\", \"\")\n                        # Skip PEFT layers: they don't exist in vLLM, and they are merged already.\n                        if model.prefix in name:\n                            continue\n                        # When module to save, remove its prefix and discard the original module\n                        if \"original_module\" in name:"
+        },
+        {
+          "needle": "self.llm = LLM(",
+          "line": 362,
+          "source": "                        raise ValueError(\"vLLM does not support in-flight 8-bit quantization.\")\n\n            # Build LLM initialization kwargs\n            self.llm = LLM(\n                model=model.name_or_path,\n                tensor_parallel_size=self.tensor_parallel_size,\n                gpu_memory_utilization=self.gpu_memory_utilization,\n                max_model_len=self.max_model_length,\n                max_num_seqs=self.max_num_seqs,\n                enable_sleep_mode=self.enable_sleep_mode,\n                enable_prefix_caching=self.enable_prefix_caching,\n                speculative_config=self.speculative_config,\n                model_impl=self.model_impl,\n                distributed_executor_backend=\"external_launcher\",\n                # Feed identical seed for tp groups to ensure sampling results are the same across workers\n                seed=accelerator.process_index // self.tensor_parallel_size,\n                # Latest vLLM v1 memory profiler is misled by the high default value (i.e., 32768) - thinking there's not enough memory\n                max_num_batched_tokens=4096,\n                # Important so temperature scaling/logit tweaking affects the TIS log probs"
+        }
+      ]
+    },
+    "/home/chen/.venvs/dolens-rl/lib/python3.12/site-packages/trl/trainer/grpo_trainer.py": {
+      "sha256": "38189ac6ffffc027966c8c7cf86d568c0bcffa5e091ad727463e009a38c106f5",
+      "excerpts": [
+        {
+          "needle": "count only model-generated tokens",
+          "line": 2398,
+          "source": "\n        # Get completion length per sequence, used for logging\n        prompt_lengths = torch.tensor([len(ids) for ids in prompt_ids], device=device)\n        if tool_mask is not None:  # count only model-generated tokens (tool_mask=1)\n            completion_lengths = torch.tensor([sum(mask) for mask in tool_mask], device=device)\n        else:\n            completion_lengths = torch.tensor([len(ids) for ids in completion_ids], device=device)\n        agg_prompt_lengths = self.accelerator.gather(prompt_lengths)\n        agg_completion_lengths = self.accelerator.gather(completion_lengths)\n        total_prompt_tokens = agg_prompt_lengths.sum()\n\n        # Log the metrics\n        if mode == \"train\":\n            self.state.num_input_tokens_seen += (total_prompt_tokens + agg_completion_lengths.sum()).item()\n        self._metrics[mode][\"num_tokens\"] = [self.state.num_input_tokens_seen]\n\n        # Log completion lengths, mean, min, max\n        self._metrics[mode][\"completions/mean_length\"].append(agg_completion_lengths.float().mean().item())\n        self._metrics[mode][\"completions/min_length\"].append(agg_completion_lengths.float().min().item())"
+        }
+      ]
+    },
+    "/home/chen/.venvs/dolens-rl/lib/python3.12/site-packages/vllm/config/model.py": {
+      "sha256": "7d52e060db54067a21591882bd6e3c2dd2486ac9041dde1117f97023e71bf89f",
+      "excerpts": [
+        {
+          "needle": "enforce_eager: bool",
+          "line": 217,
+          "source": "    one of the values in `ONLINE_QUANT_SHORTHAND_NAMES`.\"\"\"\n    allow_deprecated_quantization: bool = False\n    \"\"\"Whether to allow deprecated quantization methods.\"\"\"\n    enforce_eager: bool = False\n    \"\"\"Whether to always use eager-mode PyTorch. If True, we will disable CUDA\n    graph and always execute the model in eager mode. If False, we will use\n    CUDA graph and eager execution in hybrid for maximal performance and\n    flexibility.\"\"\"\n    enable_return_routed_experts: bool = False\n    \"\"\"Whether to return routed experts.\"\"\"\n    max_logprobs: int = Field(default=20, ge=-1)\n    \"\"\"Maximum number of log probabilities to return when `logprobs` is\n    specified in `SamplingParams`. The default value comes the default for the\n    OpenAI Chat Completions API. -1 means no cap, i.e. all (output_length *\n    vocab_size) logprobs are allowed to be returned and it may cause OOM.\"\"\"\n    logprobs_mode: LogprobsMode = \"raw_logprobs\"\n    \"\"\"Indicates the content returned in the logprobs and prompt_logprobs.\n    Supported mode:\n    1) raw_logprobs, 2) processed_logprobs, 3) raw_logits, 4) processed_logits."
+        }
+      ]
+    },
+    "/home/chen/.venvs/dolens-dapo-official/lib/python3.12/site-packages/vllm/config/vllm.py": {
+      "sha256": "90dfccb0b67cec8d579281116635db4ce0a065ef6563564f1dbfac30569adaab",
+      "excerpts": [
+        {
+          "needle": "disabling torch.compile and CUDAGraphs",
+          "line": 1063,
+          "source": "\n        if self.model_config is not None and self.model_config.enforce_eager:\n            logger.warning(\n                \"Enforce eager set, disabling torch.compile and CUDAGraphs. \"\n                \"This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none\"\n            )\n            self.compilation_config.mode = CompilationMode.NONE\n            self.compilation_config.cudagraph_mode = CUDAGraphMode.NONE\n\n        if os.environ.get(\"TORCH_COMPILE_DISABLE\") == \"1\":\n            logger.warning(\n                \"TORCH_COMPILE_DISABLE is set, disabling torch.compile. \"\n                \"This is equivalent to setting -cc.mode=none\"\n            )\n            self.compilation_config.mode = CompilationMode.NONE\n\n        # For model classes don't carry @support_torch_compile \u2014\n        # the breakable cudagraph is the supported PIECEWISE path. Auto-enable\n        # it unless the user has explicitly opted out via the env var."
+        }
+      ]
+    },
+    "/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1/verl/workers/rollout/vllm_rollout/vllm_async_server.py": {
+      "sha256": "11f9ae679472852446884c4267f89772cfad8a22db53992e1438d3c3c6fa8f43",
+      "excerpts": [
+        {
+          "needle": "\"enable_lora\": True",
+          "line": 427,
+          "source": "\n        if lora_rank > 0:\n            lora_args = {\n                \"enable_lora\": True,\n                \"max_loras\": 1,\n                \"max_lora_rank\": get_vllm_max_lora_rank(lora_rank),\n            }\n            if self.model_config.lora.get(\"fully_sharded_loras\", False):\n                lora_args[\"fully_sharded_loras\"] = True\n            args.update(lora_args)\n\n        if self.config.enable_rollout_routing_replay:\n            # R3 (Rollout Router Replay) relies on vLLM's ``enable_return_routed_experts``\n            # path (RoutedExpertsManager / RoutedExpertsCapturer), which is only correct\n            # for hybrid-attention MoE models (e.g. Qwen3.5, whose linear + full attention\n            # layout produces >1 KV-cache group) starting from vLLM 0.22.0. Earlier\n            # releases either lack the feature or under-size the routed-experts host\n            # buffer and crash with an IndexError. Fail fast with an actionable message\n            # instead of surfacing an opaque runtime error deep inside vLLM."
+        }
+      ]
+    },
+    "/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1/verl/trainer/ppo/metric_utils.py": {
+      "sha256": "15a17ba4cd4c46743fd80a776afe2c688c0bc63a1012df99163ffa468920d4b2",
+      "excerpts": [
+        {
+          "needle": "response_mask = batch.batch[\"attention_mask\"]",
+          "line": 84,
+          "source": "    response_length = batch.batch[\"responses\"].shape[-1]\n\n    prompt_mask = batch.batch[\"attention_mask\"][:, :-response_length]\n    response_mask = batch.batch[\"attention_mask\"][:, -response_length:]\n\n    prompt_length = prompt_mask.sum(-1).float()\n    response_length = response_mask.sum(-1).float()  # (batch_size,)\n\n    return dict(\n        prompt_length=prompt_length,\n        response_length=response_length,\n    )\n\n\ndef _get_nested_attr(obj: Any, name: str) -> Any:\n    if hasattr(obj, \"get\"):\n        return obj.get(name)\n    return getattr(obj, name, None)\n"
+        }
+      ]
+    }
+  },
+  "historical_training_args": {
+    "num_generations": 4,
+    "generation_batch_size": 4,
+    "max_completion_length": 31497,
+    "vllm_max_model_length": 32768,
+    "vllm_enable_prefix_caching": true,
+    "vllm_speculative_config": null,
+    "vllm_sleep_level": 2,
+    "bf16": true,
+    "model_init_kwargs": {
+      "dtype": "bfloat16"
+    },
+    "vllm_mode": "colocate",
+    "vllm_gpu_memory_utilization": 0.5,
+    "gradient_accumulation_steps": 4,
+    "num_iterations": 1
+  },
+  "historical_training_args_sha256": "5c9c442070ec34c68b96615e512d76871da938d6948343decfb4f313e726ec0d",
+  "scope": "Read-only inspection. Historical arguments are archived metadata; installed dependency sources are as inspected now, not proof of historical graph hit rates. No checkpoint weights loaded."
+}

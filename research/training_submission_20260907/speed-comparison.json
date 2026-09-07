@@ -1,0 +1,48 @@
+{
+  "legacy_log_sha256": "87609df4b54548803a16bf7ff61f6b483aa488b22d401dc21a75df41121269b6",
+  "progress_sha256": "8c353f93151dddd0a8a9d29923c87a7e3e6eb4dc032543cc4055e4dbc59aaa27",
+  "legacy_all": {
+    "groups": 649,
+    "step_seconds_mean": 517.9217103235748,
+    "step_seconds_median": 497.0,
+    "model_generated_tokens_mean": 7382.49969183359,
+    "tool_calls_mean": 21.145993836671803
+  },
+  "legacy_backdoor": {
+    "groups": 130,
+    "step_seconds_mean": 364.4245384615385,
+    "step_seconds_median": 345.35,
+    "model_generated_tokens_mean": 5162.756153846154,
+    "tool_calls_mean": 23.032692307692308
+  },
+  "legacy_backdoor_nonzero_gradient": {
+    "groups": 96,
+    "step_seconds_mean": 385.303125,
+    "step_seconds_median": 353.55,
+    "model_generated_tokens_mean": 5433.421875,
+    "tool_calls_mean": 23.515625
+  },
+  "legacy_last100_backdoor": {
+    "groups": 20,
+    "step_seconds_mean": 415.865,
+    "step_seconds_median": 390.45000000000005,
+    "model_generated_tokens_mean": 6068.45,
+    "tool_calls_mean": 27.4375
+  },
+  "current_first_update": {
+    "timing_s/step": 1399.2265700789867,
+    "timing_s/gen": 1271.573787198984,
+    "timing_s/old_log_prob": 42.60457183897961,
+    "timing_s/update_actor": 75.22352265904192,
+    "timing_s/update_weights": 6.6841744859702885,
+    "timing_s/agent_loop/tool_calls/mean": 0.48371546834823675,
+    "timing_s/agent_loop/tool_calls/max": 1.016690683318302,
+    "response_length/mean": 12027.25,
+    "train/num_gen_batches": 1.0,
+    "actor/grad_norm": 0.26953125
+  },
+  "current_generation_share": 0.9087690402614377,
+  "current_to_legacy_backdoor_wall_ratio": 3.8395509149465843,
+  "scope": "Observed first current update versus historical task-family averages; different worlds, policy weights and runtimes. Not a causal attribution or steady-state throughput estimate.",
+  "token_warning": "Historical completions/mean_length counts model-generated tokens; current response_length/mean uses attention-mask response length, including tool text. Do not divide these to claim a generation-length or tokens-per-second ratio."
+}

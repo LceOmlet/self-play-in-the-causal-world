@@ -1,0 +1,10 @@
+{
+  "archive": "first-update.tar.gz",
+  "sha256": "7c4f585b74dedde096cd30e70a19e7b839372aa3af3e12b51dba1b58c60f79a6",
+  "bytes": 62565,
+  "snapshot_time": 1788796257.5335274,
+  "updates": [
+    1
+  ],
+  "scope": "First real official update and partial subsequent generation; not a completed capability evaluation."
+}
