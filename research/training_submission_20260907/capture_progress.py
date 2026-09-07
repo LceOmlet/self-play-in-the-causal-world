@@ -29,7 +29,11 @@ def metrics_from_log(data):
         if not match:
             continue
         row = records.setdefault(int(match[1]), {})
-        for item in match[2].split(' - '):
+        # Ray can append the next worker's message without a separating newline.
+        # Its explicit process prefix ends this metric record; keep the preceding
+        # numeric value intact and do not parse the worker's warning as metrics.
+        body = re.split(r'\([A-Za-z_][\w:.]* pid=\d+\)', match[2], maxsplit=1)[0]
+        for item in body.split(' - '):
             key, separator, value = item.partition(':')
             if separator:
                 # Official LocalLogger serializes numeric values only.

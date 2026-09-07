@@ -41,7 +41,16 @@ remain required; neither nominal compilation support nor a tiny-model test can
 stand in for those checks. No competing GPU benchmark is launched while the
 current training occupies the device; preserve its verified checkpoints first.
 
-Output location:
-`/home/chen/runs/inference-efficiency-20260908/configuration`.
-The resolved configurations, official validation output and acceptance record
-are archived after execution, including any failure rather than claiming success.
+Executed result: all three candidates passed official configuration validation.
+The complete resolved diff contains exactly zero, two and three changes,
+respectively, all confined to the declared inference settings. The model config
+SHA-256 is `d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05`.
+GPU execution, probability checks and measured speed remain unverified.
+
+Successful output location:
+`/home/chen/runs/inference-efficiency-20260908/configuration-v2`.
+The first inspection attempt put candidate overrides after Hydra's inspection
+flags and failed in argument parsing before composing that candidate. Commit
+`fbf1df3` fixes this inspection command; it does not alter the trainer. Both the
+failed first attempt and successful second attempt are retained in
+`configuration-evidence.tar.gz`, with hashes in `configuration-evidence.sha256.json`.
