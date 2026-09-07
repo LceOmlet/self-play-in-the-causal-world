@@ -21,12 +21,14 @@ DATA = Path('/home/chen/runs/training-submission-20260907/data/train.parquet')
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--verl-root', type=Path, default=VERL)
+    parser.add_argument('--expect-fixed', action='store_true')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     os.environ['CUDA_VISIBLE_DEVICES'] = ''
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['OPENBLAS_NUM_THREADS'] = '1'
-    sys.path.insert(0, str(VERL))
+    sys.path.insert(0, str(args.verl_root))
     import torch
     import pyarrow.parquet as pq
     from omegaconf import OmegaConf
@@ -87,21 +89,24 @@ def main():
         for _ in range(8):
             iterator, index = advance(iterator, trainer.train_dataloader)
             actual.append(index)
-        assert (actual == expected) is should_match
+        assert (actual == expected) is (True if args.expect_fixed else should_match)
         results.append({'case': name, 'updates': updates, 'generated_groups': generated,
                         'saved_groups_in_current_epoch': state['_num_yielded'],
                         'saved_iterator_finished': state['_iterator_finished'],
                         'expected_next_row_indices': expected, 'actual_next_row_indices': actual,
                         'matches_uninterrupted_stream': actual == expected})
 
-    source = VERL / 'verl/trainer/ppo/ray_trainer.py'
+    source = args.verl_root / 'verl/trainer/ppo/ray_trainer.py'
     report = {
-        'defect_reproduced': True, 'actual_upstream_method': 'RayPPOTrainer._load_checkpoint',
+        'defect_reproduced': not args.expect_fixed,
+        'all_stream_cases_match': all(row['matches_uninterrupted_stream'] for row in results),
+        'actual_upstream_method': 'RayPPOTrainer._load_checkpoint',
         'gpu_checkpoint_rpc_mocked': True, 'real_sampler_factory': 'verl.trainer.ppo.utils.create_rl_sampler',
         'dataset': {'path': str(DATA), 'sha256': hashlib.sha256(DATA.read_bytes()).hexdigest(), 'rows': n},
         'source': {'path': str(source), 'sha256': hashlib.sha256(source.read_bytes()).hexdigest()},
         'cases': results, 'cuda_initialized': torch.cuda.is_initialized(),
         'scope': 'CPU data-stream control probe with the actual upstream method and sampler. No model or optimizer resume is validated by this probe.',
+        'remaining': 'The DAPO recipe still infers current_epoch from optimizer steps and does not save gen_steps. This probe does not validate that separate loop-resume state.',
     }
     assert not report['cuda_initialized']
     (args.output / 'resume-probe.json').write_text(json.dumps(report, indent=2) + '\n')
