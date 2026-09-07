@@ -1,5 +1,28 @@
 Fixed-task interpretation and matched official evaluation preparation.
 
+The full official update25 validation has now finished and passed the complete
+reader path:25 uniquely matched tasks,11 submitted answers,14 unfinished outputs.
+All14 unfinished trajectories hit the response limit:11 reach exactly30,720
+response attention tokens;3 stop before appending feedback at30,699/30,657/30,665.
+Exact negative upstream length penalties recover these lengths. Full output,
+owner events and the inspected fixed source establish the stop paths; this is
+not an approximate retokenization or newly added runtime instrumentation.
+
+`inspect_validation_stops.py`, `update25-validation.json` and `update25-stops.json`
+preserve the actual checks and per-task results. All three discrete task families
+have strict success0/5. No before/after learning effect is claimed yet.
+
+After full validation was logged, native update25 was preserved and the training
+process deliberately paused. Official original-base `val_only` is now live as
+PID467771 with step0 validation actually interacting with the original tasks.
+Its full result and the subsequent native GPU training resume remain pending.
+
+`update25-validation-and-base-launch-evidence.tar.gz` contains96 members,
+893,900 bytes, SHA-256
+`6b688cb8cf3c51a9a7479adcc496c26ce91a347d4ab76e75ab2d8eba327a52d1`.
+See `docs/update25-validation-stops-20260908.md`. Earlier preparation/partial
+states below describe the preceding stages, not the latest execution state.
+
 `control_matched_evaluation.py` reuses the accepted native process/checkpoint
 controller to prepare recovery, wait for fully logged validation before pausing,
 run the official original-base `val_only` entry point, and resume native training.
