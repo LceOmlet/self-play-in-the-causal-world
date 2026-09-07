@@ -1,5 +1,32 @@
 Official DAPO progress-control audit, 2026-09-08
 
+Actual GPU acceptance is complete for native update15 -> update16 with the
+explicit `progress-v1` source profile. All 496 finite LoRA tensors changed;
+496 Adam states and the scheduler are at16, with 992 finite moments. Generated
+batches and the real data cursor both advance from18 to19. The actual candidate
+load method restores the next eight data rows exactly on CPU (only its GPU
+weight RPC is mocked in that separate check). This is not bitwise GPU-memory
+restoration or actual GPU execution across epochs. Training continues.
+
+`gpu-update16-and-curves-evidence.tar.gz` freezes 79 members, including the real
+GPU load/update logs, update15/16 acceptance, sampler states, source identity,
+all raw snapshots for updates1..17, the reader correction and curve inputs.
+Its SHA-256 is `868ff881acadd334e8585724d84424c0f3983793b9e6f65e75da2726cdbf2361`.
+The associated manifest records each member hash; large model/optimizer files
+remain preserved on the server and have their hashes in the acceptance record.
+
+`plot_trusted_progress.py` adapts the existing plotting style. Extract the
+archive's `curve-inputs` into an audit directory, then supply all three JSON
+files using `--inputs`, plus `--output figures`. The six figures show raw quality,
+shaped training reward, update/generation time and recorded task errors; they
+do not smooth data or claim paired learning gains. The strict failure panel
+counts the one incomplete retained output as failure. In-flight unretained
+outputs are excluded. A malformed tool command is kept verbatim by the reader
+so the entire executed command sequence can be uniquely matched: the 39 prior
+joins and all official metrics remain unchanged, with one additional join.
+
+The source-admission history below predates this real GPU acceptance.
+
 Latest source admission: candidate-v2 preserves the original CRLF bytes. Three
 `git apply` reconstruction checks and the 15 CPU control cases pass. The new
 explicit `progress-v1` source profile and the unchanged default `baseline` both
@@ -8,7 +35,7 @@ cross-profile substitutions are rejected. Exact production-admissible patch
 files are in `patches/verl-dapo-progress-v1.patch` and
 `patches/verl-recipe-mask-progress-v1.patch`. The v1 candidate below is retained
 as historical evidence; actual GPU recovery with the admitted v2 source is
-still pending.
+now documented above.
 
 `candidate-v2/integration-evidence-v2.tar.gz` records all 180 members of this
 phase, including the initial incorrect validation filename and its correction
@@ -49,11 +76,10 @@ Source base:
 - verl: `23af6a7a2e8d6efeeb2adbe5d1689c7a24f503a3`, with the already reviewed tool termination patch.
 - verl-recipe: `ee3aef1690d6bb5e6448052c4842e8efb7a3f76c`, with the already reviewed response-mask guard.
 
-Candidate roots on the server are `verl-progress-candidate-v1` and
-`verl-recipe-progress-candidate-v1` under `/home/chen/vendor/dapo-official-20260906`.
-The candidate remains outside the production provenance manifest until its
-exact patches and real GPU recovery have been admitted and verified. Current
-compiled verification training continues on its original source roots.
+The original candidate roots on the server are `verl-progress-candidate-v1`
+and `verl-recipe-progress-candidate-v1` under
+`/home/chen/vendor/dapo-official-20260906`. The current run explicitly selects
+the corresponding `candidate-v2` roots and the admitted `progress-v1` manifest.
 
 See `docs/dapo-progress-correctness-20260908.md` for the counter invariant,
 reproduced failures, compatibility assumptions, and remaining proof obligations.

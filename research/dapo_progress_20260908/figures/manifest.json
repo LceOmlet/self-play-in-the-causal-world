@@ -1,0 +1,48 @@
+{
+  "inputs": {
+    "..\\audit\\dapo_progress_20260908\\curve-inputs\\eager-1-5.json": "5f5aaea9f99f2e4892e0fcbc5f789b4121f3e2c745da1a86ed3a9149fa0f39fa",
+    "..\\audit\\dapo_progress_20260908\\curve-inputs\\compiled-6-15.json": "74041f218ca824ab4e0a82058d2c9f5336769410d2120b1f03ba9912035cca8f",
+    "..\\audit\\dapo_progress_20260908\\curve-inputs\\progress-16-17.json": "16b23dd85024cec00fa4d11c49adf0dfb08decde0f43205ce72c7fbcfc40b0ea"
+  },
+  "script_sha256": "4682fcb7a45a27af97c26e5d17878a9fc9a5cc98f3614212c3cf24feb1712c7a",
+  "adapted_style_sha256": "9cbb0eb4b85422d4afc2dc5972651bfaba7462f3dbcdec58b75a9398728f4a80",
+  "updates": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "retained_trajectories": 68,
+  "incomplete_trajectories": 1,
+  "generated_groups": 20,
+  "metric_coverage": {
+    "total_variation_error": 12,
+    "mean_absolute_endpoint_error": 16,
+    "normalized_regret": 12,
+    "edit_distance": 19,
+    "mediator_f1": 8,
+    "order_f1": 8
+  },
+  "files": {
+    "trusted-rewards-and-time.png": "5d388762f133bcb071389d950cb77c5e54de37ff7497244790dc0c41a7970eba",
+    "trusted-rewards-and-time.svg": "62ee1faf832437eadd7f1358d5f8e0e6a8d48210c365fdba226046ed4b7e87e8",
+    "trusted-rewards-and-time.pdf": "80cc9fb61773427e4f5f1b9c874beaf4dadcbac73dd11c44089b8b1a6b2ebed6",
+    "trusted-task-errors.png": "a2b5efb15f3c7f792aed3d28994b575de2f8ae59f83fb6619fbbacf14f296e96",
+    "trusted-task-errors.svg": "842ab56f24444aa1cf02e1b29723e5b1c777a981dab1fea7c5fca62910f19986",
+    "trusted-task-errors.pdf": "2905b039bc6ac04329a96ddbc9bae86859b225e022dd967aa4fa01aad74e1b04"
+  },
+  "scope": "Training rollout metrics on changing tasks; no causal capability-gain claim."
+}

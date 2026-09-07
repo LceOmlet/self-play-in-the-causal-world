@@ -22,6 +22,23 @@ def read_complete(path):
     return data[:data.rfind(b'\n') + 1]
 
 
+def commands_from_output(output):
+    """Keep malformed command strings exactly as the tool audit records them."""
+    calls = re.findall(
+        r'<tool_call>\s*<function=act>\s*<parameter=command>\s*'
+        r'(.*?)\s*</parameter>\s*</function>\s*</tool_call>', output, re.DOTALL)
+    commands = []
+    for call in calls:
+        try:
+            commands.append(json.loads(call))
+        except json.JSONDecodeError:
+            # The actual tool passes malformed JSON through as a string; the
+            # environment records it and returns a protocol error. Dropping it
+            # would change the executed sequence used for the unique join.
+            commands.append(call)
+    return commands
+
+
 def metrics_from_log(data):
     text = re.sub(r'\x1b\[[0-9;]*[A-Za-z]', '', data.decode(errors='replace'))
     records = {}
@@ -145,11 +162,7 @@ def main():
             if request is None:
                 # This pinned runtime's actual dump omits request IDs. Match the
                 # entire executed JSON command sequence, never score/order alone.
-                calls = re.findall(r'<tool_call>\s*<function=act>\s*<parameter=command>\s*(.*?)\s*</parameter>\s*</function>\s*</tool_call>', row['output'], re.DOTALL)
-                try:
-                    commands = [json.loads(call) for call in calls]
-                except json.JSONDecodeError:
-                    commands = []
+                commands = commands_from_output(row['output'])
                 candidates = [key for key, trace in by_request.items()
                               if commands and commands == [event['command'] for event in trace]]
                 request = candidates[0] if len(candidates) == 1 else None
