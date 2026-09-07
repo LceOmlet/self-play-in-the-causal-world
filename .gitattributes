@@ -17,3 +17,6 @@ research/rl_correctness_20260907/official_execution/original_plot_training_curve
 research/rl_correctness_20260907/official_execution/figures/*.svg -diff -whitespace
 # Preserve the next kernel audit and its byte-level evidence manifest.
 research/et_v2_projection_20260907/** -text whitespace=cr-at-eol
+# Minimum-cut audit: preserve profiler output and captured verification bytes.
+research/backdoor_mincut_20260907/** -text whitespace=cr-at-eol
+research/backdoor_mincut_20260907/baseline-profile.txt -whitespace

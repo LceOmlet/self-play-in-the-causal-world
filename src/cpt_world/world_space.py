@@ -1599,14 +1599,14 @@ def _descendant_nodes(
     return frozenset(seen)
 
 
-def _backdoor_separated_structure(
+def _backdoor_moral_neighbors(
     node_count: int,
     edges: tuple[tuple[int, int], ...],
     treatment: int,
     outcome: int,
     condition: frozenset[int],
-) -> bool:
-    """Test back-door separation from graph structure alone."""
+) -> dict[int, set[int]]:
+    """Moralize ancestors of endpoints and conditions in the back-door DAG."""
 
     backdoor_edges = tuple(edge for edge in edges if edge[0] != treatment)
     parents: list[set[int]] = [set() for _ in range(node_count)]
@@ -1633,6 +1633,19 @@ def _backdoor_separated_structure(
             for right in relevant_parents[left_index + 1 :]:
                 moral_neighbors[left].add(right)
                 moral_neighbors[right].add(left)
+    return moral_neighbors
+
+
+def _backdoor_separated_structure(
+    node_count: int,
+    edges: tuple[tuple[int, int], ...],
+    treatment: int,
+    outcome: int,
+    condition: frozenset[int],
+) -> bool:
+    """Test back-door separation from graph structure alone."""
+
+    moral_neighbors = _backdoor_moral_neighbors(node_count, edges, treatment, outcome, condition)
 
     reachable = {treatment}
     stack = [treatment]
@@ -1654,31 +1667,63 @@ def _minimum_backdoor_adjustment_size(
     treatment: int,
     outcome: int,
 ) -> int:
-    """Return the exact minimum back-door set size for one ordered pair.
+    """Return the minimum back-door set size by an integer vertex cut.
 
-    The treatment's parents always form a valid set, so exact search only needs
-    subsets smaller than that instance-specific upper bound.
+    A minimum separator lies among the ancestors of the endpoints in the
+    back-door DAG. Split each vertex in that moral graph: admissible vertices
+    have capacity one; endpoints and original treatment descendants cannot be
+    cut. Integral augmenting paths compute the minimum size without enumerating
+    conditioning subsets. For the sampler's causal roles, treatment parents
+    are a valid set and bound the number of augmentations.
     """
 
     treatment_parents = tuple(parent for parent, child in edges if child == treatment)
     upper_bound = len(treatment_parents)
+    if upper_bound == 0:
+        return 0
+    moral_neighbors = _backdoor_moral_neighbors(node_count, edges, treatment, outcome, frozenset())
     descendants = _descendant_nodes(node_count, edges, treatment)
-    allowed = tuple(
-        node
-        for node in range(node_count)
-        if node not in {treatment, outcome} and node not in descendants
-    )
-    for size in range(upper_bound):
-        for subset in combinations(allowed, size):
-            if _backdoor_separated_structure(
-                node_count,
-                edges,
-                treatment,
-                outcome,
-                frozenset(subset),
-            ):
-                return size
-    return upper_bound
+    uncuttable = upper_bound + 1
+    residual: list[dict[int, int]] = [{} for _ in range(2 * node_count)]
+
+    def add_arc(source: int, target: int, capacity: int) -> None:
+        residual[source][target] = capacity
+        residual[target].setdefault(source, 0)
+
+    for node, neighbors in moral_neighbors.items():
+        capacity = uncuttable if node in {treatment, outcome} or node in descendants else 1
+        add_arc(2 * node, 2 * node + 1, capacity)
+        for neighbor in neighbors:
+            add_arc(2 * node + 1, 2 * neighbor, uncuttable)
+
+    source, target = 2 * treatment + 1, 2 * outcome
+    flow = 0
+    while flow < upper_bound:
+        previous = {source: source}
+        queue = [source]
+        for node in queue:
+            for neighbor, capacity in residual[node].items():
+                if capacity > 0 and neighbor not in previous:
+                    previous[neighbor] = node
+                    queue.append(neighbor)
+            if target in previous:
+                break
+        if target not in previous:
+            return flow
+        increment = upper_bound - flow
+        node = target
+        while node != source:
+            parent = previous[node]
+            increment = min(increment, residual[parent][node])
+            node = parent
+        node = target
+        while node != source:
+            parent = previous[node]
+            residual[parent][node] -= increment
+            residual[node][parent] += increment
+            node = parent
+        flow += increment
+    return flow
 
 
 def _sampled_backdoor_complexity(node_count: int, seed: int, query_type: str) -> int:

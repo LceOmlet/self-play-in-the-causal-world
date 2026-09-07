@@ -1,0 +1,8 @@
+ERROR: not found: /home/chen/runs/strong-reversal-kernel-20260907/candidate/tests/test_query_truth.py::QueryTruthTests::test_backdoor_adjustment_sets_match_known_dag_motifs
+(no match in any of [<Module test_query_truth.py>])
+
+ERROR: not found: /home/chen/runs/strong-reversal-kernel-20260907/candidate/tests/test_query_truth.py::QueryTruthTests::test_backdoor_moral_graph_algorithm_matches_path_enumeration
+(no match in any of [<Module test_query_truth.py>])
+
+
+no tests ran in 0.22s

@@ -1,0 +1,43 @@
+         170528800 function calls (170394543 primitive calls) in 73.698 seconds
+
+   Ordered by: cumulative time
+   List reduced from 280 to 35 due to restriction <35>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.014    0.014   76.165   76.165 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:2332(iter_sampled_seeds)
+      262    0.007    0.000   52.918    0.202 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:879(sample_task_world)
+      262    0.088    0.000   33.117    0.126 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:722(_build_world)
+     1230    0.007    0.000   31.040    0.025 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:1703(_sampled_role_assignments)
+     4970    0.050    0.000   30.330    0.006 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:1721(<genexpr>)
+    32667    0.923    0.000   30.269    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:1651(_minimum_backdoor_adjustment_size)
+   297950   18.140    0.000   28.632    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:1602(_backdoor_separated_structure)
+     2211    0.088    0.000   28.441    0.013 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:370(_sample_parent_subset_balanced_effect)
+     8052    0.338    0.000   25.555    0.003 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:305(_project_parent_subset_effect)
+     8052    0.679    0.000   11.405    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:231(_parent_interaction_projection)
+     8052    2.493    0.000   11.179    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:150(_project_joint_effect)
+      242    0.006    0.000   10.275    0.042 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:1876(_best_intervention_observational_relation)
+     1064    0.009    0.000   10.255    0.010 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:454(worldspec_projected_interventional_distribution)
+     1064    0.237    0.000   10.242    0.010 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:243(_variable_elimination_distribution)
+     4849    3.155    0.001    8.972    0.002 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:320(_contract_eliminating)
+     8740    2.782    0.000    8.082    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:188(_parent_subset_marginal_projection)
+  2853848    3.945    0.000    7.991    0.000 {built-in method math.fsum}
+ 38692928    6.999    0.000    6.999    0.000 {method 'add' of 'set' objects}
+     1064    0.001    0.000    5.311    0.005 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:1896(<genexpr>)
+      822    0.002    0.000    5.310    0.006 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:505(interventional_probability)
+      822    0.007    0.000    5.308    0.006 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:478(interventional_joint_probability)
+  3744306    3.090    0.000    4.678    0.000 /usr/lib/python3.12/random.py:551(gauss)
+       20    0.001    0.000    3.719    0.186 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:2253(assemble_sampled_anchor_tasks)
+  3136949    2.111    0.000    3.693    0.000 {built-in method builtins.sum}
+  2625307    1.097    0.000    3.356    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:349(<genexpr>)
+     2211    0.059    0.000    2.717    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:332(_combine_effect_blocks)
+  1065822    1.145    0.000    2.661    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:221(<genexpr>)
+     2211    0.791    0.000    2.492    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:441(_exponential_tilt_rows)
+  1059654    0.994    0.000    2.046    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:292(<genexpr>)
+     1523    0.026    0.000    2.035    0.001 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:514(_contextual_parent_pair_score_scale)
+315874/181623    0.495    0.000    1.946    0.000 {built-in method builtins.any}
+   130806    0.190    0.000    1.878    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:352(<genexpr>)
+  3360318    1.220    0.000    1.841    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/world_space.py:177(_parent_state_at_row)
+  8870556    1.716    0.000    1.716    0.000 {method 'append' of 'list' objects}
+   738946    0.405    0.000    1.713    0.000 /home/chen/runs/strong-reversal-kernel-20260907/candidate/src/cpt_world/query_truth.py:70(_probability_sum)
+
+
