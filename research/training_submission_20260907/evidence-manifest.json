@@ -1,0 +1,18 @@
+{
+  "snapshot_time": 1788794627.0411458,
+  "scope": "Certified task data, stopped pilot, and training-start evidence; training is ongoing.",
+  "files": {
+    "certified-data.tar.gz": {
+      "bytes": 19663178,
+      "sha256": "4a8a1149e5907c96f102b8b63c62e1841e930ee49f65d6536f729df97fc73cd4"
+    },
+    "training-start.tar.gz": {
+      "bytes": 26493,
+      "sha256": "6f551cbe9c64213d67857b7cb0b91f4b47229c9b14c3dd143155f478deb383a6"
+    }
+  },
+  "pilot_archive": {
+    "bytes": 778063,
+    "sha256": "fef4921c4ececd1c63fdb953fc34b4707d0d55bf7ad8f1eb9a2368f1f6962faf"
+  }
+}
