@@ -43,6 +43,8 @@ result['completed_trajectories'] = len({e['trajectory_id'] for e in acts if e['c
 result['scored_by_family'] = dict(Counter(e['data_source'] for e in events if e['event'] == 'raw_score'))
 errors = Counter()
 for event in acts:
+    if event['completed']:
+        continue
     feedback = json.loads(event['feedback'].splitlines()[0])
     if feedback.get('type') == 'protocol_error':
         errors[feedback['error']['message']] += 1

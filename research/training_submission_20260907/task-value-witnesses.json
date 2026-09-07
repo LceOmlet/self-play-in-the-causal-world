@@ -1,0 +1,74 @@
+{
+  "scope": "Concrete witnessed solvable strong-reversal tasks; selected examples are not a prevalence or model-learning estimate. Context omits model reasoning. Full cohort results remain in the earlier diagnostic archive.",
+  "examples": [
+    {
+      "public_file": "cohort-a-task-113-r1.public.json.gz",
+      "seed_id": "SAMPLED-20034915273-best_intervention-decision-a12",
+      "public_transcript_sha256": "ac50e011c68308fee7fe7129a5c4a1da0b0fa0a994c541c8dc061279db79953f",
+      "public_only_replay_passed": true,
+      "causal_values": [
+        0.17763733480411412,
+        0.7309679910205777,
+        0.09843791047726763,
+        0.4217563212382157
+      ],
+      "observational_values": [
+        0.16894560772328573,
+        0.7414023696336945,
+        0.24875130922768188,
+        0.4075422914113967
+      ],
+      "observational_choice": 0,
+      "correct_choice": 2,
+      "observational_causal_loss": 0.07919942432684648,
+      "estimated_values": [
+        0.21372494604050632,
+        0.653674691437623,
+        0.201707296298039,
+        0.4370595723446446
+      ],
+      "budget": 16384,
+      "remaining_budget": 1,
+      "context": {
+        "public_file": "cohort-a-task-113-r1.public.json.gz",
+        "initial_tokens": 1213,
+        "total_tokens": 5999,
+        "tool_calls": 27,
+        "exceeds_32768": false
+      }
+    },
+    {
+      "public_file": "cohort-a-task-123-r0.public.json.gz",
+      "seed_id": "SAMPLED-20032513229-best_intervention-decision-a0",
+      "public_transcript_sha256": "d45c257936a369ca9e245505cddb5bbd527fde39ad0a833eaf272d50a113113d",
+      "public_only_replay_passed": true,
+      "causal_values": [
+        0.45248918347413886,
+        0.4219357740701811,
+        0.4705506700352448
+      ],
+      "observational_values": [
+        0.38690471914324903,
+        0.6163645986663786,
+        0.3747834088611194
+      ],
+      "observational_choice": 1,
+      "correct_choice": 2,
+      "observational_causal_loss": 0.04861489596506369,
+      "estimated_values": [
+        0.4259615923773666,
+        0.4162830989490741,
+        0.4789056277884501
+      ],
+      "budget": 28672,
+      "remaining_budget": 3,
+      "context": {
+        "public_file": "cohort-a-task-123-r0.public.json.gz",
+        "initial_tokens": 1268,
+        "total_tokens": 6740,
+        "tool_calls": 33,
+        "exceeds_32768": false
+      }
+    }
+  ]
+}

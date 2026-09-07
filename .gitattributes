@@ -30,3 +30,6 @@ research/decision_budget_20260907/** -text whitespace=cr-at-eol
 research/task_value_learning_20260907/** -text whitespace=cr-at-eol
 # Frozen real-task active decision experiments and their complete public traces.
 research/active_decision_diagnostic_20260907/** -text whitespace=cr-at-eol
+# Executed diagnostic/submission scripts and immutable run evidence.
+research/base_signal_diagnostic_20260907/** -text whitespace=cr-at-eol
+research/training_submission_20260907/** -text whitespace=cr-at-eol

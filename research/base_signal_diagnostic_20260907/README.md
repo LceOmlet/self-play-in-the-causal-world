@@ -2,8 +2,8 @@ Original-base signal diagnostic, 2026-09-07
 
 This directory contains the controller for an actual **validation-only** run of
 the pinned official `dapo.main_dapo`. It does not implement or replace the RL
-algorithm. Production long training remains stopped; no historical checkpoint
-is loaded. `trainer.val_before_train=true` and `trainer.val_only=true` return
+algorithm. At launch production training was stopped; no historical checkpoint
+was loaded. `trainer.val_before_train=true` and `trainer.val_only=true` return
 from the official trainer immediately after initial validation.
 
 The selected pilot is the first 25 rows, in their existing order, of the frozen
@@ -30,8 +30,19 @@ which is a resource bound, never an evidence sufficiency criterion. On expiry,
 the supervisor terminates only this invocation's process group/descendants.
 Never infer completion from missing output or restart on observation timeout.
 
-At this commit the evaluation is running; no aggregate result is claimed.
-Read `status.py` against the live run to inspect its exact state. Raw tool events
-are in `environment/`, official final outputs in `validation/`, and recomputed
-worlds/truths in `truth/`. Results and provenance will be archived after the run
-becomes terminal, including failures or partial completion if applicable.
+The user subsequently requested only a few trajectory analyses and actual
+training. This expanded pilot was stopped by checked PID/creation time; exit
+code -9 is a directed interruption, not a completed evaluation. Four trajectories
+on the first ATE world started, one completed and three were interrupted. No
+official validation dump was produced because the official validator writes
+that dump after the entire validation pass. Interrupted trajectories must not
+be scored as failures or used to infer within-group reward variance.
+
+`analyze_events.py` reports the partial raw-event evidence; terminal feedback
+is plain text, while experiment feedback is JSON. `status.py` now handles this
+distinction. The completed answer is independently checked by
+`../training_submission_20260907/analyze_case.py` against its first public
+histogram. `stopped-evidence.tar.gz` preserves all partial events, truths, launch,
+directed-stop and terminal records; its hash is in `stopped-evidence.sha256.json`.
+Actual fresh-base official DAPO training was subsequently launched separately;
+see `docs/training-submission-20260907.md`. No complete baseline metric is claimed.
