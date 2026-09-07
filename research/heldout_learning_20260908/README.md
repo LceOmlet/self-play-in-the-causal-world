@@ -1,5 +1,26 @@
 Fixed-task interpretation and matched official evaluation preparation.
 
+`control_matched_evaluation.py` reuses the accepted native process/checkpoint
+controller to prepare recovery, wait for fully logged validation before pausing,
+run the official original-base `val_only` entry point, and resume native training.
+Only CPU preparation/configuration and the pending-validation guard have been
+executed so far. No base GPU result or GPU restore is claimed by this preparation.
+
+`read_validation.py` joins the full public user prompt and exact executed command
+sequence. It requires all25 outputs plus finished official metrics before reporting
+aggregate performance, and retains actual task-error coverage. The partial branch
+has been exercised on frozen snapshots; the complete branch awaits real outputs.
+Snapshot03 contains20 started task traces and19 ended identifiable owner scores:
+7 submitted answers,12 no terminal answer. These are partial counts, not a full
+validation failure rate or an explanation of why generation ended.
+
+`matched-evaluation-preparation-evidence.tar.gz` freezes64 members (1,028,587 bytes),
+SHA-256 `dcdc2bec0079bcdf4916e44d487660e9e305e541d738365c47e6fa76608fd9fc`.
+It includes controller/reader versions, actual preparation logs and configuration,
+native data/progress state and checkpoint acceptance, and two partial snapshots.
+The archive's scope precedes any pause or base GPU launch. Large native weights
+remain in the preserved server directory and are identified by acceptance hashes.
+
 Update25 has now been preserved and verified:496 finite LoRA tensors,496 Adam
 states at25,992 finite moments, scheduler25, generation/data cursor29. The
 actual official data-load method restores the next8 rows identically on CPU;
