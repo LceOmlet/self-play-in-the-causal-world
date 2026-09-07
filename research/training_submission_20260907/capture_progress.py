@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 from pathlib import Path
 import re
 import time
@@ -46,6 +47,36 @@ def metrics_from_log(data):
     return [{'step': step, **values} for step, values in sorted(records.items())]
 
 
+def capture_task_runner_stdout(run, output):
+    """Read the verified live trainer's own log, before Ray driver forwarding."""
+    import psutil
+    saved = json.loads((run / 'process.json').read_text())
+    info = {'available': False, 'main_process': saved}
+    try:
+        main = psutil.Process(saved['pid'])
+        if abs(main.create_time() - saved['create_time']) >= .01 or not main.is_running():
+            return {**info, 'reason': 'Recorded main process is not the same live process'}
+        candidates = []
+        for child in main.children(recursive=True):
+            try:
+                if child.name().startswith('ray::DAPOTaskRunner'):
+                    candidates.append(child)
+            except psutil.NoSuchProcess:
+                continue
+        if len(candidates) != 1:
+            return {**info, 'reason': 'Need one live DAPOTaskRunner child', 'candidates': len(candidates)}
+        child = candidates[0]
+        source = Path(os.readlink(f'/proc/{child.pid}/fd/1'))
+        if not source.is_file():
+            return {**info, 'reason': 'Task runner stdout is not a regular file'}
+        data = source.read_bytes()
+        (output / 'task-runner-stdout.log').write_bytes(data)
+        return {**info, 'available': True, 'pid': child.pid, 'create_time': child.create_time(),
+                'source': str(source), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+    except (OSError, psutil.Error) as error:
+        return {**info, 'reason': repr(error)}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', type=Path, required=True)
@@ -60,6 +91,10 @@ def main():
     spec = importlib.util.spec_from_file_location('existing_event_analysis', analysis_path)
     existing = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(existing)
+
+    if not args.reuse_snapshot:
+        runner_source = capture_task_runner_stdout(args.run, args.output)
+        (args.output / 'task-runner-source.json').write_text(json.dumps(runner_source, indent=2) + '\n')
 
     source_root = args.output if args.reuse_snapshot else args.run
     files = [source_root / name for name in ('launch.json', 'process.json', 'exit.json', 'train.log')]
@@ -79,6 +114,12 @@ def main():
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
         fingerprints[str(relative)] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+    for name in ('task-runner-stdout.log', 'task-runner-source.json'):
+        path = args.output / name
+        if path.exists():
+            data = path.read_bytes()
+            fingerprints[name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
 
     events, _ = existing.read_events(args.output)
     by_request = defaultdict(list)
@@ -130,7 +171,19 @@ def main():
                 'task_metrics': trajectory['task_metrics'] if trajectory else None,
             })
 
-    logs = metrics_from_log((args.output / 'train.log').read_bytes())
+    merged_metrics = {}
+    metric_sources = defaultdict(list)
+    for name in ('train.log', 'task-runner-stdout.log'):
+        path = args.output / name
+        if not path.exists():
+            continue
+        for row in metrics_from_log(path.read_bytes()):
+            combined = merged_metrics.setdefault(row['step'], {})
+            for key, value in row.items():
+                assert key not in combined or combined[key] == value, (name, row['step'], key)
+                combined[key] = value
+            metric_sources[row['step']].append(name)
+    logs = [merged_metrics[step] for step in sorted(merged_metrics)]
     updates = [row for row in logs if 'actor/grad_norm' in row]
     nonfinite = [{'step': row['step'], 'metric': key, 'value': str(value)}
                  for row in logs for key, value in row.items() if not math.isfinite(value)]
@@ -160,6 +213,7 @@ def main():
         'event_counts': dict(Counter(e['event'] for e in events)),
         'trajectories': list(trajectories.values()), 'raw_score_events': raw_scores,
         'official_metrics': logs, 'official_updates_logged': [row['step'] for row in updates],
+        'official_metric_sources': dict(metric_sources),
         'nonfinite_metrics': nonfinite, 'retained_rollouts': retained, 'retained_groups': groups,
         'scope': 'Read-only append-prefix snapshot. Update logs are execution evidence, not post-update capability measurements. Missing/in-flight records are not failed trajectories. Raw-score events lack request IDs and are not individually joined.',
         'dump_score_semantics': 'Pinned official writer overwrites shaped score with raw score metadata. Shaped rewards here are reconstructed from recorded raw_reward and overlong_reward, not from decoded-token length.',
