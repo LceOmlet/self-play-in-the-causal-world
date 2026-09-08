@@ -1,0 +1,1632 @@
+{
+  "provenance": {
+    "original_file": "audit/environment_validation_20260907/evidence/finite-baselines.jsonl",
+    "original_file_sha256": "2f6f4dd60fb619cfd53e21fb8e1da900a42510f727da0f32421eb41782c42b95",
+    "original_file_bytes": 1040667,
+    "original_jsonl_rows": 200,
+    "selection_rule": "Parse each original JSONL line and select query_type == ate; preserve selected bytes and order without reserialization.",
+    "selected_original_line_numbers": [
+      4,
+      5,
+      7,
+      13,
+      20,
+      24,
+      26,
+      31,
+      33,
+      35,
+      42,
+      44,
+      53,
+      56,
+      59,
+      61,
+      63,
+      67,
+      75,
+      79,
+      80,
+      83,
+      87,
+      95,
+      99,
+      101,
+      105,
+      108,
+      111,
+      115,
+      119,
+      123,
+      127,
+      134,
+      136,
+      139,
+      143,
+      148,
+      151,
+      159,
+      160,
+      164,
+      170,
+      172,
+      177,
+      183,
+      184,
+      188,
+      191,
+      195
+    ],
+    "selected_rows": 50,
+    "selected_uncompressed_sha256": "b9c0530a470ff4bfbc441aa2876997a1eb308fa64708340d06d25f9282f37047",
+    "selected_uncompressed_bytes": 296707,
+    "selected_archive_sha256": "ebfd40229e049d342dfe8ff4e2ab51121e3f5b0f83ebad15230adeda5e04595b",
+    "selected_archive_bytes": 44423,
+    "finite_program_original_path": "audit/environment_validation_20260907/finite_budget_baselines.py",
+    "finite_program_archive": "finite_budget_baselines.original.py",
+    "finite_program_sha256": "df0f9115a1ba5ff972f312314b3b530e98a3ef99531c0b659687620b22432abe",
+    "program_scope": "Original diagnostic program preserved for source inspection only; the reader never imports or executes it.",
+    "estimator": "ATE is the difference between treatment and baseline rows of (counts + 0.5) / (row_count + 0.5 * outcome_state_count)."
+  },
+  "provenance_sha256": "2dccb255bb3de4802cdf1247a8a46c0102e209cbf86f9e876a9e21a6a866429e",
+  "reader_sha256": "7609c8977bf4dc843f2d1047710f2f4bab106b55b087c540f64ad23f7f57ad2c",
+  "profile_inputs": {
+    "cohort-a-profiles.jsonl.gz": {
+      "archive_sha256": "3d54d3a964c7b81fa2d1f3f06b693009de889f0fa1aa4c8a0b4a518a8cedbbab",
+      "uncompressed_sha256": "d30f4f66aa78f0a604cf3d5a54e4a67109594e72642a46929936a69e13086344"
+    },
+    "cohort-b-profiles.jsonl.gz": {
+      "archive_sha256": "975c483f6e51b274a66d7b3f9b2a641d3f5e1fd3d7ff491fd8c65e64532984cb",
+      "uncompressed_sha256": "256366cdd4a5fc65b7a9efc54adfc331b6d20f562c8ce9d0aae054edcf46162a"
+    }
+  },
+  "worlds": 50,
+  "tapes_per_world": 2,
+  "stages": [
+    "128",
+    "2048",
+    "full"
+  ],
+  "source_estimate_records": 294,
+  "stage_references": 300,
+  "stage_sample_definitions": {
+    "128": "min(128, scalar_budget // 2)",
+    "2048": "min(2048, scalar_budget // 2)",
+    "full": "scalar_budget // 2"
+  },
+  "worlds_with_2048_stage_equal_to_full": 3,
+  "aggregation": "Each squared norm and inner product first averages over that world's ATE state dimension, then over its two tapes, then equally over 50 worlds. Stages are nested samples of each existing tape and are not independent runs.",
+  "identity": "MSE(h,truth) = MSE(o,truth) + MSE(h,o) + 2*mean((h-o)*(o-truth))",
+  "stage_means": {
+    "128": {
+      "population_formula_bias_squared": 0.0025201074957907563,
+      "finite_estimate_residual_squared": 0.018878018043375175,
+      "cross_term": -0.0011332658357448957,
+      "total_mse": 0.020264859703421036
+    },
+    "2048": {
+      "population_formula_bias_squared": 0.0025201074957907563,
+      "finite_estimate_residual_squared": 0.0016011629103393334,
+      "cross_term": -3.774591786366848e-05,
+      "total_mse": 0.004083524488266422
+    },
+    "full": {
+      "population_formula_bias_squared": 0.0025201074957907563,
+      "finite_estimate_residual_squared": 0.00027116366409174095,
+      "cross_term": 0.000245282470247147,
+      "total_mse": 0.0030365536301296446
+    }
+  },
+  "per_world": [
+    {
+      "seed_id": "SAMPLED-200000-ate-target_query-a1",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.2178295916146126e-05,
+          "finite_estimate_residual_squared": 0.021974864533961264,
+          "cross_term": -0.0003666003059718849,
+          "total_mse": 0.021620442523905523
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.2178295916146126e-05,
+          "finite_estimate_residual_squared": 0.006002738775391181,
+          "cross_term": 0.0005221684373651525,
+          "total_mse": 0.006537085508672479
+        },
+        "full": {
+          "samples_per_tape": 24576,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.2178295916146126e-05,
+          "finite_estimate_residual_squared": 2.2287590052328797e-05,
+          "cross_term": 1.4308144046923626e-05,
+          "total_mse": 4.877403001539855e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200005-ate-target_query-a1",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.2818449574651602e-07,
+          "finite_estimate_residual_squared": 0.001832239074004044,
+          "cross_term": 5.096079571224362e-07,
+          "total_mse": 0.0018328768664569132
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.2818449574651602e-07,
+          "finite_estimate_residual_squared": 0.00041408967082210985,
+          "cross_term": -1.196084518804455e-06,
+          "total_mse": 0.00041302177079905193
+        },
+        "full": {
+          "samples_per_tape": 8192,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.2818449574651602e-07,
+          "finite_estimate_residual_squared": 8.950911790213287e-05,
+          "cross_term": -3.0391487979502182e-06,
+          "total_mse": 8.659815359992916e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200012-ate-target_query-a4",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0007270188335744396,
+          "finite_estimate_residual_squared": 0.012660278073094828,
+          "cross_term": 0.0043768784235083645,
+          "total_mse": 0.017764175330177635
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0007270188335744396,
+          "finite_estimate_residual_squared": 0.0006032056432577252,
+          "cross_term": -0.0008463929804356571,
+          "total_mse": 0.00048383149639650766
+        },
+        "full": {
+          "samples_per_tape": 7168,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0007270188335744396,
+          "finite_estimate_residual_squared": 3.6408529361095724e-05,
+          "cross_term": -0.00032516752876831344,
+          "total_mse": 0.0004382598341672219
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200017-ate-target_query-a8",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.5985775730259814e-05,
+          "finite_estimate_residual_squared": 0.010208331380742038,
+          "cross_term": -0.000708105872582553,
+          "total_mse": 0.009546211283889744
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.5985775730259814e-05,
+          "finite_estimate_residual_squared": 0.0009489903094818834,
+          "cross_term": -0.0001477616751604333,
+          "total_mse": 0.0008472144100517099
+        },
+        "full": {
+          "samples_per_tape": 8192,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.5985775730259814e-05,
+          "finite_estimate_residual_squared": 0.0004742094247816152,
+          "cross_term": -1.1507850580081422e-05,
+          "total_mse": 0.0005086873499317936
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200022-ate-target_query-a3",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00021530856121639068,
+          "finite_estimate_residual_squared": 0.019084777529788915,
+          "cross_term": -0.0008639332455139723,
+          "total_mse": 0.01843615284549133
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00021530856121639068,
+          "finite_estimate_residual_squared": 0.0016512197396035203,
+          "cross_term": 0.00021449564603155227,
+          "total_mse": 0.002081023946851463
+        },
+        "full": {
+          "samples_per_tape": 40960,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00021530856121639068,
+          "finite_estimate_residual_squared": 0.0002432904561794685,
+          "cross_term": -0.0003830743463981308,
+          "total_mse": 7.552467099772845e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200036-ate-target_query-a3",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.1913979813545113e-06,
+          "finite_estimate_residual_squared": 0.09669375556822533,
+          "cross_term": -0.0008374560429508183,
+          "total_mse": 0.09585849092325585
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.1913979813545113e-06,
+          "finite_estimate_residual_squared": 0.007342779832152592,
+          "cross_term": 0.0002415339331159942,
+          "total_mse": 0.007586505163249942
+        },
+        "full": {
+          "samples_per_tape": 5120,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.1913979813545113e-06,
+          "finite_estimate_residual_squared": 6.612685785460198e-05,
+          "cross_term": 1.8864638098143878e-05,
+          "total_mse": 8.718289393410036e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200028-ate-target_query-a3",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0010365123346199735,
+          "finite_estimate_residual_squared": 0.015606575019080087,
+          "cross_term": 0.002111566281528653,
+          "total_mse": 0.018754653635228716
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0010365123346199735,
+          "finite_estimate_residual_squared": 0.00030285762738042335,
+          "cross_term": 0.0009200532359153322,
+          "total_mse": 0.002259423197915729
+        },
+        "full": {
+          "samples_per_tape": 65536,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0010365123346199735,
+          "finite_estimate_residual_squared": 3.989501084401313e-06,
+          "cross_term": -3.38817435024815e-05,
+          "total_mse": 0.0010066200922018934
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200043-ate-target_query-a2",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00023650468681060853,
+          "finite_estimate_residual_squared": 0.039763702756996776,
+          "cross_term": -0.0007941740019230743,
+          "total_mse": 0.039206033441884315
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00023650468681060853,
+          "finite_estimate_residual_squared": 0.0007407269170849107,
+          "cross_term": -0.0002401628203704808,
+          "total_mse": 0.0007370687835250383
+        },
+        "full": {
+          "samples_per_tape": 81920,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00023650468681060853,
+          "finite_estimate_residual_squared": 6.53311570803535e-06,
+          "cross_term": -6.0250867896611763e-05,
+          "total_mse": 0.0001827869346220321
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200048-ate-target_query-a5",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.001538892437806309,
+          "finite_estimate_residual_squared": 0.0027035828454314657,
+          "cross_term": 0.0037771216965962473,
+          "total_mse": 0.00801959697983402
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.001538892437806309,
+          "finite_estimate_residual_squared": 7.65337052038177e-05,
+          "cross_term": 0.0002460405796436096,
+          "total_mse": 0.0018614667226537363
+        },
+        "full": {
+          "samples_per_tape": 32768,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.001538892437806309,
+          "finite_estimate_residual_squared": 2.5240917408521165e-05,
+          "cross_term": -0.00022584168149320462,
+          "total_mse": 0.0013382916737216255
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200053-ate-target_query-a19",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.6096561363323944e-33,
+          "finite_estimate_residual_squared": 0.006572470362464783,
+          "cross_term": -2.0058729289413298e-18,
+          "total_mse": 0.006572470362464782
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.6096561363323944e-33,
+          "finite_estimate_residual_squared": 0.00040623457705711693,
+          "cross_term": -4.820956424338979e-19,
+          "total_mse": 0.0004062345770571165
+        },
+        "full": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.6096561363323944e-33,
+          "finite_estimate_residual_squared": 0.00040623457705711693,
+          "cross_term": -4.820956424338979e-19,
+          "total_mse": 0.0004062345770571165
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200058-ate-target_query-a9",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.041965554955303186,
+          "finite_estimate_residual_squared": 0.0321469924177485,
+          "cross_term": -0.014576560880072819,
+          "total_mse": 0.059535986492978865
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.041965554955303186,
+          "finite_estimate_residual_squared": 0.0005205307816647623,
+          "cross_term": 0.0036346254093466432,
+          "total_mse": 0.0461207111463146
+        },
+        "full": {
+          "samples_per_tape": 14336,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.041965554955303186,
+          "finite_estimate_residual_squared": 0.0001692370413803591,
+          "cross_term": 0.004521720021860368,
+          "total_mse": 0.046656512018543914
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200063-ate-target_query-a5",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.015065887613602943,
+          "finite_estimate_residual_squared": 0.008163767263916393,
+          "cross_term": -0.013862188435826933,
+          "total_mse": 0.009367466441692401
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.015065887613602943,
+          "finite_estimate_residual_squared": 0.0002738940495957407,
+          "cross_term": 0.0010778737394224465,
+          "total_mse": 0.01641765540262113
+        },
+        "full": {
+          "samples_per_tape": 8192,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.015065887613602943,
+          "finite_estimate_residual_squared": 0.00015405783419411616,
+          "cross_term": 0.001541770988222343,
+          "total_mse": 0.016761716436019404
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200074-ate-target_query-a3",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.419766481290786e-35,
+          "finite_estimate_residual_squared": 0.03223115901320711,
+          "cross_term": -2.2411650935740637e-18,
+          "total_mse": 0.03223115901320711
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.419766481290786e-35,
+          "finite_estimate_residual_squared": 0.0007678313255496268,
+          "cross_term": -1.8735376593120001e-19,
+          "total_mse": 0.0007678313255496267
+        },
+        "full": {
+          "samples_per_tape": 24576,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.419766481290786e-35,
+          "finite_estimate_residual_squared": 5.003568984220963e-05,
+          "cross_term": 2.083828431184891e-20,
+          "total_mse": 5.003568984220966e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200069-ate-target_query-a4",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.015157307996197673,
+          "finite_estimate_residual_squared": 0.004383493657242376,
+          "cross_term": -0.011155482657856607,
+          "total_mse": 0.00838531899558344
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.015157307996197673,
+          "finite_estimate_residual_squared": 0.0015546520801542323,
+          "cross_term": 0.001400050008416181,
+          "total_mse": 0.018112010084768086
+        },
+        "full": {
+          "samples_per_tape": 106496,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.015157307996197673,
+          "finite_estimate_residual_squared": 1.2027799379602419e-05,
+          "cross_term": 6.188968188293138e-05,
+          "total_mse": 0.015231225477460204
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200079-ate-target_query-a1",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.8869222261646324e-05,
+          "finite_estimate_residual_squared": 0.014223746686219233,
+          "cross_term": 0.001278252641029661,
+          "total_mse": 0.015530868549510541
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.8869222261646324e-05,
+          "finite_estimate_residual_squared": 0.000729862677404583,
+          "cross_term": -6.87127841508673e-06,
+          "total_mse": 0.0007518606212511427
+        },
+        "full": {
+          "samples_per_tape": 28672,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.8869222261646324e-05,
+          "finite_estimate_residual_squared": 1.824797541445797e-05,
+          "cross_term": -1.2875634500683153e-05,
+          "total_mse": 3.4241563175421147e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200084-ate-target_query-a2",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00018096759257715087,
+          "finite_estimate_residual_squared": 0.007309494950386194,
+          "cross_term": 0.00041451022001204833,
+          "total_mse": 0.007904972762975393
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00018096759257715087,
+          "finite_estimate_residual_squared": 0.004276061974415079,
+          "cross_term": 0.0013165299369257083,
+          "total_mse": 0.005773559503917938
+        },
+        "full": {
+          "samples_per_tape": 36864,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00018096759257715087,
+          "finite_estimate_residual_squared": 0.00014217571232453809,
+          "cross_term": -1.3802764545398874e-05,
+          "total_mse": 0.0003093405403562901
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200089-ate-target_query-a0",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00036265320958142117,
+          "finite_estimate_residual_squared": 0.008144559047514495,
+          "cross_term": -0.000541526025186158,
+          "total_mse": 0.007965686231909758
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00036265320958142117,
+          "finite_estimate_residual_squared": 0.002102979049615158,
+          "cross_term": -0.0008809313585338752,
+          "total_mse": 0.0015847009006627038
+        },
+        "full": {
+          "samples_per_tape": 36864,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.00036265320958142117,
+          "finite_estimate_residual_squared": 7.973849573085365e-05,
+          "cross_term": -2.755393723541013e-05,
+          "total_mse": 0.0004148377680768647
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200094-ate-target_query-a12",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.7649255087875992e-07,
+          "finite_estimate_residual_squared": 0.023193362061708033,
+          "cross_term": -0.00011092082943303956,
+          "total_mse": 0.02308261772482587
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.7649255087875992e-07,
+          "finite_estimate_residual_squared": 0.0009789952164250212,
+          "cross_term": 1.5194721909142766e-05,
+          "total_mse": 0.0009943664308850427
+        },
+        "full": {
+          "samples_per_tape": 4096,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.7649255087875992e-07,
+          "finite_estimate_residual_squared": 0.0009116436675296811,
+          "cross_term": 7.244548278821111e-06,
+          "total_mse": 0.000919064708359381
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200104-ate-target_query-a0",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 9.663921605863468e-06,
+          "finite_estimate_residual_squared": 0.0040595625523577004,
+          "cross_term": 1.9637221022563724e-05,
+          "total_mse": 0.0040888636949861275
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 9.663921605863468e-06,
+          "finite_estimate_residual_squared": 0.0049812586846840895,
+          "cross_term": 0.00040377302149849305,
+          "total_mse": 0.005394695627788445
+        },
+        "full": {
+          "samples_per_tape": 24576,
+          "tapes": 2,
+          "population_formula_bias_squared": 9.663921605863468e-06,
+          "finite_estimate_residual_squared": 0.0002818360441599592,
+          "cross_term": 5.152058683824381e-05,
+          "total_mse": 0.0003430205526040665
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200099-ate-target_query-a2",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.5363000433545023e-07,
+          "finite_estimate_residual_squared": 0.04890509427985426,
+          "cross_term": 9.698631648970914e-05,
+          "total_mse": 0.0490025342263483
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.5363000433545023e-07,
+          "finite_estimate_residual_squared": 0.005551317110126052,
+          "cross_term": -8.442711943085259e-05,
+          "total_mse": 0.005467343620699536
+        },
+        "full": {
+          "samples_per_tape": 106496,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.5363000433545023e-07,
+          "finite_estimate_residual_squared": 0.00015415307519606262,
+          "cross_term": -1.1008386526357467e-05,
+          "total_mse": 0.0001435983186740406
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200110-ate-target_query-a9",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 3.129636159629258e-33,
+          "finite_estimate_residual_squared": 0.11216371036696031,
+          "cross_term": 1.9398538562327864e-18,
+          "total_mse": 0.11216371036696031
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 3.129636159629258e-33,
+          "finite_estimate_residual_squared": 0.000961342928640393,
+          "cross_term": -2.792037445344685e-19,
+          "total_mse": 0.0009613429286403928
+        },
+        "full": {
+          "samples_per_tape": 26624,
+          "tapes": 2,
+          "population_formula_bias_squared": 3.129636159629258e-33,
+          "finite_estimate_residual_squared": 0.00011667756493015831,
+          "cross_term": -9.395486813547335e-20,
+          "total_mse": 0.00011667756493015822
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200116-ate-target_query-a0",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0012088432385426904,
+          "finite_estimate_residual_squared": 0.0014877870042567798,
+          "cross_term": 0.0005886982553562547,
+          "total_mse": 0.003285328498155725
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0012088432385426904,
+          "finite_estimate_residual_squared": 0.00023155383513514676,
+          "cross_term": 0.00014134042752783773,
+          "total_mse": 0.001581737501205675
+        },
+        "full": {
+          "samples_per_tape": 24576,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0012088432385426904,
+          "finite_estimate_residual_squared": 7.197591064841708e-05,
+          "cross_term": 0.00014614253259699468,
+          "total_mse": 0.0014269616817881021
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200121-ate-target_query-a3",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.005021451751565411,
+          "finite_estimate_residual_squared": 0.004706323260118725,
+          "cross_term": 0.005461403966737393,
+          "total_mse": 0.01518917897842153
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.005021451751565411,
+          "finite_estimate_residual_squared": 0.0013311993695177323,
+          "cross_term": 0.005158411668382337,
+          "total_mse": 0.011511062789465482
+        },
+        "full": {
+          "samples_per_tape": 9216,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.005021451751565411,
+          "finite_estimate_residual_squared": 0.00013301191260564388,
+          "cross_term": 0.0009267132722587494,
+          "total_mse": 0.006081176936429805
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200133-ate-target_query-a0",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0004166372297512764,
+          "finite_estimate_residual_squared": 0.01107619073405815,
+          "cross_term": -0.002487274227886886,
+          "total_mse": 0.009005553735922541
+        },
+        "2048": {
+          "samples_per_tape": 1024,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0004166372297512764,
+          "finite_estimate_residual_squared": 0.003404952883726166,
+          "cross_term": -0.0008189683154793032,
+          "total_mse": 0.0030026217979981394
+        },
+        "full": {
+          "samples_per_tape": 1024,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0004166372297512764,
+          "finite_estimate_residual_squared": 0.003404952883726166,
+          "cross_term": -0.0008189683154793032,
+          "total_mse": 0.0030026217979981394
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-200128-ate-target_query-a0",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.018531076210112e-33,
+          "finite_estimate_residual_squared": 0.0075375498359371434,
+          "cross_term": -1.2048565448360413e-17,
+          "total_mse": 0.00753754983593713
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.018531076210112e-33,
+          "finite_estimate_residual_squared": 0.004195924096746214,
+          "cross_term": -6.839321732945862e-18,
+          "total_mse": 0.004195924096746206
+        },
+        "full": {
+          "samples_per_tape": 90112,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.018531076210112e-33,
+          "finite_estimate_residual_squared": 4.849072775945973e-05,
+          "cross_term": -9.562368218346995e-19,
+          "total_mse": 4.8490727759458774e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300000-ate-target_query-a1",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 7.585076494028338e-06,
+          "finite_estimate_residual_squared": 0.01135046019719766,
+          "cross_term": -8.3347289753847e-05,
+          "total_mse": 0.011274697983937843
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 7.585076494028338e-06,
+          "finite_estimate_residual_squared": 0.0010378854612607886,
+          "cross_term": 3.572358954023585e-05,
+          "total_mse": 0.0010811941272950527
+        },
+        "full": {
+          "samples_per_tape": 61440,
+          "tapes": 2,
+          "population_formula_bias_squared": 7.585076494028338e-06,
+          "finite_estimate_residual_squared": 1.1619025500890321e-05,
+          "cross_term": -1.1864784619258586e-05,
+          "total_mse": 7.339317375660074e-06
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300005-ate-target_query-a4",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.207375441899498e-05,
+          "finite_estimate_residual_squared": 0.01207507519365952,
+          "cross_term": -0.0006178162710878008,
+          "total_mse": 0.011499332676990713
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.207375441899498e-05,
+          "finite_estimate_residual_squared": 0.001118592465882707,
+          "cross_term": -4.380440426204611e-05,
+          "total_mse": 0.0011168618160396558
+        },
+        "full": {
+          "samples_per_tape": 18432,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.207375441899498e-05,
+          "finite_estimate_residual_squared": 0.0001742953990826365,
+          "cross_term": -1.311750069487633e-05,
+          "total_mse": 0.00020325165280675515
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300011-ate-target_query-a13",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.007219361053660564,
+          "finite_estimate_residual_squared": 0.020168858222272674,
+          "cross_term": 0.013763601408326987,
+          "total_mse": 0.041151820684260224
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.007219361053660564,
+          "finite_estimate_residual_squared": 0.004105148282989695,
+          "cross_term": -0.001680212823570391,
+          "total_mse": 0.009644296513079869
+        },
+        "full": {
+          "samples_per_tape": 16384,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.007219361053660564,
+          "finite_estimate_residual_squared": 0.0002427069647747948,
+          "cross_term": 0.002420847437835736,
+          "total_mse": 0.009882915456271096
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300016-ate-target_query-a2",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.02113970755387471,
+          "finite_estimate_residual_squared": 0.017895654169449868,
+          "cross_term": -0.03561592399513385,
+          "total_mse": 0.0034194377281907325
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.02113970755387471,
+          "finite_estimate_residual_squared": 0.0008083573077492174,
+          "cross_term": -0.00824934237689109,
+          "total_mse": 0.01369872248473284
+        },
+        "full": {
+          "samples_per_tape": 36864,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.02113970755387471,
+          "finite_estimate_residual_squared": 0.00016049407790525368,
+          "cross_term": 0.003201696653684965,
+          "total_mse": 0.02450189828546493
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300023-ate-target_query-a5",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.0963627137455077e-35,
+          "finite_estimate_residual_squared": 0.02784016081073089,
+          "cross_term": 4.0692520945999144e-19,
+          "total_mse": 0.02784016081073089
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.0963627137455077e-35,
+          "finite_estimate_residual_squared": 0.00016311611442210467,
+          "cross_term": -9.716495573685506e-20,
+          "total_mse": 0.00016311611442210456
+        },
+        "full": {
+          "samples_per_tape": 8192,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.0963627137455077e-35,
+          "finite_estimate_residual_squared": 0.00017191282366808345,
+          "cross_term": -2.604381017886589e-20,
+          "total_mse": 0.00017191282366808342
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300028-ate-target_query-a5",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0015899278757508695,
+          "finite_estimate_residual_squared": 0.0044639999407704075,
+          "cross_term": -0.0003320902526443986,
+          "total_mse": 0.005721837563876878
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0015899278757508695,
+          "finite_estimate_residual_squared": 0.0004463702906574825,
+          "cross_term": 0.0010563960846136644,
+          "total_mse": 0.0030926942510220165
+        },
+        "full": {
+          "samples_per_tape": 18432,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0015899278757508695,
+          "finite_estimate_residual_squared": 1.4993406367349926e-05,
+          "cross_term": -2.7488638295507857e-05,
+          "total_mse": 0.0015774326438227116
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300034-ate-target_query-a7",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.0113959271946716e-33,
+          "finite_estimate_residual_squared": 0.0027146426642212125,
+          "cross_term": -5.980647222202596e-19,
+          "total_mse": 0.0027146426642212116
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.0113959271946716e-33,
+          "finite_estimate_residual_squared": 0.0015739544627033,
+          "cross_term": 2.555078652955935e-20,
+          "total_mse": 0.0015739544627033004
+        },
+        "full": {
+          "samples_per_tape": 7168,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.0113959271946716e-33,
+          "finite_estimate_residual_squared": 0.00022207244791754805,
+          "cross_term": -1.5443934188064957e-19,
+          "total_mse": 0.00022207244791754788
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300039-ate-target_query-a0",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0036998644809143775,
+          "finite_estimate_residual_squared": 0.020394461771832774,
+          "cross_term": -0.010524033302541674,
+          "total_mse": 0.013570292950205478
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0036998644809143775,
+          "finite_estimate_residual_squared": 0.0009653698959630965,
+          "cross_term": -0.002772513698148048,
+          "total_mse": 0.001892720678729426
+        },
+        "full": {
+          "samples_per_tape": 20480,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0036998644809143775,
+          "finite_estimate_residual_squared": 0.00022259981673766402,
+          "cross_term": 0.0012505394687323526,
+          "total_mse": 0.005173003766384394
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300044-ate-target_query-a17",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.903993967693881e-05,
+          "finite_estimate_residual_squared": 0.011840138949788373,
+          "cross_term": 0.0011301706280100274,
+          "total_mse": 0.013039349517475339
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.903993967693881e-05,
+          "finite_estimate_residual_squared": 0.0013195557728734497,
+          "cross_term": -0.000313607630412193,
+          "total_mse": 0.0010749880821381958
+        },
+        "full": {
+          "samples_per_tape": 18432,
+          "tapes": 2,
+          "population_formula_bias_squared": 6.903993967693881e-05,
+          "finite_estimate_residual_squared": 4.351918090714542e-05,
+          "cross_term": 2.0618310539122277e-05,
+          "total_mse": 0.0001331774311232065
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300050-ate-target_query-a5",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 8.97513446739833e-34,
+          "finite_estimate_residual_squared": 0.01490687257926603,
+          "cross_term": 7.427172749255671e-19,
+          "total_mse": 0.014906872579266027
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 8.97513446739833e-34,
+          "finite_estimate_residual_squared": 0.0003469705958782888,
+          "cross_term": -1.7380594597646119e-19,
+          "total_mse": 0.00034697059587828855
+        },
+        "full": {
+          "samples_per_tape": 4096,
+          "tapes": 2,
+          "population_formula_bias_squared": 8.97513446739833e-34,
+          "finite_estimate_residual_squared": 5.2691214179162125e-05,
+          "cross_term": 5.669526168193489e-20,
+          "total_mse": 5.269121417916217e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300055-ate-target_query-a16",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.7333369499485123e-33,
+          "finite_estimate_residual_squared": 0.005897672260577377,
+          "cross_term": 2.311115933264683e-33,
+          "total_mse": 0.005897672260577378
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.7333369499485123e-33,
+          "finite_estimate_residual_squared": 0.0009412418507098975,
+          "cross_term": -5.7777898331617076e-34,
+          "total_mse": 0.0009412418507098975
+        },
+        "full": {
+          "samples_per_tape": 16384,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.7333369499485123e-33,
+          "finite_estimate_residual_squared": 7.288724581590811e-05,
+          "cross_term": -1.7333369499485123e-33,
+          "total_mse": 7.288724581590811e-05
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300060-ate-target_query-a3",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0008058486184606593,
+          "finite_estimate_residual_squared": 0.01601765604215722,
+          "cross_term": 0.005695363450761815,
+          "total_mse": 0.022518868111379695
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0008058486184606593,
+          "finite_estimate_residual_squared": 0.00023936540473140292,
+          "cross_term": 0.00032432261696254517,
+          "total_mse": 0.0013695366401546075
+        },
+        "full": {
+          "samples_per_tape": 4096,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0008058486184606593,
+          "finite_estimate_residual_squared": 0.0003779424406652542,
+          "cross_term": 9.516553606375797e-05,
+          "total_mse": 0.0012789565951896716
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300065-ate-target_query-a0",
+      "dimension": 5,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 8.365288774489389e-05,
+          "finite_estimate_residual_squared": 0.023288635856648452,
+          "cross_term": -0.00045353574382162975,
+          "total_mse": 0.022918753000571716
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 8.365288774489389e-05,
+          "finite_estimate_residual_squared": 0.0003776023497014771,
+          "cross_term": 0.00022518053328347566,
+          "total_mse": 0.0006864357707298466
+        },
+        "full": {
+          "samples_per_tape": 12288,
+          "tapes": 2,
+          "population_formula_bias_squared": 8.365288774489389e-05,
+          "finite_estimate_residual_squared": 0.00014476628099088597,
+          "cross_term": 7.147131664550536e-05,
+          "total_mse": 0.0002998904853812852
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300070-ate-target_query-a3",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0005040622879564772,
+          "finite_estimate_residual_squared": 0.01498681025562992,
+          "cross_term": 0.0008572101840690537,
+          "total_mse": 0.01634808272765545
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0005040622879564772,
+          "finite_estimate_residual_squared": 0.0020069191304885395,
+          "cross_term": -0.0011750241385872584,
+          "total_mse": 0.0013359572798577585
+        },
+        "full": {
+          "samples_per_tape": 12288,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0005040622879564772,
+          "finite_estimate_residual_squared": 0.0001403150737293377,
+          "cross_term": -0.00019217734780637037,
+          "total_mse": 0.0004522000138794445
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300075-ate-target_query-a0",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0017856105193243212,
+          "finite_estimate_residual_squared": 0.0018606822888605642,
+          "cross_term": -0.0031298846107801763,
+          "total_mse": 0.0005164081974047093
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0017856105193243212,
+          "finite_estimate_residual_squared": 0.00010955208138304062,
+          "cross_term": 5.239134951118176e-05,
+          "total_mse": 0.0019475539502185435
+        },
+        "full": {
+          "samples_per_tape": 12288,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0017856105193243212,
+          "finite_estimate_residual_squared": 8.569497710353928e-05,
+          "cross_term": 9.892476704687216e-05,
+          "total_mse": 0.001970230263474733
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300080-ate-target_query-a0",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.001118711578968067,
+          "finite_estimate_residual_squared": 0.002554356817707896,
+          "cross_term": 0.0032592206504431327,
+          "total_mse": 0.006932289047119095
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.001118711578968067,
+          "finite_estimate_residual_squared": 0.00042378156721253966,
+          "cross_term": 0.0011926878812567366,
+          "total_mse": 0.002735181027437343
+        },
+        "full": {
+          "samples_per_tape": 6144,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.001118711578968067,
+          "finite_estimate_residual_squared": 0.0001295552552454404,
+          "cross_term": 0.0006420495136118425,
+          "total_mse": 0.0018903163478253499
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300085-ate-target_query-a1",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0002629691003615355,
+          "finite_estimate_residual_squared": 0.010489810154590598,
+          "cross_term": 0.0003310739479302152,
+          "total_mse": 0.011083853202882346
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0002629691003615355,
+          "finite_estimate_residual_squared": 0.005224249498140242,
+          "cross_term": -0.0010474398425897996,
+          "total_mse": 0.004439778755911977
+        },
+        "full": {
+          "samples_per_tape": 20480,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0002629691003615355,
+          "finite_estimate_residual_squared": 0.00025337607827761614,
+          "cross_term": -8.272317825435297e-05,
+          "total_mse": 0.0004336220003847987
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300093-ate-target_query-a0",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0028939039896287507,
+          "finite_estimate_residual_squared": 0.00489050962270374,
+          "cross_term": -0.0006868669372837102,
+          "total_mse": 0.00709754667504878
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0028939039896287507,
+          "finite_estimate_residual_squared": 0.00024717408682597763,
+          "cross_term": -0.0007477676680209506,
+          "total_mse": 0.0023933104084337773
+        },
+        "full": {
+          "samples_per_tape": 40960,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0028939039896287507,
+          "finite_estimate_residual_squared": 3.5134966374160235e-06,
+          "cross_term": 4.6517327103746164e-05,
+          "total_mse": 0.0029439348133699127
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300098-ate-target_query-a1",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.402025931593566e-06,
+          "finite_estimate_residual_squared": 0.06374094477707805,
+          "cross_term": 0.00036243886404516916,
+          "total_mse": 0.06410778566705481
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.402025931593566e-06,
+          "finite_estimate_residual_squared": 0.002015186001082598,
+          "cross_term": 8.42357674646293e-06,
+          "total_mse": 0.002028011603760655
+        },
+        "full": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 4.402025931593566e-06,
+          "finite_estimate_residual_squared": 0.002015186001082598,
+          "cross_term": 8.42357674646293e-06,
+          "total_mse": 0.002028011603760655
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300103-ate-target_query-a0",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.0113606414876832e-07,
+          "finite_estimate_residual_squared": 0.031290076707607625,
+          "cross_term": 9.930871219906599e-05,
+          "total_mse": 0.031389586555870846
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.0113606414876832e-07,
+          "finite_estimate_residual_squared": 0.0037661770497089014,
+          "cross_term": 2.9914362549048632e-05,
+          "total_mse": 0.0037962925483220984
+        },
+        "full": {
+          "samples_per_tape": 12288,
+          "tapes": 2,
+          "population_formula_bias_squared": 2.0113606414876832e-07,
+          "finite_estimate_residual_squared": 0.000636020972725592,
+          "cross_term": 1.403733453297754e-06,
+          "total_mse": 0.0006376258422430385
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300110-ate-target_query-a0",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0006194870172942493,
+          "finite_estimate_residual_squared": 0.005895526615617824,
+          "cross_term": 0.0003017812358222878,
+          "total_mse": 0.006816794868734361
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0006194870172942493,
+          "finite_estimate_residual_squared": 0.0001689056103210975,
+          "cross_term": -0.0005032541857781875,
+          "total_mse": 0.0002851384418371593
+        },
+        "full": {
+          "samples_per_tape": 32768,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0006194870172942493,
+          "finite_estimate_residual_squared": 7.609768409161715e-06,
+          "cross_term": -0.0001143898371422555,
+          "total_mse": 0.0005127069485611555
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300115-ate-target_query-a7",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.260251458715161e-05,
+          "finite_estimate_residual_squared": 0.0337132926066648,
+          "cross_term": -0.0010325467829344743,
+          "total_mse": 0.03269334833831748
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.260251458715161e-05,
+          "finite_estimate_residual_squared": 0.0008903475369158459,
+          "cross_term": 8.04223783278874e-05,
+          "total_mse": 0.0009833724298308848
+        },
+        "full": {
+          "samples_per_tape": 28672,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.260251458715161e-05,
+          "finite_estimate_residual_squared": 0.0006181101482294952,
+          "cross_term": -0.00014268985824386786,
+          "total_mse": 0.000488022804572779
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300121-ate-target_query-a5",
+      "dimension": 3,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0002240396129782678,
+          "finite_estimate_residual_squared": 0.01851154957299585,
+          "cross_term": -0.0006261672509079158,
+          "total_mse": 0.018109421935066206
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0002240396129782678,
+          "finite_estimate_residual_squared": 0.0011145465113191688,
+          "cross_term": -0.000422378387376936,
+          "total_mse": 0.0009162077369205006
+        },
+        "full": {
+          "samples_per_tape": 7168,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0002240396129782678,
+          "finite_estimate_residual_squared": 0.00040114890069333555,
+          "cross_term": -0.00026145525564605544,
+          "total_mse": 0.00036373325802554796
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300126-ate-target_query-a0",
+      "dimension": 4,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0006879254096369221,
+          "finite_estimate_residual_squared": 0.0006901155665156672,
+          "cross_term": -0.000900109899984979,
+          "total_mse": 0.0004779310761676103
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0006879254096369221,
+          "finite_estimate_residual_squared": 9.269881728822547e-05,
+          "cross_term": -0.00022930615598269413,
+          "total_mse": 0.0005513180709424534
+        },
+        "full": {
+          "samples_per_tape": 4096,
+          "tapes": 2,
+          "population_formula_bias_squared": 0.0006879254096369221,
+          "finite_estimate_residual_squared": 2.1528246555081037e-05,
+          "cross_term": -0.0001319418259395104,
+          "total_mse": 0.0005775118302524928
+        }
+      }
+    },
+    {
+      "seed_id": "SAMPLED-300131-ate-target_query-a15",
+      "dimension": 2,
+      "stages": {
+        "128": {
+          "samples_per_tape": 128,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.210994114595802e-06,
+          "finite_estimate_residual_squared": 0.0195895682489388,
+          "cross_term": -0.0002824806370113384,
+          "total_mse": 0.01930829860604206
+        },
+        "2048": {
+          "samples_per_tape": 2048,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.210994114595802e-06,
+          "finite_estimate_residual_squared": 0.00020334450992230712,
+          "cross_term": 2.65139124890022e-05,
+          "total_mse": 0.00023106941652590514
+        },
+        "full": {
+          "samples_per_tape": 8192,
+          "tapes": 2,
+          "population_formula_bias_squared": 1.210994114595802e-06,
+          "finite_estimate_residual_squared": 0.00021153153917485422,
+          "cross_term": 2.111188917615251e-05,
+          "total_mse": 0.00023385442246560257
+        }
+      }
+    }
+  ],
+  "scope": [
+    "All 50 ATE worlds from the existing diagnostic cohort; no new worlds or samples.",
+    "The named 2048 stage is capped by each world's budget. In three worlds it is already the full stage; 300 stage references reuse 294 source estimates.",
+    "The finite program uses observational conditionals with fixed 0.5 smoothing.",
+    "Population-formula bias measures the observational formula's mismatch with the causal ATE, not an error in the environment's scoring formula.",
+    "Finite-estimate residual includes sampling and smoothing; it is not pure variance.",
+    "The cross term is retained. Neither error term is presented as a fraction of total MSE or assumed to add without the cross term.",
+    "This is a deterministic diagnostic program, not an LLM or evidence that LLM answers, rewards, or learning are dominated by either error source.",
+    "No claim about the optimal achievable error of other legal experiment policies."
+  ]
+}

@@ -1,0 +1,4019 @@
+{
+  "scope": "Existing production admission archive and completed frozen replay; no new solving or generation.",
+  "definitions": {
+    "affected_mechanisms": "Nodes strictly downstream of X and ancestral to Y, including Y and excluding X.",
+    "affected_convergence": "An affected node has at least two parents that are also affected nodes.",
+    "direct_source_outcome_edge": "The serialized DAG contains X -> Y.",
+    "frozen_certified": "The existing replay's before.status equals ok; not a fresh solver result."
+  },
+  "limitations": [
+    "Production attempt fractions describe this exact prepared dataset, not the full generator law.",
+    "Frozen 74 tasks are a development collection; their failure and conditional rates are not population estimates.",
+    "Rejected production worlds are not serialized. Their structural rejection rates are unknown and were not reconstructed.",
+    "Accepted task coverage is not evidence that adding harder tasks would improve learning or explain old 800-step failure.",
+    "No production code, rewards, budgets, training or validation configuration is changed by this reader."
+  ],
+  "source_sha256": {
+    "research/training_submission_20260907/certified-data.tar.gz": "4a8a1149e5907c96f102b8b63c62e1841e930ee49f65d6536f729df97fc73cd4",
+    "research/symbolic_contraction_20260907/inputs.tar.gz": "313498a434a60b79d54ada0fe9eb44412fae86e9b0b21e5dc85ce046dc287ce5",
+    "research/symbolic_contraction_20260907/numeric-v1-summary.json": "f779159e761d55f4797572676f20e5a812a6c7b1c8ebd9c8dd718bc3af38cc17",
+    "reader": "5524444706d76e03945e4f34c660cd4885507bee81c4539e90f2a7075738fe2b",
+    "worldspec_schema_source": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b"
+  },
+  "production": {
+    "splits": {
+      "train": {
+        "attempts": 136,
+        "accepted": 100,
+        "rejected": 36,
+        "rejection_fraction_in_this_attempt_stream": 0.2647058823529412,
+        "rejection_error_types": {
+          "RuntimeError": 25,
+          "CounterfactualResourceLimitError": 11
+        },
+        "attempt_seconds": 390.725622498896,
+        "rejected_attempt_seconds": 286.60102065408137,
+        "accepted_graphs": {
+          "worlds": 100,
+          "affected_mechanism_counts": {
+            "1": 54,
+            "2": 39,
+            "3": 5,
+            "4": 2
+          },
+          "affected_convergence": 2,
+          "direct_source_outcome_edge": 68,
+          "at_most_two_affected_mechanisms": 93
+        }
+      },
+      "validation": {
+        "attempts": 6,
+        "accepted": 5,
+        "rejected": 1,
+        "rejection_fraction_in_this_attempt_stream": 0.16666666666666666,
+        "rejection_error_types": {
+          "CounterfactualResourceLimitError": 1
+        },
+        "attempt_seconds": 14.02052445197478,
+        "rejected_attempt_seconds": 11.214598758029751,
+        "accepted_graphs": {
+          "worlds": 5,
+          "affected_mechanism_counts": {
+            "1": 3,
+            "2": 1,
+            "3": 1
+          },
+          "affected_convergence": 1,
+          "direct_source_outcome_edge": 4,
+          "at_most_two_affected_mechanisms": 4
+        }
+      }
+    },
+    "accepted_worlds": [
+      {
+        "split": "train",
+        "index": 1,
+        "seed_id": "SAMPLED-2000002-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0001.pkl",
+        "world_sha256": "691e6ce5e04b0a466080cdc1202f019bbcdf5db36bc7cf21debf83268d3c23b8",
+        "nodes": 9,
+        "edges": 7,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 6,
+        "seed_id": "SAMPLED-2000007-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0006.pkl",
+        "world_sha256": "dae986791388921adf13cc4f95551b73af68c4bd9d92f4e4b67d4a50d93addab",
+        "nodes": 16,
+        "edges": 25,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 11,
+        "seed_id": "SAMPLED-2000012-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0011.pkl",
+        "world_sha256": "e881803b2827ca5bc18b0adc11e1f35d99184d999f22ebadeba44c6e9b12cce4",
+        "nodes": 9,
+        "edges": 13,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 16,
+        "seed_id": "SAMPLED-2000017-individual_counterfactual_probability-target_query-a6",
+        "world_member": "data/truth/train-0016.pkl",
+        "world_sha256": "e4514d5a5886051d6eac526948328384d0c1b367ec4cf8d537a5f0a6caa227e2",
+        "nodes": 10,
+        "edges": 8,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 21,
+        "seed_id": "SAMPLED-2000023-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0021.pkl",
+        "world_sha256": "80ec19a00bf8e85f6cf9d0e450913d13a0aefae7038e8796dd1425f1d5e2a37b",
+        "nodes": 9,
+        "edges": 15,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 26,
+        "seed_id": "SAMPLED-2000028-individual_counterfactual_probability-target_query-a20",
+        "world_member": "data/truth/train-0026.pkl",
+        "world_sha256": "24989ff7b5c35f53b9062eab638f87049194fa0c52e51c87d51a06b223473ba2",
+        "nodes": 16,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 31,
+        "seed_id": "SAMPLED-2000033-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0031.pkl",
+        "world_sha256": "bdbae8c355836e729755e52149fdaf2783bde6cb9f58b0e2de98cb4a632e3754",
+        "nodes": 10,
+        "edges": 16,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 36,
+        "seed_id": "SAMPLED-2000038-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0036.pkl",
+        "world_sha256": "df1fa0bdcbffc353905eb2cb7b1a1b6ccee752553b8f8fd9c0613cb5f538e650",
+        "nodes": 8,
+        "edges": 8,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 41,
+        "seed_id": "SAMPLED-2000043-individual_counterfactual_probability-target_query-a3",
+        "world_member": "data/truth/train-0041.pkl",
+        "world_sha256": "e3c4b5163a50ea143120b54827fefd3bd8b16d8cad9fad9773916c8e88757370",
+        "nodes": 14,
+        "edges": 14,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 46,
+        "seed_id": "SAMPLED-2000049-individual_counterfactual_probability-target_query-a6",
+        "world_member": "data/truth/train-0046.pkl",
+        "world_sha256": "3db9ce3b29808e1006698d0ca12af9703c824ba86178535062edb26b5d5eea24",
+        "nodes": 9,
+        "edges": 15,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 51,
+        "seed_id": "SAMPLED-2000055-individual_counterfactual_probability-target_query-a17",
+        "world_member": "data/truth/train-0051.pkl",
+        "world_sha256": "54e5fd0498221d900fc83e4f76f0a6c6ba9a5dfe471db5b1853da0c6d850b602",
+        "nodes": 13,
+        "edges": 19,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 56,
+        "seed_id": "SAMPLED-2000061-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0056.pkl",
+        "world_sha256": "1d5f4d245897cdf065536852b44efb688007477c37383686c2f57426036d6d39",
+        "nodes": 10,
+        "edges": 15,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 61,
+        "seed_id": "SAMPLED-2000066-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0061.pkl",
+        "world_sha256": "4a32b3778e6cbb1339946b265b09eefbaeb06496d6fcc31d179cbb738b25af82",
+        "nodes": 9,
+        "edges": 16,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 66,
+        "seed_id": "SAMPLED-2000071-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0066.pkl",
+        "world_sha256": "a8e72ea33ffd9d6a5b32d6c5cf31773a8a1be2c6816ff56dfd9a3a4e953e4244",
+        "nodes": 8,
+        "edges": 8,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 71,
+        "seed_id": "SAMPLED-2000076-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0071.pkl",
+        "world_sha256": "d1a37ce06762198775c9204e1774a54229f3c7c98e58838654ccd57e7ca425c5",
+        "nodes": 9,
+        "edges": 10,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 76,
+        "seed_id": "SAMPLED-2000081-individual_counterfactual_probability-target_query-a24",
+        "world_member": "data/truth/train-0076.pkl",
+        "world_sha256": "52ac19f3a55b2166f9c1d7c2ffc589db8358c6e0dd684b35984a256e2812c8f4",
+        "nodes": 13,
+        "edges": 17,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 81,
+        "seed_id": "SAMPLED-2000087-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0081.pkl",
+        "world_sha256": "345a192ddf34d15bbaf13dffe0efdebc3eeee950e0163f3dd7f1020d0258b4ee",
+        "nodes": 8,
+        "edges": 8,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 86,
+        "seed_id": "SAMPLED-2000092-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0086.pkl",
+        "world_sha256": "2de01edf0a5a69984c6d5f7e9d0763f3e48c7c3966cd2e84ea53b42e17ed7fc8",
+        "nodes": 8,
+        "edges": 11,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 91,
+        "seed_id": "SAMPLED-2000097-individual_counterfactual_probability-target_query-a3",
+        "world_member": "data/truth/train-0091.pkl",
+        "world_sha256": "db78e7db6520fe0e8dd1dc924812f010096f4888195e4a1b9a8935c49c402bf4",
+        "nodes": 15,
+        "edges": 31,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 96,
+        "seed_id": "SAMPLED-2000103-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0096.pkl",
+        "world_sha256": "355fae3fb67e60f7a086908ff65806b53cf32678463031fba366d60bff3c605a",
+        "nodes": 10,
+        "edges": 19,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 101,
+        "seed_id": "SAMPLED-2000108-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0101.pkl",
+        "world_sha256": "faa89fc381be93d56fe1f9ef1c433e13c821aa196ecefbe544ae3c7cf49b2ea8",
+        "nodes": 8,
+        "edges": 5,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 106,
+        "seed_id": "SAMPLED-2000113-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0106.pkl",
+        "world_sha256": "a8539b023e8471a2f91bc6c03f43213cae5214e2fa17fa22a0b66c3a5c3de9dc",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 111,
+        "seed_id": "SAMPLED-2000118-individual_counterfactual_probability-target_query-a4",
+        "world_member": "data/truth/train-0111.pkl",
+        "world_sha256": "80506c25587bf8e61c121554b76bf7b447058832905ac768e23fe411adbe9a63",
+        "nodes": 13,
+        "edges": 20,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 116,
+        "seed_id": "SAMPLED-2000123-individual_counterfactual_probability-target_query-a6",
+        "world_member": "data/truth/train-0116.pkl",
+        "world_sha256": "254911a5862bde25414ca2522b5565989b74dc2c4feb52bd0d724d6251249ebd",
+        "nodes": 13,
+        "edges": 21,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 121,
+        "seed_id": "SAMPLED-2000128-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0121.pkl",
+        "world_sha256": "f6fd58613250023ba570aafa69271f717461af298b4da910ff0f071a30376fce",
+        "nodes": 15,
+        "edges": 44,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 126,
+        "seed_id": "SAMPLED-2000136-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0126.pkl",
+        "world_sha256": "bfabfccf2cdf3cff481c6d942a77f332231701233a384944b690841bbd3cc35e",
+        "nodes": 8,
+        "edges": 6,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 131,
+        "seed_id": "SAMPLED-2000142-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0131.pkl",
+        "world_sha256": "f2a38987bf7c494028682b467a33ffaea1f8d10044b1a86bb5eb95b853f7419b",
+        "nodes": 14,
+        "edges": 29,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 136,
+        "seed_id": "SAMPLED-2000147-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0136.pkl",
+        "world_sha256": "69d9011e44b956cbc30fecb97d9efd430c6ba4c6dd2da47bb1e50cdf523aa853",
+        "nodes": 16,
+        "edges": 44,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 141,
+        "seed_id": "SAMPLED-2000152-individual_counterfactual_probability-target_query-a5",
+        "world_member": "data/truth/train-0141.pkl",
+        "world_sha256": "2d8223d44803a0dd1addf5dc2ca6fe8b18560e34da237a75d0c2e2b862f9bcb8",
+        "nodes": 12,
+        "edges": 16,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 146,
+        "seed_id": "SAMPLED-2000157-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0146.pkl",
+        "world_sha256": "bf220a404c0d54c682d1ce792d7a4f4f622bfe548aa66be932e68cf5930bee65",
+        "nodes": 16,
+        "edges": 41,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 151,
+        "seed_id": "SAMPLED-2000164-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0151.pkl",
+        "world_sha256": "065a349338f6013ff2b15abc1892707891f9b3c0456b11ad2d5f0b5581723d0f",
+        "nodes": 8,
+        "edges": 7,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 156,
+        "seed_id": "SAMPLED-2000171-individual_counterfactual_probability-target_query-a11",
+        "world_member": "data/truth/train-0156.pkl",
+        "world_sha256": "54efe333d924b5e56b63f04685ae3a7fabe8d662fa64f8ad1a6b1aaa23c4a5e0",
+        "nodes": 11,
+        "edges": 18,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 161,
+        "seed_id": "SAMPLED-2000177-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0161.pkl",
+        "world_sha256": "45024fb9e03e9b07a30c8a38208b7dba7a9cfc810aab254cc013afc5227e89c6",
+        "nodes": 8,
+        "edges": 4,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 166,
+        "seed_id": "SAMPLED-2000182-individual_counterfactual_probability-target_query-a13",
+        "world_member": "data/truth/train-0166.pkl",
+        "world_sha256": "2f896486c25f81cbf4126d0a88c821cb6a71baf55286a24ff966eb9c1e8bf4a5",
+        "nodes": 12,
+        "edges": 18,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 171,
+        "seed_id": "SAMPLED-2000188-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0171.pkl",
+        "world_sha256": "87723b4759db8d84f02dc8f6048acd3fdc64e1507bb4d6eb22939d2c45ab7271",
+        "nodes": 12,
+        "edges": 33,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 176,
+        "seed_id": "SAMPLED-2000193-individual_counterfactual_probability-target_query-a4",
+        "world_member": "data/truth/train-0176.pkl",
+        "world_sha256": "22a482b61819e455fd210c4f422d6a33f2eaf271320166cfcdb9763161db97b5",
+        "nodes": 12,
+        "edges": 25,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 181,
+        "seed_id": "SAMPLED-2000198-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0181.pkl",
+        "world_sha256": "14a7d6bf8b4d906c8468f463eff2c00f5fe760f109ac13aa4b7bbebe4b9cd572",
+        "nodes": 16,
+        "edges": 41,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 186,
+        "seed_id": "SAMPLED-2000203-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0186.pkl",
+        "world_sha256": "cffb37a336e73e7f3087e713946b472bb2b1d41e22c681245ae06ea38dc9d783",
+        "nodes": 8,
+        "edges": 6,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 191,
+        "seed_id": "SAMPLED-2000208-individual_counterfactual_probability-target_query-a4",
+        "world_member": "data/truth/train-0191.pkl",
+        "world_sha256": "98fbc01b18ca197acfa817c253c40d8081e15ff8ca58b1fb8ffabc8fab1314d3",
+        "nodes": 8,
+        "edges": 7,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 196,
+        "seed_id": "SAMPLED-2000214-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0196.pkl",
+        "world_sha256": "974dbc1eaa1631a4415862fcffbf93fcf400f76f25f06165e3841e6a6cdbb460",
+        "nodes": 9,
+        "edges": 5,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 201,
+        "seed_id": "SAMPLED-2000220-individual_counterfactual_probability-target_query-a18",
+        "world_member": "data/truth/train-0201.pkl",
+        "world_sha256": "b475a8415842604002b2d114ff37fc7070b0b1bfaa8c6ce906ab8e15e3bddb86",
+        "nodes": 15,
+        "edges": 24,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 206,
+        "seed_id": "SAMPLED-2000226-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0206.pkl",
+        "world_sha256": "e4efbcae796830f4bab0dca05430e70948be9f5f4984af939bcb17f546f0029d",
+        "nodes": 11,
+        "edges": 20,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 211,
+        "seed_id": "SAMPLED-2000231-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0211.pkl",
+        "world_sha256": "734d2942985e9b5310444de9579aa168eb0bc5d6d2f3843c5544f852e18ca2cc",
+        "nodes": 10,
+        "edges": 14,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 216,
+        "seed_id": "SAMPLED-2000236-individual_counterfactual_probability-target_query-a3",
+        "world_member": "data/truth/train-0216.pkl",
+        "world_sha256": "e2bba09e5b1e451a9d3cb669873d9d715c67037beb0c632180a178dca2c5cb07",
+        "nodes": 9,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 221,
+        "seed_id": "SAMPLED-2000241-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0221.pkl",
+        "world_sha256": "a20934523b421d2d00ab865076c0cb8379c8c78fb119b2096019170e410ec6b3",
+        "nodes": 12,
+        "edges": 15,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 226,
+        "seed_id": "SAMPLED-2000247-individual_counterfactual_probability-target_query-a5",
+        "world_member": "data/truth/train-0226.pkl",
+        "world_sha256": "789b03952da0e58e6c7a88c5181c454318e318ef16190528963f2e6eb4d1eceb",
+        "nodes": 11,
+        "edges": 20,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 231,
+        "seed_id": "SAMPLED-2000253-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0231.pkl",
+        "world_sha256": "7dc6bb79aa2e01a9a862e1c702c196ee7a38204692cfc743cf73726c24e5d771",
+        "nodes": 10,
+        "edges": 12,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 236,
+        "seed_id": "SAMPLED-2000258-individual_counterfactual_probability-target_query-a11",
+        "world_member": "data/truth/train-0236.pkl",
+        "world_sha256": "06d2994ee2c7e80acceabd7db8580e52a4f2727b0b3d4671d88636f7c8c102b6",
+        "nodes": 15,
+        "edges": 34,
+        "affected_mechanisms": 4,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 241,
+        "seed_id": "SAMPLED-2000263-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0241.pkl",
+        "world_sha256": "d535ff4e40f4555f500ac1c5d9b5708d5cd55d34d6aac1f6393b3f796e281292",
+        "nodes": 12,
+        "edges": 18,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 246,
+        "seed_id": "SAMPLED-2000271-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0246.pkl",
+        "world_sha256": "c628a1c09bd6fe26bd526089b6eb9ed07ceac636c4f5d8dd1875d05577d0fcb3",
+        "nodes": 8,
+        "edges": 8,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 251,
+        "seed_id": "SAMPLED-2000278-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0251.pkl",
+        "world_sha256": "568d0908eeb743357588b46185611a1ea71bb169494d5a2cb4a32d12bb9eb796",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 4,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 256,
+        "seed_id": "SAMPLED-2000283-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0256.pkl",
+        "world_sha256": "ec4a9d8235eb2f219fcdc81e0959431842f22e96838ad3d67c82b27371786d8e",
+        "nodes": 9,
+        "edges": 11,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 261,
+        "seed_id": "SAMPLED-2000288-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0261.pkl",
+        "world_sha256": "66d2904245eecacfeec778a22cdf9511da8b36cb2057f00fdd5597b2e846a5d2",
+        "nodes": 15,
+        "edges": 36,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 266,
+        "seed_id": "SAMPLED-2000294-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0266.pkl",
+        "world_sha256": "8815ec4c130c62cdee990257c34e439cff7517bcb2e95dd9a402721179ea0d7b",
+        "nodes": 13,
+        "edges": 26,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 271,
+        "seed_id": "SAMPLED-2000299-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0271.pkl",
+        "world_sha256": "211605440fc21b82048be8df16293756f707e1c57d3c0a41d4c20bd9304bf4ad",
+        "nodes": 8,
+        "edges": 10,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 276,
+        "seed_id": "SAMPLED-2000304-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0276.pkl",
+        "world_sha256": "27bc0bb52b24c7b036877c11c7a9c000ff33197ee0f6c2ea389ed09f66c5cc8a",
+        "nodes": 9,
+        "edges": 10,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 281,
+        "seed_id": "SAMPLED-2000309-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0281.pkl",
+        "world_sha256": "42bc8006b13049583cfa822ec8c81a51d48573712f6a74d00745e8d6eba5f91d",
+        "nodes": 13,
+        "edges": 22,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 286,
+        "seed_id": "SAMPLED-2000314-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0286.pkl",
+        "world_sha256": "d8838aff5e2fcc9f8a2a2abe43c5d57df33cc0bb2e6a472dc8086121f980f4dc",
+        "nodes": 8,
+        "edges": 6,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 291,
+        "seed_id": "SAMPLED-2000319-individual_counterfactual_probability-target_query-a7",
+        "world_member": "data/truth/train-0291.pkl",
+        "world_sha256": "55dd2824dac8a5a6f5658ab197ce65eb18a76bfaf5abbbf2d87d5b92f0d7553e",
+        "nodes": 12,
+        "edges": 29,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 296,
+        "seed_id": "SAMPLED-2000324-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0296.pkl",
+        "world_sha256": "6a37d210f469303e4d9cb31167e00cb9106204941217783ca6d39059a673d857",
+        "nodes": 11,
+        "edges": 17,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 301,
+        "seed_id": "SAMPLED-2000329-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0301.pkl",
+        "world_sha256": "1825a4a672fa3a01d2c17acffef0c80d8b5d440f8fd332d7ee837c92ad32cf82",
+        "nodes": 16,
+        "edges": 37,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 306,
+        "seed_id": "SAMPLED-2000334-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0306.pkl",
+        "world_sha256": "ed48159aaf8960d541534759a49b68dcf5ec49119061d4abc6d78e23992ca03f",
+        "nodes": 12,
+        "edges": 26,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 311,
+        "seed_id": "SAMPLED-2000339-individual_counterfactual_probability-target_query-a5",
+        "world_member": "data/truth/train-0311.pkl",
+        "world_sha256": "50ae5ba3bf2f945ca705ea32c11e0d93ac656d0e9feba184e53b386eb81ee513",
+        "nodes": 12,
+        "edges": 19,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 316,
+        "seed_id": "SAMPLED-2000345-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0316.pkl",
+        "world_sha256": "5b606fce33a4bc2927987ac2ed3ae41b9d4207e73f53853e219257eff5360b83",
+        "nodes": 14,
+        "edges": 23,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 321,
+        "seed_id": "SAMPLED-2000350-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0321.pkl",
+        "world_sha256": "1034f4d8ba28e1b5ef40893abf0592c6ecdadaac98b382f4c1dbda2bb0d64cd7",
+        "nodes": 9,
+        "edges": 16,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 326,
+        "seed_id": "SAMPLED-2000355-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0326.pkl",
+        "world_sha256": "0965144731feda7213b9a36f21feb5813e9cfd93c8e4a30e6e98ba7290c36460",
+        "nodes": 9,
+        "edges": 14,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 331,
+        "seed_id": "SAMPLED-2000360-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0331.pkl",
+        "world_sha256": "dae8acb635d91bc33ab8ef3f8a489928b451ada9e711eab4236097d4fa8ca1bf",
+        "nodes": 14,
+        "edges": 28,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 336,
+        "seed_id": "SAMPLED-2000365-individual_counterfactual_probability-target_query-a8",
+        "world_member": "data/truth/train-0336.pkl",
+        "world_sha256": "33e1abcc8660a047cb37899693d7fcdf974ee03f40bda180ad2a204df5c54be4",
+        "nodes": 13,
+        "edges": 27,
+        "affected_mechanisms": 3,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 341,
+        "seed_id": "SAMPLED-2000370-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0341.pkl",
+        "world_sha256": "dcddbccdb484b64487daa97d377b32743b25e53439a42bb660503ec62ed75677",
+        "nodes": 9,
+        "edges": 15,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 346,
+        "seed_id": "SAMPLED-2000375-individual_counterfactual_probability-target_query-a3",
+        "world_member": "data/truth/train-0346.pkl",
+        "world_sha256": "0ed1b4b88097d0bb06ae524040c2c2b46a6af86d39429439a82a2ba31d471d41",
+        "nodes": 16,
+        "edges": 29,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 351,
+        "seed_id": "SAMPLED-2000380-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0351.pkl",
+        "world_sha256": "337c74466cee1a02f11292a589efd1c4819814485cacf8db365db95e4267e2ee",
+        "nodes": 14,
+        "edges": 30,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 356,
+        "seed_id": "SAMPLED-2000385-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0356.pkl",
+        "world_sha256": "192875a3400d3b22c73a798d02c239e8ce63df8c0d0216d59907dbb8f3f6dbfd",
+        "nodes": 15,
+        "edges": 34,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 361,
+        "seed_id": "SAMPLED-2000390-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0361.pkl",
+        "world_sha256": "7cf213d41602d584501925ce36dccc28c2b8ba3ebb5aef704640e28f7bdba493",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 366,
+        "seed_id": "SAMPLED-2000395-individual_counterfactual_probability-target_query-a9",
+        "world_member": "data/truth/train-0366.pkl",
+        "world_sha256": "cd838ed760349499e376f171d08465fe3ca60bf058c586d51bf8e98a113b6bf0",
+        "nodes": 16,
+        "edges": 41,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 371,
+        "seed_id": "SAMPLED-2000404-individual_counterfactual_probability-target_query-a1",
+        "world_member": "data/truth/train-0371.pkl",
+        "world_sha256": "714d24e267cfe9762744373d55ea16d7aac4084cc8632373b5eb46f622f7f49f",
+        "nodes": 9,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 376,
+        "seed_id": "SAMPLED-2000409-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0376.pkl",
+        "world_sha256": "25b60535f269c835e1fdf8e2c9771a8ad39f0ddfca96fbb3615afd05c56b9ad3",
+        "nodes": 13,
+        "edges": 26,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 381,
+        "seed_id": "SAMPLED-2000414-individual_counterfactual_probability-target_query-a7",
+        "world_member": "data/truth/train-0381.pkl",
+        "world_sha256": "51009b0edfeb4f16ad4e62850fbd8a6e323932da7fa2cd3b1bc516172c8250f2",
+        "nodes": 12,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 386,
+        "seed_id": "SAMPLED-2000419-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0386.pkl",
+        "world_sha256": "fe6ecc46578ada51f56b9d6bd09fe263af560693d5c63db5fbd7fce5b8c6aacc",
+        "nodes": 12,
+        "edges": 24,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 391,
+        "seed_id": "SAMPLED-2000424-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0391.pkl",
+        "world_sha256": "c435fbec224859d973b66501047729cef4f994b813c919c8ea40d55a4c2c6752",
+        "nodes": 14,
+        "edges": 29,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 396,
+        "seed_id": "SAMPLED-2000429-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0396.pkl",
+        "world_sha256": "3891e3ae171e3827c8b6d024b5f9bbe1a37f002f15a35f2c4e1a282bd166f06e",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 401,
+        "seed_id": "SAMPLED-2000434-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0401.pkl",
+        "world_sha256": "858f62fc9beed90eea8aaa28581f408669ddc93f37e221a7289def4822d9c412",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 406,
+        "seed_id": "SAMPLED-2000439-individual_counterfactual_probability-target_query-a5",
+        "world_member": "data/truth/train-0406.pkl",
+        "world_sha256": "7eaa8e30b9670dc39ef95faabd7e035d1463b857a353e63d254baa75899f9a54",
+        "nodes": 12,
+        "edges": 12,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 411,
+        "seed_id": "SAMPLED-2000444-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0411.pkl",
+        "world_sha256": "d913241fd768f654f26208b80a290492d124bace89295a35320ad6de35c957c7",
+        "nodes": 14,
+        "edges": 22,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 416,
+        "seed_id": "SAMPLED-2000449-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0416.pkl",
+        "world_sha256": "cc8ae9c9c5a7447e29ce1cb464e789bc442a5f4f0d84b9638f12e7a0db3b452a",
+        "nodes": 13,
+        "edges": 24,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 421,
+        "seed_id": "SAMPLED-2000454-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0421.pkl",
+        "world_sha256": "d6647b972a65564ade7b71e11a3b0bfcf940e7537edd7ee16298299c6034a237",
+        "nodes": 9,
+        "edges": 13,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 426,
+        "seed_id": "SAMPLED-2000459-individual_counterfactual_probability-target_query-a4",
+        "world_member": "data/truth/train-0426.pkl",
+        "world_sha256": "61941166382be2a417e2c38aef524014b9d09b65ed62533481d074dfd36792fb",
+        "nodes": 14,
+        "edges": 20,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 431,
+        "seed_id": "SAMPLED-2000464-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0431.pkl",
+        "world_sha256": "0d84183bddda37c1cc00d447455bd9f874d7a75a139279bc91123060861a802f",
+        "nodes": 12,
+        "edges": 13,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 436,
+        "seed_id": "SAMPLED-2000469-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0436.pkl",
+        "world_sha256": "50b40792fd4804b0b08731bbeeb867c8238ad4f840e5995c795dd190494d5ea7",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 441,
+        "seed_id": "SAMPLED-2000474-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0441.pkl",
+        "world_sha256": "c4281ee270919ec57a69a25463ee191150c2a626280f5afe58c7a7623347b7f4",
+        "nodes": 14,
+        "edges": 27,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 446,
+        "seed_id": "SAMPLED-2000480-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0446.pkl",
+        "world_sha256": "865660ccf87a63a9d2d6a3a8c748303dfacf7ab002e2c0f41afa171887edda25",
+        "nodes": 12,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 451,
+        "seed_id": "SAMPLED-2000485-individual_counterfactual_probability-target_query-a3",
+        "world_member": "data/truth/train-0451.pkl",
+        "world_sha256": "879fbf12af19c73f1269ed50eee272460456e093fa51d12f9cd051f46a4fa22a",
+        "nodes": 11,
+        "edges": 11,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 456,
+        "seed_id": "SAMPLED-2000490-individual_counterfactual_probability-target_query-a8",
+        "world_member": "data/truth/train-0456.pkl",
+        "world_sha256": "689eb94ba02d73e5bb078d1f3b8a4355551712a12bd443f82c512e976ee34944",
+        "nodes": 10,
+        "edges": 16,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 461,
+        "seed_id": "SAMPLED-2000496-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0461.pkl",
+        "world_sha256": "15755c0cc9c437ec55763550ee54f8e19886323d20e0141ec9cab63db66d6ac8",
+        "nodes": 12,
+        "edges": 25,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 466,
+        "seed_id": "SAMPLED-2000501-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0466.pkl",
+        "world_sha256": "4445d65a58c08153c66491c4dbad86b90cb3c9cb65f92643c4e68c6e3d36f5d0",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 471,
+        "seed_id": "SAMPLED-2000507-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0471.pkl",
+        "world_sha256": "db4a51ceaa4860b49c1c38e035265884f072f8bcc379c0b66fda03a82493d1c7",
+        "nodes": 9,
+        "edges": 13,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "train",
+        "index": 476,
+        "seed_id": "SAMPLED-2000512-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/train-0476.pkl",
+        "world_sha256": "b43d0ab264f66434900840e58658761e615dd8eeff8765809c3fddd27fbde59d",
+        "nodes": 11,
+        "edges": 11,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 481,
+        "seed_id": "SAMPLED-2000517-individual_counterfactual_probability-target_query-a4",
+        "world_member": "data/truth/train-0481.pkl",
+        "world_sha256": "50e5460f09b57de31c2b3a2cdce840be9702bb68ca596ba47a9db85424451a1f",
+        "nodes": 13,
+        "edges": 17,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 486,
+        "seed_id": "SAMPLED-2000522-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0486.pkl",
+        "world_sha256": "f6fbcf67a6bd3588fcc42e1e3e053f3353e9c272b7ac10d50c49aa73502938a6",
+        "nodes": 14,
+        "edges": 16,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 491,
+        "seed_id": "SAMPLED-2000527-individual_counterfactual_probability-target_query-a7",
+        "world_member": "data/truth/train-0491.pkl",
+        "world_sha256": "444f9789b09449e4fd5e4a3eed59cac1d04d458824c481a7a2fd306d060f80e1",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "train",
+        "index": 496,
+        "seed_id": "SAMPLED-2000532-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/train-0496.pkl",
+        "world_sha256": "06c6229ffceb5218f3ecc863b7c6560cc58ad93a3008d668ea8dd22efb411b4c",
+        "nodes": 14,
+        "edges": 27,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "validation",
+        "index": 1,
+        "seed_id": "SAMPLED-3000001-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/validation-0001.pkl",
+        "world_sha256": "b46ef1825b014ca0f84ce19eb216d9cbdf84c203ee2b7402e7849506cae7c5fd",
+        "nodes": 9,
+        "edges": 7,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "validation",
+        "index": 6,
+        "seed_id": "SAMPLED-3000007-individual_counterfactual_probability-target_query-a0",
+        "world_member": "data/truth/validation-0006.pkl",
+        "world_sha256": "f141a26b86ad5071768c7e70a448d89994d5665ecc80fee21c0978cbbf9164a9",
+        "nodes": 14,
+        "edges": 24,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "validation",
+        "index": 11,
+        "seed_id": "SAMPLED-3000012-individual_counterfactual_probability-target_query-a24",
+        "world_member": "data/truth/validation-0011.pkl",
+        "world_sha256": "074b24103211ba808e0f79a20ea3e4bea265357142ee023afeedb6ff173e527e",
+        "nodes": 15,
+        "edges": 28,
+        "affected_mechanisms": 3,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "split": "validation",
+        "index": 16,
+        "seed_id": "SAMPLED-3000017-individual_counterfactual_probability-target_query-a2",
+        "world_member": "data/truth/validation-0016.pkl",
+        "world_sha256": "a84aba638ffb68e983379619617afd4273b4da5cea397ca3d192936ba646c39c",
+        "nodes": 12,
+        "edges": 21,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "split": "validation",
+        "index": 21,
+        "seed_id": "SAMPLED-3000022-individual_counterfactual_probability-target_query-a3",
+        "world_member": "data/truth/validation-0021.pkl",
+        "world_sha256": "b9c01041392ee6e3780645cd3e387a2619c744165bbc47ad1393f8c3f2ff56b4",
+        "nodes": 8,
+        "edges": 7,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      }
+    ],
+    "attempts": [
+      {
+        "seed_id": "SAMPLED-2000001-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.02327069437658287, dual=0.02451573033016657",
+        "seconds": 5.369184328941628
+      },
+      {
+        "seed_id": "SAMPLED-2000002-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.9938407944904208,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30345749703701586
+      },
+      {
+        "seed_id": "SAMPLED-2000007-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.17393183296828163,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3033548209350556
+      },
+      {
+        "seed_id": "SAMPLED-2000012-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.09268509182538123,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.303267462993972
+      },
+      {
+        "seed_id": "SAMPLED-2000017-individual_counterfactual_probability-target_query-a6",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.04589762479649761,
+          "upper": 0.4380936518479546,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.511455233907327
+      },
+      {
+        "seed_id": "SAMPLED-2000022-individual_counterfactual_probability-target_query-a1",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.021225754534696686, dual=0.008129841735329947",
+        "seconds": 5.46687941707205
+      },
+      {
+        "seed_id": "SAMPLED-2000023-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.3323650145303345,
+          "upper": 0.5860264189313148,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3032388109713793
+      },
+      {
+        "seed_id": "SAMPLED-2000028-individual_counterfactual_probability-target_query-a20",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.011933622726298377,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.40308615495450795
+      },
+      {
+        "seed_id": "SAMPLED-2000033-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.3541427998821616,
+          "upper": 0.7605882728070553,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3614123120205477
+      },
+      {
+        "seed_id": "SAMPLED-2000038-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0006854464880820319,
+          "upper": 0.11003176850092138,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 4.13570185599383
+      },
+      {
+        "seed_id": "SAMPLED-2000043-individual_counterfactual_probability-target_query-a3",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.6330293909824929,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.24625990900676697
+      },
+      {
+        "seed_id": "SAMPLED-2000048-individual_counterfactual_probability-target_query-a4",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.3353596478108807, dual=0.319806011405237",
+        "seconds": 5.450779504026286
+      },
+      {
+        "seed_id": "SAMPLED-2000049-individual_counterfactual_probability-target_query-a6",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.5444782241761847,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20239720400422812
+      },
+      {
+        "seed_id": "SAMPLED-2000054-individual_counterfactual_probability-target_query-a2",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=4.70799881945337e-05, dual=0.0008603788445501768",
+        "seconds": 5.42391809693072
+      },
+      {
+        "seed_id": "SAMPLED-2000055-individual_counterfactual_probability-target_query-a17",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.34100756241222985,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3027266109129414
+      },
+      {
+        "seed_id": "SAMPLED-2000060-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000060-individual_counterfactual_probability-target_query-a0 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000060-individual_counterfactual_probability-target_query-a0.json",
+        "seconds": 11.180145011050627
+      },
+      {
+        "seed_id": "SAMPLED-2000061-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.3729747563553553,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.4033660439308733
+      },
+      {
+        "seed_id": "SAMPLED-2000066-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.009645605914195299,
+          "upper": 0.24904741522264157,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5398941449820995
+      },
+      {
+        "seed_id": "SAMPLED-2000071-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.1116164717741739,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3034985300619155
+      },
+      {
+        "seed_id": "SAMPLED-2000076-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.01583456884029829,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.38480351597536355
+      },
+      {
+        "seed_id": "SAMPLED-2000081-individual_counterfactual_probability-target_query-a24",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.35465585669749766,
+          "upper": 0.8088753332440487,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.4036261379951611
+      },
+      {
+        "seed_id": "SAMPLED-2000086-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.0003751214221161282, dual=0.017651351813787023",
+        "seconds": 10.633881188929081
+      },
+      {
+        "seed_id": "SAMPLED-2000087-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1313854423685623,
+          "upper": 0.5263727297314743,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 2.4115233869524673
+      },
+      {
+        "seed_id": "SAMPLED-2000092-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.01225919694944434,
+          "upper": 0.9526565972094774,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 1.8396589693616953e-05,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 7.27757798996754
+      },
+      {
+        "seed_id": "SAMPLED-2000097-individual_counterfactual_probability-target_query-a3",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.20501317329013208,
+          "upper": 0.3902604892387102,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30359930102713406
+      },
+      {
+        "seed_id": "SAMPLED-2000102-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.008253736582176534, dual=0.017782987091290225",
+        "seconds": 5.42491489299573
+      },
+      {
+        "seed_id": "SAMPLED-2000103-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.24744243090348464,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.403245621942915
+      },
+      {
+        "seed_id": "SAMPLED-2000108-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.49565995306709126,
+          "upper": 0.7762838437338001,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.293776931008324
+      },
+      {
+        "seed_id": "SAMPLED-2000113-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.0005939353817087575,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3120733000105247
+      },
+      {
+        "seed_id": "SAMPLED-2000118-individual_counterfactual_probability-target_query-a4",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.3553005160903676,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3029706870438531
+      },
+      {
+        "seed_id": "SAMPLED-2000123-individual_counterfactual_probability-target_query-a6",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.3342524412663684,
+          "upper": 0.9997998041529308,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.2067498540272936
+      },
+      {
+        "seed_id": "SAMPLED-2000128-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.13308709882440473,
+          "upper": 0.6277233155947335,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3046530509600416
+      },
+      {
+        "seed_id": "SAMPLED-2000133-individual_counterfactual_probability-target_query-a3",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000133-individual_counterfactual_probability-target_query-a3 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000133-individual_counterfactual_probability-target_query-a3.json",
+        "seconds": 11.187967093079351
+      },
+      {
+        "seed_id": "SAMPLED-2000134-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.25017054346527, dual=0.24684121100934742",
+        "seconds": 5.725502263987437
+      },
+      {
+        "seed_id": "SAMPLED-2000135-individual_counterfactual_probability-target_query-a15",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.03283140479000736, dual=0.03703247064735078",
+        "seconds": 6.829683074960485
+      },
+      {
+        "seed_id": "SAMPLED-2000136-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.4472143472395176,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2069044179515913
+      },
+      {
+        "seed_id": "SAMPLED-2000141-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.040363891368816934, dual=0.0412436440643079",
+        "seconds": 5.324318945989944
+      },
+      {
+        "seed_id": "SAMPLED-2000142-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.4151786451345944,
+          "upper": 0.8528982005420599,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.6044666289817542
+      },
+      {
+        "seed_id": "SAMPLED-2000147-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.19829419433075685,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30455600400455296
+      },
+      {
+        "seed_id": "SAMPLED-2000152-individual_counterfactual_probability-target_query-a5",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.019358123923075295,
+          "upper": 0.7589974452441668,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30261820601299405
+      },
+      {
+        "seed_id": "SAMPLED-2000157-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1420833072013046,
+          "upper": 0.26049300813967186,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 3.5210383649682626
+      },
+      {
+        "seed_id": "SAMPLED-2000162-individual_counterfactual_probability-target_query-a1",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000162-individual_counterfactual_probability-target_query-a1 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000162-individual_counterfactual_probability-target_query-a1.json",
+        "seconds": 11.182318516075611
+      },
+      {
+        "seed_id": "SAMPLED-2000163-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000163-individual_counterfactual_probability-target_query-a0 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000163-individual_counterfactual_probability-target_query-a0.json",
+        "seconds": 11.181139155989513
+      },
+      {
+        "seed_id": "SAMPLED-2000164-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.9121436110940462,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2027879839297384
+      },
+      {
+        "seed_id": "SAMPLED-2000169-individual_counterfactual_probability-target_query-a3",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.07021128585804118, dual=0.051014634493923024",
+        "seconds": 5.325044816010632
+      },
+      {
+        "seed_id": "SAMPLED-2000170-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000170-individual_counterfactual_probability-target_query-a0 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000170-individual_counterfactual_probability-target_query-a0.json",
+        "seconds": 11.162497467012145
+      },
+      {
+        "seed_id": "SAMPLED-2000171-individual_counterfactual_probability-target_query-a11",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.29724801586779787,
+          "upper": 0.656764095675486,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30279533902648836
+      },
+      {
+        "seed_id": "SAMPLED-2000176-individual_counterfactual_probability-target_query-a2",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.012097336077958508, dual=1e+20",
+        "seconds": 6.554699040018022
+      },
+      {
+        "seed_id": "SAMPLED-2000177-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.0018997592018287963,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2029420940671116
+      },
+      {
+        "seed_id": "SAMPLED-2000182-individual_counterfactual_probability-target_query-a13",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.6803493165233365,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30341517901979387
+      },
+      {
+        "seed_id": "SAMPLED-2000187-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.0017918694111082806, dual=-1e+20",
+        "seconds": 9.140335505944677
+      },
+      {
+        "seed_id": "SAMPLED-2000188-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30324688006658107
+      },
+      {
+        "seed_id": "SAMPLED-2000193-individual_counterfactual_probability-target_query-a4",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.07747290309174343,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3029703130014241
+      },
+      {
+        "seed_id": "SAMPLED-2000198-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.08643844128438942,
+          "upper": 0.9153237607680065,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3033301659161225
+      },
+      {
+        "seed_id": "SAMPLED-2000203-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.16862933683161335,
+          "upper": 0.39017478315704796,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.33105722698383033
+      },
+      {
+        "seed_id": "SAMPLED-2000208-individual_counterfactual_probability-target_query-a4",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.1851701345964767,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3045639649499208
+      },
+      {
+        "seed_id": "SAMPLED-2000213-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.7195081501009742, dual=0.7215559929709117",
+        "seconds": 10.61107311991509
+      },
+      {
+        "seed_id": "SAMPLED-2000214-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.8147091712501205,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20210638002026826
+      },
+      {
+        "seed_id": "SAMPLED-2000219-individual_counterfactual_probability-target_query-a8",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.06570607404141295, dual=0.08637640263969631",
+        "seconds": 5.504420364974067
+      },
+      {
+        "seed_id": "SAMPLED-2000220-individual_counterfactual_probability-target_query-a18",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.3517419854933053,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30295040097553283
+      },
+      {
+        "seed_id": "SAMPLED-2000225-individual_counterfactual_probability-target_query-a24",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.0034665917906109072, dual=0.002842114764020246",
+        "seconds": 6.231875741970725
+      },
+      {
+        "seed_id": "SAMPLED-2000226-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.8103233645891976,
+          "upper": 0.8223110535068779,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.4034479489782825
+      },
+      {
+        "seed_id": "SAMPLED-2000231-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0024386634333826516,
+          "upper": 0.9999999999999999,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20238127000629902
+      },
+      {
+        "seed_id": "SAMPLED-2000236-individual_counterfactual_probability-target_query-a3",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.39009370837718255,
+          "upper": 0.6452096024312428,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3168580719502643
+      },
+      {
+        "seed_id": "SAMPLED-2000241-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.4894876036348151,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3166390840196982
+      },
+      {
+        "seed_id": "SAMPLED-2000246-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000246-individual_counterfactual_probability-target_query-a0 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000246-individual_counterfactual_probability-target_query-a0.json",
+        "seconds": 11.21801996405702
+      },
+      {
+        "seed_id": "SAMPLED-2000247-individual_counterfactual_probability-target_query-a5",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6237622534902967,
+          "upper": 0.9981052405485485,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30269938393030316
+      },
+      {
+        "seed_id": "SAMPLED-2000252-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.36398991947297005, dual=-1e+20",
+        "seconds": 5.894514636951499
+      },
+      {
+        "seed_id": "SAMPLED-2000253-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.17482591497524846,
+          "upper": 0.4483321841061562,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2022702880203724
+      },
+      {
+        "seed_id": "SAMPLED-2000258-individual_counterfactual_probability-target_query-a11",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.2445135318402851,
+          "upper": 0.25114175525384086,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.7073851850582287
+      },
+      {
+        "seed_id": "SAMPLED-2000263-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.17803004269252987,
+          "upper": 0.4627634348225767,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30256259196903557
+      },
+      {
+        "seed_id": "SAMPLED-2000268-individual_counterfactual_probability-target_query-a17",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000268-individual_counterfactual_probability-target_query-a17 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000268-individual_counterfactual_probability-target_query-a17.json",
+        "seconds": 11.279899812070653
+      },
+      {
+        "seed_id": "SAMPLED-2000269-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=minimize, primal=0.003965994160315974, dual=-1e+20",
+        "seconds": 6.731185090029612
+      },
+      {
+        "seed_id": "SAMPLED-2000270-individual_counterfactual_probability-target_query-a18",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.07208488622843334, dual=-1e+20",
+        "seconds": 8.436317935003899
+      },
+      {
+        "seed_id": "SAMPLED-2000271-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.2728376775226708,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20286347705405205
+      },
+      {
+        "seed_id": "SAMPLED-2000276-individual_counterfactual_probability-target_query-a1",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000276-individual_counterfactual_probability-target_query-a1 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000276-individual_counterfactual_probability-target_query-a1.json",
+        "seconds": 11.213804829050787
+      },
+      {
+        "seed_id": "SAMPLED-2000277-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.024649969176729947, dual=0.02185075845378066",
+        "seconds": 5.42369341198355
+      },
+      {
+        "seed_id": "SAMPLED-2000278-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0017014102165123035,
+          "upper": 0.46661238281706874,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 0.00024244847124000658,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 6.227791483979672
+      },
+      {
+        "seed_id": "SAMPLED-2000283-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.2048301283916244,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3217720900429413
+      },
+      {
+        "seed_id": "SAMPLED-2000288-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0061001482196933144,
+          "upper": 0.027836255138229953,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.403326355968602
+      },
+      {
+        "seed_id": "SAMPLED-2000293-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=maximize, primal=0.2395074009389899, dual=0.2402408278062616",
+        "seconds": 5.324794032028876
+      },
+      {
+        "seed_id": "SAMPLED-2000294-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.18099888757035,
+          "upper": 0.9162684354812323,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 2.814202173962258
+      },
+      {
+        "seed_id": "SAMPLED-2000299-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.03779830545115198,
+          "upper": 0.8652300956261084,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.36820358189288527
+      },
+      {
+        "seed_id": "SAMPLED-2000304-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.012897635299690284,
+          "upper": 0.02850909245569786,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.253779987921007
+      },
+      {
+        "seed_id": "SAMPLED-2000309-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.8973900892969607,
+          "upper": 0.9793563567440815,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3028184949653223
+      },
+      {
+        "seed_id": "SAMPLED-2000314-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6877007701219982,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3966587500181049
+      },
+      {
+        "seed_id": "SAMPLED-2000319-individual_counterfactual_probability-target_query-a7",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.07167510385828367,
+          "upper": 0.2517818883507695,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.388901422964409
+      },
+      {
+        "seed_id": "SAMPLED-2000324-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1375056818121599,
+          "upper": 0.500879821178821,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 2.2063880178036104e-06,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.524696070002392
+      },
+      {
+        "seed_id": "SAMPLED-2000329-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.9332368128459139,
+          "upper": 0.9991787076495996,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30300634703598917
+      },
+      {
+        "seed_id": "SAMPLED-2000334-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7908341548892243,
+          "upper": 0.887027773088976,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5143035319633782
+      },
+      {
+        "seed_id": "SAMPLED-2000339-individual_counterfactual_probability-target_query-a5",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.556081871151002,
+          "upper": 0.9371220667698957,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5481882599415258
+      },
+      {
+        "seed_id": "SAMPLED-2000344-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000344-individual_counterfactual_probability-target_query-a0 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000344-individual_counterfactual_probability-target_query-a0.json",
+        "seconds": 11.180797068984248
+      },
+      {
+        "seed_id": "SAMPLED-2000345-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.015786637129997474,
+          "upper": 0.09619860868264928,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 7.527526542500005e-08,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 9.640689479070716
+      },
+      {
+        "seed_id": "SAMPLED-2000350-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30266247096005827
+      },
+      {
+        "seed_id": "SAMPLED-2000355-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7619456764151444,
+          "upper": 0.9366416083838635,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3630191199481487
+      },
+      {
+        "seed_id": "SAMPLED-2000360-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.01949461124162726,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3029424479464069
+      },
+      {
+        "seed_id": "SAMPLED-2000365-individual_counterfactual_probability-target_query-a8",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0005036637820787427,
+          "upper": 0.1444690623988332,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.40376245602965355
+      },
+      {
+        "seed_id": "SAMPLED-2000370-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6970000568561254,
+          "upper": 0.9897125612441501,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 1.9519581347641854e-05,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.408925238065422
+      },
+      {
+        "seed_id": "SAMPLED-2000375-individual_counterfactual_probability-target_query-a3",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.005625083826561215,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30394349398557097
+      },
+      {
+        "seed_id": "SAMPLED-2000380-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.00012141827264370015,
+          "upper": 0.05499072117134306,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.323057762929238
+      },
+      {
+        "seed_id": "SAMPLED-2000385-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.846730740989681,
+          "upper": 0.9710498198593251,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.5092543410137296
+      },
+      {
+        "seed_id": "SAMPLED-2000390-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0998208271064297,
+          "upper": 0.2352488085955592,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2673983209533617
+      },
+      {
+        "seed_id": "SAMPLED-2000395-individual_counterfactual_probability-target_query-a9",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.4542461632641676,
+          "upper": 0.5042922320347061,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30342281609773636
+      },
+      {
+        "seed_id": "SAMPLED-2000400-individual_counterfactual_probability-target_query-a1",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.0, dual=1e+20",
+        "seconds": 6.1284093980211765
+      },
+      {
+        "seed_id": "SAMPLED-2000401-individual_counterfactual_probability-target_query-a10",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=True, sense=maximize, primal=0.0007676267267758246, dual=1e+20",
+        "seconds": 6.231583073036745
+      },
+      {
+        "seed_id": "SAMPLED-2000402-individual_counterfactual_probability-target_query-a15",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.005110520366576063, dual=0.0",
+        "seconds": 6.5322364249732345
+      },
+      {
+        "seed_id": "SAMPLED-2000403-individual_counterfactual_probability-target_query-a0",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000403-individual_counterfactual_probability-target_query-a0 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000403-individual_counterfactual_probability-target_query-a0.json",
+        "seconds": 11.213235281058587
+      },
+      {
+        "seed_id": "SAMPLED-2000404-individual_counterfactual_probability-target_query-a1",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.0623170843059639,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.20275394397322088
+      },
+      {
+        "seed_id": "SAMPLED-2000409-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.5091330870325373,
+          "upper": 0.8454246803233383,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.6050995399709791
+      },
+      {
+        "seed_id": "SAMPLED-2000414-individual_counterfactual_probability-target_query-a7",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.021420065721548556,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30265077599324286
+      },
+      {
+        "seed_id": "SAMPLED-2000419-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.41676212519598205,
+          "upper": 0.4386932632040248,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30271678999997675
+      },
+      {
+        "seed_id": "SAMPLED-2000424-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.43996143269266313,
+          "upper": 0.8680312812805845,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.47769675694871694
+      },
+      {
+        "seed_id": "SAMPLED-2000429-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0021173834279939034,
+          "upper": 0.07924492142961563,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.748458055080846
+      },
+      {
+        "seed_id": "SAMPLED-2000434-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.17300536105913883,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 2.391248035011813
+      },
+      {
+        "seed_id": "SAMPLED-2000439-individual_counterfactual_probability-target_query-a5",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.9453052808316698,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.5697429670253769
+      },
+      {
+        "seed_id": "SAMPLED-2000444-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.9342395239174937,
+          "upper": 1.0,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3204584699124098
+      },
+      {
+        "seed_id": "SAMPLED-2000449-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.01334548835398203,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3028680100105703
+      },
+      {
+        "seed_id": "SAMPLED-2000454-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.7415699599260214,
+          "upper": 0.8232985104899144,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.32252441300079226
+      },
+      {
+        "seed_id": "SAMPLED-2000459-individual_counterfactual_probability-target_query-a4",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.6629653897528539,
+          "upper": 0.6720401298473101,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3043213919736445
+      },
+      {
+        "seed_id": "SAMPLED-2000464-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.14139454592857087,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3029566230252385
+      },
+      {
+        "seed_id": "SAMPLED-2000469-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.5055777169611657,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.99998638802208
+      },
+      {
+        "seed_id": "SAMPLED-2000474-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.18936788784592232,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30405524699017406
+      },
+      {
+        "seed_id": "SAMPLED-2000479-individual_counterfactual_probability-target_query-a1",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-2000479-individual_counterfactual_probability-target_query-a1 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-2000479-individual_counterfactual_probability-target_query-a1.json",
+        "seconds": 11.216135788010433
+      },
+      {
+        "seed_id": "SAMPLED-2000480-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.12930122963069188,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3026867900043726
+      },
+      {
+        "seed_id": "SAMPLED-2000485-individual_counterfactual_probability-target_query-a3",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.14397430185506946,
+          "upper": 0.424078821651891,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.37748968100640923
+      },
+      {
+        "seed_id": "SAMPLED-2000490-individual_counterfactual_probability-target_query-a8",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.8605554553420829,
+          "upper": 0.8969128959129562,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.31112377799581736
+      },
+      {
+        "seed_id": "SAMPLED-2000495-individual_counterfactual_probability-target_query-a5",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=True, pricing_timed_out=False, sense=minimize, primal=0.9844690986139948, dual=0.9720094981669422",
+        "seconds": 7.939040462020785
+      },
+      {
+        "seed_id": "SAMPLED-2000496-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.00048647926191674226,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 8.348236025129542e-06,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.624855370959267
+      },
+      {
+        "seed_id": "SAMPLED-2000501-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.07138214036337495,
+          "upper": 0.22199917493595034,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.35802522394806147
+      },
+      {
+        "seed_id": "SAMPLED-2000506-individual_counterfactual_probability-target_query-a6",
+        "status": "rejected",
+        "error_type": "RuntimeError",
+        "error": "RuntimeError: SCIP did not certify an optimal counterfactual bound: status=timelimit, pricing_closed=False, pricing_timed_out=False, sense=minimize, primal=0.5467484187319016, dual=-1e+20",
+        "seconds": 5.726775900926441
+      },
+      {
+        "seed_id": "SAMPLED-2000507-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.9594274730583596,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.403381333919242
+      },
+      {
+        "seed_id": "SAMPLED-2000512-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.10250885395019123,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2597042480483651
+      },
+      {
+        "seed_id": "SAMPLED-2000517-individual_counterfactual_probability-target_query-a4",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.4605713078075071,
+          "upper": 0.6208985213472388,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30286552594043314
+      },
+      {
+        "seed_id": "SAMPLED-2000522-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.1320303256123855,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30393456399906427
+      },
+      {
+        "seed_id": "SAMPLED-2000527-individual_counterfactual_probability-target_query-a7",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.10422554546421453,
+          "upper": 0.8969269501588266,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.31544176500756294
+      },
+      {
+        "seed_id": "SAMPLED-2000532-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.004523992227549042,
+          "upper": 0.08847747593062029,
+          "certification": "epsilon_sharp",
+          "interval_source": "epsilon_sharp_markovian_outer",
+          "endpoint_error": 9.750842503318234e-05,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 5.42425643990282
+      },
+      {
+        "seed_id": "SAMPLED-3000001-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1447174407763179,
+          "upper": 0.3856008441027138,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2846369299804792
+      },
+      {
+        "seed_id": "SAMPLED-3000006-individual_counterfactual_probability-target_query-a4",
+        "status": "rejected",
+        "error_type": "CounterfactualResourceLimitError",
+        "error": "counterfactual candidate SAMPLED-3000006-individual_counterfactual_probability-target_query-a4 exceeded the 11s hard wall; diagnostic=/home/chen/runs/training-submission-20260907/cf-diagnostics/SAMPLED-3000006-individual_counterfactual_probability-target_query-a4.json",
+        "seconds": 11.214598758029751
+      },
+      {
+        "seed_id": "SAMPLED-3000007-individual_counterfactual_probability-target_query-a0",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.8896534920655462,
+          "upper": 0.9543090972213478,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.2019817279651761
+      },
+      {
+        "seed_id": "SAMPLED-3000012-individual_counterfactual_probability-target_query-a24",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.6822674795935452,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.30421369697432965
+      },
+      {
+        "seed_id": "SAMPLED-3000017-individual_counterfactual_probability-target_query-a2",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.1716984461893785,
+          "upper": 0.6735114510618724,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 1.7083952550310642
+      },
+      {
+        "seed_id": "SAMPLED-3000022-individual_counterfactual_probability-target_query-a3",
+        "status": "accepted",
+        "truth": {
+          "type": "individual_counterfactual_probability",
+          "lower": 0.0,
+          "upper": 0.0034467550810268347,
+          "certification": "exact",
+          "interval_source": "exact_markovian",
+          "endpoint_error": 0.0,
+          "endpoint_tolerance": 0.001
+        },
+        "seconds": 0.3066980839939788
+      }
+    ],
+    "dataset_sha256": {
+      "validation.parquet": "4508652e399973610611368545a92b1c0a2be8faa4fe1f3ec547fac8e3183900",
+      "train.parquet": "bcb84b4f1b915fd9d3f8f63dd116bfcca837f622a62402b135a3c8ff9fe4faf8"
+    },
+    "accepted_ledger_sha256": "d26b7f78e0d62f7a62b9fca1a786ae7d2e7959c90b93defd6583f2a52dddd522",
+    "attempt_ledger_sha256": "c97a3191f2768cf6bc0e6fc038186c0ac29b9d20d1f7ae861913717a1f4dee59",
+    "rejected_worlds_serialized": 0
+  },
+  "frozen": {
+    "replay_base_commit": "95b84544f70aabdca74d73de3523e29e50549354",
+    "status_counts": {
+      "ok": 51,
+      "timeout": 9,
+      "RuntimeError": 14
+    },
+    "by_class": {
+      "direct_source_outcome_edge": {
+        "total": 40,
+        "certified": 39
+      },
+      "no_direct_source_outcome_edge": {
+        "total": 34,
+        "certified": 12
+      },
+      "at_most_two_affected_mechanisms": {
+        "total": 49,
+        "certified": 46
+      },
+      "at_least_three_affected_mechanisms": {
+        "total": 25,
+        "certified": 5
+      },
+      "affected_convergence": {
+        "total": 14,
+        "certified": 2
+      }
+    },
+    "certified_graphs": {
+      "worlds": 51,
+      "affected_mechanism_counts": {
+        "1": 33,
+        "2": 13,
+        "3": 4,
+        "4": 1
+      },
+      "affected_convergence": 2,
+      "direct_source_outcome_edge": 39,
+      "at_most_two_affected_mechanisms": 46
+    },
+    "unresolved_graphs": {
+      "worlds": 23,
+      "affected_mechanism_counts": {
+        "2": 3,
+        "3": 10,
+        "4": 5,
+        "5": 3,
+        "6": 1,
+        "8": 1
+      },
+      "affected_convergence": 12,
+      "direct_source_outcome_edge": 1,
+      "at_most_two_affected_mechanisms": 3
+    },
+    "records": [
+      {
+        "index": 0,
+        "seed_id": "SAMPLED-200001-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-0.pkl",
+        "world_sha256": "14462b431855936e5037a776f737612e9734503c4b6c292f3fca91aabbfd2a4c",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 14,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 1,
+        "seed_id": "SAMPLED-200006-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-1.pkl",
+        "world_sha256": "9e4a8c18bdce6edc90a2f2682c7cb85056373e5f24d9dc5250c68c69df60ece7",
+        "status": "timeout",
+        "nodes": 16,
+        "edges": 43,
+        "affected_mechanisms": 5,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 2,
+        "seed_id": "SAMPLED-200007-individual_counterfactual_probability-target_query-a18",
+        "world_member": "task-2.pkl",
+        "world_sha256": "d2349f227bf65757d2ec70cc0a35fb602d3b2d532cca789df450fd54d4feefd6",
+        "status": "timeout",
+        "nodes": 16,
+        "edges": 32,
+        "affected_mechanisms": 5,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 3,
+        "seed_id": "SAMPLED-200008-individual_counterfactual_probability-target_query-a3",
+        "world_member": "task-3.pkl",
+        "world_sha256": "afe2a517dcf31df4f6853c837b17596819144e5159bd2d999c77b873d9eae2dd",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 5,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 4,
+        "seed_id": "SAMPLED-200013-individual_counterfactual_probability-target_query-a2",
+        "world_member": "task-4.pkl",
+        "world_sha256": "6bb1b708512812adec0532e907c9d3cd5b704945f30b8aac13a5f1d7a468517f",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 4,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 5,
+        "seed_id": "SAMPLED-200018-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-5.pkl",
+        "world_sha256": "bd4d8e9d669a4060ae1ce0b0f3bf707f39c399946c828af0996e9a02b1232488",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 6,
+        "seed_id": "SAMPLED-200023-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-6.pkl",
+        "world_sha256": "1b2e1ebe4a15595e2a172e7b3f08e2a833f5249732930027a8cbde1a97a5fd1a",
+        "status": "timeout",
+        "nodes": 13,
+        "edges": 28,
+        "affected_mechanisms": 8,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 7,
+        "seed_id": "SAMPLED-200024-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-7.pkl",
+        "world_sha256": "0a5ac0f46a01b4f618825d136cf7025ce3d5053759776b7953e4a1f5d9015b03",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 11,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 8,
+        "seed_id": "SAMPLED-200029-individual_counterfactual_probability-target_query-a6",
+        "world_member": "task-8.pkl",
+        "world_sha256": "f462ad92bfad873cc091930a0db2f0f36d97f9f65317cdf6a570716623b84c8e",
+        "status": "RuntimeError",
+        "nodes": 15,
+        "edges": 30,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 9,
+        "seed_id": "SAMPLED-200030-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-9.pkl",
+        "world_sha256": "203ddae46b527c66098bc8e4cc3a58efa2ed6e7ea820eaf0be2cc58dbaa030c3",
+        "status": "timeout",
+        "nodes": 13,
+        "edges": 26,
+        "affected_mechanisms": 5,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 10,
+        "seed_id": "SAMPLED-200031-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-10.pkl",
+        "world_sha256": "afb69e1a5ffbaa7aef8f02d21be0ba54f337884f8f4d0747b18ab1974d019dc4",
+        "status": "RuntimeError",
+        "nodes": 8,
+        "edges": 10,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 11,
+        "seed_id": "SAMPLED-200032-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-11.pkl",
+        "world_sha256": "3ed7fb24b76540105f08a05e49db5e86196b11914cb8763a0b5177ab95bffbe5",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 13,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 12,
+        "seed_id": "SAMPLED-200037-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-12.pkl",
+        "world_sha256": "bc62bc8709d3fb0a0c7d73d5872eaf7c7d18ca7dd707492676c29e071c5d3661",
+        "status": "timeout",
+        "nodes": 15,
+        "edges": 38,
+        "affected_mechanisms": 6,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 13,
+        "seed_id": "SAMPLED-200038-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-13.pkl",
+        "world_sha256": "d7f9ab943cde5a285870f87928a1ad08262bf2fbd98dc17fc256e1f5a31d042c",
+        "status": "timeout",
+        "nodes": 13,
+        "edges": 26,
+        "affected_mechanisms": 4,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 14,
+        "seed_id": "SAMPLED-200039-individual_counterfactual_probability-target_query-a2",
+        "world_member": "task-14.pkl",
+        "world_sha256": "7df7de7e31e001738dfa11627a91cdf75781d6cfb6fa72e2a3ef6f16fd0846cf",
+        "status": "ok",
+        "nodes": 16,
+        "edges": 43,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 15,
+        "seed_id": "SAMPLED-200044-individual_counterfactual_probability-target_query-a19",
+        "world_member": "task-15.pkl",
+        "world_sha256": "a8459aa05c736c96ba4ff55be123936d7f4f9a0f86ad86b49ff0ce316f8a72ad",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 25,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 16,
+        "seed_id": "SAMPLED-200049-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-16.pkl",
+        "world_sha256": "c0834cd0ba03b1044a4dd07e32b55926635b9e47546352e9c152f1ebf16baf88",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 34,
+        "affected_mechanisms": 3,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 17,
+        "seed_id": "SAMPLED-200054-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-17.pkl",
+        "world_sha256": "1980b8e7188f53caf0fd5e0ce655add460f571c0bcf49928829bbf7446ffdfcd",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 23,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 18,
+        "seed_id": "SAMPLED-200059-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-18.pkl",
+        "world_sha256": "bc3d11f64702f447113b49b779159454c53c3a865f83dc8cecc0d12ec7287ca1",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 8,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 19,
+        "seed_id": "SAMPLED-200064-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-19.pkl",
+        "world_sha256": "8d3747923bfbe11ba9ce3385bdb1d515e657befc8d626a20789ccab7120d1b82",
+        "status": "RuntimeError",
+        "nodes": 12,
+        "edges": 17,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 20,
+        "seed_id": "SAMPLED-200065-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-20.pkl",
+        "world_sha256": "fc9f8cbf9a68a87e15721c76723c5c7d9438daa4db332513297a03b1e0ec0af5",
+        "status": "ok",
+        "nodes": 15,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 21,
+        "seed_id": "SAMPLED-200070-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-21.pkl",
+        "world_sha256": "7918b41923b079d41cb3c8b90eab4fa8d31bf6755f3f62c39d7400a7c592a21d",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 22,
+        "seed_id": "SAMPLED-200075-individual_counterfactual_probability-target_query-a11",
+        "world_member": "task-22.pkl",
+        "world_sha256": "3184c310d516c70b047732fc38b6adaee00adb429d84b190e0f180605b6da8c5",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 17,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 23,
+        "seed_id": "SAMPLED-200080-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-23.pkl",
+        "world_sha256": "78449e172a23e70adc681449ff268081d7fca39e7372d5cde57d86058ab0bb2d",
+        "status": "ok",
+        "nodes": 11,
+        "edges": 12,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 24,
+        "seed_id": "SAMPLED-200085-individual_counterfactual_probability-target_query-a8",
+        "world_member": "task-24.pkl",
+        "world_sha256": "8b32acd1953f5a7d1477b07f6add7761ea6fc5c1beab91e793d9c259b32357f6",
+        "status": "ok",
+        "nodes": 15,
+        "edges": 41,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 25,
+        "seed_id": "SAMPLED-200090-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-25.pkl",
+        "world_sha256": "dbe9ad4e91c5636a54c9a983b6f55ff0d4581ee557d752a90d627d64e91bc562",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 22,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 26,
+        "seed_id": "SAMPLED-200095-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-26.pkl",
+        "world_sha256": "1d34af40595416ee8c570a22dc5e047fbe63167ac76bb07b95fa5014d44a57f4",
+        "status": "ok",
+        "nodes": 10,
+        "edges": 16,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 27,
+        "seed_id": "SAMPLED-200100-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-27.pkl",
+        "world_sha256": "c967274b6b4fb117bc73f56188f54b6397925053f6800a997a98e2c4cb6379a4",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 21,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 28,
+        "seed_id": "SAMPLED-200105-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-28.pkl",
+        "world_sha256": "8ffa47b1fe719e16da5b0a077e6bf790cfcd0c994357c5d5f37195011df48679",
+        "status": "RuntimeError",
+        "nodes": 10,
+        "edges": 15,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 29,
+        "seed_id": "SAMPLED-200106-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-29.pkl",
+        "world_sha256": "0b5b297b3f4eebea24de73e528dd2dd498565c4a74e57b3b24eda6e47c7f9c91",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 7,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 30,
+        "seed_id": "SAMPLED-200111-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-30.pkl",
+        "world_sha256": "b33356b306b11b4d33828d9a2d559cb2478b52cbb3bfe2f449444a5bad38ad27",
+        "status": "RuntimeError",
+        "nodes": 10,
+        "edges": 15,
+        "affected_mechanisms": 3,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 31,
+        "seed_id": "SAMPLED-200112-individual_counterfactual_probability-target_query-a4",
+        "world_member": "task-31.pkl",
+        "world_sha256": "82934b42083d220618aba364d5077946319a1f13a7cc7c548999caf9046a2c35",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 17,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 32,
+        "seed_id": "SAMPLED-200117-individual_counterfactual_probability-target_query-a14",
+        "world_member": "task-32.pkl",
+        "world_sha256": "8dde1e79ce3ad7e15d833530b7234a3a8fd6bfcc3d477d9d3a4bc7a37977bbee",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 23,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 33,
+        "seed_id": "SAMPLED-200122-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-33.pkl",
+        "world_sha256": "092a51ed3c12df6bd365498ef51a72fdc09580b8c408f81a2648021370f2f452",
+        "status": "RuntimeError",
+        "nodes": 14,
+        "edges": 16,
+        "affected_mechanisms": 3,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 34,
+        "seed_id": "SAMPLED-200123-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-34.pkl",
+        "world_sha256": "4a7cc329b1363e93e049253672d130b464680afcbc34ad90d34081ed4fa72fbd",
+        "status": "RuntimeError",
+        "nodes": 14,
+        "edges": 23,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 35,
+        "seed_id": "SAMPLED-200124-individual_counterfactual_probability-target_query-a2",
+        "world_member": "task-35.pkl",
+        "world_sha256": "2ac2a6c6749d2ffee34f5d9bedf6b342ccb19d4c9910d1605e28b26233dea66e",
+        "status": "ok",
+        "nodes": 10,
+        "edges": 14,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 36,
+        "seed_id": "SAMPLED-200129-individual_counterfactual_probability-target_query-a3",
+        "world_member": "task-36.pkl",
+        "world_sha256": "87f4ea52c62a932704cdcea17016c4c64712068378f2304f44f0d3e0ae2e9974",
+        "status": "ok",
+        "nodes": 13,
+        "edges": 21,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 37,
+        "seed_id": "SAMPLED-200134-individual_counterfactual_probability-target_query-a9",
+        "world_member": "task-37.pkl",
+        "world_sha256": "edf3eea4b3eb6fd9e6a925514cac5814207988d4a3121a3ed261bf4e6075e8ed",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 18,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 38,
+        "seed_id": "SAMPLED-300001-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-38.pkl",
+        "world_sha256": "7cc522d23419471544475fecb56d10243eed5d059bb8c652bcba1cef1af253e1",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 22,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 39,
+        "seed_id": "SAMPLED-300006-individual_counterfactual_probability-target_query-a6",
+        "world_member": "task-39.pkl",
+        "world_sha256": "18344ce1405f93c09d4fca58010f94f5b8628041f183e7022b0d451e8048852d",
+        "status": "timeout",
+        "nodes": 16,
+        "edges": 34,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 40,
+        "seed_id": "SAMPLED-300007-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-40.pkl",
+        "world_sha256": "2aba27494f90960108100eecdda6baac073e820a53082138d7d29bcc6632bdee",
+        "status": "ok",
+        "nodes": 10,
+        "edges": 13,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 41,
+        "seed_id": "SAMPLED-300012-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-41.pkl",
+        "world_sha256": "282b172d1a11b3af155f4647e96c0fac75194b9cc80aa1aeca316d5d1b87343d",
+        "status": "ok",
+        "nodes": 10,
+        "edges": 15,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 42,
+        "seed_id": "SAMPLED-300017-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-42.pkl",
+        "world_sha256": "abc92a4341ad17af98cbf9e2b8a986690f108ced4d448931f63b5b0ec5b59ab9",
+        "status": "RuntimeError",
+        "nodes": 9,
+        "edges": 12,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 43,
+        "seed_id": "SAMPLED-300018-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-43.pkl",
+        "world_sha256": "eb9ab83255c4aa7f4fa5880709ebb2726ff65c8c79cd87be88219d359ec96c3f",
+        "status": "timeout",
+        "nodes": 16,
+        "edges": 32,
+        "affected_mechanisms": 4,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 44,
+        "seed_id": "SAMPLED-300019-individual_counterfactual_probability-target_query-a13",
+        "world_member": "task-44.pkl",
+        "world_sha256": "f2f9ee462b3c536eea632ef65fb2362465852b88efec960c3db9021a2d45c5c0",
+        "status": "ok",
+        "nodes": 13,
+        "edges": 11,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 45,
+        "seed_id": "SAMPLED-300024-individual_counterfactual_probability-target_query-a3",
+        "world_member": "task-45.pkl",
+        "world_sha256": "18e17bef54cfebc18cb00146ae9f7342e4837023c59130d5cc8a77eb90e24d53",
+        "status": "ok",
+        "nodes": 16,
+        "edges": 27,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 46,
+        "seed_id": "SAMPLED-300029-individual_counterfactual_probability-target_query-a7",
+        "world_member": "task-46.pkl",
+        "world_sha256": "8aa4a2e929cff64060235b9d05f8404ea2c84ad0116c9fb3d44b22892f8a2342",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 25,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 47,
+        "seed_id": "SAMPLED-300030-individual_counterfactual_probability-target_query-a2",
+        "world_member": "task-47.pkl",
+        "world_sha256": "aee70b68ffd45e77e0e54385b4c7ca8784d2d9022be16f20dc1abe2fb3c01d3f",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 16,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 48,
+        "seed_id": "SAMPLED-300035-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-48.pkl",
+        "world_sha256": "9772616b9bd9e1efdf2ecb27b76d3f150ea7c0e6f4300f7762a39bf286cdeeeb",
+        "status": "ok",
+        "nodes": 15,
+        "edges": 33,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 49,
+        "seed_id": "SAMPLED-300040-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-49.pkl",
+        "world_sha256": "05e17b3f0f4c993bb19d9079145adab8c75acbbcecaeded43170593cd355673c",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 16,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 50,
+        "seed_id": "SAMPLED-300045-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-50.pkl",
+        "world_sha256": "ec7f4679049bad156e19e25ad34c143c0e7d6044d56ae380e79139bb7cc78bef",
+        "status": "RuntimeError",
+        "nodes": 14,
+        "edges": 35,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 51,
+        "seed_id": "SAMPLED-300046-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-51.pkl",
+        "world_sha256": "4a1b4bb88918e568770ae402a396dcab345acf389deca6176920890c34618a0c",
+        "status": "ok",
+        "nodes": 14,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 52,
+        "seed_id": "SAMPLED-300051-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-52.pkl",
+        "world_sha256": "94d382c6b6407787c7c3cea79e933e083ab2a805d3645fa4ed84b5edf7d7b3ec",
+        "status": "ok",
+        "nodes": 13,
+        "edges": 16,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 53,
+        "seed_id": "SAMPLED-300056-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-53.pkl",
+        "world_sha256": "d901f994c6ed83804736fe560526adf763801f06efb4306130c6aa3a8662b6d1",
+        "status": "ok",
+        "nodes": 13,
+        "edges": 22,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 54,
+        "seed_id": "SAMPLED-300061-individual_counterfactual_probability-target_query-a4",
+        "world_member": "task-54.pkl",
+        "world_sha256": "7d8e824a4754e16b4e4e417c95685e816f8a13cecd2a5c9f0cb3774a3f52bb69",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 14,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 55,
+        "seed_id": "SAMPLED-300066-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-55.pkl",
+        "world_sha256": "e3968c297a28c20b2d32fcdf211bafae4480f426051ff617ae2504e602382b70",
+        "status": "ok",
+        "nodes": 16,
+        "edges": 18,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 56,
+        "seed_id": "SAMPLED-300071-individual_counterfactual_probability-target_query-a19",
+        "world_member": "task-56.pkl",
+        "world_sha256": "96b73822d8e1d09b5861bf9666b54253d526fe07f6c61903c938c19aae4cdae0",
+        "status": "ok",
+        "nodes": 15,
+        "edges": 30,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 57,
+        "seed_id": "SAMPLED-300076-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-57.pkl",
+        "world_sha256": "a6242cf93acfa638656bf8c2ce687f7e271c8a9c1ecb6ca7e88ff88b3a4d6a35",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 7,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 58,
+        "seed_id": "SAMPLED-300081-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-58.pkl",
+        "world_sha256": "46ae609acf9f854a2482f82452e55018038b4ef083c144987f046080aba79628",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 17,
+        "affected_mechanisms": 4,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 59,
+        "seed_id": "SAMPLED-300086-individual_counterfactual_probability-target_query-a7",
+        "world_member": "task-59.pkl",
+        "world_sha256": "1872eeeaa144e8a7b7b4ee2c62bcafe84bad11d222101f2f07da0c5a011b0c1c",
+        "status": "RuntimeError",
+        "nodes": 10,
+        "edges": 17,
+        "affected_mechanisms": 4,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 60,
+        "seed_id": "SAMPLED-300087-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-60.pkl",
+        "world_sha256": "8b0db4786b1502e51a078df7cba58f22107572718f202d6b63c1979f22140cfa",
+        "status": "RuntimeError",
+        "nodes": 10,
+        "edges": 18,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 61,
+        "seed_id": "SAMPLED-300088-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-61.pkl",
+        "world_sha256": "c9a4561d3c73dd98d5299d5f53677b0fa36ffd605e52c6a237d3ddfbc7878cbb",
+        "status": "RuntimeError",
+        "nodes": 16,
+        "edges": 38,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 62,
+        "seed_id": "SAMPLED-300089-individual_counterfactual_probability-target_query-a3",
+        "world_member": "task-62.pkl",
+        "world_sha256": "c621ba0aa470eb2cd8fb27a37d00c13280f4261620906374557f2cb9f78fdd85",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 9,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 63,
+        "seed_id": "SAMPLED-300094-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-63.pkl",
+        "world_sha256": "72cee352219dbb84e885bceba94de7c9b35eaf9f672a08015659e897b1e13ba3",
+        "status": "ok",
+        "nodes": 16,
+        "edges": 39,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 64,
+        "seed_id": "SAMPLED-300099-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-64.pkl",
+        "world_sha256": "085c3fe30029d801f005f33575f4bb385dc2edf3678395064dbf71adcc66b54f",
+        "status": "ok",
+        "nodes": 16,
+        "edges": 43,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 65,
+        "seed_id": "SAMPLED-300104-individual_counterfactual_probability-target_query-a5",
+        "world_member": "task-65.pkl",
+        "world_sha256": "0818d80ac9c700325f9a1979f09963738dbf7f73b9d4a5f305238f74228241bc",
+        "status": "timeout",
+        "nodes": 16,
+        "edges": 38,
+        "affected_mechanisms": 4,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 66,
+        "seed_id": "SAMPLED-300105-individual_counterfactual_probability-target_query-a3",
+        "world_member": "task-66.pkl",
+        "world_sha256": "bad56ceab962898916dc9b94965424f85223bc02ce7d5edf8be4d2f13aacd232",
+        "status": "RuntimeError",
+        "nodes": 10,
+        "edges": 11,
+        "affected_mechanisms": 4,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 67,
+        "seed_id": "SAMPLED-300106-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-67.pkl",
+        "world_sha256": "cc504e6b0395dd354edc4976f3b88ef9b4cbafae16907e2150d4b4f0fd547bbf",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 8,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 68,
+        "seed_id": "SAMPLED-300111-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-68.pkl",
+        "world_sha256": "0b8dcfe07f1db5d0657ea84e884768bba1520cd740b5f32264a9eb9e39639762",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 8,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 69,
+        "seed_id": "SAMPLED-300116-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-69.pkl",
+        "world_sha256": "804d1bd4d815b359935d933abc557950514949dacc8a7253206eeda56a1a3bb7",
+        "status": "RuntimeError",
+        "nodes": 12,
+        "edges": 25,
+        "affected_mechanisms": 3,
+        "affected_convergence": true,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 70,
+        "seed_id": "SAMPLED-300117-individual_counterfactual_probability-target_query-a8",
+        "world_member": "task-70.pkl",
+        "world_sha256": "e20c5a435fc4b0db7a9cec6463526e636990c4d096242c7eac6cce1793b7e5e7",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 13,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 71,
+        "seed_id": "SAMPLED-300122-individual_counterfactual_probability-target_query-a1",
+        "world_member": "task-71.pkl",
+        "world_sha256": "fc1e583d5ba6d9a753627cc11748d01dfca20ace8ec0eb43044ab4ff85504c03",
+        "status": "ok",
+        "nodes": 12,
+        "edges": 23,
+        "affected_mechanisms": 1,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": true
+      },
+      {
+        "index": 72,
+        "seed_id": "SAMPLED-300127-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-72.pkl",
+        "world_sha256": "dee1dfbc8583dc33c7cd9cbc3706e31e8f11858edfa140f0a1ec79d70ea00d8a",
+        "status": "ok",
+        "nodes": 9,
+        "edges": 12,
+        "affected_mechanisms": 3,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      },
+      {
+        "index": 73,
+        "seed_id": "SAMPLED-300132-individual_counterfactual_probability-target_query-a0",
+        "world_member": "task-73.pkl",
+        "world_sha256": "63f790bca7eec94637753d1fbc5d670aed0b05729973fb61bc1de256bb78a657",
+        "status": "ok",
+        "nodes": 8,
+        "edges": 7,
+        "affected_mechanisms": 2,
+        "affected_convergence": false,
+        "direct_source_outcome_edge": false
+      }
+    ]
+  }
+}
