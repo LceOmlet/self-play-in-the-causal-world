@@ -1,0 +1,610 @@
+{
+  "script_sha256": "bb61bb5cdd314f19b8a533b52fe2ef8560ee6710a469688e236fcd9d7a12eff1",
+  "validation_report_sha256": "0afdd6eae0c66267498790a43f2652114e24d247d7d46490a528bca73257e557",
+  "records": [
+    {
+      "index": 8,
+      "tape_key": "trl-grpo:SAMPLED-4500163501530-best_intervention-decision-a6",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "EEP",
+        "outcome": "TLP",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "51e94368db026db17860c44c1746d33ef5202b61c97e19234679196c2361bed1",
+      "output_sha256": "791d22d715804d8cbfc2fcd6967c5e937042488f039d2a0c4df98415c62eedf4",
+      "chosen": 3,
+      "optimal": 1,
+      "regret": 0.06822344485770271,
+      "population_observation_choice": 0,
+      "population_observation": [
+        0.46752241617432344,
+        0.4935249600670192,
+        0.673116059933455,
+        0.5170340787256608
+      ],
+      "causal_probabilities": [
+        0.5562209438512159,
+        0.49471287951868503,
+        0.4983466613659543,
+        0.5629363243763877
+      ],
+      "source_is_manipulable": false,
+      "source_parents": [
+        "QKI",
+        "EWM",
+        "JFG",
+        "DLS",
+        "QHK"
+      ],
+      "observation_batches": [
+        {
+          "totals": [
+            22,
+            53,
+            21,
+            32
+          ],
+          "successes": [
+            11,
+            27,
+            15,
+            14
+          ],
+          "probabilities": [
+            0.5,
+            0.5094339622641509,
+            0.7142857142857143,
+            0.4375
+          ],
+          "n": 128,
+          "choice": 3
+        },
+        {
+          "totals": [
+            5,
+            24,
+            14,
+            21
+          ],
+          "successes": [
+            3,
+            9,
+            11,
+            10
+          ],
+          "probabilities": [
+            0.6,
+            0.375,
+            0.7857142857142857,
+            0.47619047619047616
+          ],
+          "n": 64,
+          "choice": 1
+        }
+      ],
+      "interventions": [
+        {
+          "target": "QKI",
+          "state": "state_0",
+          "successes": 27,
+          "n": 64,
+          "probability": 0.421875,
+          "source_also_measured": true
+        },
+        {
+          "target": "QKI",
+          "state": "state_1",
+          "successes": 31,
+          "n": 64,
+          "probability": 0.484375,
+          "source_also_measured": true
+        },
+        {
+          "target": "EWM",
+          "state": "state_0",
+          "successes": 16,
+          "n": 64,
+          "probability": 0.25,
+          "source_also_measured": true
+        },
+        {
+          "target": "EWM",
+          "state": "state_1",
+          "successes": 27,
+          "n": 64,
+          "probability": 0.421875,
+          "source_also_measured": true
+        },
+        {
+          "target": "EWM",
+          "state": "state_2",
+          "successes": 35,
+          "n": 64,
+          "probability": 0.546875,
+          "source_also_measured": true
+        },
+        {
+          "target": "EWM",
+          "state": "state_3",
+          "successes": 33,
+          "n": 64,
+          "probability": 0.515625,
+          "source_also_measured": true
+        },
+        {
+          "target": "EWM",
+          "state": "state_4",
+          "successes": 28,
+          "n": 64,
+          "probability": 0.4375,
+          "source_also_measured": true
+        }
+      ],
+      "natural_outcome_batches": [
+        {
+          "columns": [
+            "EEP",
+            "TLP"
+          ],
+          "successes": 67,
+          "n": 128
+        },
+        {
+          "columns": [
+            "QKI",
+            "EWM",
+            "JFG",
+            "PMH",
+            "DLS",
+            "QHK",
+            "QLU",
+            "DRM",
+            "PMP",
+            "JRQ",
+            "LLI",
+            "MEO",
+            "FKS",
+            "EEP",
+            "TLP"
+          ],
+          "successes": 33,
+          "n": 64
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "tape_key": "trl-grpo:SAMPLED-4500139501113-best_intervention-decision-a0",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "ESQ",
+        "outcome": "NHS",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "5bc1ca7485ed07726391f764c20d585b1aa21017dfbd7b86c5037bf877617623",
+      "output_sha256": "7f1bd47e0bb02c206c4034ff4f06bd4d378a6f2d5c6ea925fbce8a7ef27460db",
+      "chosen": 2,
+      "optimal": 1,
+      "regret": 0.09716004195280914,
+      "population_observation_choice": 2,
+      "population_observation": [
+        0.6154412562508084,
+        0.33590078952602587,
+        0.2488869631337203
+      ],
+      "causal_probabilities": [
+        0.30632640482366086,
+        0.2980528821387763,
+        0.3952129240915854
+      ],
+      "source_is_manipulable": false,
+      "source_parents": [
+        "HKI",
+        "LEO",
+        "JVH"
+      ],
+      "observation_batches": [
+        {
+          "totals": [
+            8,
+            70,
+            50
+          ],
+          "successes": [
+            4,
+            26,
+            13
+          ],
+          "probabilities": [
+            0.5,
+            0.37142857142857144,
+            0.26
+          ],
+          "n": 128,
+          "choice": 2
+        }
+      ],
+      "interventions": [
+        {
+          "target": "HKI",
+          "state": "state_0",
+          "successes": 37,
+          "n": 128,
+          "probability": 0.2890625,
+          "source_also_measured": false
+        },
+        {
+          "target": "EMR",
+          "state": "state_0",
+          "successes": 54,
+          "n": 128,
+          "probability": 0.421875,
+          "source_also_measured": false
+        },
+        {
+          "target": "HIW",
+          "state": "state_0",
+          "successes": 47,
+          "n": 128,
+          "probability": 0.3671875,
+          "source_also_measured": false
+        },
+        {
+          "target": "LEO",
+          "state": "state_0",
+          "successes": 110,
+          "n": 128,
+          "probability": 0.859375,
+          "source_also_measured": false
+        },
+        {
+          "target": "JVH",
+          "state": "state_0",
+          "successes": 48,
+          "n": 128,
+          "probability": 0.375,
+          "source_also_measured": false
+        },
+        {
+          "target": "MSK",
+          "state": "state_0",
+          "successes": 46,
+          "n": 128,
+          "probability": 0.359375,
+          "source_also_measured": false
+        },
+        {
+          "target": "HIH",
+          "state": "state_0",
+          "successes": 42,
+          "n": 128,
+          "probability": 0.328125,
+          "source_also_measured": false
+        },
+        {
+          "target": "VLG",
+          "state": "state_0",
+          "successes": 36,
+          "n": 128,
+          "probability": 0.28125,
+          "source_also_measured": false
+        }
+      ],
+      "natural_outcome_batches": [
+        {
+          "columns": [
+            "ESQ",
+            "NHS"
+          ],
+          "successes": 43,
+          "n": 128
+        },
+        {
+          "columns": [
+            "NHS"
+          ],
+          "successes": 38,
+          "n": 128
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "tape_key": "trl-grpo:SAMPLED-4500331506196-best_intervention-decision-a0",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "LLM",
+        "outcome": "TVQ",
+        "objective": "minimize",
+        "outcome_state": "state_1"
+      },
+      "truth_file_sha256": "6952baf6b4e82239fa76907130e193c61063ed42f1acaef09782c5a667e0db70",
+      "output_sha256": "7c3471525e49ad418fcac3b9bf61b20c7d08b114182f8a5fb566592a9af60ceb",
+      "chosen": 0,
+      "optimal": 1,
+      "regret": 0.07712151384750499,
+      "population_observation_choice": 0,
+      "population_observation": [
+        0.6234529752607787,
+        0.708120287529442
+      ],
+      "causal_probabilities": [
+        0.7972568223305884,
+        0.7201353084830834
+      ],
+      "source_is_manipulable": false,
+      "source_parents": [
+        "JET",
+        "UUI"
+      ],
+      "observation_batches": [
+        {
+          "totals": [
+            15,
+            113
+          ],
+          "successes": [
+            9,
+            77
+          ],
+          "probabilities": [
+            0.6,
+            0.6814159292035398
+          ],
+          "n": 128,
+          "choice": 0
+        },
+        {
+          "totals": [
+            1,
+            15
+          ],
+          "successes": [
+            1,
+            12
+          ],
+          "probabilities": [
+            1.0,
+            0.8
+          ],
+          "n": 16,
+          "choice": 1
+        }
+      ],
+      "interventions": [
+        {
+          "target": "SSD",
+          "state": "state_0",
+          "successes": 81,
+          "n": 128,
+          "probability": 0.6328125,
+          "source_also_measured": false
+        },
+        {
+          "target": "SSD",
+          "state": "state_1",
+          "successes": 99,
+          "n": 128,
+          "probability": 0.7734375,
+          "source_also_measured": false
+        },
+        {
+          "target": "SSD",
+          "state": "state_2",
+          "successes": 96,
+          "n": 128,
+          "probability": 0.75,
+          "source_also_measured": false
+        }
+      ],
+      "natural_outcome_batches": [
+        {
+          "columns": [
+            "LLM",
+            "TVQ"
+          ],
+          "successes": 86,
+          "n": 128
+        },
+        {
+          "columns": [
+            "LLM",
+            "SSD",
+            "JET",
+            "TVQ",
+            "UUI",
+            "FQU",
+            "SNE",
+            "VOW"
+          ],
+          "successes": 13,
+          "n": 16
+        },
+        {
+          "columns": [
+            "SSD",
+            "TVQ"
+          ],
+          "successes": 85,
+          "n": 128
+        }
+      ],
+      "formula_audit": {
+        "assumed_mediator": "SSD",
+        "actual_role": "ancestor_of_source_and_outcome",
+        "edges": [
+          [
+            "LLM",
+            "TVQ"
+          ],
+          [
+            "SSD",
+            "JET"
+          ],
+          [
+            "SSD",
+            "FQU"
+          ],
+          [
+            "JET",
+            "LLM"
+          ],
+          [
+            "JET",
+            "TVQ"
+          ],
+          [
+            "UUI",
+            "LLM"
+          ]
+        ],
+        "model_formula_substring_verified": "P(TVQ=1 | do(SSD=s)) * P(SSD=s | LLM=0)",
+        "wrong_empirical_functional_from_recorded_counts": [
+          0.7274639423076923,
+          0.7488511029411764
+        ],
+        "observed_source_by_jet_cell_counts": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            14,
+            0,
+            1
+          ]
+        ],
+        "wrong_population_functional": [
+          0.6792827408689439,
+          0.6984511746846105
+        ],
+        "wrong_population_choice": 0,
+        "valid_adjustment": [
+          "JET"
+        ],
+        "adjusted_population_values": [
+          0.7972568223305885,
+          0.7201353084830834
+        ],
+        "independent_full_joint_do_values": [
+          0.7972568223305883,
+          0.7201353084830834
+        ],
+        "scope": "Hidden-world diagnosis after the recorded answer, not a public solver or a model result."
+      }
+    },
+    {
+      "index": 23,
+      "tape_key": "trl-grpo:SAMPLED-4500076500326-best_intervention-decision-a0",
+      "query": {
+        "type": "best_intervention",
+        "decision_target": "VWP",
+        "outcome": "GMG",
+        "objective": "minimize",
+        "outcome_state": "state_0"
+      },
+      "truth_file_sha256": "6d542c9017970b9f2e75d61b601f770b98da1b7616b5ae678f7833e8e308bb5a",
+      "output_sha256": "43789ecbf151a248acffe42649ea802a549edeef50deaafd1af6d9585f521484",
+      "chosen": 0,
+      "optimal": 2,
+      "regret": 0.12832649008331054,
+      "population_observation_choice": 0,
+      "population_observation": [
+        0.11876896877550591,
+        0.3261348474588579,
+        0.3321840957072396,
+        0.6843739523269833
+      ],
+      "causal_probabilities": [
+        0.4851170973864082,
+        0.3622705429225305,
+        0.35679060730309764,
+        0.6108390681726652
+      ],
+      "source_is_manipulable": false,
+      "source_parents": [
+        "SDM",
+        "EOR",
+        "RGT"
+      ],
+      "observation_batches": [
+        {
+          "totals": [
+            8,
+            37,
+            74,
+            9
+          ],
+          "successes": [
+            1,
+            10,
+            22,
+            6
+          ],
+          "probabilities": [
+            0.125,
+            0.2702702702702703,
+            0.2972972972972973,
+            0.6666666666666666
+          ],
+          "n": 128,
+          "choice": 0
+        },
+        {
+          "totals": [
+            13,
+            33,
+            68,
+            14
+          ],
+          "successes": [
+            2,
+            9,
+            23,
+            6
+          ],
+          "probabilities": [
+            0.15384615384615385,
+            0.2727272727272727,
+            0.3382352941176471,
+            0.42857142857142855
+          ],
+          "n": 128,
+          "choice": 0
+        }
+      ],
+      "interventions": [],
+      "natural_outcome_batches": [
+        {
+          "columns": [
+            "VWP",
+            "GMG"
+          ],
+          "successes": 39,
+          "n": 128
+        },
+        {
+          "columns": [
+            "VWP",
+            "GMG",
+            "SDM",
+            "HJW",
+            "OUD",
+            "EPF",
+            "EHW",
+            "TJQ",
+            "EOR",
+            "RGT"
+          ],
+          "successes": 40,
+          "n": 128
+        }
+      ]
+    }
+  ],
+  "scope": "All four completed update25 best-intervention tasks. Recorded finite observations, model choices and hidden-world formula diagnostics are kept distinct. No learning gain or population prevalence is inferred."
+}

@@ -1,5 +1,23 @@
 Fixed-task interpretation and matched official evaluation preparation.
 
+Latest completed state: original-base official validation exited 0 with all 25
+outputs and metrics. Matched base/update25 answers are 13/25 → 11/25 and mean raw
+quality is 0.200494 → 0.189426 (3 improve, 5 worsen, 17 unchanged). No aggregate
+learning gain is established. Both use Qwen3.5-9B and identical evaluation inputs
+and settings. See `docs/matched-base-and-update25-20260908.md` and the paired figure.
+
+All four completed intervention decisions were audited against the actual frozen
+worlds. In task18, the model's wrong causal formula still selects the wrong action
+when populated with exact probabilities; correct JET adjustment and independent
+joint enumeration agree. This is an actual-trajectory diagnosis, not a new solver.
+
+Native training has resumed from update25 and completed updates26/27. The preserved
+update26 has 496 changed finite LoRA tensors, Adam/scheduler26, finite moments and
+correct continuous data position. Training remains active. Current evidence is
+`matched-base-and-native-resume-evidence.tar.gz` (113 members, 1,454,593 bytes,
+SHA-256 `b74010330492c329f6dc9846abee647a43003b7a3d20bf33c45ff029c5ab32de`).
+The earlier pending/base-live statements below are historical stage records.
+
 The full official update25 validation has now finished and passed the complete
 reader path:25 uniquely matched tasks,11 submitted answers,14 unfinished outputs.
 All14 unfinished trajectories hit the response limit:11 reach exactly30,720

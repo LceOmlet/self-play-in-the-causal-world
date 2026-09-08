@@ -1,0 +1,2132 @@
+{
+  "dataset_sha256": "4508652e399973610611368545a92b1c0a2be8faa4fe1f3ec547fac8e3183900",
+  "step": 0,
+  "reader_sha256": "3f226ad6283ed21182488e0ab335f32820090e3f0033791bc57a80d47b8098f4",
+  "snapshot": "/home/chen/runs/heldout-learning-20260908/base-complete-snapshot",
+  "event_prefixes": {
+    "environment-469302.jsonl": {
+      "bytes": 16016,
+      "sha256": "c80b11cabe87657c4327b2588a8676c89eac173e43d8cbfbae6ca464d8974e8b"
+    },
+    "environment-470816.jsonl": {
+      "bytes": 1020898,
+      "sha256": "8d8f41f1479d1d9845e7bee47979a99be47c73cea84d5c57f1513885239def4b"
+    }
+  },
+  "observed_validation_requests": 25,
+  "observed_completed_answers": 13,
+  "ended_owner_scores_with_task_identity": 25,
+  "ended_without_terminal_answer_with_task_identity": 12,
+  "ended_score_scope": "Known original validation tape only; no request ID inferred from score. No-action scores without tape metadata await the complete official dump. These counts are not a complete-pass failure rate.",
+  "complete_official_pass": true,
+  "scope": "Fixed 25 tasks, one greedy trajectory per task. A complete official pass requires 25 saved outputs and finished official validation metrics. This is not a before/after learning-gain estimate.",
+  "official_output_rows": 25,
+  "official_validation_metrics_logged": true,
+  "outputs_sha256": "d0de6a460a776ea9f61dec190d9ba916cbd6bc357d0741bae17228843a9211e3",
+  "official_metrics": {
+    "step": 0,
+    "val-aux/cpt_world/ate/reward/mean@1": -0.21262483894824982,
+    "val-aux/cpt_world/ate/score/mean@1": 0.18468960884909053,
+    "val-core/cpt_world/ate/acc/mean@1": 0.18468960884909053,
+    "val-aux/cpt_world/ate/raw_reward/mean@1": 0.18468960884909053,
+    "val-aux/cpt_world/ate/completed/mean@1": 0.6,
+    "val-aux/cpt_world/ate/overlong_reward/mean@1": -0.397314453125,
+    "val-aux/cpt_world/ate/overlong/mean@1": 0.4,
+    "val-aux/cpt_world/individual_counterfactual_probability/reward/mean@1": -0.7718339323997497,
+    "val-aux/cpt_world/individual_counterfactual_probability/score/mean@1": 0.0246992705320527,
+    "val-core/cpt_world/individual_counterfactual_probability/acc/mean@1": 0.0246992705320527,
+    "val-aux/cpt_world/individual_counterfactual_probability/raw_reward/mean@1": 0.0246992705320527,
+    "val-aux/cpt_world/individual_counterfactual_probability/completed/mean@1": 0.2,
+    "val-aux/cpt_world/individual_counterfactual_probability/overlong_reward/mean@1": -0.796533203125,
+    "val-aux/cpt_world/individual_counterfactual_probability/overlong/mean@1": 0.8,
+    "val-aux/cpt_world/backadj_minimal_sets/reward/mean@1": -0.6162179112434387,
+    "val-aux/cpt_world/backadj_minimal_sets/score/mean@1": 0.17142857142857143,
+    "val-core/cpt_world/backadj_minimal_sets/acc/mean@1": 0.17142857142857143,
+    "val-aux/cpt_world/backadj_minimal_sets/raw_reward/mean@1": 0.17142857142857143,
+    "val-aux/cpt_world/backadj_minimal_sets/completed/mean@1": 0.2,
+    "val-aux/cpt_world/backadj_minimal_sets/overlong_reward/mean@1": -0.787646484375,
+    "val-aux/cpt_world/backadj_minimal_sets/overlong/mean@1": 0.8,
+    "val-aux/cpt_world/best_intervention/reward/mean@1": 0.3002904236316681,
+    "val-aux/cpt_world/best_intervention/score/mean@1": 0.49926503708016695,
+    "val-core/cpt_world/best_intervention/acc/mean@1": 0.49926503708016695,
+    "val-aux/cpt_world/best_intervention/raw_reward/mean@1": 0.49926503708016695,
+    "val-aux/cpt_world/best_intervention/completed/mean@1": 0.8,
+    "val-aux/cpt_world/best_intervention/overlong_reward/mean@1": -0.198974609375,
+    "val-aux/cpt_world/best_intervention/overlong/mean@1": 0.2,
+    "val-aux/cpt_world/mediator_set/reward/mean@1": -0.07761257886886597,
+    "val-aux/cpt_world/mediator_set/score/mean@1": 0.12238741650506357,
+    "val-core/cpt_world/mediator_set/acc/mean@1": 0.12238741650506357,
+    "val-aux/cpt_world/mediator_set/raw_reward/mean@1": 0.12238741650506357,
+    "val-aux/cpt_world/mediator_set/completed/mean@1": 0.8,
+    "val-aux/cpt_world/mediator_set/overlong_reward/mean@1": -0.2,
+    "val-aux/cpt_world/mediator_set/overlong/mean@1": 0.2,
+    "val-aux/num_turns/min": 4.0,
+    "val-aux/num_turns/max": 474.0,
+    "val-aux/num_turns/mean": 101.6
+  },
+  "records": [
+    {
+      "index": 0,
+      "tape_key": "trl-grpo:SAMPLED-3000000-ate-target_query-a6",
+      "query_type": "ate",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "b58a01af085e97e2030141fa873308f108145c3facd3cf3f3074996e1692b5ae",
+      "input_sha256": "c8a5ebc609897fa722c3bff3150dcea4919add12490434acdf0a395e68b6e5d2",
+      "output_sha256": "afb9def169ee44ecacc02b88108bc11a8aff116ec0ba886b02dae6b2b52f1d0e",
+      "request_id": "44de286c2bcc4975b87ccc80f4290239",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.5170562088523012,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.5170562088523012,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "44de286c2bcc4975b87ccc80f4290239",
+        "tape_key": "trl-grpo:SAMPLED-3000000-ate-target_query-a6",
+        "sample_index": 3000000,
+        "query_type": "ate",
+        "actions": 130,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 128
+        },
+        "observations_used": 32768,
+        "measured_scalar_counts": {
+          "SSF": 16384,
+          "FWJ": 16384
+        },
+        "intervention_calls_by_target": {},
+        "completed": true,
+        "quality": 0.5170562088523012,
+        "answer": {
+          "type": "answer",
+          "effect": {
+            "state_0": -0.02,
+            "state_1": 0.01,
+            "state_2": 0.02,
+            "state_3": -0.01,
+            "state_4": 0.0
+          }
+        },
+        "task_metrics": {
+          "total_variation_error": 0.2126888114794105
+        },
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.10671324934363888,
+            0.21737753133110801,
+            -0.08975979840464834,
+            -0.02621576373112325,
+            0.005311280148302511
+          ],
+          "prediction": [
+            -0.02,
+            0.01,
+            0.02,
+            -0.01,
+            0.0
+          ],
+          "component_errors": [
+            0.08671324934363887,
+            0.207377531331108,
+            0.10975979840464835,
+            0.016215763731123246,
+            0.005311280148302511
+          ],
+          "l1_error": 0.425377622958821,
+          "total_variation_error": 0.2126888114794105,
+          "squared_error": 0.012572600429748637,
+          "observational_shortcut": [
+            -0.08647016750253182,
+            0.20447474143490807,
+            -0.0010468956887304012,
+            0.07044311087842664,
+            -0.1874007891220725
+          ],
+          "observational_shortcut_error": 0.2056148591665749,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "tape_key": "trl-grpo:SAMPLED-3000001-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "e3b94e85ec64d3d77a9ee7fdabcaf5dfa20cc9d1be26ef3160f0afdc83ef3180",
+      "input_sha256": "7e3c076435ed6453635207f680b6b17fceb066f60300b016108b636c20129ce8",
+      "output_sha256": "ae85315ac4f8c0e56c6308fc468d8cdc36b831053f3452904bc26e4b84d1a609",
+      "request_id": "0b8a477f3a864ab8ac189474f4bdc6e2",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.1234963526602635,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.1234963526602635,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "0b8a477f3a864ab8ac189474f4bdc6e2",
+        "tape_key": "trl-grpo:SAMPLED-3000001-individual_counterfactual_probability-target_query-a0",
+        "sample_index": 3000001,
+        "query_type": "individual_counterfactual_probability",
+        "actions": 20,
+        "protocol_errors": {
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 2,
+          "intervene": 16
+        },
+        "observations_used": 4736,
+        "measured_scalar_counts": {
+          "ETV": 2304,
+          "SKI": 2304,
+          "WEU": 128
+        },
+        "intervention_calls_by_target": {
+          "WEU": 5,
+          "IEW": 2,
+          "TNH": 1,
+          "FEU": 1,
+          "ETW": 2,
+          "SRN": 2,
+          "UQL": 3
+        },
+        "completed": true,
+        "quality": 0.1234963526602635,
+        "answer": {
+          "type": "answer",
+          "lower": 0.0967,
+          "upper": 0.0967
+        },
+        "task_metrics": {
+          "mean_absolute_endpoint_error": 0.16845914243951585
+        },
+        "terminal_score": {
+          "kind": "counterfactual_roi",
+          "truth": {
+            "lower": 0.1447174407763179,
+            "upper": 0.3856008441027138,
+            "certification": "exact",
+            "endpoint_error": 0.0,
+            "certified_lower_range": [
+              0.1447174407763179,
+              0.1447174407763179
+            ],
+            "certified_upper_range": [
+              0.3856008441027138,
+              0.3856008441027138
+            ]
+          },
+          "prediction": {
+            "lower": 0.0967,
+            "upper": 0.0967
+          },
+          "lower_endpoint_error": 0.04801744077631791,
+          "upper_endpoint_error": 0.28890084410271377,
+          "mean_absolute_endpoint_error": 0.16845914243951585,
+          "mean_squared_endpoint_error": 0.042884686170983864,
+          "observational_shortcut": {
+            "lower": 0.1433256722780697,
+            "upper": 0.38748553062868185
+          },
+          "observational_shortcut_error": 0.0016382275121081297,
+          "certification": "exact",
+          "endpoint_error": 0.0,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "tape_key": "trl-grpo:SAMPLED-3000002-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "d3813675ea02b604e463448534187b296b83563b991fabdf852540d3bcb22d83",
+      "input_sha256": "d4c2dd284f4845fb58e62b787976c6083928ddeff79c2c60eb462c872c27014f",
+      "output_sha256": "023b2021240f06dbd7108e3dea232adb70c1fcb768ced793d1af743a116538b7",
+      "request_id": "f6882cfe10424bfa8bd3e3764797d2b1",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -0.95361328125,
+      "shaped_reward": -0.95361328125,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "f6882cfe10424bfa8bd3e3764797d2b1",
+        "tape_key": "trl-grpo:SAMPLED-3000002-backadj_minimal_sets-discovery-a3",
+        "sample_index": 3000002,
+        "query_type": "backadj_minimal_sets",
+        "actions": 89,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 89
+        },
+        "observations_used": 7920,
+        "measured_scalar_counts": {
+          "HLQ": 112,
+          "EJH": 1424,
+          "GUV": 1408,
+          "HMP": 1392,
+          "NRH": 1056,
+          "NWO": 720,
+          "JND": 1424,
+          "PDO": 384
+        },
+        "intervention_calls_by_target": {},
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 3,
+      "tape_key": "trl-grpo:SAMPLED-4500010500006-best_intervention-decision-a2",
+      "query_type": "best_intervention",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "5474b26ed69d8ac103681b096578a48ac5b33b32b8413e2c2bc19d427d3e49c5",
+      "input_sha256": "6ee7f4b39c004203543443b68cbd867f7a699194ea304d8388fc519fc60787e4",
+      "output_sha256": "9cc1cb4798f851dd48f64402777e7303bf3cacfc048f624e8763f09b1d8daec4",
+      "request_id": "04a5500d32ca4fa68164fa9173141b72",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -0.994873046875,
+      "shaped_reward": -0.994873046875,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "04a5500d32ca4fa68164fa9173141b72",
+        "tape_key": "trl-grpo:SAMPLED-4500010500006-best_intervention-decision-a2",
+        "sample_index": 4500010500006,
+        "query_type": "best_intervention",
+        "actions": 237,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 236
+        },
+        "observations_used": 30336,
+        "measured_scalar_counts": {
+          "RWN": 128,
+          "DJV": 30208
+        },
+        "intervention_calls_by_target": {},
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 4,
+      "tape_key": "trl-grpo:SAMPLED-3000004-mediator_set-discovery-a1",
+      "query_type": "mediator_set",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "11c62740497e1c5cb329e3921b9fc8cf3f674e61ec05d0b140e0d480bfbb2303",
+      "input_sha256": "2bbc40afc59cbed0885f4f81163e57ae23ad9f2d1b8faa9df41d79211e86ce83",
+      "output_sha256": "db739ad0a9ae7037b01adae4b2c35b14bbdf04513ed4cf6e70b50611385530f7",
+      "request_id": "9140f383685c4b2bbd98331826dc8af6",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.14285714285714285,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.14285714285714285,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "9140f383685c4b2bbd98331826dc8af6",
+        "tape_key": "trl-grpo:SAMPLED-3000004-mediator_set-discovery-a1",
+        "sample_index": 3000004,
+        "query_type": "mediator_set",
+        "actions": 26,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 23
+        },
+        "observations_used": 2704,
+        "measured_scalar_counts": {
+          "IQG": 384,
+          "NSV": 336,
+          "KJD": 320,
+          "MMJ": 336,
+          "DEQ": 320,
+          "FEE": 304,
+          "VPW": 320,
+          "SNW": 384
+        },
+        "intervention_calls_by_target": {
+          "NSV": 3,
+          "KJD": 4,
+          "MMJ": 3,
+          "DEQ": 4,
+          "FEE": 5,
+          "VPW": 4
+        },
+        "completed": true,
+        "quality": 0.14285714285714285,
+        "answer": {
+          "type": "answer",
+          "mediators": [
+            "NSV",
+            "KJD",
+            "MMJ",
+            "DEQ",
+            "FEE",
+            "VPW"
+          ],
+          "order": [
+            [
+              "IQG",
+              "NSV"
+            ],
+            [
+              "NSV",
+              "KJD"
+            ],
+            [
+              "KJD",
+              "MMJ"
+            ],
+            [
+              "MMJ",
+              "DEQ"
+            ],
+            [
+              "DEQ",
+              "FEE"
+            ],
+            [
+              "FEE",
+              "VPW"
+            ],
+            [
+              "VPW",
+              "SNW"
+            ]
+          ]
+        },
+        "task_metrics": {
+          "mediator_f1": 0.2857142857142857,
+          "order_f1": 0.0,
+          "mediators_exact_match": false,
+          "order_exact_match": false
+        },
+        "terminal_score": {
+          "kind": "mediator",
+          "mediator_precision": 0.16666666666666666,
+          "mediator_recall": 1.0,
+          "mediator_f1": 0.2857142857142857,
+          "order_precision": 0.0,
+          "order_recall": 0.0,
+          "order_f1": 0.0,
+          "mediators_exact_match": false,
+          "order_exact_match": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "tape_key": "trl-grpo:SAMPLED-3000005-ate-target_query-a0",
+      "query_type": "ate",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "902a170c48c60dbc892eaf2b5945938855876b587fb5ea5262b1b024d8f03e22",
+      "input_sha256": "b8bc09f00a8e8e461f8b71109fe5ae0b7dd278d41bb02c28975e4c7036162904",
+      "output_sha256": "01689947d495e6d6901079dfe615ff74d351fc49ca064c9ab8381be3e26d6908",
+      "request_id": "f1f293c85a884c9781522e8674f837a8",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "f1f293c85a884c9781522e8674f837a8",
+        "tape_key": "trl-grpo:SAMPLED-3000005-ate-target_query-a0",
+        "sample_index": 3000005,
+        "query_type": "ate",
+        "actions": 22,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 21
+        },
+        "observations_used": 5632,
+        "measured_scalar_counts": {
+          "POT": 2816,
+          "JGK": 2816
+        },
+        "intervention_calls_by_target": {
+          "PFG": 2,
+          "NVN": 2,
+          "MPQ": 3,
+          "VHM": 3,
+          "TRE": 4,
+          "SRF": 4,
+          "MIO": 3
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 6,
+      "tape_key": "trl-grpo:SAMPLED-3000007-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "5814194e43eb5672ade3590f18ce653303c6a80e13a791baf36339fb02c8f7ff",
+      "input_sha256": "66e989d2370e88fc5160beda20cfc0e2cf1079a7c8f0ff6e876d8208c20acef0",
+      "output_sha256": "129cb2ace0b6cc0c4783c7f88176ec11c4ee677669b8195a79bb64160b88d274",
+      "request_id": "1c72c39feb964eec8b6eb60fd1aaba79",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "1c72c39feb964eec8b6eb60fd1aaba79",
+        "tape_key": "trl-grpo:SAMPLED-3000007-individual_counterfactual_probability-target_query-a0",
+        "sample_index": 3000007,
+        "query_type": "individual_counterfactual_probability",
+        "actions": 15,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 14
+        },
+        "observations_used": 3840,
+        "measured_scalar_counts": {
+          "JTL": 1920,
+          "WNW": 1920
+        },
+        "intervention_calls_by_target": {
+          "QJS": 2,
+          "ITI": 2,
+          "KUP": 1,
+          "IVS": 1,
+          "IPW": 1,
+          "EUJ": 1,
+          "GRT": 1,
+          "WIR": 1,
+          "JPM": 1,
+          "HDP": 1,
+          "MMK": 1,
+          "IIM": 1
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 7,
+      "tape_key": "trl-grpo:SAMPLED-3000008-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "df4b93ad1dd5bb4f58e9a9e0b20862a9988ecb2c6c18e8272f7755e0e8ea3b7d",
+      "input_sha256": "c830aa28e85c8f5d1cf9df4b4f5eb5feb76013ec20e00ee09f19debbf309c262",
+      "output_sha256": "aee98725566ed2abf5d968d1d0e2a250ec5057dc9d2b909fb9b7e202983bf895",
+      "request_id": "fda616b6269245c6a89eb79968e59a94",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -0.984619140625,
+      "shaped_reward": -0.984619140625,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "fda616b6269245c6a89eb79968e59a94",
+        "tape_key": "trl-grpo:SAMPLED-3000008-backadj_minimal_sets-discovery-a3",
+        "sample_index": 3000008,
+        "query_type": "backadj_minimal_sets",
+        "actions": 75,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 75
+        },
+        "observations_used": 9600,
+        "measured_scalar_counts": {
+          "PSF": 1200,
+          "UJU": 1200,
+          "DWR": 1200,
+          "GQW": 1200,
+          "MMR": 1200,
+          "OKO": 1200,
+          "NGV": 1200,
+          "OIE": 1200
+        },
+        "intervention_calls_by_target": {},
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 8,
+      "tape_key": "trl-grpo:SAMPLED-4500163501530-best_intervention-decision-a6",
+      "query_type": "best_intervention",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "0f47cc28e7364ece543d437fddc237acd994e8af7810327cccee377c1a1b88e8",
+      "input_sha256": "aed81b5a5f7998ae3b2b6e6752eda6157c3d2fc5273e3e6ac1ae41b01493440d",
+      "output_sha256": "ed2b45b40327c588809a7b0062fb5650e5afe151da879d6667eaf5b0f4c49ffe",
+      "request_id": "20d1903361514bcb98b72feb0a65ec50",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.4801589496760656,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.4801589496760656,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "20d1903361514bcb98b72feb0a65ec50",
+        "tape_key": "trl-grpo:SAMPLED-4500163501530-best_intervention-decision-a6",
+        "sample_index": 4500163501530,
+        "query_type": "best_intervention",
+        "actions": 2,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 1
+        },
+        "observations_used": 256,
+        "measured_scalar_counts": {
+          "EEP": 128,
+          "TLP": 128
+        },
+        "intervention_calls_by_target": {},
+        "completed": true,
+        "quality": 0.4801589496760656,
+        "answer": {
+          "type": "answer",
+          "value": "state_3"
+        },
+        "task_metrics": {
+          "regret": 0.06822344485770271,
+          "normalized_regret": 1.0,
+          "optimal_action": false
+        },
+        "terminal_score": {
+          "kind": "decision",
+          "optimal": {
+            "target": "V14",
+            "value": 1
+          },
+          "chosen": {
+            "target": "V14",
+            "value": 3
+          },
+          "prediction": {
+            "target": "V14",
+            "value": 3
+          },
+          "optimal_probability": 0.49471287951868503,
+          "chosen_probability": 0.5629363243763877,
+          "candidate_probabilities": [
+            0.5562209438512159,
+            0.49471287951868503,
+            0.4983466613659543,
+            0.5629363243763877
+          ],
+          "minimum_probability": 0.49471287951868503,
+          "maximum_probability": 0.5629363243763877,
+          "probability_span": 0.06822344485770271,
+          "regret": 0.06822344485770271,
+          "normalized_regret": 1.0,
+          "observational_shortcut": [
+            0.46752241617432344,
+            0.4935249600670192,
+            0.673116059933455,
+            0.5170340787256608
+          ],
+          "observational_choice": 0,
+          "observational_shortcut_error": 0.061508064332530865,
+          "observational_shortcut_normalized_regret": 0.9015678475459796,
+          "optimal_action": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "tape_key": "trl-grpo:SAMPLED-3000010-mediator_set-discovery-a0",
+      "query_type": "mediator_set",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "4fb4c1d0f0547b72ccd99b86e3125e1afc41dad8bde339ae9b7315fe795116fa",
+      "input_sha256": "97155eef5a93dc8f356b1f64483e5a04be7a8df3304fe618a33ca82197b1c215",
+      "output_sha256": "55bc2c762c52ed0dea43ce3f04031bd4c2417410b2872b54b4c8ac2d1fa8f937",
+      "request_id": "6b1825f7c9ef473b8b82e33b8a1e5e0a",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.12549019607843137,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.12549019607843137,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "6b1825f7c9ef473b8b82e33b8a1e5e0a",
+        "tape_key": "trl-grpo:SAMPLED-3000010-mediator_set-discovery-a0",
+        "sample_index": 3000010,
+        "query_type": "mediator_set",
+        "actions": 33,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 16,
+          "intervene": 14
+        },
+        "observations_used": 11264,
+        "measured_scalar_counts": {
+          "DJF": 3840,
+          "EPQ": 3840,
+          "NQD": 256,
+          "VPK": 256,
+          "PTI": 256,
+          "JKD": 256,
+          "QMG": 256,
+          "FVJ": 256,
+          "ORO": 256,
+          "PPF": 256,
+          "TEL": 256,
+          "ODV": 256,
+          "HJS": 256,
+          "FJW": 256,
+          "OKU": 256,
+          "DWO": 256
+        },
+        "intervention_calls_by_target": {
+          "NQD": 1,
+          "VPK": 1,
+          "PTI": 1,
+          "JKD": 1,
+          "QMG": 1,
+          "FVJ": 1,
+          "ORO": 1,
+          "PPF": 1,
+          "TEL": 1,
+          "ODV": 1,
+          "HJS": 1,
+          "FJW": 1,
+          "OKU": 1,
+          "DWO": 1
+        },
+        "completed": true,
+        "quality": 0.12549019607843137,
+        "answer": {
+          "type": "answer",
+          "mediators": [
+            "NQD",
+            "VPK",
+            "PTI",
+            "JKD",
+            "QMG",
+            "FVJ",
+            "ORO",
+            "PPF",
+            "TEL",
+            "ODV",
+            "HJS",
+            "FJW",
+            "OKU",
+            "DWO"
+          ],
+          "order": [
+            [
+              "DJF",
+              "NQD"
+            ],
+            [
+              "NQD",
+              "VPK"
+            ],
+            [
+              "VPK",
+              "PTI"
+            ],
+            [
+              "PTI",
+              "JKD"
+            ],
+            [
+              "JKD",
+              "QMG"
+            ],
+            [
+              "QMG",
+              "FVJ"
+            ],
+            [
+              "FVJ",
+              "ORO"
+            ],
+            [
+              "ORO",
+              "PPF"
+            ],
+            [
+              "PPF",
+              "TEL"
+            ],
+            [
+              "TEL",
+              "ODV"
+            ],
+            [
+              "ODV",
+              "HJS"
+            ],
+            [
+              "HJS",
+              "FJW"
+            ],
+            [
+              "FJW",
+              "OKU"
+            ],
+            [
+              "OKU",
+              "DWO"
+            ],
+            [
+              "DWO",
+              "EPQ"
+            ]
+          ]
+        },
+        "task_metrics": {
+          "mediator_f1": 0.13333333333333333,
+          "order_f1": 0.11764705882352941,
+          "mediators_exact_match": false,
+          "order_exact_match": false
+        },
+        "terminal_score": {
+          "kind": "mediator",
+          "mediator_precision": 0.07142857142857142,
+          "mediator_recall": 1.0,
+          "mediator_f1": 0.13333333333333333,
+          "order_precision": 0.06666666666666667,
+          "order_recall": 0.5,
+          "order_f1": 0.11764705882352941,
+          "mediators_exact_match": false,
+          "order_exact_match": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "tape_key": "trl-grpo:SAMPLED-3000011-ate-target_query-a12",
+      "query_type": "ate",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "892b64bf2551cc17f4463f2038276a913d21b588b4b04781532157174a73a111",
+      "input_sha256": "bdf099a76659e1fd1cc24996d9a5400953aaddc291414651ded2ca673b8992e2",
+      "output_sha256": "76b8886939e9b74d4c993a671cdd9abc2cdf7e4a371561feb31ecfa454481fda",
+      "request_id": "83c09646d6c84322b60d82e8ab03d170",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.22158632648750398,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.22158632648750398,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "83c09646d6c84322b60d82e8ab03d170",
+        "tape_key": "trl-grpo:SAMPLED-3000011-ate-target_query-a12",
+        "sample_index": 3000011,
+        "query_type": "ate",
+        "actions": 57,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 3,
+          "intervene": 51
+        },
+        "observations_used": 13696,
+        "measured_scalar_counts": {
+          "DFV": 6784,
+          "DVP": 6784,
+          "IGU": 128
+        },
+        "intervention_calls_by_target": {
+          "IGU": 2,
+          "VRE": 3,
+          "HGS": 2,
+          "DFW": 5,
+          "LMJ": 3,
+          "NWM": 3,
+          "WMR": 4,
+          "HGW": 4,
+          "LUS": 2,
+          "NIU": 5,
+          "EGO": 4,
+          "KPH": 5,
+          "ILD": 5,
+          "MHH": 4
+        },
+        "completed": true,
+        "quality": 0.22158632648750398,
+        "answer": {
+          "type": "answer",
+          "effect": {
+            "state_0": -0.6444,
+            "state_1": 0.6444
+          }
+        },
+        "task_metrics": {
+          "total_variation_error": 0.07762516248098406
+        },
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            -0.5667748375190158,
+            0.566774837519016
+          ],
+          "prediction": [
+            -0.6444,
+            0.6444
+          ],
+          "component_errors": [
+            0.07762516248098417,
+            0.07762516248098394
+          ],
+          "l1_error": 0.1552503249619681,
+          "total_variation_error": 0.07762516248098406,
+          "squared_error": 0.0060256658501991744,
+          "observational_shortcut": [
+            -0.5667748375190158,
+            0.5667748375190158
+          ],
+          "observational_shortcut_error": 1.2011843916604658e-16,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "tape_key": "trl-grpo:SAMPLED-3000012-individual_counterfactual_probability-target_query-a24",
+      "query_type": "individual_counterfactual_probability",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "1fd36f517105e6bdbe4f2086070689cc1b1711b1c3aab4f47bd4fcb6c494a841",
+      "input_sha256": "b195814cfcd3925fd5dbb31753a1af8d2edc9ae6a3310f25be8d306a54d12cbf",
+      "output_sha256": "a9ee9978cc553c8dab1257d6fdc7b6635e41f1fcfc7518a0d63ece2d5cdbb810",
+      "request_id": "73d7d7931a14432aa12ab724b0ceb5ad",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "73d7d7931a14432aa12ab724b0ceb5ad",
+        "tape_key": "trl-grpo:SAMPLED-3000012-individual_counterfactual_probability-target_query-a24",
+        "sample_index": 3000012,
+        "query_type": "individual_counterfactual_probability",
+        "actions": 20,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 14,
+          "intervene": 4
+        },
+        "observations_used": 6272,
+        "measured_scalar_counts": {
+          "VGD": 2304,
+          "PFJ": 2304,
+          "HOF": 128,
+          "GEU": 128,
+          "ISL": 128,
+          "FSG": 128,
+          "QOE": 128,
+          "PSL": 128,
+          "HMK": 128,
+          "EKG": 128,
+          "RUJ": 128,
+          "IQN": 128,
+          "URT": 128,
+          "OOL": 128,
+          "MDO": 128
+        },
+        "intervention_calls_by_target": {
+          "HOF": 2,
+          "GEU": 1,
+          "ISL": 1
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 12,
+      "tape_key": "trl-grpo:SAMPLED-3000013-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "47efaee7498380e1708ca77be18bf511639b65f9fef24702c993a93f668bc99b",
+      "input_sha256": "943212e95981bf87ab554368ea14be1d62f9d66830f24b3b01c1dea09eb4c8a9",
+      "output_sha256": "f3c7bdd9a7a3596b60481834cf2a67f54c43aaf1dbcd273870606bf60a02942e",
+      "request_id": "f644a0d8ed3d416191d34fd09d9240d6",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "f644a0d8ed3d416191d34fd09d9240d6",
+        "tape_key": "trl-grpo:SAMPLED-3000013-backadj_minimal_sets-discovery-a0",
+        "sample_index": 3000013,
+        "query_type": "backadj_minimal_sets",
+        "actions": 11,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 2,
+          "intervene": 9
+        },
+        "observations_used": 510,
+        "measured_scalar_counts": {
+          "DLQ": 30,
+          "LUS": 120,
+          "FJF": 30,
+          "FLT": 30,
+          "LQR": 30,
+          "GDF": 30,
+          "USJ": 30,
+          "VFU": 30,
+          "OFG": 120,
+          "TRV": 30,
+          "UKH": 30
+        },
+        "intervention_calls_by_target": {
+          "DLQ": 1,
+          "FJF": 1,
+          "FLT": 1,
+          "LQR": 1,
+          "GDF": 1,
+          "USJ": 1,
+          "VFU": 1,
+          "TRV": 1,
+          "UKH": 1
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 13,
+      "tape_key": "trl-grpo:SAMPLED-4500139501113-best_intervention-decision-a0",
+      "query_type": "best_intervention",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "787065f19f26d351c205c9b35950bf0d67a7d678ae8f59b81602795ea0ff00b4",
+      "input_sha256": "eac53295510f0882f1018b9df97eae4bd93b370807d5129c6f68004dbff09a58",
+      "output_sha256": "8673ea27fdcc7d3d678dd0a78aacf627f18aa77e16c095aa542f4e035d95cea0",
+      "request_id": "409c367d62b640b08ca375be363f86a1",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.505463903552184,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.505463903552184,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "409c367d62b640b08ca375be363f86a1",
+        "tape_key": "trl-grpo:SAMPLED-4500139501113-best_intervention-decision-a0",
+        "sample_index": 4500139501113,
+        "query_type": "best_intervention",
+        "actions": 14,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 4,
+          "intervene": 8
+        },
+        "observations_used": 1920,
+        "measured_scalar_counts": {
+          "ESQ": 384,
+          "NHS": 1536
+        },
+        "intervention_calls_by_target": {
+          "HKI": 1,
+          "EMR": 1,
+          "HIW": 1,
+          "LEO": 1,
+          "JVH": 1,
+          "MSK": 1,
+          "HIH": 1,
+          "VLG": 1
+        },
+        "completed": true,
+        "quality": 0.505463903552184,
+        "answer": {
+          "type": "answer",
+          "value": "state_2"
+        },
+        "task_metrics": {
+          "regret": 0.09716004195280914,
+          "normalized_regret": 1.0,
+          "optimal_action": false
+        },
+        "terminal_score": {
+          "kind": "decision",
+          "optimal": {
+            "target": "V7",
+            "value": 1
+          },
+          "chosen": {
+            "target": "V7",
+            "value": 2
+          },
+          "prediction": {
+            "target": "V7",
+            "value": 2
+          },
+          "optimal_probability": 0.2980528821387763,
+          "chosen_probability": 0.3952129240915854,
+          "candidate_probabilities": [
+            0.30632640482366086,
+            0.2980528821387763,
+            0.3952129240915854
+          ],
+          "minimum_probability": 0.2980528821387763,
+          "maximum_probability": 0.3952129240915854,
+          "probability_span": 0.09716004195280914,
+          "regret": 0.09716004195280914,
+          "normalized_regret": 1.0,
+          "observational_shortcut": [
+            0.6154412562508084,
+            0.33590078952602587,
+            0.2488869631337203
+          ],
+          "observational_choice": 2,
+          "observational_shortcut_error": 0.09716004195280914,
+          "observational_shortcut_normalized_regret": 1.0,
+          "optimal_action": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "tape_key": "trl-grpo:SAMPLED-3000015-mediator_set-discovery-a4",
+      "query_type": "mediator_set",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "58af3121942ca288bfd5412dc42aa4b7887257bcf90b82c30fc16fd41817e85f",
+      "input_sha256": "3218787de0dba258720ed973645f9eeb8b32d66637c806e6af82e3a1ae287a1f",
+      "output_sha256": "b687c4d5808d03094d83582911e543c7f4db1ee4b1eea57a6a80296a6e77f5e3",
+      "request_id": "43106f325fe846d3b653f9e0cef03413",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "43106f325fe846d3b653f9e0cef03413",
+        "tape_key": "trl-grpo:SAMPLED-3000015-mediator_set-discovery-a4",
+        "sample_index": 3000015,
+        "query_type": "mediator_set",
+        "actions": 23,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 12,
+          "intervene": 11
+        },
+        "observations_used": 7296,
+        "measured_scalar_counts": {
+          "WPI": 2944,
+          "QJN": 2944,
+          "QRW": 128,
+          "KGH": 128,
+          "JTM": 128,
+          "HIL": 128,
+          "UDD": 128,
+          "MRN": 128,
+          "HNW": 128,
+          "OUJ": 128,
+          "GPM": 128,
+          "MTR": 128,
+          "QQM": 128
+        },
+        "intervention_calls_by_target": {
+          "QRW": 1,
+          "KGH": 1,
+          "JTM": 1,
+          "HIL": 1,
+          "UDD": 1,
+          "MRN": 1,
+          "HNW": 1,
+          "OUJ": 1,
+          "GPM": 1,
+          "MTR": 1,
+          "QQM": 1
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 15,
+      "tape_key": "trl-grpo:SAMPLED-3000016-ate-target_query-a0",
+      "query_type": "ate",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "ad1ab8173afa7e82e79fee7e01ca46d0be76f1f8b0fcd203595fd84fce1baf21",
+      "input_sha256": "6584f2b4cf5a1bcc30d5f468cd189e96f5900e892411e28a0904b97988a69f4d",
+      "output_sha256": "728e86479813ad8155c13f00a90cfff9a1db4826654a81adeaeec42b09cf07c3",
+      "request_id": "5e7f2854c2354a1c913ca0020f6f48aa",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -0.986572265625,
+      "shaped_reward": -0.986572265625,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "5e7f2854c2354a1c913ca0020f6f48aa",
+        "tape_key": "trl-grpo:SAMPLED-3000016-ate-target_query-a0",
+        "sample_index": 3000016,
+        "query_type": "ate",
+        "actions": 119,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 119
+        },
+        "observations_used": 30464,
+        "measured_scalar_counts": {
+          "JLU": 15232,
+          "SHT": 15232
+        },
+        "intervention_calls_by_target": {},
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 16,
+      "tape_key": "trl-grpo:SAMPLED-3000017-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "83e93fff5c230ea8a8c059a1ea9a7897f2e8331f56da1fa9db988136147dec21",
+      "input_sha256": "dafa326863cf0124414015bd5c5b20efddc1eef83b121a02760c2108fc561acb",
+      "output_sha256": "813295c6626172e1480d8a4b26bac4800640fc4e1c601a2b3b8f29f17e39ec20",
+      "request_id": "3c731da1c0c24419a0ecad52622b1983",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "3c731da1c0c24419a0ecad52622b1983",
+        "tape_key": "trl-grpo:SAMPLED-3000017-individual_counterfactual_probability-target_query-a2",
+        "sample_index": 3000017,
+        "query_type": "individual_counterfactual_probability",
+        "actions": 35,
+        "protocol_errors": {
+          "the intervention target must not appear in measure": 3
+        },
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 31
+        },
+        "observations_used": 8192,
+        "measured_scalar_counts": {
+          "UDR": 4096,
+          "HPK": 4096
+        },
+        "intervention_calls_by_target": {
+          "QHM": 2,
+          "HEE": 2,
+          "KMD": 5,
+          "DIN": 5,
+          "TDP": 5,
+          "MGM": 2,
+          "MSD": 3,
+          "JSS": 3,
+          "SSE": 2,
+          "UIV": 2
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 17,
+      "tape_key": "trl-grpo:SAMPLED-3000018-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "b7f0cee3436eeb288be7426cc2770bfcdb95454c5bdb78ab858689f17a0816e1",
+      "input_sha256": "f83daed7bdf2d52a6d043ed0c465c9b26a38188a337e42fd39f3e75be754fe46",
+      "output_sha256": "289050ecaa4674c03af3e6e176c1344f553a6d5544610ac063c9971370d8bd1a",
+      "request_id": "d8a96dea0b9a48b0957c01ec5224f422",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.8571428571428571,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.8571428571428571,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "d8a96dea0b9a48b0957c01ec5224f422",
+        "tape_key": "trl-grpo:SAMPLED-3000018-backadj_minimal_sets-discovery-a1",
+        "sample_index": 3000018,
+        "query_type": "backadj_minimal_sets",
+        "actions": 16,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 12
+        },
+        "observations_used": 1700,
+        "measured_scalar_counts": {
+          "WDV": 120,
+          "PQV": 120,
+          "NWW": 120,
+          "HSG": 120,
+          "IRE": 120,
+          "QSR": 130,
+          "JKU": 120,
+          "UMP": 120,
+          "GPE": 120,
+          "JJO": 120,
+          "WUL": 120,
+          "WJL": 120,
+          "SWQ": 120,
+          "RTO": 130
+        },
+        "intervention_calls_by_target": {
+          "WDV": 1,
+          "PQV": 1,
+          "NWW": 1,
+          "HSG": 1,
+          "IRE": 1,
+          "JKU": 1,
+          "UMP": 1,
+          "GPE": 1,
+          "JJO": 1,
+          "WUL": 1,
+          "WJL": 1,
+          "SWQ": 1
+        },
+        "completed": true,
+        "quality": 0.8571428571428571,
+        "answer": {
+          "type": "answer",
+          "adjustment_set": []
+        },
+        "task_metrics": {
+          "edit_distance": 2,
+          "valid_adjustment_set": false
+        },
+        "terminal_score": {
+          "kind": "backadj",
+          "prediction": [],
+          "nearest_valid_adjustment_set": [
+            "V4",
+            "V8"
+          ],
+          "edit_distance": 2,
+          "valid_adjustment_set": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "tape_key": "trl-grpo:SAMPLED-4500331506196-best_intervention-decision-a0",
+      "query_type": "best_intervention",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "657166877cf59794f66c65ae2d2fd392f6eec874eb125ac01cd3e3089468074f",
+      "input_sha256": "3906136bfd0984b032534e92bad47749645704714b89f33afa7e89d91ea16c5f",
+      "output_sha256": "b54e9f8d7108972333f90f29731a6165c677eb2e56346d5c903e832f948e2f59",
+      "request_id": "5593d6918f5b4441b479eb7464217192",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 1.0,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 1.0,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "5593d6918f5b4441b479eb7464217192",
+        "tape_key": "trl-grpo:SAMPLED-4500331506196-best_intervention-decision-a0",
+        "sample_index": 4500331506196,
+        "query_type": "best_intervention",
+        "actions": 32,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 7,
+          "intervene": 23
+        },
+        "observations_used": 4864,
+        "measured_scalar_counts": {
+          "LLM": 784,
+          "TVQ": 3472,
+          "SSD": 272,
+          "JET": 272,
+          "UUI": 16,
+          "FQU": 16,
+          "SNE": 16,
+          "VOW": 16
+        },
+        "intervention_calls_by_target": {
+          "SSD": 3,
+          "JET": 3,
+          "UUI": 5,
+          "FQU": 4,
+          "SNE": 5,
+          "VOW": 3
+        },
+        "completed": true,
+        "quality": 1.0,
+        "answer": {
+          "type": "answer",
+          "value": "state_1"
+        },
+        "task_metrics": {
+          "regret": 0.0,
+          "normalized_regret": 0.0,
+          "optimal_action": true
+        },
+        "terminal_score": {
+          "kind": "decision",
+          "optimal": {
+            "target": "V0",
+            "value": 1
+          },
+          "chosen": {
+            "target": "V0",
+            "value": 1
+          },
+          "prediction": {
+            "target": "V0",
+            "value": 1
+          },
+          "optimal_probability": 0.7201353084830834,
+          "chosen_probability": 0.7201353084830834,
+          "candidate_probabilities": [
+            0.7972568223305884,
+            0.7201353084830834
+          ],
+          "minimum_probability": 0.7201353084830834,
+          "maximum_probability": 0.7972568223305884,
+          "probability_span": 0.07712151384750499,
+          "regret": 0.0,
+          "normalized_regret": 0.0,
+          "observational_shortcut": [
+            0.6234529752607787,
+            0.708120287529442
+          ],
+          "observational_choice": 0,
+          "observational_shortcut_error": 0.07712151384750499,
+          "observational_shortcut_normalized_regret": 1.0,
+          "optimal_action": true,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 19,
+      "tape_key": "trl-grpo:SAMPLED-3000020-mediator_set-discovery-a2",
+      "query_type": "mediator_set",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "f4a520003c62bdac520fd855bcf9032430a84f742ff32a2f91bf7df777a43628",
+      "input_sha256": "d72f07c0e5704845a6a143a42fe49ca53b3ae1c88edc06b24fdd1b6c114a8979",
+      "output_sha256": "ccc884145dc1961f3f70c5808f0ad9d8a50c5fb4d2825aa3d807cb48604af776",
+      "request_id": "c63169451323451f9e8d2cc5b444858f",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.16666666666666666,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.16666666666666666,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "c63169451323451f9e8d2cc5b444858f",
+        "tape_key": "trl-grpo:SAMPLED-3000020-mediator_set-discovery-a2",
+        "sample_index": 3000020,
+        "query_type": "mediator_set",
+        "actions": 44,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 2,
+          "intervene": 39
+        },
+        "observations_used": 6608,
+        "measured_scalar_counts": {
+          "FNI": 16,
+          "UFO": 592,
+          "NDS": 592,
+          "GPL": 592,
+          "JOD": 592,
+          "JNQ": 624,
+          "RDI": 576,
+          "RMO": 656,
+          "FFJ": 576,
+          "ENN": 624,
+          "PID": 576,
+          "QGI": 592
+        },
+        "intervention_calls_by_target": {
+          "UFO": 4,
+          "NDS": 4,
+          "GPL": 4,
+          "JOD": 4,
+          "JNQ": 2,
+          "RDI": 5,
+          "FFJ": 5,
+          "ENN": 2,
+          "PID": 5,
+          "QGI": 4
+        },
+        "completed": true,
+        "quality": 0.16666666666666666,
+        "answer": {
+          "type": "answer",
+          "mediators": [
+            "UFO",
+            "NDS",
+            "GPL",
+            "JOD",
+            "JNQ",
+            "RDI",
+            "FFJ",
+            "ENN",
+            "PID",
+            "QGI"
+          ],
+          "order": [
+            [
+              "FNI",
+              "UFO"
+            ],
+            [
+              "UFO",
+              "NDS"
+            ],
+            [
+              "NDS",
+              "GPL"
+            ],
+            [
+              "GPL",
+              "JOD"
+            ],
+            [
+              "JOD",
+              "JNQ"
+            ],
+            [
+              "JNQ",
+              "RDI"
+            ],
+            [
+              "RDI",
+              "FFJ"
+            ],
+            [
+              "FFJ",
+              "ENN"
+            ],
+            [
+              "ENN",
+              "PID"
+            ],
+            [
+              "PID",
+              "QGI"
+            ],
+            [
+              "QGI",
+              "RMO"
+            ]
+          ]
+        },
+        "task_metrics": {
+          "mediator_f1": 0.3333333333333333,
+          "order_f1": 0.0,
+          "mediators_exact_match": false,
+          "order_exact_match": false
+        },
+        "terminal_score": {
+          "kind": "mediator",
+          "mediator_precision": 0.2,
+          "mediator_recall": 1.0,
+          "mediator_f1": 0.3333333333333333,
+          "order_precision": 0.0,
+          "order_recall": 0.0,
+          "order_f1": 0.0,
+          "mediators_exact_match": false,
+          "order_exact_match": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 20,
+      "tape_key": "trl-grpo:SAMPLED-3000021-ate-target_query-a2",
+      "query_type": "ate",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "231aab8b52a3b1a85f9bba3bd4c2597903e82b47c14bd33887feed7eb7d4cd5a",
+      "input_sha256": "5f0c4678d253627c549dbc122bd9f2ceb173eaaf21119b86335b9d875ff1bc83",
+      "output_sha256": "e14f2835746863c1d7aa90b725b13b3ac74cb404575aecfff47189535719d651",
+      "request_id": "ef554a432e7a4e07a294827bad4d98df",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.18480550890564756,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.18480550890564756,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "ef554a432e7a4e07a294827bad4d98df",
+        "tape_key": "trl-grpo:SAMPLED-3000021-ate-target_query-a2",
+        "sample_index": 3000021,
+        "query_type": "ate",
+        "actions": 6,
+        "protocol_errors": {},
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 4
+        },
+        "observations_used": 1280,
+        "measured_scalar_counts": {
+          "KFV": 640,
+          "NFS": 640
+        },
+        "intervention_calls_by_target": {
+          "RMJ": 4
+        },
+        "completed": true,
+        "quality": 0.18480550890564756,
+        "answer": {
+          "type": "answer",
+          "effect": {
+            "state_0": -0.048828125,
+            "state_1": 0.048828125
+          }
+        },
+        "task_metrics": {
+          "total_variation_error": 0.09747232983816076
+        },
+        "terminal_score": {
+          "kind": "target_query",
+          "truth": [
+            0.04864420483816073,
+            -0.04864420483816079
+          ],
+          "prediction": [
+            -0.048828125,
+            0.048828125
+          ],
+          "component_errors": [
+            0.09747232983816073,
+            0.09747232983816079
+          ],
+          "l1_error": 0.19494465967632152,
+          "total_variation_error": 0.09747232983816076,
+          "squared_error": 0.009500855084079204,
+          "observational_shortcut": [
+            0.04864420483816077,
+            -0.04864420483816077
+          ],
+          "observational_shortcut_error": 2.7755575615628914e-17,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 21,
+      "tape_key": "trl-grpo:SAMPLED-3000022-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "27e45a703f6b87f2fe974cbb248d7c3c73e28d05e6cff75fa85223b857134595",
+      "input_sha256": "a2e9be04280f1db841137c8a1651c04e032a9e976880a27961aeee7d7c2ad353",
+      "output_sha256": "4243000198277d9d7a521b2454eb8c156222eefe695ef84f659c6a10705e2572",
+      "request_id": "0fc542682bbc4695b07f83e7b1d3640f",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -0.982666015625,
+      "shaped_reward": -0.982666015625,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "0fc542682bbc4695b07f83e7b1d3640f",
+        "tape_key": "trl-grpo:SAMPLED-3000022-individual_counterfactual_probability-target_query-a3",
+        "sample_index": 3000022,
+        "query_type": "individual_counterfactual_probability",
+        "actions": 160,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 148,
+          "intervene": 11
+        },
+        "observations_used": 5568,
+        "measured_scalar_counts": {
+          "VUL": 80,
+          "WPR": 80,
+          "RSO": 2544,
+          "PLQ": 80,
+          "PTM": 80,
+          "QPP": 80,
+          "LIJ": 80,
+          "POE": 2544
+        },
+        "intervention_calls_by_target": {
+          "VUL": 3,
+          "WPR": 4,
+          "PLQ": 1,
+          "PTM": 1,
+          "QPP": 1,
+          "LIJ": 1
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 22,
+      "tape_key": "trl-grpo:SAMPLED-3000023-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "f009d123dd20bc8fdcc6c96e5982324b2a9321b5282aa9a7b09d19142351d8a3",
+      "input_sha256": "5d44970904feb7469a6a173cef7f3127ef4b081a291725ec0b0e9201329e7d9d",
+      "output_sha256": "84e376421afdc783a64cf13e66b8bd9d418cf24df6e7e887c1138b05e1bb7bac",
+      "request_id": "47548afe29f1415a961cf503446a2079",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.0,
+      "official_length_penalty": -1.0,
+      "shaped_reward": -1.0,
+      "completed": false,
+      "trajectory": {
+        "trajectory_id": "47548afe29f1415a961cf503446a2079",
+        "tape_key": "trl-grpo:SAMPLED-3000023-backadj_minimal_sets-discovery-a2",
+        "sample_index": 3000023,
+        "query_type": "backadj_minimal_sets",
+        "actions": 14,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 1
+        },
+        "valid_experiments": {
+          "observe": 2,
+          "intervene": 10
+        },
+        "observations_used": 1460,
+        "measured_scalar_counts": {
+          "WLV": 120,
+          "QOP": 120,
+          "KKV": 120,
+          "LPM": 120,
+          "TFK": 120,
+          "GEH": 120,
+          "SVU": 120,
+          "KHD": 120,
+          "IQE": 130,
+          "GFK": 130,
+          "QOK": 120,
+          "VLN": 120
+        },
+        "intervention_calls_by_target": {
+          "WLV": 1,
+          "QOP": 1,
+          "KKV": 1,
+          "LPM": 1,
+          "TFK": 1,
+          "GEH": 1,
+          "SVU": 1,
+          "KHD": 1,
+          "QOK": 1,
+          "VLN": 1
+        },
+        "completed": false,
+        "quality": null,
+        "answer": null,
+        "task_metrics": null,
+        "terminal_score": null
+      }
+    },
+    {
+      "index": 23,
+      "tape_key": "trl-grpo:SAMPLED-4500076500326-best_intervention-decision-a0",
+      "query_type": "best_intervention",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "c58b7afd4f4d61a7b70e908abce3824c7cd02e420087f6e2dae1c3bf430b27be",
+      "input_sha256": "d87ceb3883df7c5361fb8bf85c06ce9a77c66c8161eb408b229a0143b915e5b8",
+      "output_sha256": "7c671c55bfdf8bb4fd7ae23217aa1c48c0c1003992cae5cb20add4cabf8b6a5c",
+      "request_id": "551e1a4ef10b45ecaa57031152e77cfc",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.5107023321725853,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.5107023321725853,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "551e1a4ef10b45ecaa57031152e77cfc",
+        "tape_key": "trl-grpo:SAMPLED-4500076500326-best_intervention-decision-a0",
+        "sample_index": 4500076500326,
+        "query_type": "best_intervention",
+        "actions": 10,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1
+        },
+        "valid_experiments": {
+          "observe": 8
+        },
+        "observations_used": 2304,
+        "measured_scalar_counts": {
+          "VWP": 1024,
+          "GMG": 256,
+          "SDM": 256,
+          "OUD": 128,
+          "EPF": 128,
+          "HJW": 128,
+          "TJQ": 128,
+          "EOR": 128,
+          "RGT": 128
+        },
+        "intervention_calls_by_target": {},
+        "completed": true,
+        "quality": 0.5107023321725853,
+        "answer": {
+          "type": "answer",
+          "value": "state_0"
+        },
+        "task_metrics": {
+          "regret": 0.12832649008331054,
+          "normalized_regret": 0.5051260284910577,
+          "optimal_action": false
+        },
+        "terminal_score": {
+          "kind": "decision",
+          "optimal": {
+            "target": "V1",
+            "value": 2
+          },
+          "chosen": {
+            "target": "V1",
+            "value": 0
+          },
+          "prediction": {
+            "target": "V1",
+            "value": 0
+          },
+          "optimal_probability": 0.35679060730309764,
+          "chosen_probability": 0.4851170973864082,
+          "candidate_probabilities": [
+            0.4851170973864082,
+            0.3622705429225305,
+            0.35679060730309764,
+            0.6108390681726652
+          ],
+          "minimum_probability": 0.35679060730309764,
+          "maximum_probability": 0.6108390681726652,
+          "probability_span": 0.25404846086956756,
+          "regret": 0.12832649008331054,
+          "normalized_regret": 0.5051260284910577,
+          "observational_shortcut": [
+            0.11876896877550591,
+            0.3261348474588579,
+            0.3321840957072396,
+            0.6843739523269833
+          ],
+          "observational_choice": 0,
+          "observational_shortcut_error": 0.12832649008331054,
+          "observational_shortcut_normalized_regret": 0.5051260284910577,
+          "optimal_action": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    },
+    {
+      "index": 24,
+      "tape_key": "trl-grpo:SAMPLED-3000025-mediator_set-discovery-a2",
+      "query_type": "mediator_set",
+      "task_join": "unique_full_public_user_message",
+      "public_user_message_sha256": "b319e2650444771a06f2694cb9a935d6432fdc12881dac6c702a9b57ca0c4af6",
+      "input_sha256": "d6e06ace0f50d22ef7c856024db63d3127386a6f3a912ea521c0684458ddf6fb",
+      "output_sha256": "bc1418f2a98f99bc88d8f02bdee00246d720ec0d0709630cdcd4980a04e1db5b",
+      "request_id": "052182f8de9e4e4a9d38c13b04436952",
+      "event_join": "unique_full_executed_commands",
+      "raw_quality": 0.17692307692307693,
+      "official_length_penalty": 0.0,
+      "shaped_reward": 0.17692307692307693,
+      "completed": true,
+      "trajectory": {
+        "trajectory_id": "052182f8de9e4e4a9d38c13b04436952",
+        "tape_key": "trl-grpo:SAMPLED-3000025-mediator_set-discovery-a2",
+        "sample_index": 3000025,
+        "query_type": "mediator_set",
+        "actions": 53,
+        "protocol_errors": {
+          "intervention target is not manipulable": 1,
+          "the intervention target must not appear in measure": 9,
+          "intervention state is outside the target domain": 1
+        },
+        "valid_experiments": {
+          "observe": 1,
+          "intervene": 40
+        },
+        "observations_used": 5360,
+        "measured_scalar_counts": {
+          "QHP": 16,
+          "VDH": 16,
+          "ONE": 656,
+          "VPF": 608,
+          "DOI": 608,
+          "DQU": 576,
+          "MSH": 576,
+          "NGW": 592,
+          "QFL": 576,
+          "PUO": 576,
+          "PVW": 560
+        },
+        "intervention_calls_by_target": {
+          "VDH": 4,
+          "VPF": 3,
+          "DOI": 3,
+          "DQU": 5,
+          "MSH": 5,
+          "NGW": 4,
+          "QFL": 5,
+          "PUO": 5,
+          "PVW": 6
+        },
+        "completed": true,
+        "quality": 0.17692307692307693,
+        "answer": {
+          "type": "answer",
+          "mediators": [
+            "VDH",
+            "VPF",
+            "DOI",
+            "DQU",
+            "MSH",
+            "NGW",
+            "QFL",
+            "PUO",
+            "PVW"
+          ],
+          "order": [
+            [
+              "QHP",
+              "VDH"
+            ],
+            [
+              "VDH",
+              "VPF"
+            ],
+            [
+              "VPF",
+              "DOI"
+            ],
+            [
+              "DOI",
+              "DQU"
+            ],
+            [
+              "DQU",
+              "MSH"
+            ],
+            [
+              "MSH",
+              "NGW"
+            ],
+            [
+              "NGW",
+              "QFL"
+            ],
+            [
+              "QFL",
+              "PUO"
+            ],
+            [
+              "PUO",
+              "PVW"
+            ],
+            [
+              "PVW",
+              "ONE"
+            ]
+          ]
+        },
+        "task_metrics": {
+          "mediator_f1": 0.2,
+          "order_f1": 0.15384615384615385,
+          "mediators_exact_match": false,
+          "order_exact_match": false
+        },
+        "terminal_score": {
+          "kind": "mediator",
+          "mediator_precision": 0.1111111111111111,
+          "mediator_recall": 1.0,
+          "mediator_f1": 0.2,
+          "order_precision": 0.1,
+          "order_recall": 0.3333333333333333,
+          "order_f1": 0.15384615384615385,
+          "mediators_exact_match": false,
+          "order_exact_match": false,
+          "reward_scalarization": "terminal-quality-v10"
+        }
+      }
+    }
+  ],
+  "families": {
+    "ate": {
+      "tasks": 5,
+      "completed_answers": 3,
+      "mean_raw_quality": 0.18468960884909053,
+      "mean_shaped_reward": -0.21262484427590947,
+      "task_metrics": {
+        "total_variation_error": {
+          "observed": 3,
+          "mean": 0.1292621012661851,
+          "values": [
+            0.2126888114794105,
+            0.07762516248098406,
+            0.09747232983816076
+          ]
+        }
+      }
+    },
+    "individual_counterfactual_probability": {
+      "tasks": 5,
+      "completed_answers": 1,
+      "mean_raw_quality": 0.0246992705320527,
+      "mean_shaped_reward": -0.7718339325929473,
+      "task_metrics": {
+        "mean_absolute_endpoint_error": {
+          "observed": 1,
+          "mean": 0.16845914243951585,
+          "values": [
+            0.16845914243951585
+          ]
+        }
+      }
+    },
+    "backadj_minimal_sets": {
+      "tasks": 5,
+      "completed_answers": 1,
+      "mean_raw_quality": 0.17142857142857143,
+      "mean_shaped_reward": -0.6162179129464286,
+      "task_metrics": {
+        "edit_distance": {
+          "observed": 1,
+          "mean": 2.0,
+          "values": [
+            2
+          ]
+        },
+        "valid_adjustment_set": {
+          "observed": 1,
+          "mean": 0.0,
+          "values": [
+            false
+          ]
+        }
+      },
+      "strict_success_count": 0
+    },
+    "best_intervention": {
+      "tasks": 5,
+      "completed_answers": 4,
+      "mean_raw_quality": 0.49926503708016695,
+      "mean_shaped_reward": 0.30029042770516695,
+      "task_metrics": {
+        "regret": {
+          "observed": 4,
+          "mean": 0.0734274942234556,
+          "values": [
+            0.06822344485770271,
+            0.09716004195280914,
+            0.0,
+            0.12832649008331054
+          ]
+        },
+        "normalized_regret": {
+          "observed": 4,
+          "mean": 0.6262815071227644,
+          "values": [
+            1.0,
+            1.0,
+            0.0,
+            0.5051260284910577
+          ]
+        },
+        "optimal_action": {
+          "observed": 4,
+          "mean": 0.25,
+          "values": [
+            false,
+            false,
+            true,
+            false
+          ]
+        }
+      },
+      "strict_success_count": 1
+    },
+    "mediator_set": {
+      "tasks": 5,
+      "completed_answers": 4,
+      "mean_raw_quality": 0.12238741650506357,
+      "mean_shaped_reward": -0.07761258349493644,
+      "task_metrics": {
+        "mediator_f1": {
+          "observed": 4,
+          "mean": 0.23809523809523808,
+          "values": [
+            0.2857142857142857,
+            0.13333333333333333,
+            0.3333333333333333,
+            0.2
+          ]
+        },
+        "order_f1": {
+          "observed": 4,
+          "mean": 0.06787330316742082,
+          "values": [
+            0.0,
+            0.11764705882352941,
+            0.0,
+            0.15384615384615385
+          ]
+        },
+        "mediators_exact_match": {
+          "observed": 4,
+          "mean": 0.0,
+          "values": [
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "order_exact_match": {
+          "observed": 4,
+          "mean": 0.0,
+          "values": [
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      },
+      "strict_success_count": 0
+    }
+  }
+}

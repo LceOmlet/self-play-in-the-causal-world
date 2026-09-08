@@ -1,0 +1,23 @@
+{
+  "archive_sha256": "b74010330492c329f6dc9846abee647a43003b7a3d20bf33c45ff029c5ab32de",
+  "all_member_hashes_verified": 113,
+  "source_sha256": "0a57118c1662c0df05aaf70e4624be90367e22d3a23da5a321c44ed7cc59bf8a",
+  "base_report_sha256": "d120d138de41bf2b895f3c4e987183109f47a2637650ecdad6ecc2f282f0d5b8",
+  "update25_report_sha256": "0afdd6eae0c66267498790a43f2652114e24d247d7d46490a528bca73257e557",
+  "local_comparison_sha256": "7698a68a978535c97b2629870c717844c66239fd998306fc17ab877ea7bee2bd",
+  "remote_comparison_sha256": "bcbcb8974c2ffc5f0459eefa1676022253556d07256cb7645903a40e8d9e6e3d",
+  "initial_local_partial_sha256": "4a457d82a290b130989fa20e56b20fe2312292693ff8c2a1af0def96eb783f03",
+  "comparison_reports_semantically_equal": true,
+  "byte_identity_claimed": false,
+  "difference": "JSON object key order / whitespace differ; parsed values are identical.",
+  "python": "3.12.13",
+  "matplotlib": "3.11.1",
+  "existing_plot_dependencies": "C:\\Users\\Chen\\Documents\\ChatGPT\\credit\\audit\\environment_validation_20260907\\plot_libs",
+  "figures": {
+    "base-vs-update25.pdf": "e523a99a0ced2b97611a88b38f542280c4093a24507d8cee4823d49650d4ada0",
+    "base-vs-update25.png": "7f11a4ff124f7fa9787d1dbcb1063c783ca5045da0732d4615e5dec2f2c41350",
+    "base-vs-update25.svg": "dcb04318c2da2c6ba9e25f65cd859eb2187603ee86ca92adf2e73529b941ec54"
+  },
+  "png_visually_inspected": true,
+  "scope": "Standalone local figure from the matched complete reports, not an added training component."
+}
