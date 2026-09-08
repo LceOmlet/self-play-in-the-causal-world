@@ -31,3 +31,5 @@ CPU 验收已通过：
 所有额外模型验证仍关闭；连续供题修复不改变奖励、预算和官方算法。检查点恢复依赖对应完整 journal，备份时须一并保留。最新部署证据见 `research/long_run_prepare_20260908/deployment/`。
 
 源码与复核入口：`src/cpt_world/verl_streaming_dataset.py`、`src/cpt_world/trl_environment.py`、`scripts/migrate_dapo_continuous_data.py`、`research/continuous_training_restore_20260908/`。旧 500 题档案仅保留为历史输入与诊断证据，不再用作当前持续训练的数据源。
+
+后续核对至第 100 次实际更新／G115：恢复后完成 29 个持续生成题组，五类分别 6、6、6、6、5 组；这是原家族轮换的有限前缀，没有每类 100 的封顶。本轮进一步禁用维护仓库中旧 `research/training_submission_20260907/prepare.py` 与 `control.py` 的直接命令行执行，保留历史函数供当前控制器复用。退出检查确认不写题库、不创建训练进程，当前生成器／转换器来源指纹保持一致。完整普通训练报表见 `research/training_progress100_20260908/README.md`，没有增加模型验证。

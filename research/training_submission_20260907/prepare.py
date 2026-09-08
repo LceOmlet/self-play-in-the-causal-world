@@ -10,6 +10,24 @@ from collections import Counter
 from fractions import Fraction
 from pathlib import Path
 
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description=(
+            'Archived fixed-500 preparation entry point; execution is disabled. '
+            'See research/long_run_10000_20260908/control.py for continuous '
+            'restoration helpers. Historical inputs remain evidence only.'
+        )
+    )
+    parser.parse_known_args()
+    parser.error(
+        'Fixed-500 training preparation is retired. See '
+        'research/long_run_10000_20260908/control.py for continuous restoration. '
+        'Training uses scripts/run_official_dapo.sh and the accepted prepared stream; '
+        'do not regenerate a fixed training cohort.'
+    )
+
 import pyarrow as pa
 import pyarrow.parquet as pq
 
@@ -135,7 +153,3 @@ def main():
                 'scope': 'Existing production generator and certification admission unchanged; rejected CF attempts logged.'}
     (data/'acceptance.json').write_text(json.dumps(manifest, indent=2)+'\n')
     print(json.dumps(manifest), flush=True)
-
-
-if __name__ == '__main__':
-    main()

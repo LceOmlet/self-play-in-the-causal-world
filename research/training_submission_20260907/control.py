@@ -7,8 +7,24 @@ import os
 from pathlib import Path
 import signal
 import subprocess
-import sys
 import time
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description=(
+            'Archived fixed-500 submission entry point; all command-line actions are disabled. '
+            'See research/long_run_10000_20260908/control.py for continuous '
+            'restoration helpers; the training entry point is scripts/run_official_dapo.sh. '
+            'Importable environment helpers remain available to the accepted continuation.'
+        )
+    )
+    parser.parse_known_args()
+    parser.error(
+        'Fixed-500 training submission is retired. See '
+        'research/long_run_10000_20260908/control.py for continuous restoration. '
+        'Training uses scripts/run_official_dapo.sh and the accepted prepared stream. '
+        'This archived controller cannot prepare, launch, supervise, or stop a run.'
+    )
 
 PROJECT = Path('/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831')
 VERL = Path('/home/chen/vendor/dapo-official-20260906/verl-tool-termination-v1')
@@ -173,9 +189,3 @@ def supervise():
             code = p.wait()
     write(RUN/'exit.json', {'exit_code': code, 'wall_limit_reached': expired, 'time': time.time()})
     return code
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['stop_pilot', 'preflight', 'launch', 'supervise'])
-    sys.exit(globals()[parser.parse_args().action]() or 0)

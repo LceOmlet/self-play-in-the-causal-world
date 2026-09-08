@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
 
@@ -21,7 +22,26 @@ def main():
     parser.add_argument("--inputs", nargs="+", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--native-progress", nargs="*", type=Path, default=[])
+    parser.add_argument(
+        "--phase-boundary",
+        action="append",
+        default=[],
+        metavar="UPDATE:LABEL",
+        help="Add a labeled phase boundary, e.g. 77.5:第78步起持续生成; may be repeated.",
+    )
     args = parser.parse_args()
+    boundaries = [(5.5, "第6步起启用编译"), (15.5, "第16步起使用已验收的进度补丁")]
+    for value in args.phase_boundary:
+        coordinate, separator, label = value.partition(":")
+        try:
+            coordinate = float(coordinate)
+        except ValueError:
+            parser.error("--phase-boundary requires UPDATE:LABEL")
+        if not separator or not label or not math.isfinite(coordinate) or coordinate <= 0:
+            parser.error("--phase-boundary requires a positive finite UPDATE and nonempty LABEL")
+        boundaries.append((coordinate, label))
+    assert len({coordinate for coordinate, _ in boundaries}) == len(boundaries)
+    boundaries.sort()
     args.output.mkdir(parents=True, exist_ok=True)
     style_path = Path(__file__).resolve().parents[1] / (
         "rl_correctness_20260907/official_execution/original_plot_training_curves.py"
@@ -47,7 +67,16 @@ def main():
         for record in [json.loads(p.read_text(encoding="utf-8")) for p in args.native_progress]
     }
     assert all(r["event_join_method"] != "unresolved" for r in rows)
-    assert len({r["request_id"] for r in rows}) == len(rows)
+    # A rollout with no tool calls has no environment request ID. Its immutable
+    # dump record identifies the offline sample without inventing a tool trace.
+    identities = [
+        ("environment", r["request_id"])
+        if r["request_id"] is not None
+        else ("dump", r["record_id"])
+        for r in rows
+    ]
+    assert all(identity for _, identity in identities)
+    assert len(set(identities)) == len(rows)
     by_step = defaultdict(list)
     for row in rows:
         by_step[row["step"]].append(row)
@@ -60,7 +89,7 @@ def main():
         batch = by_step[step]
         assert len(batch) == 4 and len({r["query_type"] for r in batch}) == 1
         if step in missing_metrics:
-            # A saved native update can precede validation and final logging.
+            # A saved native update can precede final logging.
             # Preserve the reward/error samples; do not fabricate missing logs.
             assert native[step]["version"] == 1
             assert native[step]["generated_batches"] >= generated + 1
@@ -89,8 +118,9 @@ def main():
         ax.set_ylim(-0.03 * ymax, ymax)
         ax.grid(axis="y")
         ax.tick_params(length=0)
-        for boundary in [5.5, 15.5]:
-            ax.axvline(boundary, color="#9aa9b8", lw=0.8, ls="--", alpha=0.7)
+        for boundary, _ in boundaries:
+            if 0.5 <= boundary <= max(steps) + 0.5:
+                ax.axvline(boundary, color="#9aa9b8", lw=0.8, ls="--", alpha=0.7)
 
     def error_points(family, key, transform=lambda x: x):
         result = []
@@ -126,7 +156,7 @@ def main():
 
     artifacts = []
     fig, axes = plt.subplots(2, 1, figsize=(12.5, 8.5))
-    fig.subplots_adjust(left=0.075, right=0.96, top=0.76, bottom=0.12, hspace=0.43)
+    fig.subplots_adjust(left=0.075, right=0.96, top=0.76, bottom=0.17, hspace=0.43)
     fig.suptitle(
         "官方 DAPO：奖励与更新耗时", x=0.075, y=0.985, ha="left", fontsize=22, fontweight="bold"
     )
@@ -197,11 +227,18 @@ def main():
             color=style.MUTED,
             fontsize=9,
         )
-    footnote = "虚线：第 6 步起启用编译；第 16 步起使用已验收的进度补丁。"
+    footnote = (
+        "虚线："
+        + "；".join(
+            label for coordinate, label in boundaries if 0.5 <= coordinate <= max(steps) + 0.5
+        )
+        + "。"
+    )
     if missing_metrics:
-        footnote = (
-            "第 " + "、".join(map(str, sorted(missing_metrics)))
-            + " 步原生更新已保存；取消验证时尚未打印最终日志，相关曲线留空。"
+        footnote += (
+            "\n第 "
+            + "、".join(map(str, sorted(missing_metrics)))
+            + " 步原生更新已保存；最终指标日志缺失，相关训练指标留空。"
         )
     fig.text(0.075, 0.06, footnote, color=style.MUTED)
     fig.text(
@@ -280,6 +317,9 @@ def main():
         "generated_groups": generated,
         "metric_coverage": coverage,
         "validation_seconds_separate_from_training_step": validation_seconds,
+        "phase_boundaries": [
+            {"coordinate": coordinate, "label": label} for coordinate, label in boundaries
+        ],
         "files": {p.name: sha(p) for p in artifacts},
         "scope": "Training rollout metrics on changing tasks; no causal capability-gain claim.",
     }

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import math
 from pathlib import Path
 
 
@@ -11,7 +12,34 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def plot_references(data, style, output):
+def generation_axis(ax, total, boundaries):
+    target_stride = max(1, total / 6)
+    magnitude = 10 ** math.floor(math.log10(target_stride))
+    stride = next(
+        value * magnitude for value in (1, 2, 5, 10) if value * magnitude >= target_stride
+    )
+    ticks = {
+        1,
+        total,
+        *(tick for tick in range(stride, total, stride) if total - tick >= stride / 3),
+    }
+    ax.set_xlim(0.5, total + 0.5)
+    ax.set_xticks(sorted(ticks))
+    for coordinate, _ in boundaries:
+        if 0.5 <= coordinate <= total + 0.5:
+            ax.axvline(coordinate, color="#9aa9b8", lw=0.8, ls="--", alpha=0.7)
+
+
+def phase_note(boundaries, total):
+    labels = [
+        f"G={coordinate:g}：{label}"
+        for coordinate, label in boundaries
+        if 0.5 <= coordinate <= total + 0.5
+    ]
+    return "\n竖线（生成组序号）：" + "；".join(labels) + "。" if labels else ""
+
+
+def plot_references(data, style, output, boundaries=()):
     """Use identical completed trajectories on both sides of each comparison."""
     np, plt = style.np, style.plt
     families = [
@@ -20,7 +48,7 @@ def plot_references(data, style, output):
         ("best_intervention", "最佳干预选择", "归一化遗憾"),
     ]
     fig, axes = plt.subplots(2, 3, figsize=(15, 9.4))
-    fig.subplots_adjust(left=0.07, right=0.975, top=0.76, bottom=0.17, hspace=0.48, wspace=0.3)
+    fig.subplots_adjust(left=0.07, right=0.975, top=0.76, bottom=0.21, hspace=0.48, wspace=0.3)
     fig.suptitle(
         "模型与同题观察参考：得分和真实误差",
         x=0.07,
@@ -32,7 +60,8 @@ def plot_references(data, style, output):
     fig.text(
         0.07,
         0.917,
-        "前 51 次更新 · 动态过滤前全部训练采样 · 仅比较有最终答案的相同轨迹",
+        f"前 {data['completed_updates']} 次更新 · 动态过滤前全部训练采样 · "
+        "仅比较有最终答案的相同轨迹",
         color=style.MUTED,
     )
     handles = []
@@ -81,8 +110,7 @@ def plot_references(data, style, output):
                 ax.set_ylim(-0.03, 1.04)
             else:
                 ax.set_ylim(bottom=0)
-            ax.set_xlim(0.5, data["generated_groups"] + 0.5)
-            ax.set_xticks([1, 10, 20, 30, 40, 50, data["generated_groups"]])
+            generation_axis(ax, data["generated_groups"], boundaries)
             ax.set_xlabel("实际生成题组序号（累计均值）")
             ax.grid(axis="y")
             ax.tick_params(length=0)
@@ -92,7 +120,8 @@ def plot_references(data, style, output):
     fig.text(
         0.07,
         0.105,
-        "参考使用总体观察概率，不是基座模型成绩，也不是有限采样程序的实测成绩。",
+        "参考使用总体观察概率，不是基座模型成绩，也不是有限采样程序的实测成绩。"
+        + phase_note(boundaries, data["generated_groups"]),
         color=style.MUTED,
     )
     fig.text(
@@ -110,7 +139,7 @@ def plot_references(data, style, output):
     return style.save_figure(fig, output, "same-task-reference-score-and-error")
 
 
-def plot_structure(data, style, output):
+def plot_structure(data, style, output, boundaries=()):
     np, plt = style.np, style.plt
     fig, axes = plt.subplots(1, 3, figsize=(15, 5.2))
     fig.subplots_adjust(left=0.07, right=0.98, top=0.64, bottom=0.23, wspace=0.3)
@@ -118,7 +147,8 @@ def plot_structure(data, style, output):
     fig.text(
         0.07,
         0.87,
-        "前 51 次更新 · 全部训练采样（含过滤组）· 编辑距离与 F1 只统计已提交答案",
+        f"前 {data['completed_updates']} 次更新 · 全部训练采样（含过滤组）· "
+        "编辑距离与 F1 只统计已提交答案",
         color=style.MUTED,
     )
     for col, (family, fields, title) in enumerate(
@@ -149,8 +179,7 @@ def plot_structure(data, style, output):
         if col == 1:
             axes[col].set_ylim(0, 1.04)
             axes[col].legend(frameon=False, fontsize=10)
-        axes[col].set_xlim(0.5, data["generated_groups"] + 0.5)
-        axes[col].set_xticks([1, 20, 40, data["generated_groups"]])
+        generation_axis(axes[col], data["generated_groups"], boundaries)
         axes[col].set_xlabel("实际生成题组序号")
     ax = axes[2]
     families = ["backadj_minimal_sets", "best_intervention", "mediator_set"]
@@ -172,7 +201,8 @@ def plot_structure(data, style, output):
     fig.text(
         0.07,
         0.09,
-        "部分分不等于答对：后门要求合法调整集；干预要求零遗憾；中介要求集合与路径边同时精确匹配。",
+        "部分分不等于答对：后门要求合法调整集；干预要求零遗憾；中介要求集合与路径边同时精确匹配。"
+        + phase_note(boundaries, data["generated_groups"]),
         color=style.MUTED,
     )
     return style.save_figure(fig, output, "structure-errors-and-strict-correctness")
@@ -182,7 +212,28 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--phase-boundary",
+        action="append",
+        default=[],
+        metavar="GENERATION:LABEL",
+        help="Add a generation-axis boundary, e.g. 86.5:持续新题; may be repeated.",
+    )
     args = parser.parse_args()
+    boundaries = []
+    for value in args.phase_boundary:
+        coordinate, separator, label = value.partition(":")
+        try:
+            coordinate = float(coordinate)
+        except ValueError:
+            parser.error("--phase-boundary requires GENERATION:LABEL")
+        if not separator or not label or not math.isfinite(coordinate) or coordinate <= 0:
+            parser.error(
+                "--phase-boundary requires a positive finite GENERATION and nonempty LABEL"
+            )
+        boundaries.append((coordinate, label))
+    assert len({coordinate for coordinate, _ in boundaries}) == len(boundaries)
+    boundaries.sort()
     data = json.loads(args.input.read_text(encoding="utf-8"))
     groups = data["groups"]
     style_path = Path(__file__).resolve().parents[1] / (
@@ -194,7 +245,7 @@ def main():
     style.style()
     plt, np = style.plt, style.np
     fig, axes = plt.subplots(2, 3, figsize=(15, 8.5))
-    fig.subplots_adjust(left=0.065, right=0.97, top=0.77, bottom=0.14, hspace=0.48, wspace=0.25)
+    fig.subplots_adjust(left=0.065, right=0.97, top=0.77, bottom=0.19, hspace=0.48, wspace=0.25)
     fig.suptitle(
         "全部训练采样的累计得分", x=0.065, y=0.975, ha="left", fontsize=23, fontweight="bold"
     )
@@ -232,15 +283,15 @@ def main():
     ax.set_ylim(-0.03, 1.04)
     ax.set_ylabel("完成率")
     for ax in axes.flat:
-        ax.set_xlim(0.5, len(groups) + 0.5)
-        ax.set_xticks([1, 10, 20, 30, 40, 50, len(groups)])
+        generation_axis(ax, data["generated_groups"], boundaries)
         ax.set_xlabel("实际生成题组序号（含过滤组）")
         ax.grid(axis="y")
         ax.tick_params(length=0)
     fig.text(
         0.065,
         0.075,
-        "同题四个回答得分相同会被过滤，包括全对、全错和相同部分分；模型未提交答案时得分为 0。",
+        "同题四个回答得分相同会被过滤，包括全对、全错和相同部分分；模型未提交答案时得分为 0。"
+        + phase_note(boundaries, data["generated_groups"]),
         color=style.MUTED,
     )
     fig.text(
@@ -251,13 +302,17 @@ def main():
     )
     args.output.mkdir(parents=True, exist_ok=True)
     files = style.save_figure(fig, args.output, "all-training-samples")
-    files += plot_references(data, style, args.output)
-    files += plot_structure(data, style, args.output)
+    files += plot_references(data, style, args.output, boundaries)
+    files += plot_structure(data, style, args.output, boundaries)
     manifest = {
         "input": str(args.input),
         "input_sha256": sha(args.input),
         "script_sha256": sha(Path(__file__)),
         "style_sha256": sha(style_path),
+        "phase_boundary_axis": "generation",
+        "phase_boundaries": [
+            {"coordinate": coordinate, "label": label} for coordinate, label in boundaries
+        ],
         "files": {p.name: sha(p) for p in files},
     }
     (args.output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

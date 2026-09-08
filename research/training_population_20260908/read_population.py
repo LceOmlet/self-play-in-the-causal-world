@@ -1,8 +1,10 @@
 """Recover all completed training groups before DAPO filtering from saved logs.
 
-The currently frozen sources cover the first sampler epoch only. Each source
-is bounded by its completed native-update frontier, excluding cancelled or
-in-flight work beyond that frontier. Validation tapes are never training data.
+Historical catalogs cover the first finite sampler epoch. A joined generation
+catalog can explicitly connect that history to journal-backed continuous tasks.
+Each source is bounded by its completed native-update frontier, excluding
+cancelled or in-flight work beyond that frontier. Validation tapes are never
+training data.
 """
 
 import argparse
@@ -117,11 +119,32 @@ def summarize_comparisons(groups, family):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--curve-manifest", type=Path, required=True)
-    parser.add_argument("--catalog", type=Path, required=True)
+    catalogs = parser.add_mutually_exclusive_group(required=True)
+    catalogs.add_argument("--catalog", type=Path)
+    catalogs.add_argument("--generation-catalog", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    manifest, catalog = read(args.curve_manifest), read(args.catalog)
-    assert catalog["sha256"] == "bcb84b4f1b915fd9d3f8f63dd116bfcca837f622a62402b135a3c8ff9fe4faf8"
+    catalog_path = args.generation_catalog or args.catalog
+    manifest, catalog = read(args.curve_manifest), read(catalog_path)
+    if args.generation_catalog:
+        assert catalog["version"] == 1 and catalog["kind"] == "joined_official_generations"
+        assert isinstance(catalog["input_fingerprints"], dict) and catalog["input_fingerprints"]
+        assert all(sha(p) == value for p, value in catalog["input_fingerprints"].items())
+        catalog_rows = catalog["rows"]
+        assert isinstance(catalog_rows, list) and catalog_rows
+        for row in catalog_rows:
+            assert type(row["generation"]) is int and type(row["index"]) is int
+            assert row["index"] >= 0
+            assert all(
+                isinstance(row[key], str) and row[key]
+                for key in ("tape_key", "query_type", "source_kind")
+            )
+        assert [r["generation"] for r in catalog_rows] == list(range(1, len(catalog_rows) + 1))
+        assert len({r["tape_key"] for r in catalog_rows}) == len(catalog_rows)
+    else:
+        assert (
+            catalog["sha256"] == "bcb84b4f1b915fd9d3f8f63dd116bfcca837f622a62402b135a3c8ff9fe4faf8"
+        )
     assert all(sha(p) == value for p, value in manifest["inputs"].items())
     assert all(sha(p) == value for p, value in manifest["native_progress_inputs"].items())
     sources = [read(p) for p in manifest["inputs"]]
@@ -139,12 +162,19 @@ def main():
         else:
             frontier[step] = native[step]["generated_batches"]
         assert frontier[step] > frontier[step - 1]
-    order = catalog["official_sampler_order"]
-    assert max(frontier.values()) <= len(order), "This evidence reader covers the first epoch only"
-    by_index = {r["index"]: r for r in catalog["rows"]}
-    tape_catalog = {r["tape_key"]: r for r in catalog["rows"]}
-    assert len(order) == len(by_index) == len(tape_catalog) == 500
-    generation = {g + 1: by_index[index] for g, index in enumerate(order)}
+    if args.generation_catalog:
+        generation = {r["generation"]: r for r in catalog_rows}
+        tape_catalog = {r["tape_key"]: r for r in catalog_rows}
+        assert max(frontier.values()) <= len(generation), "Missing completed generation identities"
+    else:
+        order = catalog["official_sampler_order"]
+        assert max(frontier.values()) <= len(order), (
+            "This evidence reader covers the first epoch only"
+        )
+        by_index = {r["index"]: r for r in catalog["rows"]}
+        tape_catalog = {r["tape_key"]: r for r in catalog["rows"]}
+        assert len(order) == len(by_index) == len(tape_catalog) == 500
+        generation = {g + 1: by_index[index] for g, index in enumerate(order)}
     update_for_group = {
         g: step
         for step in manifest["updates"]
@@ -278,7 +308,7 @@ def main():
     result = {
         "input_fingerprints": manifest["inputs"],
         "native_frontier_proofs": manifest["native_progress_inputs"],
-        "catalog_sha256": sha(args.catalog),
+        "catalog_sha256": sha(catalog_path),
         "reader_sha256": sha(Path(__file__)),
         "completed_updates": max(frontier),
         "generated_groups": len(groups),
@@ -290,8 +320,16 @@ def main():
         "scope": "All fully scored training groups through completed native frontiers, including "
         "constant-acc filtered groups. "
         "Changing tasks and cumulative means are not paired learning gains. "
-        "Only the first data epoch is covered; no new inference or training implementation.",
+        + (
+            "Explicit generation identities join finite history and the continuous task journal; "
+            if args.generation_catalog
+            else "Only the first data epoch is covered; "
+        )
+        + "no new inference or training implementation.",
     }
+    if args.generation_catalog:
+        result["generation_catalog_kind"] = catalog["kind"]
+        result["generation_catalog_input_fingerprints"] = catalog["input_fingerprints"]
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     print(
         json.dumps({k: v for k, v in result.items() if k not in ["groups", "input_fingerprints"]})
