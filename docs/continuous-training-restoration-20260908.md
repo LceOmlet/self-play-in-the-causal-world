@@ -26,6 +26,8 @@ CPU 验收已通过：
 
 随后原生第 78 次更新已完成并保存，G 推进至 87；四轨迹均提交答案且未超长，496 个 LoRA 张量均有有限的实际参数变化。保存的数据游标与 journal 前缀一致，下一道 seed 4,000,001 的 CF 题已生成并缓存完整认证区间，未因更新回到旧题。`update78/` 保存真实检查点数据状态、完成轨迹、下一题记录及只读验收脚本。本项已跨过实际更新边界，证明连续供题和更新接续工作；一组更新不证明能力改善。
 
-所有额外模型验证仍关闭；本次修复不改变奖励、预算、任务难度、官方算法和当前运行的更新目标。最终 10,000 次实际更新目标继续由总工作清单管理。检查点恢复依赖对应完整 journal，备份时须一并保留。
+后续实际部署：持续流已推进至 U96／G110，并在这个完整检查点边界迁至 `long-run-10000-20260908/resume-01`。保留生成器 seed、游标、已有题目／真值和训练状态，同时接入已验收反事实内核，将目标改为累计 10,000 次实际更新并取消墙钟截断。首个正常第 97 次更新已保存，累计生成 G111、journal next=112；运行配置实际绑定 `stream.json` 与 `CPTWorldStreamingDataset`，没有重新使用固定 parquet。GPU 日志确认恢复 LoRA、Adam、RNG、调度器，学习率仍为 1e-6；这是实际接续证据，不是能力提升证据。
+
+所有额外模型验证仍关闭；连续供题修复不改变奖励、预算和官方算法。检查点恢复依赖对应完整 journal，备份时须一并保留。最新部署证据见 `research/long_run_prepare_20260908/deployment/`。
 
 源码与复核入口：`src/cpt_world/verl_streaming_dataset.py`、`src/cpt_world/trl_environment.py`、`scripts/migrate_dapo_continuous_data.py`、`research/continuous_training_restore_20260908/`。旧 500 题档案仅保留为历史输入与诊断证据，不再用作当前持续训练的数据源。

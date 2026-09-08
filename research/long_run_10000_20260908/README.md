@@ -5,6 +5,15 @@ absolute target of 10,000 completed optimizer updates. It preserves the official
 launcher, recipe, numerical configuration and update implementation. Preparation
 does not stop training or launch a model.
 
+The accepted source at `e87bea8` has now been deployed. The actual GPU run resumed
+the preserved native checkpoint at update 96 and generation count 110, retaining
+the continuous task stream and cached tasks. Its first new update, 97, completed
+and was saved with generation count 111 and journal next index 112. The observed
+gradient norm was `0.1396484375`, learning rate `1e-6`, mean reward `0.26984128`,
+and step duration `533.94` seconds. This establishes successful native GPU
+continuation; it does not establish improved learning or completion of 10,000
+updates. No additional standalone model validation was run.
+
 The only training setting changed is `trainer.total_training_steps=10000`.
 Runtime/output/source paths follow the new run. The existing constant learning
 rate of `1e-6`, zero warmup, disabled separate validation, and native Adam,
@@ -13,6 +22,8 @@ explicit update target precedence over `total_epochs`; its generation counter
 includes dynamically filtered groups and is never substituted for update count.
 The supervisor uses `process.wait()` without a wall-clock timeout. It records a
 completed target only when the native checkpoint progress reaches 10,000.
+The deployed run uses this cumulative target and has no inherited 500-update or
+24-hour cutoff. Separate fixed validation remains disabled.
 
 Preparation deliberately supports the already accepted counterfactual-kernel
 source migration. It calls
