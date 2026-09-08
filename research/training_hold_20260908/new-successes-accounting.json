@@ -1,0 +1,233 @@
+{
+  "script_sha256": "cb8acf7787681e5aed08f63d4bf54cb01fa20cefe11129baaa70863c1c25808b",
+  "audit_sha256": "bba25120d6b3ebdfe6eaa092ac405014fa2b377e51c4027da958c8d06ea5f24d",
+  "traces_sha256": "180b5d78f7e33aa51b0b2b0139bb52827b7f5cae45f62b2c5cc282152a1159ca",
+  "all_new_successes_checked": 3,
+  "records": [
+    {
+      "step": 32,
+      "task_index": 383,
+      "request_id": "5e7dc70a8ee84e4794aa342feb672a75",
+      "source_world_sha256": "50b7bd029baed5cb533d9c143d7596f5de7a463b55959a22c2ecbe90aac7f43a",
+      "output_sha256": "0f89a234964afad6c66bf19ed04ddee55c23a982d726e65f27954b138a3e4e73",
+      "sample_count": 32,
+      "selected_commands": [
+        {
+          "type": "intervene",
+          "target": "IOV",
+          "value": "state_0",
+          "measure": [
+            "KNI",
+            "ETJ"
+          ],
+          "batch_size": 32
+        }
+      ],
+      "actual_successes": [
+        11,
+        1,
+        1,
+        1,
+        2
+      ],
+      "actual_totals": [
+        16,
+        1,
+        5,
+        3,
+        7
+      ],
+      "actual_empirical_conditionals": [
+        0.6875,
+        1.0,
+        0.2,
+        0.3333333333333333,
+        0.2857142857142857
+      ],
+      "same_experiment_mixture_population_conditionals": [
+        0.744575515312954,
+        0.37859827548874947,
+        0.3677597087144637,
+        0.3300560673234858,
+        0.14853385727454008
+      ],
+      "true_do_values": [
+        0.24802744778167302,
+        0.1260955639970368,
+        0.17599715900290497,
+        0.23226060052909553,
+        0.15106414219109132
+      ],
+      "true_action": 0,
+      "decision_parents": [
+        "IOV",
+        "QEU",
+        "PVR",
+        "QQR",
+        "PDO"
+      ],
+      "outcome_parents": [
+        "IOV",
+        "SEU",
+        "KNI",
+        "QEU"
+      ],
+      "scope": "Post-answer accounting and population formula check; no hidden truth supplied to model."
+    },
+    {
+      "step": 34,
+      "task_index": 408,
+      "request_id": "70bdca03a3574b19b12194c4ecab1240",
+      "source_world_sha256": "8bc236a42ccfed47b19e0d3d09df93015083eb584f603bbe9152b1a289d21a33",
+      "output_sha256": "8bc746fe1be305d2daf8c45833ad6f0a69e2a581b408856f848a31ecacbf0e12",
+      "sample_count": 256,
+      "selected_commands": [
+        {
+          "type": "intervene",
+          "target": "VER",
+          "value": "state_0",
+          "measure": [
+            "IRL",
+            "RRM"
+          ],
+          "batch_size": 64
+        },
+        {
+          "type": "intervene",
+          "target": "VER",
+          "value": "state_1",
+          "measure": [
+            "IRL",
+            "RRM"
+          ],
+          "batch_size": 64
+        },
+        {
+          "type": "intervene",
+          "target": "VER",
+          "value": "state_2",
+          "measure": [
+            "IRL",
+            "RRM"
+          ],
+          "batch_size": 64
+        },
+        {
+          "type": "intervene",
+          "target": "VER",
+          "value": "state_3",
+          "measure": [
+            "IRL",
+            "RRM"
+          ],
+          "batch_size": 64
+        }
+      ],
+      "actual_successes": [
+        48,
+        57,
+        4
+      ],
+      "actual_totals": [
+        99,
+        148,
+        9
+      ],
+      "actual_empirical_conditionals": [
+        0.48484848484848486,
+        0.38513513513513514,
+        0.4444444444444444
+      ],
+      "same_experiment_mixture_population_conditionals": [
+        0.4460256587020279,
+        0.4492962097672796,
+        0.3330729376089458
+      ],
+      "true_do_values": [
+        0.47519896088554076,
+        0.42593926273023974,
+        0.42582519210606384
+      ],
+      "true_action": 0,
+      "decision_parents": [
+        "VER",
+        "QDJ",
+        "JKW",
+        "VKM"
+      ],
+      "outcome_parents": [
+        "UOP",
+        "VOP",
+        "JKW",
+        "VKM"
+      ],
+      "scope": "Post-answer accounting and population formula check; no hidden truth supplied to model."
+    },
+    {
+      "step": 34,
+      "task_index": 408,
+      "request_id": "803b597be9ec4e119f1958b5e7d3adef",
+      "source_world_sha256": "8bc236a42ccfed47b19e0d3d09df93015083eb584f603bbe9152b1a289d21a33",
+      "output_sha256": "4f10d3b9c2bb43d31664d257ba2b4ae9eb11c41d3472493d9fce13af0132fc10",
+      "sample_count": 128,
+      "selected_commands": [
+        {
+          "type": "observe",
+          "measure": [
+            "IRL",
+            "RRM"
+          ],
+          "batch_size": 64
+        },
+        {
+          "type": "observe",
+          "measure": [
+            "IRL",
+            "RRM"
+          ],
+          "batch_size": 64
+        }
+      ],
+      "actual_successes": [
+        13,
+        29,
+        1
+      ],
+      "actual_totals": [
+        40,
+        84,
+        4
+      ],
+      "actual_empirical_conditionals": [
+        0.325,
+        0.34523809523809523,
+        0.25
+      ],
+      "same_experiment_mixture_population_conditionals": [
+        0.4150816772109052,
+        0.463514711928528,
+        0.2823721978665006
+      ],
+      "true_do_values": [
+        0.47519896088554076,
+        0.42593926273023974,
+        0.42582519210606384
+      ],
+      "true_action": 0,
+      "decision_parents": [
+        "VER",
+        "QDJ",
+        "JKW",
+        "VKM"
+      ],
+      "outcome_parents": [
+        "UOP",
+        "VOP",
+        "JKW",
+        "VKM"
+      ],
+      "scope": "Post-answer accounting and population formula check; no hidden truth supplied to model."
+    }
+  ],
+  "limits": "A correct outcome with an incorrect recorded calculation is not itself a DAPO bug. No inference about model learning or policy-wide causal reasoning from three successes."
+}
