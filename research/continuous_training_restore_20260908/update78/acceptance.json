@@ -1,0 +1,113 @@
+{
+  "passed": true,
+  "scope": "Saved-state inspection only: CPU LoRA comparison, sampler/journal consistency and already logged rollouts. No new task, inference or optimizer step executed; this establishes a real parameter update, not improved learned capability.",
+  "source_checkpoint": "/home/chen/runs/continuous-training-restore-20260908/hold-01/global_step_77",
+  "target_checkpoint": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-02/checkpoints/global_step_78",
+  "model_files_sha256": {
+    "/home/chen/runs/continuous-training-restore-20260908/hold-01/global_step_77/actor/model_world_size_1_rank_0.pt": "046d26c8cabe083d3e038d9ab47605b0523ee851e986069c1cc51b5e4a1aaf2c",
+    "/home/chen/runs/continuous-training-restore-20260908/resume-stream-02/checkpoints/global_step_78/actor/model_world_size_1_rank_0.pt": "90f10a6553d677b9481bb6658da0d43c06f2a7ad1814faafc4f79d64f000072a"
+  },
+  "parameter_differences": {
+    "lora_A": {
+      "tensors": 248,
+      "changed_tensors": 248,
+      "elements": 10223616,
+      "changed_elements": 51086,
+      "max_abs_change": 1.9073486328125e-06,
+      "squared_change": 9.934885627554398e-09
+    },
+    "lora_B": {
+      "tensors": 248,
+      "changed_tensors": 248,
+      "elements": 11415552,
+      "changed_elements": 10660640,
+      "max_abs_change": 1.1324882507324219e-06,
+      "squared_change": 6.831169805786174e-07
+    }
+  },
+  "parameter_difference_l2": 0.0008324973670866303,
+  "all_496_lora_tensors_finite": true,
+  "progress": {
+    "version": 1,
+    "completed_updates": 78,
+    "generated_batches": 87,
+    "data_epoch": 0,
+    "batches_per_epoch": 9223372036854775807
+  },
+  "native_data_state": {
+    "_index_sampler_state": null,
+    "_sampler_iter_state": {
+      "samples_yielded": 87
+    },
+    "_sampler_iter_yielded": 87,
+    "_num_yielded": 87,
+    "_IterableDataset_len_called": null,
+    "_shared_seed": null,
+    "fetcher_state": null,
+    "dataset_state": {
+      "version": 1,
+      "kind": "cpt_world_continuous_journal",
+      "journal_id": "c4521c400e4c4639b7497372645bc080",
+      "descriptor_sha256": "23beabba10a6c75794e5a086d48bc2d1fec7f7f7432e4d88b8ff7e442601c688",
+      "next_index": 87,
+      "last_record_sha256": "5e0d538550467387edf9618960e565f8b5ab6f50de60ea00ebe98ae2a34f701d"
+    },
+    "_iterator_finished": false
+  },
+  "journal_head_observed": {
+    "last_record_sha256": "01bffa3472af6abb0053e075bbad66a03c5c8086b01af19b777992034cf5811a",
+    "next_index": 88,
+    "version": 1
+  },
+  "journal_consistency": "Saved next index87 follows committed row86; row87 links to that same prefix. A journal ahead of the checkpoint is supported.",
+  "completed_update_task": {
+    "sample_index": 4000000,
+    "query_type": "ate",
+    "tape_key": "trl-grpo:SAMPLED-4000000-ate-target_query-a2"
+  },
+  "next_cf_task": {
+    "logical_index": 87,
+    "sample_index": 4000001,
+    "truth": {
+      "type": "individual_counterfactual_probability",
+      "lower": 0.014446021744152718,
+      "upper": 0.18699401790606213,
+      "certification": "exact",
+      "interval_source": "exact_markovian",
+      "endpoint_error": 0.0,
+      "endpoint_tolerance": 0.001
+    },
+    "truth_present_in_journal_and_forwarded_tool_row": true,
+    "cached_record_sha256": "01bffa3472af6abb0053e075bbad66a03c5c8086b01af19b777992034cf5811a"
+  },
+  "rollouts": {
+    "count": 4,
+    "same_input": true,
+    "scores": [
+      0.23650112517669994,
+      0.23650112517669994,
+      0.8951781511093653,
+      0.493215885906285
+    ],
+    "completed": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "overlong": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "artifact_sha256": {
+    "data.pt": "3711639c598b70bb6f013f27a139533a567d13fc9fb863f6a3e8040d1c418dbe",
+    "dapo_progress.json": "35d9949385c303b3eec3358cca68e4718b2fde7153918c9defe932b5a022054c",
+    "78.jsonl": "b57ee967013c2872357cad33d6b8a9cc44abdfd5006556099b0dfa3f5a7f4e8c",
+    "00000000000000000087.json": "01bffa3472af6abb0053e075bbad66a03c5c8086b01af19b777992034cf5811a"
+  },
+  "inspector_sha256": "8d8faaa8173ef43de84ac62232f0a4570323ea645f8df82579bd2ba68816f834",
+  "torch_version": "2.11.0+cu130"
+}
