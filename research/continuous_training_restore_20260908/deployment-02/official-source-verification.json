@@ -1,0 +1,136 @@
+{
+  "source_profile": "progress-v1",
+  "source_manifest_sha256": "381a875ea414391a1d9b33363747a92358d6ca7bd2a97f5e4f82ade781313c53",
+  "repositories": {
+    "verl": {
+      "root": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+      "commit": "23af6a7a2e8d6efeeb2adbe5d1689c7a24f503a3",
+      "verified_files": 419,
+      "reviewed_runtime_patch_files": 3
+    },
+    "verl-recipe": {
+      "root": "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2",
+      "commit": "ee3aef1690d6bb5e6448052c4842e8efb7a3f76c",
+      "verified_files": 8,
+      "reviewed_runtime_patch_files": 1
+    }
+  },
+  "reviewed_runtime_patches": [
+    {
+      "repository": "verl",
+      "base_commit": "23af6a7a2e8d6efeeb2adbe5d1689c7a24f503a3",
+      "path": "patches/verl-tool-termination-v1.patch",
+      "sha256": "0150904aef3f935c13195affe51563983b269cae59a12d4d204a127905c7bab5",
+      "reason": "Honor an explicit environment terminal result without adding terminal feedback or sampling another assistant turn. DAPO algorithm sources are unchanged.",
+      "files": {
+        "verl/tools/schemas.py": {
+          "upstream_sha256": "f924f1e4bab212977f4966038d118eb90e80d5481862e1c9690730bd8f754619",
+          "patched_sha256": "fb9bfdabfdfe31fc8580b76c0bff2491095ed355ec827ec0f9735862a2392d38"
+        },
+        "verl/experimental/agent_loop/tool_agent_loop.py": {
+          "upstream_sha256": "ff00f279d673cea68f489139a4559e902a120f8a0bc44053f170c4eae533bd01",
+          "patched_sha256": "52c38bef0152c6f219fa69b654e77f96085433be1ceb5091713cb49c49fd3859"
+        }
+      }
+    },
+    {
+      "repository": "verl-recipe",
+      "base_commit": "ee3aef1690d6bb5e6448052c4842e8efb7a3f76c",
+      "path": "patches/verl-recipe-mask-progress-v1.patch",
+      "sha256": "f5d4ef0d43d8b07c733be33a9e63ac387b7cbccacdc670c29646874daf42944d",
+      "reason": "Preserve the action mask and fix update-target, epoch and checkpoint progress. The numerical update block remains unchanged; verified control-flow evidence is recorded in research/dapo_progress_20260908.",
+      "files": {
+        "dapo/dapo_ray_trainer.py": {
+          "upstream_sha256": "5d3e76c0cd5a9b9e01b1a796d36659e6ad3104739fe9bdc4ae4953603cf47a2c",
+          "patched_sha256": "b8e66a6037e3b2922f560c24eb10a94dc28a916579d2f163b506adb82559f491"
+        }
+      }
+    },
+    {
+      "repository": "verl",
+      "base_commit": "23af6a7a2e8d6efeeb2adbe5d1689c7a24f503a3",
+      "path": "patches/verl-dapo-progress-v1.patch",
+      "sha256": "affa3f5b34fa8d1a619136471652eb1aa0dce0cfb7fcea94423efdab2bcc7087",
+      "reason": "Always restore the saved sampler state and return the actual loaded checkpoint path. No numerical training code changed.",
+      "files": {
+        "verl/trainer/ppo/ray_trainer.py": {
+          "upstream_sha256": "c930623489f724e9abbf1dab41ed617da1be2f0d60485d4c0ee5354c145dd809",
+          "patched_sha256": "4ade49b9c8e80d51a21240e3f07df1fb1215afac365e9424af076b84e88f8e7b"
+        }
+      }
+    }
+  ],
+  "loaded": {
+    "dapo.main_dapo": "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2/dapo/main_dapo.py",
+    "dapo.dapo_ray_trainer": "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2/dapo/dapo_ray_trainer.py",
+    "verl.trainer.ppo.core_algos": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/trainer/ppo/core_algos.py",
+    "verl.workers.engine_workers": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/workers/engine_workers.py",
+    "verl.experimental.agent_loop.tool_agent_loop": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/experimental/agent_loop/tool_agent_loop.py",
+    "verl.experimental.reward_loop.reward_manager.dapo": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/experimental/reward_loop/reward_manager/dapo.py"
+  },
+  "packages": {
+    "verl": "0.10.0.dev0",
+    "torch": "2.11.0",
+    "transformers": "5.9.0",
+    "vllm": "0.24.0",
+    "peft": "0.20.0",
+    "ray": "2.58.0",
+    "datasets": "5.0.1"
+  },
+  "environment_version": "full-nonanchor-identification-v1",
+  "project_sources": {
+    "src/cpt_world/__init__.py": "fdf90b64b532a81f9e8de2bda7459c320ec8a04bd8c4c41d677b09b4763b0757",
+    "src/cpt_world/counterfactual_isolation.py": "290529ddfc906dd497738b9aae324a566c3644cc5c805a63b14823d79011f7b5",
+    "src/cpt_world/counterfactual_solver.py": "4249c54301fe001ecb109749a41f293ff514f04b9e004af8b174e9c7b5e263b3",
+    "src/cpt_world/episode.py": "8ef6a0c407548618b55662612d7a7ee4054e9ecad8b61d595d64a952917892dc",
+    "src/cpt_world/identification.py": "d553f197c7b06085e02c67a30af7a3d27c025da358cf64a08aadd4af3b8e4348",
+    "src/cpt_world/query_truth.py": "e47fb6b8c85b64ce4af830a8fba890cb05739eab5725363be56ff5cba41989cf",
+    "src/cpt_world/registry.py": "af7b9f092374879fd0a18178850771d0a3aee1abd298cf03a8476e615a338530",
+    "src/cpt_world/rendering.py": "ce4d3a5e2a7bd71ed277b20e3a0208e194e569c633c8de1f685f89444134c647",
+    "src/cpt_world/rewards.py": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+    "src/cpt_world/seeds.py": "709b76f5ecc488d6cc696b886707480849fa08735336858d7e2ba7c19343d90c",
+    "src/cpt_world/task_scoring.py": "145edfa037613d86e530683dfd970c7d3177d5c1b7d089f2009a87ad49d514fe",
+    "src/cpt_world/trl_environment.py": "36ff8eb94c43bae01136755443f15347cd0fdbc0f8261ea0aa3b1a9234034f88",
+    "src/cpt_world/verl_environment.py": "9deed2b23c4b07f8327de46f9bff81be2e484cf3d402e8e7ac1130eaa4836fdb",
+    "src/cpt_world/verl_streaming_dataset.py": "11b9865123a804588a9793be3c6ca92430efcfa6475456f6ed84292ee5f38e91",
+    "src/cpt_world/world.py": "112a973e69c09dcbc8a0427a7e4d312137d9b7fc2257129b77f656b1436a1536",
+    "src/cpt_world/world_runtime.py": "f1159966eb12006d74133b834dc11f6ea5d22be27552cadae710b45a87350447",
+    "src/cpt_world/world_space.py": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b"
+  },
+  "datasets": {
+    "train": {
+      "path": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-02/stream.json",
+      "kind": "continuous",
+      "rows": null,
+      "start_seed": 4000000,
+      "stream_start_index": 86,
+      "journal_dir": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-02/task-journal",
+      "sha256": "2bb058b796450b1c13593329cf62221e8e340b3c24427e57547fecb1ba67dfd7",
+      "source_fingerprints": {
+        "src/cpt_world/__init__.py": "fdf90b64b532a81f9e8de2bda7459c320ec8a04bd8c4c41d677b09b4763b0757",
+        "src/cpt_world/counterfactual_isolation.py": "290529ddfc906dd497738b9aae324a566c3644cc5c805a63b14823d79011f7b5",
+        "src/cpt_world/counterfactual_solver.py": "4249c54301fe001ecb109749a41f293ff514f04b9e004af8b174e9c7b5e263b3",
+        "src/cpt_world/episode.py": "8ef6a0c407548618b55662612d7a7ee4054e9ecad8b61d595d64a952917892dc",
+        "src/cpt_world/identification.py": "d553f197c7b06085e02c67a30af7a3d27c025da358cf64a08aadd4af3b8e4348",
+        "src/cpt_world/query_truth.py": "e47fb6b8c85b64ce4af830a8fba890cb05739eab5725363be56ff5cba41989cf",
+        "src/cpt_world/registry.py": "af7b9f092374879fd0a18178850771d0a3aee1abd298cf03a8476e615a338530",
+        "src/cpt_world/rendering.py": "ce4d3a5e2a7bd71ed277b20e3a0208e194e569c633c8de1f685f89444134c647",
+        "src/cpt_world/rewards.py": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+        "src/cpt_world/seeds.py": "709b76f5ecc488d6cc696b886707480849fa08735336858d7e2ba7c19343d90c",
+        "src/cpt_world/task_scoring.py": "145edfa037613d86e530683dfd970c7d3177d5c1b7d089f2009a87ad49d514fe",
+        "src/cpt_world/trl_environment.py": "36ff8eb94c43bae01136755443f15347cd0fdbc0f8261ea0aa3b1a9234034f88",
+        "src/cpt_world/verl_environment.py": "9deed2b23c4b07f8327de46f9bff81be2e484cf3d402e8e7ac1130eaa4836fdb",
+        "src/cpt_world/verl_streaming_dataset.py": "11b9865123a804588a9793be3c6ca92430efcfa6475456f6ed84292ee5f38e91",
+        "src/cpt_world/world.py": "112a973e69c09dcbc8a0427a7e4d312137d9b7fc2257129b77f656b1436a1536",
+        "src/cpt_world/world_runtime.py": "f1159966eb12006d74133b834dc11f6ea5d22be27552cadae710b45a87350447",
+        "src/cpt_world/world_space.py": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+        "scripts/prepare_verl_cpt_data.py": "e8422e35d519c5d473e9a99012ff8ffd83bfa8bbddc3e09d63c498840749a17a"
+      }
+    },
+    "validation": {
+      "path": "/home/chen/runs/training-submission-20260907/data/validation.parquet",
+      "rows": 25,
+      "sha256": "4508652e399973610611368545a92b1c0a2be8faa4fe1f3ec547fac8e3183900"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "scope": "Static second-deployment records only. Launcher identity and initialization are not optimizer updates; post-migration runtime progress is deliberately not asserted.",
+  "remote_run": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-02",
+  "preserved_updates": 77,
+  "preserved_generated_batches": 86,
+  "next_logical_index": 86,
+  "stream_start_seed": 4000000,
+  "actor_files_rehashed_for_this_archive": false,
+  "actor_preservation_evidence": "checkpoint-acceptance.json records the dedicated migrator byte-preservation checks; this archive did not repeat large actor hashes.",
+  "archived_files_sha256": {
+    "prepared.json": "f7ffe3f5cada4e0bbdbc8cb07a3408b6989ba7fb2da3a264df3099124a65d26c",
+    "checkpoint-acceptance.json": "b6894f0c5272caf34e5cd901126969f59e498e83cf76423882ef9ba94b6a0b1d",
+    "stream.json": "2bb058b796450b1c13593329cf62221e8e340b3c24427e57547fecb1ba67dfd7",
+    "official-source-verification.json": "969baa3a326079dd206c9347ba8a18f7edcd20346f0f5234d305d9af787d2b6c",
+    "process.json": "7871091752e43013cd79b7bd0ad39464b6375a5de3ca2d37b7e5befe8e050bfc"
+  },
+  "launcher_record": {
+    "pid": 712391,
+    "create_time": 1788858674.17
+  },
+  "cross_file_checks": "Five archived file SHA256 values match the read-only server hashes; U77/G86, next index86, checkpoint path and descriptor hash agree across records.",
+  "runtime_updates_after_migration_verified": false
+}

@@ -1,0 +1,215 @@
+{
+  "passed": true,
+  "worker_pid": 714029,
+  "cwd": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+  "pythonpath": "/home/chen/runs/continuous-training-restore-20260908/candidate/src:/home/chen/runs/continuous-training-restore-20260908/candidate:/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2:/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+  "sys_path": [
+    "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/research/continuous_training_restore_20260908",
+    "/home/chen/.venvs/dolens-dapo-official/lib/python3.12/site-packages/ray/thirdparty_files",
+    "/home/chen/.venvs/dolens-dapo-official/lib/python3.12/site-packages/ray/_private/workers",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/src",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate",
+    "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2",
+    "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+    "/usr/lib/python312.zip",
+    "/usr/lib/python3.12",
+    "/usr/lib/python3.12/lib-dynload",
+    "/home/chen/.venvs/dolens-dapo-official/lib/python3.12/site-packages",
+    "/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831/src",
+    "/home/chen/vendor/dapo-official-20260906/verl",
+    "/home/chen/.venvs/dolens-dapo-official/lib/python3.12/site-packages/nvidia_cutlass_dsl/python_packages"
+  ],
+  "legacy_import": {
+    "error": "No module named 'scripts.prepare_verl_cpt_data'",
+    "scripts_file": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/scripts/__init__.py",
+    "scripts_path": [
+      "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/scripts"
+    ]
+  },
+  "tokenizer_class": "Qwen2Tokenizer",
+  "processor_class": "Qwen3VLProcessor",
+  "model_path": "/home/chen/models/Qwen/Qwen3.5-9B",
+  "tokenizer_sha256": {
+    "tokenizer_config.json": "316230d6a809701f4db5ea8f8fc862bc3a6f3229c937c174e674ff3ca0a64ac8",
+    "tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+  },
+  "custom_class_module": "custom_module_6324548727156396905",
+  "converter_file": "/home/chen/runs/continuous-training-restore-20260908/candidate/scripts/prepare_verl_cpt_data.py",
+  "rows": [
+    {
+      "index": 0,
+      "query_type": "ate",
+      "tape_key": "trl-grpo:SAMPLED-1000-ate-target_query-a0",
+      "prompt_tokens": 1575,
+      "seconds": 0.12119038193486631,
+      "last_attempts": [
+        {
+          "query_type": "ate",
+          "sample_index": 1000,
+          "seed_id": "SAMPLED-1000-ate-target_query-a0",
+          "status": "accepted"
+        }
+      ],
+      "next_generator_state": {
+        "accepted_rows": 1,
+        "best_intervention_balance_slot": 0,
+        "next_family_offset": 1,
+        "next_sample_index": 1001,
+        "version": 1
+      },
+      "journal_sha256": "eb84c7f0c88ef0b9e9f4117d3a27c398750a81771d30653e8d80c4c22a5483e1"
+    },
+    {
+      "index": 1,
+      "query_type": "individual_counterfactual_probability",
+      "tape_key": "trl-grpo:SAMPLED-1001-individual_counterfactual_probability-target_query-a0",
+      "prompt_tokens": 1279,
+      "seconds": 0.3474915629485622,
+      "last_attempts": [
+        {
+          "query_type": "individual_counterfactual_probability",
+          "sample_index": 1001,
+          "seed_id": "SAMPLED-1001-individual_counterfactual_probability-target_query-a0",
+          "status": "accepted"
+        }
+      ],
+      "next_generator_state": {
+        "accepted_rows": 2,
+        "best_intervention_balance_slot": 0,
+        "next_family_offset": 2,
+        "next_sample_index": 1002,
+        "version": 1
+      },
+      "journal_sha256": "f3313328fd957d72963edad4c27b086b14ded1a740e79feea30b34aa4e3fd7cb",
+      "certified_truth": {
+        "type": "individual_counterfactual_probability",
+        "lower": 0.0002988243002100788,
+        "upper": 0.25544361371341406,
+        "certification": "exact",
+        "interval_source": "exact_markovian",
+        "endpoint_error": 0.0,
+        "endpoint_tolerance": 0.001
+      }
+    },
+    {
+      "index": 2,
+      "query_type": "backadj_minimal_sets",
+      "tape_key": "trl-grpo:SAMPLED-1002-backadj_minimal_sets-discovery-a0",
+      "prompt_tokens": 1505,
+      "seconds": 0.16741717199329287,
+      "last_attempts": [
+        {
+          "query_type": "backadj_minimal_sets",
+          "sample_index": 1002,
+          "seed_id": "SAMPLED-1002-backadj_minimal_sets-discovery-a0",
+          "status": "accepted"
+        }
+      ],
+      "next_generator_state": {
+        "accepted_rows": 3,
+        "best_intervention_balance_slot": 0,
+        "next_family_offset": 3,
+        "next_sample_index": 1003,
+        "version": 1
+      },
+      "journal_sha256": "61207565944cbb44112414845738497a2a2a78724f0b689fca064a0e974e34be"
+    },
+    {
+      "index": 3,
+      "query_type": "best_intervention",
+      "tape_key": "trl-grpo:SAMPLED-503506-best_intervention-decision-a5",
+      "prompt_tokens": 1547,
+      "seconds": 0.6337501779198647,
+      "last_attempts": [
+        {
+          "query_type": "best_intervention",
+          "sample_index": 1003,
+          "seed_id": "SAMPLED-503506-best_intervention-decision-a5",
+          "status": "accepted"
+        }
+      ],
+      "next_generator_state": {
+        "accepted_rows": 4,
+        "best_intervention_balance_slot": 1,
+        "next_family_offset": 4,
+        "next_sample_index": 1004,
+        "version": 1
+      },
+      "journal_sha256": "3959cec46bdb50dc610c31cf403c982af679a2c6f34c31fdeddb8c558673c0c7"
+    },
+    {
+      "index": 4,
+      "query_type": "mediator_set",
+      "tape_key": "trl-grpo:SAMPLED-1004-mediator_set-discovery-a5",
+      "prompt_tokens": 1376,
+      "seconds": 0.11160053906496614,
+      "last_attempts": [
+        {
+          "query_type": "mediator_set",
+          "sample_index": 1004,
+          "seed_id": "SAMPLED-1004-mediator_set-discovery-a5",
+          "status": "accepted"
+        }
+      ],
+      "next_generator_state": {
+        "accepted_rows": 5,
+        "best_intervention_balance_slot": 1,
+        "next_family_offset": 0,
+        "next_sample_index": 1005,
+        "version": 1
+      },
+      "journal_sha256": "3fa0262e5885c6e19680cc8de07db67f84bda798b33f32a413ad4de9685f3b90"
+    }
+  ],
+  "counterfactual_subprocesses": [
+    {
+      "executable": "/home/chen/.venvs/dolens-dapo-official/bin/python",
+      "command": [
+        "/home/chen/.venvs/dolens-dapo-official/bin/python",
+        "-c",
+        "import sys; from cpt_world.counterfactual_isolation import _worker_main; raise SystemExit(_worker_main(sys.argv[1:]))",
+        "/tmp/cpt-world-cf-request-51b97tlu.pickle",
+        "/tmp/cpt-world-cf-result-qvi69ncg.pickle",
+        "8589934592",
+        "/home/chen/runs/continuous-training-restore-20260908/ray-dataset-probe-final/cf-diagnostics/SAMPLED-1001-individual_counterfactual_probability-target_query-a0.stack.txt"
+      ]
+    }
+  ],
+  "journal_state": {
+    "version": 1,
+    "kind": "cpt_world_continuous_journal",
+    "journal_id": "7111025d5138410a9648ba306777787b",
+    "descriptor_sha256": "34d629cf342b245e0741cbef0f4f08b7072ed52a0ce24c79449e7e4baa8fc4d3",
+    "next_index": 5,
+    "last_record_sha256": "3fa0262e5885c6e19680cc8de07db67f84bda798b33f32a413ad4de9685f3b90"
+  },
+  "source_fingerprints": {
+    "src/cpt_world/__init__.py": "fdf90b64b532a81f9e8de2bda7459c320ec8a04bd8c4c41d677b09b4763b0757",
+    "src/cpt_world/counterfactual_isolation.py": "290529ddfc906dd497738b9aae324a566c3644cc5c805a63b14823d79011f7b5",
+    "src/cpt_world/counterfactual_solver.py": "929b2e05aa25522bc3a1077d8697fc907be44ff7dffd7b192c38a052c9031925",
+    "src/cpt_world/episode.py": "8ef6a0c407548618b55662612d7a7ee4054e9ecad8b61d595d64a952917892dc",
+    "src/cpt_world/identification.py": "d553f197c7b06085e02c67a30af7a3d27c025da358cf64a08aadd4af3b8e4348",
+    "src/cpt_world/query_truth.py": "e47fb6b8c85b64ce4af830a8fba890cb05739eab5725363be56ff5cba41989cf",
+    "src/cpt_world/registry.py": "af7b9f092374879fd0a18178850771d0a3aee1abd298cf03a8476e615a338530",
+    "src/cpt_world/rendering.py": "ce4d3a5e2a7bd71ed277b20e3a0208e194e569c633c8de1f685f89444134c647",
+    "src/cpt_world/rewards.py": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+    "src/cpt_world/seeds.py": "709b76f5ecc488d6cc696b886707480849fa08735336858d7e2ba7c19343d90c",
+    "src/cpt_world/task_scoring.py": "145edfa037613d86e530683dfd970c7d3177d5c1b7d089f2009a87ad49d514fe",
+    "src/cpt_world/trl_environment.py": "36ff8eb94c43bae01136755443f15347cd0fdbc0f8261ea0aa3b1a9234034f88",
+    "src/cpt_world/verl_environment.py": "9deed2b23c4b07f8327de46f9bff81be2e484cf3d402e8e7ac1130eaa4836fdb",
+    "src/cpt_world/verl_streaming_dataset.py": "11b9865123a804588a9793be3c6ca92430efcfa6475456f6ed84292ee5f38e91",
+    "src/cpt_world/world.py": "112a973e69c09dcbc8a0427a7e4d312137d9b7fc2257129b77f656b1436a1536",
+    "src/cpt_world/world_runtime.py": "f1159966eb12006d74133b834dc11f6ea5d22be27552cadae710b45a87350447",
+    "src/cpt_world/world_space.py": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+    "scripts/prepare_verl_cpt_data.py": "e8422e35d519c5d473e9a99012ff8ffd83bfa8bbddc3e09d63c498840749a17a"
+  },
+  "cuda_initialized": false,
+  "elapsed_seconds": 3.593768722959794,
+  "official_dataset_sha256": "0973a7df6008193d1f14e7df0b608b220a81039dbb721ce8f189a95a8f820fe4",
+  "probe_sha256": "fdf080e90d4be5735935f9be16cccfa22cc40dd9b435585b6c3e29ad68898378",
+  "config_sha256": "48419ad7df4943ce0994cf04555bdcfbfb5675b5113382bc9bbfa037e18900f7",
+  "ray_tmp": "/tmp/cpt-ray-dataset-a25b1b4f2c",
+  "scope": "Real Ray CPU worker, official dataset factory/getitem, local Qwen tokenizer/processor and five real generated task families, including the actual isolated CF truth process. No model loading or training.",
+  "ray_shutdown_completed": true
+}

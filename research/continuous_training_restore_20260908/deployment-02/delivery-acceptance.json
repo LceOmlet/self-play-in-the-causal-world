@@ -1,0 +1,27 @@
+{
+  "scope": "Actual restored GPU training delivered a newly generated task to four rollout trajectories. This snapshot is not a completed optimizer update or a learning-gain measurement.",
+  "run": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-02",
+  "preserved_completed_updates": 77,
+  "preserved_generated_batches": 86,
+  "delivered_global_index": 86,
+  "new_source_sample_index": 4000000,
+  "query_type": "ate",
+  "tape_key": "trl-grpo:SAMPLED-4000000-ate-target_query-a2",
+  "next_generator_state": {
+    "accepted_rows": 1,
+    "best_intervention_balance_slot": 0,
+    "next_family_offset": 1,
+    "next_sample_index": 4000001,
+    "version": 1
+  },
+  "trajectory_ids": [
+    "19de16b67463475785d056a042db7c44",
+    "22761ca583ba4d6aaf772c771e9c02b8",
+    "25305afca95d463da5594250807bcd28",
+    "3acd62ac1aec459ea3aed2647d249102"
+  ],
+  "captured_events": 62,
+  "completed_trajectories_in_snapshot": 1,
+  "first_row_sha256": "5e0d538550467387edf9618960e565f8b5ab6f50de60ea00ebe98ae2a34f701d",
+  "environment_snapshot_sha256": "ca7e18e20f923d52e1d414ad255791a414a008a947e3b1acef7ee29ad4f7a008"
+}

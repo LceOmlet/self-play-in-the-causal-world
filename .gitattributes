@@ -59,4 +59,5 @@ research/legacy_learning_exposure_20260908/** -text whitespace=cr-at-eol
 research/counterfactual_coverage_20260908/** -text whitespace=cr-at-eol
 research/estimation_error_scope_20260908/** -text whitespace=cr-at-eol
 research/continuous_training_restore_20260908/** -text whitespace=cr-at-eol
+research/continuous_training_restore_20260908/**/*.log -whitespace
 docs/rl-correctness-history-before-global-review-20260908.md -text whitespace=cr-at-eol
