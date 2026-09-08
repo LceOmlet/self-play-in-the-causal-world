@@ -1,0 +1,518 @@
+{
+  "source": {
+    "archive": "trainer-state-checkpoint850.json.gz",
+    "uncompressed_sha256": "97cfbd493909bbccf743f8044202e76f509d27b6ca9327df99e07960b1fde692",
+    "uncompressed_bytes": 1348070,
+    "archive_sha256": "f861131e58356a7127ed49c5f8add10d9c1046c9783729e43cd061f5d7c63955",
+    "archive_bytes": 173862,
+    "original_local_path": "audit/rl_server_20260906_1725/trainer_state.json",
+    "checkpoint_global_step": 850,
+    "history_updates": [
+      1,
+      850
+    ],
+    "history_records": 850
+  },
+  "reader_sha256": "f63f892b79dc7801a1e809270c71e4a6c10cebb1f501009425d02af3d9063c30",
+  "selected_updates": [
+    1,
+    800
+  ],
+  "trajectories_per_logged_group": 4,
+  "grouping_basis": {
+    "source": "audit/rl_server_20260906_1725/analysis_sources/train_grpo_resource_smoke.py",
+    "generation_batch_size": 4,
+    "num_generations": 4,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "num_iterations": 1
+  },
+  "overall": {
+    "updates": 800,
+    "task_group_exposures": 800,
+    "trajectory_exposures": 3200,
+    "first_update": 1,
+    "last_update": 800,
+    "zero_current_gradient_groups": 124,
+    "zero_current_gradient_fraction": 0.155,
+    "zero_reward_std_groups": 124,
+    "nonzero_reward_std_but_zero_gradient_groups": 0,
+    "zero_gradient_by_logged_reward": {
+      "all_zero": 35,
+      "all_one": 17,
+      "constant_partial": 72
+    },
+    "logged_reward_mean": 0.48368193527217956,
+    "logged_reward_std_mean": 0.15800031102087814,
+    "logged_mean_completion_tokens": 7136.2896875,
+    "logged_mean_tool_call_frequency": 20.47375,
+    "length_clipped_trajectories": 13,
+    "length_clipped_fraction": 0.0040625
+  },
+  "by_task": {
+    "ate": {
+      "updates": 160,
+      "task_group_exposures": 160,
+      "trajectory_exposures": 640,
+      "first_update": 1,
+      "last_update": 796,
+      "zero_current_gradient_groups": 1,
+      "zero_current_gradient_fraction": 0.00625,
+      "zero_reward_std_groups": 1,
+      "nonzero_reward_std_but_zero_gradient_groups": 0,
+      "zero_gradient_by_logged_reward": {
+        "all_zero": 0,
+        "all_one": 0,
+        "constant_partial": 1
+      },
+      "logged_reward_mean": 0.4190637338673696,
+      "logged_reward_std_mean": 0.1731960485834861,
+      "logged_mean_completion_tokens": 8458.3328125,
+      "logged_mean_tool_call_frequency": 11.9484375,
+      "length_clipped_trajectories": 4,
+      "length_clipped_fraction": 0.00625,
+      "terminal_error": {
+        "name": "rmse",
+        "source_metric": "effect/ate_mse",
+        "value": 0.16428882563537484,
+        "valid_terminal_count": 624,
+        "total_trajectories": 640,
+        "valid_terminal_coverage": 0.975,
+        "weighted_source_metric_sum": 16.84227057467797,
+        "aggregation": "sqrt(sum(group_valid_count * group_mean_squared_error) / sum(group_valid_count))",
+        "scope": "Error is conditional on scorer-recorded valid terminal answers."
+      }
+    },
+    "individual_counterfactual_probability": {
+      "updates": 160,
+      "task_group_exposures": 160,
+      "trajectory_exposures": 640,
+      "first_update": 2,
+      "last_update": 797,
+      "zero_current_gradient_groups": 5,
+      "zero_current_gradient_fraction": 0.03125,
+      "zero_reward_std_groups": 5,
+      "nonzero_reward_std_but_zero_gradient_groups": 0,
+      "zero_gradient_by_logged_reward": {
+        "all_zero": 0,
+        "all_one": 0,
+        "constant_partial": 5
+      },
+      "logged_reward_mean": 0.38751023114891725,
+      "logged_reward_std_mean": 0.16686618930543773,
+      "logged_mean_completion_tokens": 8210.6796875,
+      "logged_mean_tool_call_frequency": 19.33125,
+      "length_clipped_trajectories": 4,
+      "length_clipped_fraction": 0.00625,
+      "terminal_error": {
+        "name": "endpoint_rmse",
+        "source_metric": "effect/cf_endpoint_mse",
+        "value": 0.372851108289187,
+        "valid_terminal_count": 622,
+        "total_trajectories": 640,
+        "valid_terminal_coverage": 0.971875,
+        "weighted_source_metric_sum": 86.46916424843948,
+        "aggregation": "sqrt(sum(group_valid_count * group_mean_squared_error) / sum(group_valid_count))",
+        "scope": "Error is conditional on scorer-recorded valid terminal answers."
+      }
+    },
+    "backadj_minimal_sets": {
+      "updates": 160,
+      "task_group_exposures": 160,
+      "trajectory_exposures": 640,
+      "first_update": 3,
+      "last_update": 798,
+      "zero_current_gradient_groups": 50,
+      "zero_current_gradient_fraction": 0.3125,
+      "zero_reward_std_groups": 50,
+      "nonzero_reward_std_but_zero_gradient_groups": 0,
+      "zero_gradient_by_logged_reward": {
+        "all_zero": 0,
+        "all_one": 8,
+        "constant_partial": 42
+      },
+      "logged_reward_mean": 0.8440848160535097,
+      "logged_reward_std_mean": 0.06799458949826657,
+      "logged_mean_completion_tokens": 4916.7125,
+      "logged_mean_tool_call_frequency": 21.9375,
+      "length_clipped_trajectories": 1,
+      "length_clipped_fraction": 0.0015625,
+      "terminal_error": null
+    },
+    "best_intervention": {
+      "updates": 160,
+      "task_group_exposures": 160,
+      "trajectory_exposures": 640,
+      "first_update": 4,
+      "last_update": 799,
+      "zero_current_gradient_groups": 32,
+      "zero_current_gradient_fraction": 0.2,
+      "zero_reward_std_groups": 32,
+      "nonzero_reward_std_but_zero_gradient_groups": 0,
+      "zero_gradient_by_logged_reward": {
+        "all_zero": 0,
+        "all_one": 9,
+        "constant_partial": 23
+      },
+      "logged_reward_mean": 0.6114223890705034,
+      "logged_reward_std_mean": 0.21603505253442562,
+      "logged_mean_completion_tokens": 6210.9,
+      "logged_mean_tool_call_frequency": 16.4015625,
+      "length_clipped_trajectories": 0,
+      "length_clipped_fraction": 0.0,
+      "terminal_error": {
+        "name": "normalized_regret",
+        "source_metric": "effect/decision_normalized_regret",
+        "value": 0.4569834363669015,
+        "valid_terminal_count": 629,
+        "total_trajectories": 640,
+        "valid_terminal_coverage": 0.9828125,
+        "weighted_source_metric_sum": 287.44258147478104,
+        "aggregation": "sum(group_valid_count * group_normalized_regret) / sum(group_valid_count)",
+        "scope": "Error is conditional on scorer-recorded valid terminal answers."
+      }
+    },
+    "mediator_set": {
+      "updates": 160,
+      "task_group_exposures": 160,
+      "trajectory_exposures": 640,
+      "first_update": 5,
+      "last_update": 800,
+      "zero_current_gradient_groups": 36,
+      "zero_current_gradient_fraction": 0.225,
+      "zero_reward_std_groups": 36,
+      "nonzero_reward_std_but_zero_gradient_groups": 0,
+      "zero_gradient_by_logged_reward": {
+        "all_zero": 35,
+        "all_one": 0,
+        "constant_partial": 1
+      },
+      "logged_reward_mean": 0.15632850622059777,
+      "logged_reward_std_mean": 0.16590967518277466,
+      "logged_mean_completion_tokens": 7884.8234375,
+      "logged_mean_tool_call_frequency": 32.75,
+      "length_clipped_trajectories": 4,
+      "length_clipped_fraction": 0.00625,
+      "terminal_error": null
+    }
+  },
+  "max_logged_reward_vs_family_raw_difference": 5.960464477539063e-08,
+  "online_windows": {
+    "early_1_200": {
+      "updates": [
+        1,
+        200
+      ],
+      "by_task": {
+        "ate": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 1,
+          "last_update": 196,
+          "zero_current_gradient_groups": 0,
+          "zero_current_gradient_fraction": 0.0,
+          "zero_reward_std_groups": 0,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 0,
+            "constant_partial": 0
+          },
+          "logged_reward_mean": 0.39665551567450164,
+          "logged_reward_std_mean": 0.1619737697765231,
+          "logged_mean_completion_tokens": 7512.68125,
+          "logged_mean_tool_call_frequency": 10.89375,
+          "length_clipped_trajectories": 0,
+          "length_clipped_fraction": 0.0,
+          "terminal_error": {
+            "name": "rmse",
+            "source_metric": "effect/ate_mse",
+            "value": 0.1656950685587307,
+            "valid_terminal_count": 157,
+            "total_trajectories": 160,
+            "valid_terminal_coverage": 0.98125,
+            "weighted_source_metric_sum": 4.310412351915147,
+            "aggregation": "sqrt(sum(group_valid_count * group_mean_squared_error) / sum(group_valid_count))",
+            "scope": "Error is conditional on scorer-recorded valid terminal answers."
+          }
+        },
+        "individual_counterfactual_probability": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 2,
+          "last_update": 197,
+          "zero_current_gradient_groups": 2,
+          "zero_current_gradient_fraction": 0.05,
+          "zero_reward_std_groups": 2,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 0,
+            "constant_partial": 2
+          },
+          "logged_reward_mean": 0.41198403798043726,
+          "logged_reward_std_mean": 0.14788350285962223,
+          "logged_mean_completion_tokens": 7142.7625,
+          "logged_mean_tool_call_frequency": 17.39375,
+          "length_clipped_trajectories": 2,
+          "length_clipped_fraction": 0.0125,
+          "terminal_error": {
+            "name": "endpoint_rmse",
+            "source_metric": "effect/cf_endpoint_mse",
+            "value": 0.37534339271615097,
+            "valid_terminal_count": 156,
+            "total_trajectories": 160,
+            "valid_terminal_coverage": 0.975,
+            "weighted_source_metric_sum": 21.977695343084633,
+            "aggregation": "sqrt(sum(group_valid_count * group_mean_squared_error) / sum(group_valid_count))",
+            "scope": "Error is conditional on scorer-recorded valid terminal answers."
+          }
+        },
+        "backadj_minimal_sets": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 3,
+          "last_update": 198,
+          "zero_current_gradient_groups": 14,
+          "zero_current_gradient_fraction": 0.35,
+          "zero_reward_std_groups": 14,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 5,
+            "constant_partial": 9
+          },
+          "logged_reward_mean": 0.8379464253783226,
+          "logged_reward_std_mean": 0.07575033511966467,
+          "logged_mean_completion_tokens": 4635.91875,
+          "logged_mean_tool_call_frequency": 21.33125,
+          "length_clipped_trajectories": 0,
+          "length_clipped_fraction": 0.0,
+          "terminal_error": null
+        },
+        "best_intervention": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 4,
+          "last_update": 199,
+          "zero_current_gradient_groups": 4,
+          "zero_current_gradient_fraction": 0.1,
+          "zero_reward_std_groups": 4,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 1,
+            "constant_partial": 3
+          },
+          "logged_reward_mean": 0.5620891836471855,
+          "logged_reward_std_mean": 0.22480609451886266,
+          "logged_mean_completion_tokens": 6003.4,
+          "logged_mean_tool_call_frequency": 15.43125,
+          "length_clipped_trajectories": 0,
+          "length_clipped_fraction": 0.0,
+          "terminal_error": {
+            "name": "normalized_regret",
+            "source_metric": "effect/decision_normalized_regret",
+            "value": 0.44366424596762355,
+            "valid_terminal_count": 158,
+            "total_trajectories": 160,
+            "valid_terminal_coverage": 0.9875,
+            "weighted_source_metric_sum": 70.09895086288452,
+            "aggregation": "sum(group_valid_count * group_normalized_regret) / sum(group_valid_count)",
+            "scope": "Error is conditional on scorer-recorded valid terminal answers."
+          }
+        },
+        "mediator_set": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 5,
+          "last_update": 200,
+          "zero_current_gradient_groups": 9,
+          "zero_current_gradient_fraction": 0.225,
+          "zero_reward_std_groups": 9,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 9,
+            "all_one": 0,
+            "constant_partial": 0
+          },
+          "logged_reward_mean": 0.1142873754259199,
+          "logged_reward_std_mean": 0.13717253394424916,
+          "logged_mean_completion_tokens": 7491.7375,
+          "logged_mean_tool_call_frequency": 30.60625,
+          "length_clipped_trajectories": 1,
+          "length_clipped_fraction": 0.00625,
+          "terminal_error": null
+        }
+      }
+    },
+    "late_601_800": {
+      "updates": [
+        601,
+        800
+      ],
+      "by_task": {
+        "ate": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 601,
+          "last_update": 796,
+          "zero_current_gradient_groups": 0,
+          "zero_current_gradient_fraction": 0.0,
+          "zero_reward_std_groups": 0,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 0,
+            "constant_partial": 0
+          },
+          "logged_reward_mean": 0.4047391851432621,
+          "logged_reward_std_mean": 0.1547864134074189,
+          "logged_mean_completion_tokens": 9701.54375,
+          "logged_mean_tool_call_frequency": 13.31875,
+          "length_clipped_trajectories": 3,
+          "length_clipped_fraction": 0.01875,
+          "terminal_error": {
+            "name": "rmse",
+            "source_metric": "effect/ate_mse",
+            "value": 0.18509474080735341,
+            "valid_terminal_count": 153,
+            "total_trajectories": 160,
+            "valid_terminal_coverage": 0.95625,
+            "weighted_source_metric_sum": 5.241789650404826,
+            "aggregation": "sqrt(sum(group_valid_count * group_mean_squared_error) / sum(group_valid_count))",
+            "scope": "Error is conditional on scorer-recorded valid terminal answers."
+          }
+        },
+        "individual_counterfactual_probability": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 602,
+          "last_update": 797,
+          "zero_current_gradient_groups": 0,
+          "zero_current_gradient_fraction": 0.0,
+          "zero_reward_std_groups": 0,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 0,
+            "constant_partial": 0
+          },
+          "logged_reward_mean": 0.4128550000488758,
+          "logged_reward_std_mean": 0.17842447638977318,
+          "logged_mean_completion_tokens": 9359.59375,
+          "logged_mean_tool_call_frequency": 21.90625,
+          "length_clipped_trajectories": 0,
+          "length_clipped_fraction": 0.0,
+          "terminal_error": {
+            "name": "endpoint_rmse",
+            "source_metric": "effect/cf_endpoint_mse",
+            "value": 0.35236282792180124,
+            "valid_terminal_count": 159,
+            "total_trajectories": 160,
+            "valid_terminal_coverage": 0.99375,
+            "weighted_source_metric_sum": 19.741370437666774,
+            "aggregation": "sqrt(sum(group_valid_count * group_mean_squared_error) / sum(group_valid_count))",
+            "scope": "Error is conditional on scorer-recorded valid terminal answers."
+          }
+        },
+        "backadj_minimal_sets": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 603,
+          "last_update": 798,
+          "zero_current_gradient_groups": 15,
+          "zero_current_gradient_fraction": 0.375,
+          "zero_reward_std_groups": 15,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 0,
+            "constant_partial": 15
+          },
+          "logged_reward_mean": 0.8441964209079742,
+          "logged_reward_std_mean": 0.035058305598795414,
+          "logged_mean_completion_tokens": 5078.1125,
+          "logged_mean_tool_call_frequency": 24.8375,
+          "length_clipped_trajectories": 0,
+          "length_clipped_fraction": 0.0,
+          "terminal_error": null
+        },
+        "best_intervention": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 604,
+          "last_update": 799,
+          "zero_current_gradient_groups": 10,
+          "zero_current_gradient_fraction": 0.25,
+          "zero_reward_std_groups": 10,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 0,
+            "all_one": 2,
+            "constant_partial": 8
+          },
+          "logged_reward_mean": 0.6422792032361031,
+          "logged_reward_std_mean": 0.19836335428990423,
+          "logged_mean_completion_tokens": 6889.15625,
+          "logged_mean_tool_call_frequency": 17.55625,
+          "length_clipped_trajectories": 0,
+          "length_clipped_fraction": 0.0,
+          "terminal_error": {
+            "name": "normalized_regret",
+            "source_metric": "effect/decision_normalized_regret",
+            "value": 0.4723459059524836,
+            "valid_terminal_count": 159,
+            "total_trajectories": 160,
+            "valid_terminal_coverage": 0.99375,
+            "weighted_source_metric_sum": 75.10299904644489,
+            "aggregation": "sum(group_valid_count * group_normalized_regret) / sum(group_valid_count)",
+            "scope": "Error is conditional on scorer-recorded valid terminal answers."
+          }
+        },
+        "mediator_set": {
+          "updates": 40,
+          "task_group_exposures": 40,
+          "trajectory_exposures": 160,
+          "first_update": 605,
+          "last_update": 800,
+          "zero_current_gradient_groups": 7,
+          "zero_current_gradient_fraction": 0.175,
+          "zero_reward_std_groups": 7,
+          "nonzero_reward_std_but_zero_gradient_groups": 0,
+          "zero_gradient_by_logged_reward": {
+            "all_zero": 6,
+            "all_one": 0,
+            "constant_partial": 1
+          },
+          "logged_reward_mean": 0.21290239882655443,
+          "logged_reward_std_mean": 0.1958932396955788,
+          "logged_mean_completion_tokens": 8392.69375,
+          "logged_mean_tool_call_frequency": 33.6,
+          "length_clipped_trajectories": 1,
+          "length_clipped_fraction": 0.00625,
+          "terminal_error": null
+        }
+      }
+    }
+  },
+  "scope": [
+    "Legacy trainer and checkpoints are disqualified as evidence of current official DAPO behavior.",
+    "Task-group exposures are not an audited count of distinct or statistically independent worlds.",
+    "Different online tasks and policies occur in the two windows; differences are descriptive, not causal learning gains.",
+    "No model generation, checkpoint evaluation, training update, or new task generation was performed.",
+    "Zero current gradient does not imply no Adam momentum or parameter movement.",
+    "Nonzero reward differences do not establish that correct reusable reasoning was reinforced.",
+    "Clipped ratio counts logged generation length clipping; it does not count every possible termination failure.",
+    "Backdoor and mediator valid-terminal coverage and exact correctness were not logged and are not invented."
+  ]
+}

@@ -55,4 +55,5 @@ research/training_progress51_20260908/figures/*.svg -diff -whitespace
 research/training_population_20260908/** -text whitespace=cr-at-eol
 research/training_population_20260908/figures/*.svg -diff -whitespace
 research/adapter_precision_20260908/** -text whitespace=cr-at-eol
+research/legacy_learning_exposure_20260908/** -text whitespace=cr-at-eol
 docs/rl-correctness-history-before-global-review-20260908.md -text whitespace=cr-at-eol
