@@ -1,0 +1,95 @@
+{
+  "archive_sha256": "8c58ce15e1347153e0d0c517261c4eb97d0219bd5749e90de2441b89b00a417a",
+  "members": {
+    "accepted.jsonl": {
+      "bytes": 506526,
+      "sha256": "d26b7f78e0d62f7a62b9fca1a786ae7d2e7959c90b93defd6583f2a52dddd522"
+    },
+    "audit_structural_answers.py": {
+      "bytes": 9128,
+      "sha256": "2b2107b6a5cfe400e385111514e2332d05b0f036ca9b5180fee47a81e60c001d"
+    },
+    "capture_progress.py": {
+      "bytes": 12253,
+      "sha256": "1b478cd6490ec1d89f0912eb491ce1c617cf8473ae1c84193e286115e2706f65"
+    },
+    "correct-structural-cases.json": {
+      "bytes": 196855,
+      "sha256": "a9897d02644331efae0d4f07ab2dd427b29e7c50a8420e69194d80f73d540d5f"
+    },
+    "summary.json": {
+      "bytes": 226899,
+      "sha256": "dd0206a421bd64f08c07577a96d38407deff40d88b75dd61739aaaeaabc8323d"
+    },
+    "train-0012.pkl": {
+      "bytes": 10514,
+      "sha256": "52f0e23ca3aca41f13ac7b6f4373dbefa3b724ba8f10948891a1906d736ed1b9"
+    },
+    "train-0014.pkl": {
+      "bytes": 19882,
+      "sha256": "315965448edb6897f25e95027d45ccf2bac8d565cd7ae641f89f1758f1491cbd"
+    },
+    "train-0022.pkl": {
+      "bytes": 20019,
+      "sha256": "581f0474fd6c9598f8ecb7f2acaf572c867e2f4782abe90e0a45f6b714e70e47"
+    },
+    "train-0029.pkl": {
+      "bytes": 20145,
+      "sha256": "c6331e1742a75dca4f3d17c638b6d0f8850b616815e4f0ea9b5e76bfe6d55834"
+    },
+    "train-0032.pkl": {
+      "bytes": 13629,
+      "sha256": "ede870557d26d37e468630292fffd407b3fc36269aac0aae8d44be033312b7af"
+    },
+    "train-0042.pkl": {
+      "bytes": 33474,
+      "sha256": "a72aadfaf58b39f4df20de1f8169bd0259bc637ed66cacf87314fa273079d1ff"
+    },
+    "train-0142.pkl": {
+      "bytes": 23163,
+      "sha256": "8bd5be7412790f0030102d3fb907e59cdcfd4970904bc1f6630dac8b8f9779af"
+    },
+    "train-0162.pkl": {
+      "bytes": 66933,
+      "sha256": "98e1a212c1ff9c46ad69cc07449113f53f240cbe9ab874da4633833da58f9b77"
+    },
+    "train-0169.pkl": {
+      "bytes": 49387,
+      "sha256": "9367ffdf214efe7b3a6343ff34960fb860bba65f7c4dd605dd4a24821f69d59b"
+    },
+    "train-0197.pkl": {
+      "bytes": 75918,
+      "sha256": "ddd904132c78df18b2057b5120a6adc1b661aaef3640563097c51b08c29b6f64"
+    },
+    "train-0219.pkl": {
+      "bytes": 8459,
+      "sha256": "757f9a9dea91c8d6d671d80539cdb4dd3202394be344badea1be11ce3b87c360"
+    },
+    "train-0282.pkl": {
+      "bytes": 25254,
+      "sha256": "3c7b16ca5b025b7f946abb4a7750dcad8f67197a2d58e6bbafd53ae4653d571c"
+    },
+    "train-0369.pkl": {
+      "bytes": 98313,
+      "sha256": "66878cd644e56b1b66b858f6f54ceab35ece028f4f9e20abaa2d9c3dc84854f9"
+    },
+    "train-0437.pkl": {
+      "bytes": 23673,
+      "sha256": "d8d7767f59d065f52ff8b6c4e62abccb4bcc2de4dc774a0d0710dda6a22618d4"
+    },
+    "train-0444.pkl": {
+      "bytes": 20532,
+      "sha256": "8201574190f3901136a8f79047e2aef8cc1ea41aeb17b445a22018464a6607e4"
+    },
+    "train-0489.pkl": {
+      "bytes": 10997,
+      "sha256": "3f5328f677925a129e7a25b99b9e3dbcdec7479a063b9782272d1023312d80fa"
+    },
+    "training-signal-through39.json": {
+      "bytes": 426129,
+      "sha256": "bba25120d6b3ebdfe6eaa092ac405014fa2b377e51c4027da958c8d06ea5f24d"
+    }
+  },
+  "prior_raw_archive": "research/training_hold_20260908/user-hold-and-through39-evidence.tar.gz",
+  "prior_raw_archive_sha256": "3f13aaa1c3f090eb8e148700826ab323b31789ea4dd7d1dc49323fc3c18b0d98"
+}
