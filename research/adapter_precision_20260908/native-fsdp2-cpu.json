@@ -1,0 +1,16 @@
+{
+  "cpu_only": true,
+  "torch_version": "2.11.0+cu130",
+  "fsdp1_existing_cast_preserved": true,
+  "fsdp2_trainable_dtype": "float32",
+  "frozen_base_dtype": "bfloat16",
+  "compute_dtype": "torch.bfloat16",
+  "initial_logits_bitwise_equal": true,
+  "gradients_and_moments_dtype": "float32",
+  "bf16_checkpoint_values_preserved_in_fp32": true,
+  "optimizer_steps": 2,
+  "trainable_tensors": 4,
+  "source": "/home/chen/vendor/dapo-official-20260906/verl-fp32-lora-candidate-v1/verl/workers/engine/fsdp/transformer_impl.py",
+  "script_sha256": "f6a3a6174d08bba5d31bbe1f45eb8ab653f180e2f43f8aab76f67b0208abef41",
+  "passed": true
+}

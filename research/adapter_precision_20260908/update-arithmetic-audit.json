@@ -1,0 +1,35 @@
+{
+  "step": 58,
+  "parameters": {
+    "lora_A": {
+      "elements": 10223616,
+      "actual_nonzero": 39754,
+      "desired_squared": 3.2205609545798344e-07,
+      "actual_squared": 4.8624611776319036e-09,
+      "error_squared": 3.1961037044021955e-07,
+      "v_positive": 10223616,
+      "v_decay_unchanged": 10223616
+    },
+    "lora_B": {
+      "elements": 11415552,
+      "actual_nonzero": 10620967,
+      "desired_squared": 4.751309671266557e-07,
+      "actual_squared": 4.777263467182792e-07,
+      "error_squared": 2.1344775879486505e-09,
+      "v_positive": 11415552,
+      "v_decay_unchanged": 11415552
+    }
+  },
+  "effective_weight_update": {
+    "actual_squared": 1.5962265015048795e-07,
+    "desired_squared": 1.5875637933081043e-07,
+    "error_squared": 7.122192315624609e-10,
+    "desired_a_term_squared": 3.1449958271223513e-13,
+    "desired_b_term_squared": 1.5875588739546275e-07
+  },
+  "effective_relative_error": 0.06697940039903016,
+  "update_direction_cosine": 0.9977666765506201,
+  "update_norm_ratio": 1.0027245906970674,
+  "a_term_to_b_term_norm_ratio": 0.001407489348225456,
+  "scope": "Recorded post-step moments held fixed. Storage/update arithmetic only; not full FP32 training or capability gain. LoRA scale 4 cancels in ratios."
+}

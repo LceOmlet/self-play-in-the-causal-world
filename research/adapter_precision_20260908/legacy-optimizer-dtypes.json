@@ -1,0 +1,15 @@
+{
+  "path": "/home/chen/runs/dolens-grpo-rewardv10-cfisolated-85cb577-20260902-195713-resume250-10k/checkpoints.disqualified-20260906/checkpoint-800/optimizer.pt",
+  "moment_dtypes": {
+    "torch.float32": 992
+  },
+  "state_fields": [
+    "step",
+    "exp_avg",
+    "exp_avg_sq"
+  ],
+  "learning_rates": [
+    9.68421052631579e-07,
+    9.68421052631579e-07
+  ]
+}

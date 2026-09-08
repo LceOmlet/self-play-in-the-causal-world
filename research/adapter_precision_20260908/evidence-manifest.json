@@ -1,0 +1,146 @@
+{
+  "root": "/home/chen/runs/heldout-learning-20260908/adapter-precision-01",
+  "files": {
+    "global_step_58/data.pt": {
+      "bytes": 6868,
+      "sha256": "7de2ec99beee6866e330b855059c8dbebe6c25e659c85fa23ad34fdec6a9b035"
+    },
+    "global_step_58/dapo_progress.json": {
+      "bytes": 107,
+      "sha256": "e15f99d87e44ebe1df719a47b7476aee9fac8ab018f1b360c0e929559613b834"
+    },
+    "global_step_58/actor/model_world_size_1_rank_0.pt": {
+      "bytes": 43532475,
+      "sha256": "7f043539c590dbfcf379a29835fa1bd337af01aed67f044c96316c9dee47ad78"
+    },
+    "global_step_58/actor/fsdp_config.json": {
+      "bytes": 46,
+      "sha256": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f"
+    },
+    "global_step_58/actor/extra_state_world_size_1_rank_0.pt": {
+      "bytes": 15077,
+      "sha256": "1a09fbd155bfaecc6e6df868f010ead1dfdf1e56891f84eec96a9a14b58906c0"
+    },
+    "global_step_58/actor/optim_world_size_1_rank_0.pt": {
+      "bytes": 87100836,
+      "sha256": "93b2d675be8507271db198ee4f6ba8ca2b88eedfcab6288df6917394e0ebc83b"
+    },
+    "global_step_58/actor/lora_train_meta.json": {
+      "bytes": 66,
+      "sha256": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445"
+    },
+    "global_step_58/actor/huggingface/chat_template.jinja": {
+      "bytes": 7756,
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+    },
+    "global_step_58/actor/huggingface/tokenizer_config.json": {
+      "bytes": 1165,
+      "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b"
+    },
+    "global_step_58/actor/huggingface/processor_config.json": {
+      "bytes": 1191,
+      "sha256": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1"
+    },
+    "global_step_58/actor/huggingface/config.json": {
+      "bytes": 2940,
+      "sha256": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7"
+    },
+    "global_step_58/actor/huggingface/tokenizer.json": {
+      "bytes": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    "global_step_57/data.pt": {
+      "bytes": 6868,
+      "sha256": "1c538c5beb8ba7b86539cbc023c8f04d09aaac660d4cf3e24e6eb45a2eecdfdf"
+    },
+    "global_step_57/dapo_progress.json": {
+      "bytes": 107,
+      "sha256": "77d4e4dc5b566c69d5e2240e2b6ba00e7bfd7f1e0507822a0c54cf8122b299af"
+    },
+    "global_step_57/actor/model_world_size_1_rank_0.pt": {
+      "bytes": 43532475,
+      "sha256": "470078191fe289ecd05ad4524c2d42c5ade18c30b23e8fe0a1ba73128ba57975"
+    },
+    "global_step_57/actor/fsdp_config.json": {
+      "bytes": 46,
+      "sha256": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f"
+    },
+    "global_step_57/actor/extra_state_world_size_1_rank_0.pt": {
+      "bytes": 15077,
+      "sha256": "3857bb43b298b66421fa4af4bf0980cf7458b7ecaa7db90191cc875887e3fa26"
+    },
+    "global_step_57/actor/optim_world_size_1_rank_0.pt": {
+      "bytes": 87100836,
+      "sha256": "1b769380cc0914694003e06a104a7ab642b6cfd4a8204b7985fe7c13343a7ecd"
+    },
+    "global_step_57/actor/lora_train_meta.json": {
+      "bytes": 66,
+      "sha256": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445"
+    },
+    "global_step_57/actor/huggingface/chat_template.jinja": {
+      "bytes": 7756,
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+    },
+    "global_step_57/actor/huggingface/tokenizer_config.json": {
+      "bytes": 1165,
+      "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b"
+    },
+    "global_step_57/actor/huggingface/processor_config.json": {
+      "bytes": 1191,
+      "sha256": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1"
+    },
+    "global_step_57/actor/huggingface/config.json": {
+      "bytes": 2940,
+      "sha256": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7"
+    },
+    "global_step_57/actor/huggingface/tokenizer.json": {
+      "bytes": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    "prepare_candidate.py": {
+      "bytes": 3403,
+      "sha256": "f08763e23c40dd058e6b56fd71772be9e46c7fc5a093e45d26e40c02dba4dbdf"
+    },
+    "probe_native_fsdp2.py": {
+      "bytes": 6186,
+      "sha256": "f6a3a6174d08bba5d31bbe1f45eb8ab653f180e2f43f8aab76f67b0208abef41"
+    },
+    "audit_saved_updates.py": {
+      "bytes": 4990,
+      "sha256": "76ea2d69fb28d081e3ae200fc212ca58d2209e2ae36fd48cad87aa25830cecc5"
+    },
+    "parameter-order.json": {
+      "bytes": 228779,
+      "sha256": "3d8af6262c909b14acc10ea6f3074ff12c6ee64a12f387f54a07127de6bb37db"
+    },
+    "update-arithmetic-audit.json": {
+      "bytes": 1262,
+      "sha256": "7420486a0ed566e8d09f8126c3ad50592963708bad1e823e6544afe37d05ba46"
+    },
+    "legacy-adapter-dtypes.json": {
+      "bytes": 1285,
+      "sha256": "66accc3444f3afe5739d718cb455487454713f6766d4e718aa2792bbfa76c110"
+    },
+    "legacy-optimizer-dtypes.json": {
+      "bytes": 362,
+      "sha256": "b5dd033724d21e2f88c7abb90870ed8138b42205d1273521dc4038e4a6cab6ce"
+    },
+    "native-fsdp2-cpu.json": {
+      "bytes": 629,
+      "sha256": "b8cefe53b8f66ee0907f0720b33cc3fcaee5649135c2e8d99189baf05b23c73a"
+    },
+    "candidate.json": {
+      "bytes": 595,
+      "sha256": "ea4065f97b453f838b80dec426fe8f2fae781ee44c166cd193038c204ec9f9ee"
+    },
+    "verl-fsdp2-lora-fp32-v1.patch": {
+      "bytes": 1003,
+      "sha256": "d3cb497adb1e5caabc5870d2a104587ff9ad1a526317e3246953cc58080f4d76"
+    }
+  },
+  "live_pid": 605645,
+  "live_create_time": 1788844173.03,
+  "latest_update": 61,
+  "candidate_installed": false,
+  "validation_files": []
+}

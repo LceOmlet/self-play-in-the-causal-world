@@ -1,0 +1,32 @@
+{
+  "scope": "Historical checkpoint storage metadata only, not trustworthy capability evidence or initialization.",
+  "checkpoints": [
+    {
+      "step": 300,
+      "path": "/home/chen/runs/dolens-grpo-rewardv10-cfisolated-85cb577-20260902-195713-resume250-10k/checkpoints.disqualified-20260906/checkpoint-300/adapter_model.safetensors",
+      "header_sha256": "353dfb94377937d74608549b0bc2be6b49051f34fa8af07a503247070f502538",
+      "dtype_elements": {
+        "F32": 21639168
+      },
+      "tensors": 496
+    },
+    {
+      "step": 800,
+      "path": "/home/chen/runs/dolens-grpo-rewardv10-cfisolated-85cb577-20260902-195713-resume250-10k/checkpoints.disqualified-20260906/checkpoint-800/adapter_model.safetensors",
+      "header_sha256": "353dfb94377937d74608549b0bc2be6b49051f34fa8af07a503247070f502538",
+      "dtype_elements": {
+        "F32": 21639168
+      },
+      "tensors": 496
+    },
+    {
+      "step": 850,
+      "path": "/home/chen/runs/dolens-grpo-rewardv10-cfisolated-85cb577-20260902-195713-resume250-10k/checkpoints.disqualified-20260906/checkpoint-850/adapter_model.safetensors",
+      "header_sha256": "353dfb94377937d74608549b0bc2be6b49051f34fa8af07a503247070f502538",
+      "dtype_elements": {
+        "F32": 21639168
+      },
+      "tensors": 496
+    }
+  ]
+}

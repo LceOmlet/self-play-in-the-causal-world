@@ -1,0 +1,12 @@
+{
+  "source": "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2",
+  "candidate": "/home/chen/vendor/dapo-official-20260906/verl-fp32-lora-candidate-v1",
+  "upstream_sha256": "5fe61752d52607dff63c3c4c3d513b2503e2bc851eb1646bf90f68f7ebe57a9c",
+  "patched_sha256": "fb72bed2706ee2996a6fcf853b14ea3e3f59554a66ce7f4f78cd79d8bbf34c7a",
+  "patch_sha256": "d3cb497adb1e5caabc5870d2a104587ff9ad1a526317e3246953cc58080f4d76",
+  "checked_files": 1288,
+  "changed_files": [
+    "verl/workers/engine/fsdp/transformer_impl.py"
+  ],
+  "status": "candidate; not installed in live training"
+}
