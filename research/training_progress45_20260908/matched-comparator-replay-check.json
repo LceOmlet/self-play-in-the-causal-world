@@ -1,0 +1,10 @@
+{
+  "all_original_result_fields_equal": true,
+  "original_png_bytes_equal": true,
+  "before_step": 0,
+  "after_step": 25,
+  "scope": "Replayed existing real base/update25; no later validation fabricated.",
+  "script_sha256": "0d23e0ee3116b1b08fc4729ff1ed1a2d3e31ca6eda2f39e0a815bf205281ae95",
+  "original_result_sha256": "7698a68a978535c97b2629870c717844c66239fd998306fc17ab877ea7bee2bd",
+  "replayed_result_sha256": "d8b6cc7ff1bd8f555aa45c401794533552b52099e05095955b0b92e87f0fded2"
+}

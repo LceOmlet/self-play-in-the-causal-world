@@ -67,7 +67,8 @@ def main():
     def axis(ax, title, ymax=1.04):
         ax.set_title(title, pad=12)
         ax.set_xlim(0.5, max(steps) + 0.5)
-        ax.set_xticks(sorted(set([1, 5, 10, 15, max(steps)])))
+        stride = max(5, 5 * ((max(steps) + 49) // 50))
+        ax.set_xticks(sorted({1, max(steps), *range(stride, max(steps), stride)}))
         ax.set_xlabel("官方累计更新步数")
         ax.set_ylim(-0.03 * ymax, ymax)
         ax.grid(axis="y")
@@ -136,10 +137,14 @@ def main():
         alpha=0.8,
         label="训练奖励均值（含长度惩罚）",
     )
+    minimum_reward = min(0.0, min(metrics[s]["critic/score/mean"] for s in steps))
+    axes[0].set_ylim(minimum_reward - 0.04, 1.04)
     axes[0].set_ylabel("环境终止质量")
     axes[0].legend(ncol=3, frameon=False, fontsize=9, loc="upper left", bbox_to_anchor=(0, 1.39))
     maximum = max(metrics[s]["timing_s/step"] / 60 for s in steps)
-    axis(axes[1], "每次有效更新的耗时：题目、轨迹长度及补采样次数均会改变工作量", maximum * 1.13)
+    axis(
+        axes[1], "训练步耗时（验证另计）：题目、轨迹长度及补采样次数均会改变工作量", maximum * 1.13
+    )
     axes[1].plot(
         steps,
         [metrics[s]["timing_s/step"] / 60 for s in steps],
@@ -147,7 +152,7 @@ def main():
         color="#284c6b",
         ms=4,
         lw=1.2,
-        label="完整更新",
+        label="训练步",
     )
     axes[1].plot(
         steps,
@@ -160,6 +165,22 @@ def main():
     )
     axes[1].set_ylabel("分钟")
     axes[1].legend(frameon=False, loc="upper right")
+    validation_seconds = {
+        s: metrics[s]["timing_s/testing"]
+        for s in steps
+        if metrics[s].get("timing_s/testing", 0) > 0
+    }
+    if validation_seconds:
+        axes[1].text(
+            0.46,
+            0.95,
+            "另计固定验证："
+            + "；".join(f"第 {s} 步 {t / 60:.1f} 分钟" for s, t in validation_seconds.items()),
+            transform=axes[1].transAxes,
+            va="top",
+            color=style.MUTED,
+            fontsize=9,
+        )
     fig.text(
         0.075, 0.06, "虚线：第 6 步起启用编译；第 16 步起使用已验收的进度补丁。", color=style.MUTED
     )
@@ -194,10 +215,10 @@ def main():
         axis(ax, title, ymax)
         draw(ax, points, colors[family])
         coverage[key] = len(points)
-    axis(axes[1, 1], "中介与顺序：1 − F1")
+    axis(axes[1, 1], "中介与路径边：1 − F1")
     for key, label, color, marker in [
         ("mediator_f1", "中介集合", "#c04f73", "o"),
-        ("order_f1", "顺序关系", "#74529a", "s"),
+        ("order_f1", "路径边", "#74529a", "s"),
     ]:
         points = error_points("mediator_set", key, lambda x: 1 - float(x))
         draw(axes[1, 1], points, color, label, marker)
@@ -212,7 +233,7 @@ def main():
     mediator_failures = strict_failures(
         "mediator_set", ["mediators_exact_match", "order_exact_match"]
     )
-    draw(axes[1, 2], mediator_failures, colors["mediator_set"], "中介／顺序非全对")
+    draw(axes[1, 2], mediator_failures, colors["mediator_set"], "中介／路径边非全对")
     axes[1, 2].legend(frameon=False, fontsize=8)
     fig.text(
         0.06,
@@ -236,6 +257,7 @@ def main():
         "incomplete_trajectories": sum(not row["completed"] for row in rows),
         "generated_groups": generated,
         "metric_coverage": coverage,
+        "validation_seconds_separate_from_training_step": validation_seconds,
         "files": {p.name: sha(p) for p in artifacts},
         "scope": "Training rollout metrics on changing tasks; no causal capability-gain claim.",
     }

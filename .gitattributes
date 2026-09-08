@@ -46,3 +46,6 @@ research/training_signal_20260908/** -text whitespace=cr-at-eol
 research/training_signal_20260908/figures/*.svg -diff -whitespace
 research/training_hold_20260908/** -text whitespace=cr-at-eol
 research/structural_signal_20260908/** -text whitespace=cr-at-eol
+research/training_progress45_20260908/** -text whitespace=cr-at-eol
+research/training_progress45_20260908/figures/*.svg -diff -whitespace
+docs/rl-correctness-history-before-global-review-20260908.md -text whitespace=cr-at-eol

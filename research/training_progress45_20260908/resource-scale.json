@@ -1,0 +1,242 @@
+{
+  "inputs_sha256": {
+    "updates1-5.json": "5f5aaea9f99f2e4892e0fcbc5f789b4121f3e2c745da1a86ed3a9149fa0f39fa",
+    "updates16-25.json": "b8c146f6195c33b6d62f16639569c102f8ab943d14f0ac475632815031626a71",
+    "updates26-39.json": "efc4fa04c5d399863f5127aa4cc37559fe5a5df399212caf20f066218ec67f4d",
+    "updates40-45.json": "c75f88adc6b052ee4e93c64340d67da284bd564cfbde7f827ccc23bb37f2ff4f",
+    "updates6-15.json": "74041f218ca824ab4e0a82058d2c9f5336769410d2120b1f03ba9912035cca8f"
+  },
+  "updates": [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45
+  ],
+  "train_seconds": 13845.571168152965,
+  "generation_seconds": 11923.803834632738,
+  "generation_fraction": 0.8611998515495988,
+  "mean_step_minutes": 7.691983982307203,
+  "median_step_minutes": 6.888383852683668,
+  "validation": [
+    {
+      "step": 25,
+      "seconds": 4049.557737825089
+    }
+  ],
+  "scenario": {
+    "official_updates": 10000,
+    "validation_frequency": 25,
+    "assumption": "Same measured workload and speed per update; same cost per validation as the single observed full pass. Not a prediction or a changed run configuration.",
+    "training_days": 53.4165554326889,
+    "generation_only_days": 46.0023296089226,
+    "additional_validation_days": 18.747952489930967
+  },
+  "per_update": [
+    {
+      "step": 16,
+      "training_seconds": 289.27633602696005,
+      "generation_seconds": 234.5980652209837,
+      "actor_seconds": 30.43285444099456
+    },
+    {
+      "step": 17,
+      "training_seconds": 401.5615195039427,
+      "generation_seconds": 335.7756593900267,
+      "actor_seconds": 40.104938330943696
+    },
+    {
+      "step": 18,
+      "training_seconds": 582.5699767629849,
+      "generation_seconds": 501.6163264999632,
+      "actor_seconds": 51.68344015197363
+    },
+    {
+      "step": 19,
+      "training_seconds": 414.7747688340023,
+      "generation_seconds": 360.6915673799813,
+      "actor_seconds": 31.215957247070037
+    },
+    {
+      "step": 20,
+      "training_seconds": 560.875933921081,
+      "generation_seconds": 494.7517224040348,
+      "actor_seconds": 40.37496191204991
+    },
+    {
+      "step": 21,
+      "training_seconds": 795.5637441349681,
+      "generation_seconds": 717.9358858090127,
+      "actor_seconds": 49.25474302400835
+    },
+    {
+      "step": 22,
+      "training_seconds": 394.51639463799074,
+      "generation_seconds": 336.9451104759937,
+      "actor_seconds": 38.195265536080115
+    },
+    {
+      "step": 23,
+      "training_seconds": 479.64720125007443,
+      "generation_seconds": 422.83212812501006,
+      "actor_seconds": 33.17155961797107
+    },
+    {
+      "step": 24,
+      "training_seconds": 411.8312934880378,
+      "generation_seconds": 360.34651523199864,
+      "actor_seconds": 29.12883836601395
+    },
+    {
+      "step": 25,
+      "training_seconds": 488.078950862051,
+      "generation_seconds": 377.9195233229548,
+      "actor_seconds": 73.95225765893701
+    },
+    {
+      "step": 26,
+      "training_seconds": 197.78367448505014,
+      "generation_seconds": 156.43059255206026,
+      "actor_seconds": 20.406037379056215
+    },
+    {
+      "step": 27,
+      "training_seconds": 390.20026131509803,
+      "generation_seconds": 325.14506371796597,
+      "actor_seconds": 39.61986993206665
+    },
+    {
+      "step": 28,
+      "training_seconds": 319.85751934396103,
+      "generation_seconds": 252.54271942202467,
+      "actor_seconds": 41.19241860997863
+    },
+    {
+      "step": 29,
+      "training_seconds": 366.89073789003305,
+      "generation_seconds": 311.2344732689671,
+      "actor_seconds": 32.43817302794196
+    },
+    {
+      "step": 30,
+      "training_seconds": 823.3277197721181,
+      "generation_seconds": 769.5615835830104,
+      "actor_seconds": 30.985998164047487
+    },
+    {
+      "step": 31,
+      "training_seconds": 421.6329847179586,
+      "generation_seconds": 368.7379917179933,
+      "actor_seconds": 30.120636616949923
+    },
+    {
+      "step": 32,
+      "training_seconds": 287.8955972130643,
+      "generation_seconds": 234.99367958400398,
+      "actor_seconds": 30.31715062900912
+    },
+    {
+      "step": 33,
+      "training_seconds": 702.2865628818981,
+      "generation_seconds": 635.0553540079854,
+      "actor_seconds": 41.35453526303172
+    },
+    {
+      "step": 34,
+      "training_seconds": 170.27140185190365,
+      "generation_seconds": 134.7222382829059,
+      "actor_seconds": 17.0113849559566
+    },
+    {
+      "step": 35,
+      "training_seconds": 296.96568056591786,
+      "generation_seconds": 253.17988257401157,
+      "actor_seconds": 23.513544061919674
+    },
+    {
+      "step": 36,
+      "training_seconds": 339.0704896870302,
+      "generation_seconds": 287.21219239302445,
+      "actor_seconds": 29.477659323019907
+    },
+    {
+      "step": 37,
+      "training_seconds": 719.4452820649603,
+      "generation_seconds": 591.1855073999614,
+      "actor_seconds": 80.97596861794591
+    },
+    {
+      "step": 38,
+      "training_seconds": 476.00299300497863,
+      "generation_seconds": 413.57739473495167,
+      "actor_seconds": 37.34665113897063
+    },
+    {
+      "step": 39,
+      "training_seconds": 386.8309805931058,
+      "generation_seconds": 320.09995384095237,
+      "actor_seconds": 40.83410028903745
+    },
+    {
+      "step": 40,
+      "training_seconds": 536.8147892488632,
+      "generation_seconds": 465.50335103890393,
+      "actor_seconds": 43.10771716909949
+    },
+    {
+      "step": 41,
+      "training_seconds": 310.47337465698365,
+      "generation_seconds": 266.59762302110903,
+      "actor_seconds": 23.435765674104914
+    },
+    {
+      "step": 42,
+      "training_seconds": 549.8527774120448,
+      "generation_seconds": 465.0234521799721,
+      "actor_seconds": 54.80640514707193
+    },
+    {
+      "step": 43,
+      "training_seconds": 356.1521312019322,
+      "generation_seconds": 286.084981358028,
+      "actor_seconds": 43.20192739600316
+    },
+    {
+      "step": 44,
+      "training_seconds": 802.6877462889533,
+      "generation_seconds": 736.4033096489729,
+      "actor_seconds": 40.40786391496658
+    },
+    {
+      "step": 45,
+      "training_seconds": 572.4323445350165,
+      "generation_seconds": 507.0999864459736,
+      "actor_seconds": 39.68711247702595
+    }
+  ]
+}

@@ -18,9 +18,16 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--figures", type=Path, required=True)
     args = parser.parse_args()
-    before, after = [json.loads(path.read_text()) for path in [args.before, args.after]]
+    before, after = [
+        json.loads(path.read_text(encoding="utf-8")) for path in [args.before, args.after]
+    ]
     assert before["complete_official_pass"] and after["complete_official_pass"]
-    assert before["step"] == 0 and after["step"] == 25
+    assert isinstance(before["step"], int) and isinstance(after["step"], int)
+    assert 0 <= before["step"] < after["step"]
+    before_label = "Original base" if before["step"] == 0 else f"Update {before['step']}"
+    after_label = f"Update {after['step']}"
+    before_slug = "base" if before["step"] == 0 else f"update{before['step']}"
+    comparison_slug = f"{before_slug}-vs-update{after['step']}"
     assert before["dataset_sha256"] == after["dataset_sha256"]
     assert len(before["records"]) == len(after["records"]) == 25
     indexed = {r["tape_key"]: r for r in before["records"]}
@@ -77,6 +84,8 @@ def main():
         "before_report_sha256": sha(args.before),
         "after_report_sha256": sha(args.after),
         "dataset_sha256": before["dataset_sha256"],
+        "before_step": before["step"],
+        "after_step": after["step"],
         "mean_raw_quality_before": sum(p["before_raw_quality"] for p in pairs) / 25,
         "mean_raw_quality_after": sum(p["after_raw_quality"] for p in pairs) / 25,
         "completion_transitions": dict(transitions),
@@ -127,8 +136,8 @@ def main():
         selected = list(range(5)) if metric != "strict_success_count" else [2, 3, 4]
         positions = np.arange(len(selected))
         for name, offset, color, label in [
-            ("before", -0.18, "#929da5", "Original base"),
-            ("after", 0.18, "#176b91", "Update 25"),
+            ("before", -0.18, "#929da5", before_label),
+            ("after", 0.18, "#176b91", after_label),
         ]:
             values = [families[order[j]][name][metric] for j in selected]
             bars = ax.bar(positions + offset, values, width=0.34, color=color, label=label)
@@ -144,7 +153,10 @@ def main():
         if metric != "mean_raw_quality":
             ax.set_yticks(range(6))
     axes[0].legend(frameon=False, loc="upper left", fontsize=9)
-    fig.suptitle("Matched Qwen3.5-9B validation: original base vs update 25", fontsize=14)
+    fig.suptitle(
+        f"Matched Qwen3.5-9B validation: {before_label.lower()} vs {after_label.lower()}",
+        fontsize=14,
+    )
     fig.text(
         0.5,
         0.02,
@@ -157,7 +169,7 @@ def main():
     fig.tight_layout(rect=(0, 0.055, 1, 0.95))
     args.figures.mkdir(parents=True, exist_ok=True)
     for extension in ["png", "svg", "pdf"]:
-        target = args.figures / f"base-vs-update25.{extension}"
+        target = args.figures / f"{comparison_slug}.{extension}"
         assert not target.exists()
         fig.savefig(target, dpi=180)
     plt.close(fig)
