@@ -42,3 +42,5 @@ research/dapo_progress_20260908/*.patch -whitespace
 research/dapo_progress_20260908/figures/*.svg -diff -whitespace
 research/heldout_learning_20260908/** -text whitespace=cr-at-eol
 research/heldout_learning_20260908/figures/*.svg -diff -whitespace
+research/training_signal_20260908/** -text whitespace=cr-at-eol
+research/training_signal_20260908/figures/*.svg -diff -whitespace

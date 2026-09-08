@@ -1,0 +1,81 @@
+{
+  "script_sha256": "04f34b5d961a80fe4a62284ecdf270e5438725563c04643522c0ce3fc18f0ff1",
+  "records_sha256": "545c519daedbbc5bafd257690329343c32e7d0c8600ca4183b0fde97e27015f5",
+  "original_program_scores_sha256": "73671e9684352e9eab0472b5af19269d5832d32af903aadc46033d947b00d959",
+  "results": {
+    "all": {
+      "episodes": 100,
+      "worlds": 50,
+      "observed_best": {
+        "correct": 23,
+        "accuracy": 0.23,
+        "mean_quality": 0.6266750786369453
+      },
+      "observed_second": {
+        "correct": 57,
+        "accuracy": 0.57,
+        "mean_quality": 0.7115429048943933
+      },
+      "active_adjusted": {
+        "correct": 70,
+        "accuracy": 0.7,
+        "mean_quality": 0.8641685095777327
+      },
+      "active_vs_second_paired_counts": {
+        "0->0": 9,
+        "0->1": 21,
+        "1->0": 34,
+        "1->1": 36
+      }
+    },
+    "strong": {
+      "episodes": 80,
+      "worlds": 40,
+      "observed_best": {
+        "correct": 3,
+        "accuracy": 0.0375,
+        "mean_quality": 0.5333438482961814
+      },
+      "observed_second": {
+        "correct": 57,
+        "accuracy": 0.7125,
+        "mean_quality": 0.8822828310364251
+      },
+      "active_adjusted": {
+        "correct": 51,
+        "accuracy": 0.6375,
+        "mean_quality": 0.8422659258335647
+      },
+      "active_vs_second_paired_counts": {
+        "0->0": 8,
+        "0->1": 21,
+        "1->0": 15,
+        "1->1": 36
+      }
+    },
+    "concordant": {
+      "episodes": 20,
+      "worlds": 10,
+      "observed_best": {
+        "correct": 20,
+        "accuracy": 1.0,
+        "mean_quality": 1.0
+      },
+      "observed_second": {
+        "correct": 0,
+        "accuracy": 0.0,
+        "mean_quality": 0.028583200326266257
+      },
+      "active_adjusted": {
+        "correct": 19,
+        "accuracy": 0.95,
+        "mean_quality": 0.9517788445544039
+      },
+      "active_vs_second_paired_counts": {
+        "0->0": 1,
+        "1->0": 19
+      }
+    }
+  },
+  "scope": "Previously analyzed 50 worlds/two tapes, not independent model training or a selection-adjusted significance test. Rank2 reuses the original pure-observation stream."
+}

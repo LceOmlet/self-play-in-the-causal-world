@@ -1,0 +1,61 @@
+{
+  "inputs": {
+    "research\\training_signal_20260908\\curve-inputs\\updates1-5.json": "5f5aaea9f99f2e4892e0fcbc5f789b4121f3e2c745da1a86ed3a9149fa0f39fa",
+    "research\\training_signal_20260908\\curve-inputs\\updates6-15.json": "74041f218ca824ab4e0a82058d2c9f5336769410d2120b1f03ba9912035cca8f",
+    "research\\training_signal_20260908\\curve-inputs\\updates16-25.json": "b8c146f6195c33b6d62f16639569c102f8ab943d14f0ac475632815031626a71",
+    "research\\training_signal_20260908\\curve-inputs\\updates26-29.json": "e8b0bbf46c99fac9e8fcaf5a096ffc865e41997cff6686aa18ec78703733e557"
+  },
+  "script_sha256": "4682fcb7a45a27af97c26e5d17878a9fc9a5cc98f3614212c3cf24feb1712c7a",
+  "adapted_style_sha256": "9cbb0eb4b85422d4afc2dc5972651bfaba7462f3dbcdec58b75a9398728f4a80",
+  "updates": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+  ],
+  "retained_trajectories": 116,
+  "incomplete_trajectories": 2,
+  "generated_groups": 33,
+  "metric_coverage": {
+    "total_variation_error": 20,
+    "mean_absolute_endpoint_error": 20,
+    "normalized_regret": 28,
+    "edit_distance": 26,
+    "mediator_f1": 20,
+    "order_f1": 20
+  },
+  "files": {
+    "trusted-rewards-and-time.png": "79e61c7fab064f3ba864e2f6064bdfc17b321384e162d581672ea220b6e35f79",
+    "trusted-rewards-and-time.svg": "d39f986b4eb661b798776c1e9712100eb1a519d45c12ce2998fb35840b356991",
+    "trusted-rewards-and-time.pdf": "a13087bf95bffc34ff99506fc917bdfb2ccd78354dbb7e183050e3d4048f9242",
+    "trusted-task-errors.png": "d9cd41396021a2a443761b194b9c6fd6fcd5d712440cae7cdde9268b82789571",
+    "trusted-task-errors.svg": "4dc40a5ea9b4e61914667fa430802a822648c4e38661b3788861ad86209823af",
+    "trusted-task-errors.pdf": "7e351c66dcc17cfd2286a07a746a1e286fb322b8ead35251b03d600b065cd21b"
+  },
+  "scope": "Training rollout metrics on changing tasks; no causal capability-gain claim."
+}

@@ -1,0 +1,3111 @@
+{
+  "script_sha256": "0250eaefb2d55c584d65e02d46d4694ad7b16600fd4039deb3d9cb13a5a8304d",
+  "inputs_sha256": {
+    "frozen-worlds.tar.gz": "48c5f66a7d7f245d178a6cb1ed3ec502bbefa40c0881118be4a511a430121e56",
+    "evidence.tar.gz": "3285f97a6f33ccf80730bbc25225c72722cad551df457b577c6c63a17190ea19",
+    "rescored-answers.json.gz": "73671e9684352e9eab0472b5af19269d5832d32af903aadc46033d947b00d959",
+    "public_policy.py": "975941c6cab97c2f261b2d4a37fdd7c9eba53aa336defc52ee52956a7fd1c8c2"
+  },
+  "accepted_tasks_sha256": "d26b7f78e0d62f7a62b9fca1a786ae7d2e7959c90b93defd6583f2a52dddd522",
+  "finite_baselines_sha256": "2f6f4dd60fb619cfd53e21fb8e1da900a42510f727da0f32421eb41782c42b95",
+  "records_sha256": "545c519daedbbc5bafd257690329343c32e7d0c8600ca4183b0fde97e27015f5",
+  "replayed_original_answers": 300,
+  "cohort_results": {
+    "all": {
+      "episodes": 100,
+      "worlds": 50,
+      "active_correct": 70,
+      "same_samples_first_correct": 25,
+      "same_samples_second_correct": 53,
+      "pure_observation_first_correct": 23,
+      "pure_observation_second_correct": 57
+    },
+    "strong": {
+      "episodes": 80,
+      "worlds": 40,
+      "active_correct": 51,
+      "same_samples_first_correct": 5,
+      "same_samples_second_correct": 53,
+      "pure_observation_first_correct": 3,
+      "pure_observation_second_correct": 57
+    },
+    "concordant": {
+      "episodes": 20,
+      "worlds": 10,
+      "active_correct": 19,
+      "same_samples_first_correct": 20,
+      "same_samples_second_correct": 0,
+      "pure_observation_first_correct": 20,
+      "pure_observation_second_correct": 0
+    }
+  },
+  "submitted_population_rank_diagnostic": [
+    {
+      "split": "train",
+      "index": 3,
+      "strong": false,
+      "world_sha256": "b7f6a87980e1bc034671d96861fabadaefef244437e4d53b80405ed26d471af6",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.2285458296443241,
+        0.246577032370533,
+        0.35114646073108013,
+        0.2372593130760463,
+        0.2560603706573604
+      ],
+      "causal_values": [
+        0.22854582964432413,
+        0.246577032370533,
+        0.3511464607310802,
+        0.23725931307604636,
+        0.2560603706573605
+      ],
+      "optimal": 2,
+      "observational_order": [
+        2,
+        4,
+        1,
+        3,
+        0
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 8,
+      "strong": true,
+      "world_sha256": "bcae35ed8662ce70ffa10c9b9de2614ce4515671378ceaf00b964e9aadab2c4c",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.2584824437435241,
+        0.24810871890084019
+      ],
+      "causal_values": [
+        0.24929283855715703,
+        0.3028111887720494
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.010373724842683896,
+      "causal_loss_of_observational_best": 0.053518350214892346
+    },
+    {
+      "split": "train",
+      "index": 13,
+      "strong": true,
+      "world_sha256": "e549fb39adef4882c5a0b43defac6188a93003b70f93e5f16ab8dc25ec904ab2",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.716899960524848,
+        0.7763575288240825,
+        0.3751901591820377,
+        0.07891629111641574
+      ],
+      "causal_values": [
+        0.7002390138987236,
+        0.5503078603779643,
+        0.4640589301776841,
+        0.28475256165675084
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05945756829923454,
+      "causal_loss_of_observational_best": 0.14993115352075925
+    },
+    {
+      "split": "train",
+      "index": 18,
+      "strong": true,
+      "world_sha256": "127444b5698221f79a7e1db7a3a1e7b73722d04e7e33226ef6c76e6d5d2b6d31",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.1437864455510796,
+        0.7178604961487196,
+        0.26044339179325554,
+        0.6013901690400909,
+        0.02199035036466571
+      ],
+      "causal_values": [
+        0.13850882802469944,
+        0.7733488872641926,
+        0.07844746050747756,
+        0.5202371799633766,
+        0.15925746346459016
+      ],
+      "optimal": 2,
+      "observational_order": [
+        4,
+        0,
+        2,
+        3,
+        1
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.23845304142858983,
+      "causal_loss_of_observational_best": 0.0808100029571126
+    },
+    {
+      "split": "train",
+      "index": 23,
+      "strong": true,
+      "world_sha256": "c488b3f5c88de2e8f2ec7776de1d82faa24770007be4007cc612ec5ad3af3431",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.07826407400792765,
+        0.23535757130311952,
+        0.04433738367190468
+      ],
+      "causal_values": [
+        0.05522554797750268,
+        0.26262241641869843,
+        0.13872669410078203
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.03392669033602297,
+      "causal_loss_of_observational_best": 0.08350114612327936
+    },
+    {
+      "split": "train",
+      "index": 28,
+      "strong": false,
+      "world_sha256": "4363acf357593a8a316b1b39c3c76c12fa789426e774ef51b5b566d64cf72160",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.04854184522216932,
+        0.029181579560859875,
+        0.038877007082514355
+      ],
+      "causal_values": [
+        0.045554786085353106,
+        0.02847489737853917,
+        0.03893749590882723
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 33,
+      "strong": true,
+      "world_sha256": "9d266cb9140f1f161e46b1541b46da41f1a729903906418ecb39548d75b65a7b",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.4635573726705119,
+        0.4086512548382608,
+        0.42498660202244587
+      ],
+      "causal_values": [
+        0.4147218053927114,
+        0.47260779304979866,
+        0.5411744794500171
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        2,
+        0
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.05490611783225108,
+      "causal_loss_of_observational_best": 0.057885987657087246
+    },
+    {
+      "split": "train",
+      "index": 38,
+      "strong": true,
+      "world_sha256": "a7ae05dd58d811e55b7e6ac9d77eeea6e4314ff44277323918d37a8596318916",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.6608013399280529,
+        0.7468488713275739,
+        0.4373157973140994,
+        0.7407676459927912
+      ],
+      "causal_values": [
+        0.7146741996705103,
+        0.674586129176898,
+        0.7314888520933333,
+        0.7299241376580371
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.3095330740134745,
+      "causal_loss_of_observational_best": 0.05690272291643528
+    },
+    {
+      "split": "train",
+      "index": 43,
+      "strong": true,
+      "world_sha256": "8a5aa95b298347a485ce32e85443a9b23437aca0c4e87ed3bd2f5f9900fb57c6",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.1779133755792919,
+        0.21498144677622255,
+        0.030834640245344085
+      ],
+      "causal_values": [
+        0.11023897042023506,
+        0.1607287812509018,
+        0.23727565665031847
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.18414680653087848,
+      "causal_loss_of_observational_best": 0.07654687539941668
+    },
+    {
+      "split": "train",
+      "index": 48,
+      "strong": true,
+      "world_sha256": "9dd032eb68026e45d1543873b544a9cc5bd192f07680ed832df1caabeccbd889",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4726526565187529,
+        0.535152044129807
+      ],
+      "causal_values": [
+        0.4714410949346375,
+        0.38842043187016145
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.062499387611054114,
+      "causal_loss_of_observational_best": 0.08302066306447603
+    },
+    {
+      "split": "train",
+      "index": 53,
+      "strong": false,
+      "world_sha256": "6cb05d2e18c06bf27a4d5a8b904159e9aaff1b872910b34d6ff9b70106fac5f5",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.16885869758785285,
+        0.06844532180142111
+      ],
+      "causal_values": [
+        0.16885869758785288,
+        0.06844532180142111
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 58,
+      "strong": true,
+      "world_sha256": "1abda5fae95f6cd1f0c1fc8f2031b5bf106baac5d1d62de69f50525bb6f713e9",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.22458375693832064,
+        0.3140992319338677,
+        0.23897775128725177
+      ],
+      "causal_values": [
+        0.302476702518516,
+        0.3668802145838359,
+        0.21036476727160092
+      ],
+      "optimal": 2,
+      "observational_order": [
+        0,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.014393994348931127,
+      "causal_loss_of_observational_best": 0.09211193524691508
+    },
+    {
+      "split": "train",
+      "index": 63,
+      "strong": true,
+      "world_sha256": "148493d9f0185ab54260ca31948412a56d0f80b3af1424e0f398a5fb3c8b05e5",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4362956683316424,
+        0.5231675891749241,
+        0.6572495157344045,
+        0.3568327234834718,
+        0.7462284592268726
+      ],
+      "causal_values": [
+        0.5370270229135483,
+        0.47995440894025093,
+        0.5239373266630724,
+        0.4759744206156992,
+        0.47983193410353175
+      ],
+      "optimal": 0,
+      "observational_order": [
+        4,
+        2,
+        1,
+        0,
+        3
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.30993279089523024,
+      "causal_loss_of_observational_best": 0.05719508881001656
+    },
+    {
+      "split": "train",
+      "index": 68,
+      "strong": true,
+      "world_sha256": "c3983615492393dc90014dea916bb5ac61a7a76ff9492aff8626375f37e5700a",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.2298177308790174,
+        0.2671096928975591
+      ],
+      "causal_values": [
+        0.333463390501098,
+        0.26329320748479307
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.03729196201854168,
+      "causal_loss_of_observational_best": 0.07017018301630495
+    },
+    {
+      "split": "train",
+      "index": 73,
+      "strong": true,
+      "world_sha256": "780ed4be1d0f5b1c50cd04eec391a3aefb30ecdf928031e60619a1e8c7a748d6",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.39258830716601584,
+        0.3361230335949088,
+        0.4592326135798971,
+        0.4589143537303662
+      ],
+      "causal_values": [
+        0.43515000995939573,
+        0.5408508351380715,
+        0.4541597340094925,
+        0.2448307054595632
+      ],
+      "optimal": 3,
+      "observational_order": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.1227913201354574,
+      "causal_loss_of_observational_best": 0.2960201296785083
+    },
+    {
+      "split": "train",
+      "index": 78,
+      "strong": false,
+      "world_sha256": "11e11d5a6532d50cf070414a07854c203cd133da31aba5c641d725bc34bdbc6f",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.9921553136760217,
+        0.991396728602553,
+        0.9911135616366595,
+        0.9933145691642982,
+        0.992684632679752
+      ],
+      "causal_values": [
+        0.9921625037266547,
+        0.9923059699473629,
+        0.9919388152185556,
+        0.9926711463675861,
+        0.9929008194959555
+      ],
+      "optimal": 2,
+      "observational_order": [
+        2,
+        1,
+        0,
+        4,
+        3
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 83,
+      "strong": true,
+      "world_sha256": "4184423ead27c3c21c7acfd59583d92c641fa3ab60813d879bd9412da8d37ea5",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.6933983638502164,
+        0.47468212131108733,
+        0.1388618126517384,
+        0.6239487339456444
+      ],
+      "causal_values": [
+        0.7025347799770136,
+        0.7537653131306119,
+        0.7227239976737435,
+        0.5756157347789478
+      ],
+      "optimal": 3,
+      "observational_order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.48508692129390607,
+      "causal_loss_of_observational_best": 0.14710826289479573
+    },
+    {
+      "split": "train",
+      "index": 88,
+      "strong": true,
+      "world_sha256": "45b1d1b41539866557a89338e953506396aa8c40d67c7c5e7a767a5208d8b5d3",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.06353168689505928,
+        0.2937242525957238,
+        0.278796075959863
+      ],
+      "causal_values": [
+        0.0714960435439276,
+        0.24348525706063756,
+        0.44021571638510537
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        2,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.014928176635860824,
+      "causal_loss_of_observational_best": 0.1967304593244678
+    },
+    {
+      "split": "train",
+      "index": 93,
+      "strong": true,
+      "world_sha256": "ccf96c83e2b99125c3212d14eb7fdf3f28bec1677e89c12e67dd04297b48668d",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.46859931192658605,
+        0.5734769661417728,
+        0.46713120711520534,
+        0.835880927522858
+      ],
+      "causal_values": [
+        0.5488223499498321,
+        0.6286327712056823,
+        0.6837894124021606,
+        0.9242653848895526
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.0014681048113807105,
+      "causal_loss_of_observational_best": 0.13496706245232848
+    },
+    {
+      "split": "train",
+      "index": 98,
+      "strong": true,
+      "world_sha256": "4879bef883bd7745f9634f7180884aa550cceff8e180ad01c1cf302393cab905",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.23057437779788925,
+        0.10563885230065301,
+        0.025378159000463328,
+        0.189423288196092,
+        0.14885078793262344
+      ],
+      "causal_values": [
+        0.20461678175749431,
+        0.05131664293759991,
+        0.22270888798014096,
+        0.29257556082233743,
+        0.03400677515824904
+      ],
+      "optimal": 4,
+      "observational_order": [
+        2,
+        1,
+        4,
+        3,
+        0
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.1234726289321601,
+      "causal_loss_of_observational_best": 0.18870211282189192
+    },
+    {
+      "split": "train",
+      "index": 103,
+      "strong": false,
+      "world_sha256": "6ecba8ebe82d7f314a7a39149ab16fe86db853ea3f4385a15bb1b2a3320e6204",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.7718177110003719,
+        0.7665091178909197
+      ],
+      "causal_values": [
+        0.7716676947475524,
+        0.7663971034969539
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 108,
+      "strong": true,
+      "world_sha256": "38b2505241d6e8da877b969221eb1905dd7404e6bf206d958138a925dbbcc67a",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.7573392421634814,
+        0.7747064849153436,
+        0.7013168567085909,
+        0.7773659201672493
+      ],
+      "causal_values": [
+        0.883716305850113,
+        0.7798665510875925,
+        0.726094205670119,
+        0.777412361572144
+      ],
+      "optimal": 0,
+      "observational_order": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.020026678003767895,
+      "causal_loss_of_observational_best": 0.10630394427796896
+    },
+    {
+      "split": "train",
+      "index": 113,
+      "strong": true,
+      "world_sha256": "dfdac5c960644c9ad8a439b5a01d6c96d245ede09e587d686f62b20de871b71d",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4454544945994291,
+        0.2886212942109433,
+        0.5145935775581093,
+        0.3691126555374055,
+        0.6186524945686999
+      ],
+      "causal_values": [
+        0.3298758917839585,
+        0.38739164762119493,
+        0.5065958668077767,
+        0.3533217051737066,
+        0.4512503564760432
+      ],
+      "optimal": 2,
+      "observational_order": [
+        4,
+        2,
+        0,
+        3,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.10405891701059056,
+      "causal_loss_of_observational_best": 0.05534551033173346
+    },
+    {
+      "split": "train",
+      "index": 118,
+      "strong": true,
+      "world_sha256": "c7d7a8adbd84730f825cbb76522d11541ed0a4d16c810498ab2b87d8f39aa3c3",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.25150562145165517,
+        0.28109178527092893,
+        0.21238510671047942,
+        0.36475766823083533
+      ],
+      "causal_values": [
+        0.20566437726807157,
+        0.27753829797385426,
+        0.237382465569759,
+        0.12126426287811831
+      ],
+      "optimal": 3,
+      "observational_order": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.15237256152035591,
+      "causal_loss_of_observational_best": 0.11611820269164069
+    },
+    {
+      "split": "train",
+      "index": 123,
+      "strong": true,
+      "world_sha256": "0fb583ae0df0f7f1447eeea79b22bf3d96e79c2366c14a40249692d016e5c14b",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.45878458237757247,
+        0.6639847498023187,
+        0.5182326642474974,
+        0.6297710356887616,
+        0.40499882551034916
+      ],
+      "causal_values": [
+        0.40703112698694777,
+        0.8469833692760282,
+        0.5131443516762701,
+        0.5950779256946991,
+        0.45972313389043407
+      ],
+      "optimal": 0,
+      "observational_order": [
+        4,
+        0,
+        2,
+        3,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05378575686722331,
+      "causal_loss_of_observational_best": 0.0526920069034863
+    },
+    {
+      "split": "train",
+      "index": 128,
+      "strong": false,
+      "world_sha256": "e4448e2c6d8c772cfa2868ed6e3fb741143523f91949f0ca016e5a790f3fe792",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.45268783266767204,
+        0.5435175090928487,
+        0.2855969383120478
+      ],
+      "causal_values": [
+        0.4424417289792664,
+        0.5570795388144452,
+        0.2739808464643698
+      ],
+      "optimal": 2,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 133,
+      "strong": true,
+      "world_sha256": "09f1ebff898800a75b640c0055410607a665e988448c14676695e80442c84bac",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.22994080548936285,
+        0.12233073257695022,
+        0.14080531562465912,
+        0.046912532920683085,
+        0.12184477075766179
+      ],
+      "causal_values": [
+        0.18282018699994645,
+        0.28656912981753024,
+        0.10049763719783383,
+        0.058438362138820366,
+        0.18068687996351296
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        2,
+        1,
+        4,
+        3
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.10761007291241263,
+      "causal_loss_of_observational_best": 0.10374894281758379
+    },
+    {
+      "split": "train",
+      "index": 138,
+      "strong": true,
+      "world_sha256": "1f20a37a54cb80c320df5a49ce3e02fa2fcdd7130885ae521a064e48376d4faa",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.33972183450996896,
+        0.3887098759901736
+      ],
+      "causal_values": [
+        0.4742863275254579,
+        0.3281108763372066
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.048988041480204636,
+      "causal_loss_of_observational_best": 0.14617545118825132
+    },
+    {
+      "split": "train",
+      "index": 143,
+      "strong": true,
+      "world_sha256": "1b95117610b1e22cbf85eb589fdab21d05253ab21045acda1a81474b8c6c7827",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.6782889627890536,
+        0.14823259644520614,
+        0.5030208354200241,
+        0.481407670436073
+      ],
+      "causal_values": [
+        0.562906756333337,
+        0.133792981938392,
+        0.5313787647697477,
+        0.6319245506307208
+      ],
+      "optimal": 3,
+      "observational_order": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.19688129235298057,
+      "causal_loss_of_observational_best": 0.06901779429738386
+    },
+    {
+      "split": "train",
+      "index": 148,
+      "strong": true,
+      "world_sha256": "ebc60b74a297e09380d5b244596241a771db9d961b5fdc8ba5d0995b890b51e0",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.03764811640267587,
+        0.024359736791080187,
+        0.33959267412619704,
+        0.030648922538533605
+      ],
+      "causal_values": [
+        0.018570414925887967,
+        0.08196959523418541,
+        0.38411662983978073,
+        0.017555963162398325
+      ],
+      "optimal": 3,
+      "observational_order": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.006289185747453418,
+      "causal_loss_of_observational_best": 0.06441363207178709
+    },
+    {
+      "split": "train",
+      "index": 153,
+      "strong": false,
+      "world_sha256": "0eb7c4861e6254772a6bc9b452965eb96ea646cc657bd09f167dd3c05d1fac97",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.42361700835045063,
+        0.6217814417652561
+      ],
+      "causal_values": [
+        0.4855531928038801,
+        0.49007941099458197
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 158,
+      "strong": true,
+      "world_sha256": "6e5864568ea5633ec5e306d2b36929b4a3d0e18a322b3427f291794d063d9f3a",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.3485556902216586,
+        0.39473242795715086,
+        0.2607872315752204,
+        0.47955046906794196
+      ],
+      "causal_values": [
+        0.3700280868060598,
+        0.40070482269515,
+        0.5019759225669398,
+        0.32024035481153607
+      ],
+      "optimal": 2,
+      "observational_order": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.21876323749272159,
+      "causal_loss_of_observational_best": 0.18173556775540373
+    },
+    {
+      "split": "train",
+      "index": 163,
+      "strong": true,
+      "world_sha256": "9058ed87f8da4c0f2710bf241b12a7214347e6ca57318683bce1802cfbc56a6d",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.26752713740489525,
+        0.15606381878189865,
+        0.14011692778569562,
+        0.3074438889843449
+      ],
+      "causal_values": [
+        0.1675409626060418,
+        0.17530101884490853,
+        0.19477145539007953,
+        0.13574548772492653
+      ],
+      "optimal": 2,
+      "observational_order": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.16732696119864926,
+      "causal_loss_of_observational_best": 0.059025967665153
+    },
+    {
+      "split": "train",
+      "index": 168,
+      "strong": true,
+      "world_sha256": "e0b2b90eb67c1eb423e79fadb23be306dcc921075b6fbf73544d2e17d3ead3fc",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.537271187468489,
+        0.5934522945365708,
+        0.45868121637239145,
+        0.39185115221873146,
+        0.3578144789906055
+      ],
+      "causal_values": [
+        0.48622490698837656,
+        0.7013603827885467,
+        0.4886525288070411,
+        0.3226106342602466,
+        0.45655195700005036
+      ],
+      "optimal": 3,
+      "observational_order": [
+        4,
+        3,
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.03403667322812598,
+      "causal_loss_of_observational_best": 0.13394132273980375
+    },
+    {
+      "split": "train",
+      "index": 173,
+      "strong": true,
+      "world_sha256": "7b3a793875885c4fec7a91838441bba3a2e07076e9a90a76016d4cba5eb05667",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.6219870208761824,
+        0.5215494114868782,
+        0.7922808346463737
+      ],
+      "causal_values": [
+        0.6365664080087194,
+        0.6186632759019504,
+        0.2983379820872542
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.2707314231594955,
+      "causal_loss_of_observational_best": 0.32032529381469615
+    },
+    {
+      "split": "train",
+      "index": 178,
+      "strong": false,
+      "world_sha256": "e21ee2fea7fd733530258e6df2a5dcb018d5053f10d7e2cb7a332e5a6e6aec13",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.09999428840674018,
+        0.09870725507978749,
+        0.09872082629756518,
+        0.10204465469563898
+      ],
+      "causal_values": [
+        0.09998095638618588,
+        0.09874007968924678,
+        0.09875846351764876,
+        0.10204731448756643
+      ],
+      "optimal": 3,
+      "observational_order": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 183,
+      "strong": true,
+      "world_sha256": "339fcdfd8238c08f8b12efdf345edd2585dbea10de8b0f3f452958c33b8b9942",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.7890382360647747,
+        0.8690599059769807,
+        0.6374452441266728
+      ],
+      "causal_values": [
+        0.555323396637618,
+        0.7865589467012571,
+        0.6927878020358671
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.15159299193810194,
+      "causal_loss_of_observational_best": 0.1374644053982491
+    },
+    {
+      "split": "train",
+      "index": 188,
+      "strong": true,
+      "world_sha256": "517fd0a55828720e12465644406f0ad72ff63e5317ef6042aea5df2cb8e42da1",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.597909752875082,
+        0.6348569255894307,
+        0.4478630633250312,
+        0.5333469650013636
+      ],
+      "causal_values": [
+        0.4445899364032881,
+        0.5051859116277677,
+        0.5908909857461977,
+        0.5867916085794583
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.18699386226439957,
+      "causal_loss_of_observational_best": 0.08570507411842998
+    },
+    {
+      "split": "train",
+      "index": 193,
+      "strong": true,
+      "world_sha256": "9fb459bccc03ab849c4a60f1ef8431d42473e18d90ba2706772d9de43537bfe6",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.09738534717215454,
+        0.5901654535195029,
+        0.7437187185654436
+      ],
+      "causal_values": [
+        0.10127608199129386,
+        0.6069697075636045,
+        0.5437762854210919
+      ],
+      "optimal": 1,
+      "observational_order": [
+        2,
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.1535532650459407,
+      "causal_loss_of_observational_best": 0.06319342214251256
+    },
+    {
+      "split": "train",
+      "index": 198,
+      "strong": true,
+      "world_sha256": "85623a0275a04f5820e30aafaf86eb0d8e79d32b65bcef3c13442c610fbd7515",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.397237684370827,
+        0.5256225561726462,
+        0.3992647255230868,
+        0.5790394105611624
+      ],
+      "causal_values": [
+        0.42981944898690594,
+        0.5490390047364782,
+        0.4741140624207977,
+        0.4434218005916276
+      ],
+      "optimal": 1,
+      "observational_order": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05341685438851618,
+      "causal_loss_of_observational_best": 0.10561720414485054
+    },
+    {
+      "split": "train",
+      "index": 203,
+      "strong": false,
+      "world_sha256": "efba3b2cda7772fab63810d3903b3a9c55f1f29e3bbc9a8e597d7600bf3a442a",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.48795560073686434,
+        0.505263155698435,
+        0.5303170299779876,
+        0.48973466328191045,
+        0.4530302071964802
+      ],
+      "causal_values": [
+        0.4909734445602636,
+        0.49128120036768164,
+        0.5024215443856311,
+        0.49163595291420614,
+        0.48846599068097496
+      ],
+      "optimal": 2,
+      "observational_order": [
+        2,
+        1,
+        3,
+        0,
+        4
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 208,
+      "strong": true,
+      "world_sha256": "87966c7a167192cbe540c3281e87c1441d3a7e679ace47336d0b6bec98536bf8",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.7816961329468701,
+        0.20743119625726134,
+        0.5894245903714616,
+        0.7509973175279259
+      ],
+      "causal_values": [
+        0.43482188418507195,
+        0.2959085101306216,
+        0.6848723663008184,
+        0.782229891899338
+      ],
+      "optimal": 3,
+      "observational_order": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.03069881541894426,
+      "causal_loss_of_observational_best": 0.34740800771426605
+    },
+    {
+      "split": "train",
+      "index": 213,
+      "strong": true,
+      "world_sha256": "5c23bb34143e9511ec83f2227d45b60ef09cf37c367a724459aff15799067c38",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.5382225290135315,
+        0.5899573142245249,
+        0.3925967512123478,
+        0.44493527332549937
+      ],
+      "causal_values": [
+        0.5531214349948972,
+        0.5797980940965022,
+        0.5673994243358241,
+        0.44581229715389453
+      ],
+      "optimal": 3,
+      "observational_order": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05233852211315154,
+      "causal_loss_of_observational_best": 0.1215871271819296
+    },
+    {
+      "split": "train",
+      "index": 218,
+      "strong": true,
+      "world_sha256": "c9ae57d025e8220b0ac6b15aa27cba967ac78b7e2e7bc306d9d1224ed7edfa2e",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.26671007194194774,
+        0.3238441532791544,
+        0.20021224639784754,
+        0.3827681994488076
+      ],
+      "causal_values": [
+        0.28501454040880303,
+        0.3543329198623267,
+        0.22111785237475676,
+        0.25302992892889575
+      ],
+      "optimal": 1,
+      "observational_order": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05892404616965319,
+      "causal_loss_of_observational_best": 0.10130299093343093
+    },
+    {
+      "split": "train",
+      "index": 223,
+      "strong": true,
+      "world_sha256": "5ceb278153e8e0a16e1ad5ec8774219614d6e2b9e1d902857544a83f1598b488",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.3768398488291839,
+        0.557455551419927
+      ],
+      "causal_values": [
+        0.5986110498806912,
+        0.5430124931668812
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.18061570259074305,
+      "causal_loss_of_observational_best": 0.05559855671381009
+    },
+    {
+      "split": "train",
+      "index": 228,
+      "strong": false,
+      "world_sha256": "b3b58922fa2d095937834239ae9c66a1d12a22047695f7c6f03e36df5bab2e28",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.12656826946145083,
+        0.2531220212623231,
+        0.13828373894482263,
+        0.5869347375523729
+      ],
+      "causal_values": [
+        0.13541875497523126,
+        0.3093122054807386,
+        0.1488515368368561,
+        0.37310074433681106
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 233,
+      "strong": true,
+      "world_sha256": "361446c29cc7c80c29a76b5766d789adf002957b5b8b085ae637eb298fbc4921",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.2832001160190109,
+        0.3945179315772257,
+        0.2189326027588284,
+        0.2844635200151266,
+        0.2859724222628897
+      ],
+      "causal_values": [
+        0.2901206557219216,
+        0.3056869759410628,
+        0.27622908355042924,
+        0.3630131514825813,
+        0.34032915518279705
+      ],
+      "optimal": 3,
+      "observational_order": [
+        1,
+        4,
+        3,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.11005441156209911,
+      "causal_loss_of_observational_best": 0.057326175541518476
+    },
+    {
+      "split": "train",
+      "index": 238,
+      "strong": true,
+      "world_sha256": "21130e6f350e4423cc01d23f10f5594312f09d83a951b873e658c28d9a59c68f",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.22076635701414754,
+        0.33282343631843386,
+        0.28785177659632777
+      ],
+      "causal_values": [
+        0.2592321904719399,
+        0.2633835618121222,
+        0.30951175579801654
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        2,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.044971659722106094,
+      "causal_loss_of_observational_best": 0.04612819398589435
+    },
+    {
+      "split": "train",
+      "index": 243,
+      "strong": true,
+      "world_sha256": "04f69cb11354efca59f2380bf76401d9ee2c7bd554d68a41fd03a0f2f2113c81",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.5069534698757642,
+        0.45061042795752604,
+        0.2823921958571682
+      ],
+      "causal_values": [
+        0.4984860467397497,
+        0.373515999121273,
+        0.4952813577393876
+      ],
+      "optimal": 1,
+      "observational_order": [
+        2,
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.16821823210035786,
+      "causal_loss_of_observational_best": 0.1217653586181146
+    },
+    {
+      "split": "train",
+      "index": 248,
+      "strong": true,
+      "world_sha256": "959641e1a6a34a38141aea8b93df59955e3937e6eac4d4abb0e00809d1ac6c9f",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.9396977053143776,
+        0.048674834433521254,
+        0.08897320402506897,
+        0.9656729457082156,
+        0.8648176174664068
+      ],
+      "causal_values": [
+        0.9741078022714383,
+        0.24526447023656434,
+        0.1086759822753477,
+        0.9096735464513364,
+        0.5657677176853924
+      ],
+      "optimal": 0,
+      "observational_order": [
+        3,
+        0,
+        4,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.02597524039383803,
+      "causal_loss_of_observational_best": 0.06443425582010198
+    },
+    {
+      "split": "train",
+      "index": 253,
+      "strong": false,
+      "world_sha256": "7eb185e19bb778837932e235ee5fd6b6d6305d9e5d250701eda78a8739322167",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.04244654938040978,
+        0.028901704208659663
+      ],
+      "causal_values": [
+        0.04244654938040979,
+        0.028901704208659663
+      ],
+      "optimal": 1,
+      "observational_order": [
+        1,
+        0
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 258,
+      "strong": true,
+      "world_sha256": "57d7a0888ea5ecb5415f8e1cdfb9b9235181530959cd60e2538bfb2780b361a8",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.24615971060591446,
+        0.31610870989112494,
+        0.5535472590169566,
+        0.3210208433666937
+      ],
+      "causal_values": [
+        0.3169888967198733,
+        0.4103319822110341,
+        0.38239049749398685,
+        0.26300300117449615
+      ],
+      "optimal": 3,
+      "observational_order": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.07486113276077921,
+      "causal_loss_of_observational_best": 0.05398589554537714
+    },
+    {
+      "split": "train",
+      "index": 263,
+      "strong": true,
+      "world_sha256": "73e2c73e136b0af99f0810cc7c3dd50f9c1006a8632922bf3c296839f465bd70",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.28659389007972097,
+        0.15342589313169266,
+        0.12597207401989524,
+        0.2511632927430121
+      ],
+      "causal_values": [
+        0.19924407886296897,
+        0.2628988035539367,
+        0.2594668086648856,
+        0.2451583956424975
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.1331679969480283,
+      "causal_loss_of_observational_best": 0.06365472469096772
+    },
+    {
+      "split": "train",
+      "index": 268,
+      "strong": true,
+      "world_sha256": "f96645a47cafd6613fd43179c83ef5c9526c9c39d63581cd7d6c442ea25dea88",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.615374552396545,
+        0.5586291806712508,
+        0.7047407028740562,
+        0.21660527586942066,
+        0.5637770510787431
+      ],
+      "causal_values": [
+        0.7835698419284431,
+        0.5829524329693637,
+        0.6442092219006085,
+        0.514670518778171,
+        0.5627629644513041
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        4,
+        1,
+        3
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.08936615047751117,
+      "causal_loss_of_observational_best": 0.13936062002783467
+    },
+    {
+      "split": "train",
+      "index": 273,
+      "strong": true,
+      "world_sha256": "52b1f0deffad92efd0030b61c780220c3b978202bd35514beb829473fef6a1a5",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.7868594782175811,
+        0.5258419227898241,
+        0.1312632327069698,
+        0.17351802972110333,
+        0.7019559198078322
+      ],
+      "causal_values": [
+        0.6359144347120256,
+        0.4382236826950485,
+        0.23722391568080117,
+        0.40679728808684584,
+        0.7685725799083583
+      ],
+      "optimal": 4,
+      "observational_order": [
+        0,
+        4,
+        1,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.08490355840974884,
+      "causal_loss_of_observational_best": 0.13265814519633268
+    },
+    {
+      "split": "train",
+      "index": 278,
+      "strong": false,
+      "world_sha256": "482c40658aa1ac68ac26b682cf79d3c6f39880de247fe90ec3c89b3b59a754bc",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.032056383918196533,
+        0.02571408424625532,
+        0.046631926870101856,
+        0.053326041279406086
+      ],
+      "causal_values": [
+        0.03172425567935148,
+        0.03138823343588945,
+        0.04285555809202676,
+        0.051278639806277254
+      ],
+      "optimal": 3,
+      "observational_order": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 283,
+      "strong": true,
+      "world_sha256": "dec2a9abb90c99526c94f5d1b3b056ff9b82bf57230e1cfe512870d40dda8217",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.7634701636099952,
+        0.4813802892037182,
+        0.05045681498622972,
+        0.5712970999712578,
+        0.5631881313840112
+      ],
+      "causal_values": [
+        0.5078613351668887,
+        0.6251279747968678,
+        0.10822611290834466,
+        0.5464713242826932,
+        0.5972281789373954
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        3,
+        4,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.282089874406277,
+      "causal_loss_of_observational_best": 0.11726663962997907
+    },
+    {
+      "split": "train",
+      "index": 288,
+      "strong": true,
+      "world_sha256": "ac29b523f7fd04664a809f819d34373d668aa26a8a49793b63b02604301769da",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.3838784437236746,
+        0.433813835179156,
+        0.36898708264013036
+      ],
+      "causal_values": [
+        0.4710104283312969,
+        0.41478142196792567,
+        0.40800484191552705
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.049935391455481426,
+      "causal_loss_of_observational_best": 0.05622900636337125
+    },
+    {
+      "split": "train",
+      "index": 293,
+      "strong": true,
+      "world_sha256": "0bef47a01a82ec30ed6fd930a4f565b78bd67c3ea71565532686d47a23e4bcfb",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.13133866153069787,
+        0.8187032310990108,
+        0.16542240622337537,
+        0.6894460828518841
+      ],
+      "causal_values": [
+        0.2534141684726489,
+        0.8701102309413614,
+        0.16076107030303863,
+        0.6529018296984489
+      ],
+      "optimal": 2,
+      "observational_order": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.0340837446926775,
+      "causal_loss_of_observational_best": 0.09265309816961029
+    },
+    {
+      "split": "train",
+      "index": 298,
+      "strong": true,
+      "world_sha256": "e4f5b2b25323cd08540964eab538ed2b4370e187304592c3157f7531bdb12c37",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.24602190202103416,
+        0.23657307761182064,
+        0.2910216458895978
+      ],
+      "causal_values": [
+        0.2325061148264412,
+        0.2837451999229194,
+        0.27844861055040504
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.009448824409213519,
+      "causal_loss_of_observational_best": 0.051239085096478204
+    },
+    {
+      "split": "train",
+      "index": 303,
+      "strong": false,
+      "world_sha256": "0c02befc7e07eaf5da1b07267e5ecd56e9eda7f8e3af0dcd0bb5dd3a47ccbdab",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.23296782409657077,
+        0.0018778578519958432,
+        0.008725001043546078
+      ],
+      "causal_values": [
+        0.2329678240965708,
+        0.0018778578519958434,
+        0.008725001043546078
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 308,
+      "strong": true,
+      "world_sha256": "418721bb3dbc89ca7ff061c74dc0e30e97817217500e5c8de7f2a7614450be7a",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.21004402132813918,
+        0.33753064834768054,
+        0.5146236723948183,
+        0.20250864367291269
+      ],
+      "causal_values": [
+        0.2160064485366306,
+        0.30718885745700464,
+        0.5164146822597211,
+        0.2886781820304923
+      ],
+      "optimal": 0,
+      "observational_order": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.007535377655226494,
+      "causal_loss_of_observational_best": 0.07267173349386169
+    },
+    {
+      "split": "train",
+      "index": 313,
+      "strong": true,
+      "world_sha256": "6ad06fae5744ba1c01af5e992e082fb784610fa2b7347b847fd240e80c3c1afc",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.18134728163133398,
+        0.45404469089547844,
+        0.030811811243909464
+      ],
+      "causal_values": [
+        0.14231824017559713,
+        0.4037073938586222,
+        0.23892380068178973
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.1505354703874245,
+      "causal_loss_of_observational_best": 0.0966055605061926
+    },
+    {
+      "split": "train",
+      "index": 318,
+      "strong": true,
+      "world_sha256": "b976db404ad98537a282ac4a28eef406ddd890b76b2a7a00763ae604705b7a36",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.1957196177944843,
+        0.2481028581570257,
+        0.3861434132547789
+      ],
+      "causal_values": [
+        0.5567819678374311,
+        0.22168506338139324,
+        0.3983957218062556
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05238324036254141,
+      "causal_loss_of_observational_best": 0.3350969044560378
+    },
+    {
+      "split": "train",
+      "index": 323,
+      "strong": true,
+      "world_sha256": "08c2a5d95cf7b1ae047e6745f58a5d7ba87f89c1ddcb003ad9fb072979c831b3",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.7844721782625071,
+        0.7418229840847489,
+        0.2457506039166259,
+        0.29237616975955705,
+        0.3820216642433826
+      ],
+      "causal_values": [
+        0.43203907625959403,
+        0.5336323701261179,
+        0.36739556011311403,
+        0.5234087376870222,
+        0.25692063007583393
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1,
+        4,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.042649194177758254,
+      "causal_loss_of_observational_best": 0.10159329386652383
+    },
+    {
+      "split": "train",
+      "index": 328,
+      "strong": false,
+      "world_sha256": "c575d617f3752e3595230085fe73097e0b7abe894ca15bda10004070319f954b",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.015199867199464735,
+        0.4786691324959232
+      ],
+      "causal_values": [
+        0.015467099973273528,
+        0.4765173192776921
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 333,
+      "strong": true,
+      "world_sha256": "621f6a4d9189f23c25333567531141e173bce0b6c626468a35266a25fca2c96f",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4191225522201873,
+        0.2900489027430708
+      ],
+      "causal_values": [
+        0.2724771404081144,
+        0.361603149472557
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.12907364947711647,
+      "causal_loss_of_observational_best": 0.08912600906444262
+    },
+    {
+      "split": "train",
+      "index": 338,
+      "strong": true,
+      "world_sha256": "8931a056120787cf4299d050d1154d178fb14ec006ca3063ad7ba6da397ab995",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.7122047320467172,
+        0.4489418362593092,
+        0.5794114274592372,
+        0.716963450587622
+      ],
+      "causal_values": [
+        0.7101562715623755,
+        0.5424824677585045,
+        0.5995889196525451,
+        0.4875512279626839
+      ],
+      "optimal": 3,
+      "observational_order": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.2680216143283128,
+      "causal_loss_of_observational_best": 0.0549312397958206
+    },
+    {
+      "split": "train",
+      "index": 343,
+      "strong": true,
+      "world_sha256": "97c61d7956a155d88a41a7ae5ed4a4fc7422d3b05d316db5c5bcd6635f8aa64f",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.3458333687926932,
+        0.34800545767035046,
+        0.34853322838744005
+      ],
+      "causal_values": [
+        0.40007719810682757,
+        0.3866085013471846,
+        0.3290342828899311
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        1,
+        0
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.002699859594746834,
+      "causal_loss_of_observational_best": 0.07104291521689649
+    },
+    {
+      "split": "train",
+      "index": 348,
+      "strong": true,
+      "world_sha256": "2eddf4a3330d81e1a2615ffe5276881f07cae7494810aed46a292fa385188091",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.5519932286859873,
+        0.6595806741266431,
+        0.627487516014956,
+        0.7630111208161924
+      ],
+      "causal_values": [
+        0.6865480745908301,
+        0.6920753173980776,
+        0.5950629169090068,
+        0.6162069248290131
+      ],
+      "optimal": 1,
+      "observational_order": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.10343044668954926,
+      "causal_loss_of_observational_best": 0.07586839256906452
+    },
+    {
+      "split": "train",
+      "index": 353,
+      "strong": false,
+      "world_sha256": "9fc485e3cb1983ab237aec213f1dfaec5dd45bb117c35e6110487cb98c1733ff",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.3014565253431616,
+        0.3554217173351296
+      ],
+      "causal_values": [
+        0.2702761648511584,
+        0.5474862448439581
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 358,
+      "strong": true,
+      "world_sha256": "4904990a45c84462be57fc9f1f142d358e2215122f21453c4dee920f06434340",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.3347701741552976,
+        0.3464977482401473,
+        0.38415425829449995
+      ],
+      "causal_values": [
+        0.3984255111300199,
+        0.22525199162123924,
+        0.2974612912400691
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.011727574084849701,
+      "causal_loss_of_observational_best": 0.17317351950878065
+    },
+    {
+      "split": "train",
+      "index": 363,
+      "strong": true,
+      "world_sha256": "c6e1f02346a00693b5c6d1c805ca0a8271c72cc2be92ef1fc411272f90131b0c",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.8375075494902356,
+        0.8536804175985276,
+        0.48403445515141674,
+        0.8057981762281752,
+        0.8843463273004
+      ],
+      "causal_values": [
+        0.8163807136396835,
+        0.7996550260640206,
+        0.725490861374302,
+        0.8297973794054316,
+        0.7735060140607485
+      ],
+      "optimal": 3,
+      "observational_order": [
+        4,
+        1,
+        0,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.07854815107222479,
+      "causal_loss_of_observational_best": 0.05629136534468315
+    },
+    {
+      "split": "train",
+      "index": 368,
+      "strong": true,
+      "world_sha256": "ce47e1891b6f750047491b89c35a039d6692b3dd4aa32455f2c6d85f90fe468b",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.39900661965400736,
+        0.1120128026033375,
+        0.7188073054461759,
+        0.44968655844129757
+      ],
+      "causal_values": [
+        0.5026825095121231,
+        0.3109284990712227,
+        0.23748156625712988,
+        0.3104030048825169
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.6067945028428384,
+      "causal_loss_of_observational_best": 0.07344693281409284
+    },
+    {
+      "split": "train",
+      "index": 373,
+      "strong": true,
+      "world_sha256": "e45e4288100f5584cdb10db257be9d21809b1d84ed3934c43d11cb4d8d8957bf",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.3457111835715079,
+        0.5230402976315606,
+        0.48505913647304155,
+        0.6555824313064131
+      ],
+      "causal_values": [
+        0.4640220659145321,
+        0.5762529464607675,
+        0.48652972483733675,
+        0.45600085658456974
+      ],
+      "optimal": 1,
+      "observational_order": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.13254213367485257,
+      "causal_loss_of_observational_best": 0.12025208987619779
+    },
+    {
+      "split": "train",
+      "index": 378,
+      "strong": false,
+      "world_sha256": "0bd64f6af93e6c3c125a5528f189242555424f211ee825f6786c211834766b91",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.01194795068116904,
+        0.029065375017144787,
+        0.20164742071233765,
+        0.8930933374262957,
+        0.0055913313520307975
+      ],
+      "causal_values": [
+        0.011947950681169042,
+        0.029065375017144787,
+        0.20164742071233765,
+        0.8930933374262959,
+        0.005591331352030799
+      ],
+      "optimal": 3,
+      "observational_order": [
+        3,
+        2,
+        1,
+        0,
+        4
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 383,
+      "strong": true,
+      "world_sha256": "50b7bd029baed5cb533d9c143d7596f5de7a463b55959a22c2ecbe90aac7f43a",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.25618886096215104,
+        0.3181854480629201,
+        0.16811780647919894,
+        0.1705248725277945,
+        0.16525855928023545
+      ],
+      "causal_values": [
+        0.24802744778167302,
+        0.1260955639970368,
+        0.17599715900290497,
+        0.23226060052909553,
+        0.15106414219109132
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0,
+        3,
+        2,
+        4
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.06199658710076905,
+      "causal_loss_of_observational_best": 0.12193188378463621
+    },
+    {
+      "split": "train",
+      "index": 388,
+      "strong": true,
+      "world_sha256": "f9090fa5c7055370d61ae352e6a3ae98c9f75fa12cae98a4d233ee9221274037",
+      "domain_size": 2,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4917625459999509,
+        0.3834559658611047
+      ],
+      "causal_values": [
+        0.5529675095283687,
+        0.606280794942307
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.1083065801388462,
+      "causal_loss_of_observational_best": 0.053313285413938316
+    },
+    {
+      "split": "train",
+      "index": 393,
+      "strong": true,
+      "world_sha256": "645c19938b77a227fbbf906274546dbea69c6600a9615ffaf4dca40b97fed99c",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.5444632024413409,
+        0.33872903793867426,
+        0.5860740001100767
+      ],
+      "causal_values": [
+        0.6273439735631399,
+        0.3279636744700032,
+        0.5717291295743856
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.041610797668735766,
+      "causal_loss_of_observational_best": 0.05561484398875427
+    },
+    {
+      "split": "train",
+      "index": 398,
+      "strong": true,
+      "world_sha256": "548d593993465f6c0ce89ca90956e11925ae2554832616d779c38cb419ed2037",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.8721517066373244,
+        0.6202335356835526,
+        0.5153951476393818,
+        0.5702447797157238,
+        0.48454959941384096
+      ],
+      "causal_values": [
+        0.8595962845719528,
+        0.5915993731423936,
+        0.5590818900079486,
+        0.584057243679073,
+        0.6329027727320301
+      ],
+      "optimal": 2,
+      "observational_order": [
+        4,
+        2,
+        3,
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.03084554822554081,
+      "causal_loss_of_observational_best": 0.0738208827240815
+    },
+    {
+      "split": "train",
+      "index": 403,
+      "strong": false,
+      "world_sha256": "d9319beff3e05cf1c139fbf3d3ed78f362dbca896e666032b3f6cef28ede3ee5",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.566505212765088,
+        0.29054649732359106,
+        0.44594141548265304,
+        0.45064548453573144
+      ],
+      "causal_values": [
+        0.566505212765088,
+        0.29054649732359106,
+        0.44594141548265315,
+        0.4506454845357315
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 408,
+      "strong": true,
+      "world_sha256": "8bc236a42ccfed47b19e0d3d09df93015083eb584f603bbe9152b1a289d21a33",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4150816772109052,
+        0.46351471192852806,
+        0.2823721978665006
+      ],
+      "causal_values": [
+        0.47519896088554076,
+        0.42593926273023974,
+        0.42582519210606384
+      ],
+      "optimal": 0,
+      "observational_order": [
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.048433034717622836,
+      "causal_loss_of_observational_best": 0.04925969815530101
+    },
+    {
+      "split": "train",
+      "index": 413,
+      "strong": true,
+      "world_sha256": "b23bf5aea090128333febeb670b1fd9933c314d229afefc47946adfcf63786c1",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.584478439307303,
+        0.06690488055761516,
+        0.4030403987291113,
+        0.5150259801704914
+      ],
+      "causal_values": [
+        0.3072701980963571,
+        0.07520221149664057,
+        0.5039662718212851,
+        0.45824950765611655
+      ],
+      "optimal": 2,
+      "observational_order": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.18143804057819174,
+      "causal_loss_of_observational_best": 0.19669607372492798
+    },
+    {
+      "split": "train",
+      "index": 418,
+      "strong": true,
+      "world_sha256": "d6b589b03a8f5c01e55ccec918d4ca0c644f62808faef2422a6fc5ebc662ba48",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.7122063767861825,
+        0.7245814471780283,
+        0.7635648099837831,
+        0.6051844789061215,
+        0.8029523566238704
+      ],
+      "causal_values": [
+        0.7009162340991247,
+        0.74157392587489,
+        0.7839728164741613,
+        0.8295443429443631,
+        0.8596555875811769
+      ],
+      "optimal": 0,
+      "observational_order": [
+        3,
+        0,
+        1,
+        2,
+        4
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.107021897880061,
+      "causal_loss_of_observational_best": 0.12862810884523834
+    },
+    {
+      "split": "train",
+      "index": 423,
+      "strong": true,
+      "world_sha256": "99e1d8bd471846fc34254b4123be6abfe8deadea59422193d432b513bc708632",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.013879131861469989,
+        0.10283029938517764,
+        0.07990878782812355,
+        0.3397697342749311,
+        0.05486652973691877
+      ],
+      "causal_values": [
+        0.09877408227369684,
+        0.2649883966991924,
+        0.04277574220987007,
+        0.4797620649696932,
+        0.09236064754781875
+      ],
+      "optimal": 2,
+      "observational_order": [
+        0,
+        4,
+        2,
+        1,
+        3
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.06602965596665356,
+      "causal_loss_of_observational_best": 0.05599834006382677
+    },
+    {
+      "split": "train",
+      "index": 428,
+      "strong": false,
+      "world_sha256": "d127606cb293d36500ed1a4335cd725bc64e8a91937ac9b0fd48b5fb08785cc1",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.1017069619339043,
+        0.06880141117727658,
+        0.08639036600621583,
+        0.1329713001548232
+      ],
+      "causal_values": [
+        0.08155547951008411,
+        0.06933545852946968,
+        0.08434924227593237,
+        0.13566191317886814
+      ],
+      "optimal": 1,
+      "observational_order": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 433,
+      "strong": true,
+      "world_sha256": "08c5f9d4978c747ba15ab0e3915b505f405a97124a8739ee32ce161158a85ba1",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.48779455842741565,
+        0.3452700725628303,
+        0.6067492523985826,
+        0.5811424780640999,
+        0.30082836197281565
+      ],
+      "causal_values": [
+        0.5067146651276331,
+        0.34252134691180997,
+        0.5289413873362111,
+        0.6078229158385813,
+        0.4323383881608924
+      ],
+      "optimal": 1,
+      "observational_order": [
+        4,
+        1,
+        0,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.04444171059001467,
+      "causal_loss_of_observational_best": 0.08981704124908241
+    },
+    {
+      "split": "train",
+      "index": 438,
+      "strong": true,
+      "world_sha256": "28c3f041aadd2e6d950e4200219c68e53b8715001ba2dadf1f3e295920c5afd9",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.2345203016534426,
+        0.248251327833783,
+        0.350616573712016,
+        0.04714402392270987,
+        0.11257960095844323
+      ],
+      "causal_values": [
+        0.17541008224244586,
+        0.3207607135438513,
+        0.2436337006895464,
+        0.06991089928564115,
+        0.13027073504615055
+      ],
+      "optimal": 1,
+      "observational_order": [
+        2,
+        1,
+        0,
+        4,
+        3
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.10236524587823298,
+      "causal_loss_of_observational_best": 0.07712701285430487
+    },
+    {
+      "split": "train",
+      "index": 443,
+      "strong": true,
+      "world_sha256": "03238264756c57f813fb30187e0de6c9e56c899ee18010b5595a0ba91fd6e2d1",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.31638500690366106,
+        0.38994264849105525,
+        0.2590228849366454
+      ],
+      "causal_values": [
+        0.2220958963357264,
+        0.35600087284461424,
+        0.3297685378071847
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.05736212196701568,
+      "causal_loss_of_observational_best": 0.10767264147145827
+    },
+    {
+      "split": "train",
+      "index": 448,
+      "strong": true,
+      "world_sha256": "eeb3997bb09127fc23493f809b2bf83c6a70eecc5da4ced2f77241815b85159b",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.1477836316742701,
+        0.22292846638473526,
+        0.2434641377045662,
+        0.12668421981066028
+      ],
+      "causal_values": [
+        0.12998053560838174,
+        0.24549918393868353,
+        0.14932908701747402,
+        0.14148379087387122
+      ],
+      "optimal": 1,
+      "observational_order": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.020535671319830945,
+      "causal_loss_of_observational_best": 0.09617009692120951
+    },
+    {
+      "split": "train",
+      "index": 453,
+      "strong": false,
+      "world_sha256": "6b63aa84725cceb047dfaeac208b4b503e554394c392305e442883a6d89f6618",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.03848846033811607,
+        0.24100272796140812,
+        0.12460426061203655,
+        0.10928591324926347
+      ],
+      "causal_values": [
+        0.03728198533018464,
+        0.238393225353987,
+        0.12607355152198577,
+        0.10869187426449363
+      ],
+      "optimal": 1,
+      "observational_order": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 458,
+      "strong": true,
+      "world_sha256": "6b7bb34813eace1628b0886053fade8dafc6dfcb37fc7a29e1b9caff64e59166",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.35311371121642243,
+        0.2882264362434279,
+        0.3482103588093809,
+        0.05419195711815549,
+        0.6657519554521557
+      ],
+      "causal_values": [
+        0.21959014977204036,
+        0.5922112244418616,
+        0.28160806064652805,
+        0.11130831260651057,
+        0.47292095490485203
+      ],
+      "optimal": 1,
+      "observational_order": [
+        4,
+        0,
+        2,
+        1,
+        3
+      ],
+      "optimal_observational_rank": 4,
+      "observational_margin_to_causal_optimum": 0.3775255192087278,
+      "causal_loss_of_observational_best": 0.11929026953700955
+    },
+    {
+      "split": "train",
+      "index": 463,
+      "strong": true,
+      "world_sha256": "27d0457f5f6915de5b4ac247ce0ecdb49f97e4dd506f8f85fb4c2d2a20978073",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.04513164741488868,
+        0.033293881968600926,
+        0.3060283017193817
+      ],
+      "causal_values": [
+        0.036413853055474565,
+        0.12126199061377158,
+        0.020831589028328365
+      ],
+      "optimal": 2,
+      "observational_order": [
+        1,
+        0,
+        2
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.2727344197507808,
+      "causal_loss_of_observational_best": 0.10043040158544321
+    },
+    {
+      "split": "train",
+      "index": 468,
+      "strong": true,
+      "world_sha256": "41eb7d5e5d0e528f68d35122dab0c2932501993c19f046283b9299e3be96b25f",
+      "domain_size": 3,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.23150552194470986,
+        0.1431732710677363,
+        0.10528647539709393
+      ],
+      "causal_values": [
+        0.05530546414732109,
+        0.16131390715671073,
+        0.10913441370549051
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.08833225087697355,
+      "causal_loss_of_observational_best": 0.10600844300938964
+    },
+    {
+      "split": "train",
+      "index": 473,
+      "strong": true,
+      "world_sha256": "0feb06d78e9a2d3da499b1887cc976696942444f7279b623f27b76c212eca823",
+      "domain_size": 5,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.5995231323726217,
+        0.6923170692325844,
+        0.6022861000914316,
+        0.6067823483530185,
+        0.6039334535706901
+      ],
+      "causal_values": [
+        0.6255342489844337,
+        0.5946963023509905,
+        0.5532073883138364,
+        0.6418763129986987,
+        0.6089654088635227
+      ],
+      "optimal": 2,
+      "observational_order": [
+        0,
+        2,
+        4,
+        3,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.0027629677188099055,
+      "causal_loss_of_observational_best": 0.07232686067059724
+    },
+    {
+      "split": "train",
+      "index": 478,
+      "strong": false,
+      "world_sha256": "5f4234649d08d67742703367d0425023f99b26db8ee8c31bc2e703d883a7e78b",
+      "domain_size": 4,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.07355266710130866,
+        0.06020310027040191,
+        0.15521739642949514,
+        0.1554623089472694
+      ],
+      "causal_values": [
+        0.07349672733657227,
+        0.08108785941066982,
+        0.09180856179263548,
+        0.0997972135542887
+      ],
+      "optimal": 3,
+      "observational_order": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "train",
+      "index": 483,
+      "strong": true,
+      "world_sha256": "6688e91831b98e32818e33dd38bca1bed9a5219d0d7852088fbe9f254e2af82b",
+      "domain_size": 5,
+      "public_objective": "maximize",
+      "observational_values": [
+        0.4314959905467102,
+        0.5846123367149314,
+        0.3856551213780679,
+        0.44246717123864776,
+        0.3771655604564098
+      ],
+      "causal_values": [
+        0.5361636465102109,
+        0.4286860835833265,
+        0.45508372355198917,
+        0.5590712802793415,
+        0.4208140401589542
+      ],
+      "optimal": 3,
+      "observational_order": [
+        1,
+        3,
+        0,
+        2,
+        4
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.14214516547628364,
+      "causal_loss_of_observational_best": 0.130385196696015
+    },
+    {
+      "split": "train",
+      "index": 488,
+      "strong": true,
+      "world_sha256": "fb2114de42bf0246f2e8e4578e715330115cb1beab94444463e3b63d8bbcafc1",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.9423573329431341,
+        0.7691172385577542,
+        0.732340026124576
+      ],
+      "causal_values": [
+        0.8907173285151511,
+        0.7024324288042288,
+        0.8556668844369054
+      ],
+      "optimal": 1,
+      "observational_order": [
+        2,
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.03677721243317811,
+      "causal_loss_of_observational_best": 0.15323445563267657
+    },
+    {
+      "split": "train",
+      "index": 493,
+      "strong": true,
+      "world_sha256": "6898d01b75166b0041e85d3e82dd531524fed313dd091b1c4b27d44c0eda11f3",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.45007673503858736,
+        0.6540359252300979,
+        0.4713724892201305,
+        0.40768124164614994
+      ],
+      "causal_values": [
+        0.4795157637058468,
+        0.541307985586833,
+        0.5997398466075051,
+        0.5839636316156218
+      ],
+      "optimal": 0,
+      "observational_order": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.04239549339243742,
+      "causal_loss_of_observational_best": 0.104447867909775
+    },
+    {
+      "split": "train",
+      "index": 498,
+      "strong": true,
+      "world_sha256": "e999c391b41363d84a9b09044ffbf4610500527dedbbdbc31091df54ccd907bf",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.1457133677986208,
+        0.2553654050594919,
+        0.05771338275297911
+      ],
+      "causal_values": [
+        0.12470766203878374,
+        0.126398085715315,
+        0.17335258793889324
+      ],
+      "optimal": 0,
+      "observational_order": [
+        2,
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.08799998504564169,
+      "causal_loss_of_observational_best": 0.048644925900109506
+    },
+    {
+      "split": "validation",
+      "index": 3,
+      "strong": false,
+      "world_sha256": "20dd24a85a9adb8b4bfcf1ffb1c30debb945ec21e60ea779f3bfe21f50467e81",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.08811270689662164,
+        0.0918682274409506,
+        0.0921592625432309,
+        0.09263266207994701
+      ],
+      "causal_values": [
+        0.08859110724934856,
+        0.0919496904896551,
+        0.09215960636620713,
+        0.09227978457365058
+      ],
+      "optimal": 0,
+      "observational_order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "optimal_observational_rank": 1,
+      "observational_margin_to_causal_optimum": 0.0,
+      "causal_loss_of_observational_best": 0.0
+    },
+    {
+      "split": "validation",
+      "index": 8,
+      "strong": true,
+      "world_sha256": "51e94368db026db17860c44c1746d33ef5202b61c97e19234679196c2361bed1",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.46752241617432344,
+        0.4935249600670192,
+        0.673116059933455,
+        0.5170340787256608
+      ],
+      "causal_values": [
+        0.5562209438512159,
+        0.49471287951868503,
+        0.4983466613659543,
+        0.5629363243763877
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.02600254389269574,
+      "causal_loss_of_observational_best": 0.061508064332530865
+    },
+    {
+      "split": "validation",
+      "index": 13,
+      "strong": true,
+      "world_sha256": "5bc1ca7485ed07726391f764c20d585b1aa21017dfbd7b86c5037bf877617623",
+      "domain_size": 3,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.6154412562508084,
+        0.33590078952602587,
+        0.2488869631337203
+      ],
+      "causal_values": [
+        0.30632640482366086,
+        0.2980528821387763,
+        0.3952129240915854
+      ],
+      "optimal": 1,
+      "observational_order": [
+        2,
+        1,
+        0
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.08701382639230557,
+      "causal_loss_of_observational_best": 0.09716004195280914
+    },
+    {
+      "split": "validation",
+      "index": 18,
+      "strong": true,
+      "world_sha256": "6952baf6b4e82239fa76907130e193c61063ed42f1acaef09782c5a667e0db70",
+      "domain_size": 2,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.6234529752607787,
+        0.708120287529442
+      ],
+      "causal_values": [
+        0.7972568223305884,
+        0.7201353084830834
+      ],
+      "optimal": 1,
+      "observational_order": [
+        0,
+        1
+      ],
+      "optimal_observational_rank": 2,
+      "observational_margin_to_causal_optimum": 0.08466731226866331,
+      "causal_loss_of_observational_best": 0.07712151384750499
+    },
+    {
+      "split": "validation",
+      "index": 23,
+      "strong": true,
+      "world_sha256": "6d542c9017970b9f2e75d61b601f770b98da1b7616b5ae678f7833e8e308bb5a",
+      "domain_size": 4,
+      "public_objective": "minimize",
+      "observational_values": [
+        0.11876896877550591,
+        0.3261348474588579,
+        0.3321840957072396,
+        0.6843739523269833
+      ],
+      "causal_values": [
+        0.4851170973864082,
+        0.3622705429225305,
+        0.35679060730309764,
+        0.6108390681726652
+      ],
+      "optimal": 2,
+      "observational_order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "optimal_observational_rank": 3,
+      "observational_margin_to_causal_optimum": 0.2134151269317337,
+      "causal_loss_of_observational_best": 0.12832649008331054
+    }
+  ],
+  "scope": "Post-hoc diagnostic on previously analyzed cohorts, 50 worlds/two tapes. Pure observation replays all old checkpoints before selecting rank2 and submitting through production. No claim of unbiased new-heldout generalization, model learning, or an optimal causal policy."
+}
