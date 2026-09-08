@@ -1,0 +1,17 @@
+{
+  "input": "research\\training_population_20260908\\all-training-population.json",
+  "input_sha256": "8aa3df443dcca15fc680cad138234f7e90875e419b1fda69e77d7418bfa8feff",
+  "script_sha256": "cccc12b6496ca6139ac54af391920ae968f703482c8508a8fb7bac0a201dd3dc",
+  "style_sha256": "9cbb0eb4b85422d4afc2dc5972651bfaba7462f3dbcdec58b75a9398728f4a80",
+  "files": {
+    "all-training-samples.png": "46d604a6541b1b2625bc6a1f44c21b0f4598b503c80f9a99b8588fa7ebc5b8fe",
+    "all-training-samples.svg": "de6ea80aca9edbc612ab2258d3b3fe2bb5777fbb9baf14ea9d8bbc56b811cf03",
+    "all-training-samples.pdf": "0f3e90603777303387caaf0388d378113852ec3d4b2b93f572af362f424b788c",
+    "same-task-reference-score-and-error.png": "31499c365872bc9a3823478499687286e7076d6ecf4762441678e114eed5625d",
+    "same-task-reference-score-and-error.svg": "227ffae9293f91ab248253c284674b710314f98b419f354ebcf5e062f2376a3d",
+    "same-task-reference-score-and-error.pdf": "b692a36af693fff199179341191a3be7f45ca6c92a2322d6027843d3714bd786",
+    "structure-errors-and-strict-correctness.png": "7489d51151e40a04ece9a563fec97954eefc2bcc6f6dd7119aa7909ca4d8f292",
+    "structure-errors-and-strict-correctness.svg": "7a44fbd7ae93cb1023fd000530c0ab5ef8cc04b6808f939c26ca92f8ec9092a8",
+    "structure-errors-and-strict-correctness.pdf": "950548224feeeac6cfa456788ace9f1e6487e09f83ef7fd29a2fdddbcb248679"
+  }
+}

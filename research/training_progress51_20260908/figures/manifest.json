@@ -7,7 +7,7 @@
     "research\\training_progress51_20260908\\inputs\\through50.json": "b351e74917bd485ce8530aea29f6c0ef7bd2d6c17e672e2666da6f7697297cd9",
     "research\\training_progress51_20260908\\inputs\\through51.json": "604c9af81901bb4b5930803b879730f9fb72909b57b34aeef670591b18f25add"
   },
-  "script_sha256": "74b6277691b4e923864166dfd74e036780545086d88bf5bf78e8cef54f99870b",
+  "script_sha256": "097910fdc736b665bff826487163ac124b9a6a9fe534c6803c697a19d5040038",
   "adapted_style_sha256": "9cbb0eb4b85422d4afc2dc5972651bfaba7462f3dbcdec58b75a9398728f4a80",
   "updates": [
     1,
@@ -83,12 +83,12 @@
     "25": 4049.557737825089
   },
   "files": {
-    "trusted-rewards-and-time.png": "6a7cf19a6a61fda5efe49163c693cbead9e02b9f439ddc37df479266d654f2df",
-    "trusted-rewards-and-time.svg": "70bc1ac2a5f4c58933e7677b03702e84c91ecd2b4e408adc70c3415c5104f866",
-    "trusted-rewards-and-time.pdf": "ac6c54ef1fe6516ab901f738196ff3693f0e814d69e2922107fafffcc3812f9d",
+    "trusted-rewards-and-time.png": "0ab5e18cc0bb0d5c1fa8fef8893d3538ceb30b21443fd9e87671c07f311fea8d",
+    "trusted-rewards-and-time.svg": "c0049d8ae5cd01fb963070277dd993cc45807bdda1da555a53f5fe9d1a885a44",
+    "trusted-rewards-and-time.pdf": "bc55d5254c351fb868eb4455bcf1463eeccfcd65df436b8cc99f1bc5fa7146ee",
     "trusted-task-errors.png": "c11a8462fc537818972d3c1abb626296db6e79671a97999212ff9e1b28d6dd4d",
-    "trusted-task-errors.svg": "6b873f521e3d84d93c98d7050457d76db6d1e2050f814c81e87afd39f8569a78",
-    "trusted-task-errors.pdf": "c2fbaf17743ce424809c5b0903f03d3c35889a0ddbf98bb049092b938c448199"
+    "trusted-task-errors.svg": "aff9627afacacafe8336f1f6093155fa934ec5844939d8632c3718b74615fdda",
+    "trusted-task-errors.pdf": "28a410db218abcecd920c11521fc18f283577ca7a47dccec4ab176f3536000a6"
   },
   "scope": "Training rollout metrics on changing tasks; no causal capability-gain claim."
 }

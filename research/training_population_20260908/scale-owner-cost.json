@@ -1,0 +1,12 @@
+{
+  "world_space_sha256": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+  "cohort": "same 64 seeds 0..63 as prior projection audit",
+  "world_count": 64,
+  "build_seconds": 2.4616729259723797,
+  "scale": {
+    "calls": 335,
+    "seconds": 0.1797936304938048
+  },
+  "scale_fraction": 0.07303717264664027,
+  "scope": "Isolated CPU call timing; no trained model evaluation, no production mutation."
+}

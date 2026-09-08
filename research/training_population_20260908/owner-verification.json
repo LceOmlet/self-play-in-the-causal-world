@@ -1,0 +1,10 @@
+{
+  "completed_model_scores": 229,
+  "reference_scores": 207,
+  "max_absolute_difference": 1.1102230246251565e-16,
+  "production_owner": "/home/chen/projects/self-play-in-the-causal-world-rewardv10-a92ab8e-20260831/src/cpt_world/rewards.py",
+  "production_owner_sha256": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+  "input_sha256": "8aa3df443dcca15fc680cad138234f7e90875e419b1fda69e77d7418bfa8feff",
+  "verifier_sha256": "d17f86e3734820da6e4196d54afd3f4477b289bf9323bc48864d3bc193df5916",
+  "passed": true
+}

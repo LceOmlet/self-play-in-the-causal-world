@@ -1,0 +1,3011 @@
+{
+  "dataset": "/home/chen/runs/training-submission-20260907/data/train.parquet",
+  "sha256": "bcb84b4f1b915fd9d3f8f63dd116bfcca837f622a62402b135a3c8ff9fe4faf8",
+  "rows": [
+    {
+      "index": 0,
+      "tape_key": "trl-grpo:SAMPLED-2000000-ate-target_query-a17",
+      "query_type": "ate"
+    },
+    {
+      "index": 1,
+      "tape_key": "trl-grpo:SAMPLED-2000002-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 2,
+      "tape_key": "trl-grpo:SAMPLED-2000003-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 3,
+      "tape_key": "trl-grpo:SAMPLED-2000009000010-best_intervention-decision-a6",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 4,
+      "tape_key": "trl-grpo:SAMPLED-2000005-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 5,
+      "tape_key": "trl-grpo:SAMPLED-2000006-ate-target_query-a7",
+      "query_type": "ate"
+    },
+    {
+      "index": 6,
+      "tape_key": "trl-grpo:SAMPLED-2000007-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 7,
+      "tape_key": "trl-grpo:SAMPLED-2000008-backadj_minimal_sets-discovery-a11",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 8,
+      "tape_key": "trl-grpo:SAMPLED-2000027000095-best_intervention-decision-a5",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 9,
+      "tape_key": "trl-grpo:SAMPLED-2000010-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 10,
+      "tape_key": "trl-grpo:SAMPLED-2000011-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 11,
+      "tape_key": "trl-grpo:SAMPLED-2000012-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 12,
+      "tape_key": "trl-grpo:SAMPLED-2000013-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 13,
+      "tape_key": "trl-grpo:SAMPLED-2000063000513-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 14,
+      "tape_key": "trl-grpo:SAMPLED-2000015-mediator_set-discovery-a3",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 15,
+      "tape_key": "trl-grpo:SAMPLED-2000016-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 16,
+      "tape_key": "trl-grpo:SAMPLED-2000017-individual_counterfactual_probability-target_query-a6",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 17,
+      "tape_key": "trl-grpo:SAMPLED-2000018-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 18,
+      "tape_key": "trl-grpo:SAMPLED-2000097001205-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 19,
+      "tape_key": "trl-grpo:SAMPLED-2000020-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 20,
+      "tape_key": "trl-grpo:SAMPLED-2000021-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 21,
+      "tape_key": "trl-grpo:SAMPLED-2000023-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 22,
+      "tape_key": "trl-grpo:SAMPLED-2000024-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 23,
+      "tape_key": "trl-grpo:SAMPLED-2000059000439-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 24,
+      "tape_key": "trl-grpo:SAMPLED-2000026-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 25,
+      "tape_key": "trl-grpo:SAMPLED-2000027-ate-target_query-a13",
+      "query_type": "ate"
+    },
+    {
+      "index": 26,
+      "tape_key": "trl-grpo:SAMPLED-2000028-individual_counterfactual_probability-target_query-a20",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 27,
+      "tape_key": "trl-grpo:SAMPLED-2000029-backadj_minimal_sets-discovery-a13",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 28,
+      "tape_key": "trl-grpo:SAMPLED-2000061000465-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 29,
+      "tape_key": "trl-grpo:SAMPLED-2000031-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 30,
+      "tape_key": "trl-grpo:SAMPLED-2000032-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 31,
+      "tape_key": "trl-grpo:SAMPLED-2000033-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 32,
+      "tape_key": "trl-grpo:SAMPLED-2000034-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 33,
+      "tape_key": "trl-grpo:SAMPLED-2000071000630-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 34,
+      "tape_key": "trl-grpo:SAMPLED-2000036-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 35,
+      "tape_key": "trl-grpo:SAMPLED-2000037-ate-target_query-a5",
+      "query_type": "ate"
+    },
+    {
+      "index": 36,
+      "tape_key": "trl-grpo:SAMPLED-2000038-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 37,
+      "tape_key": "trl-grpo:SAMPLED-2000039-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 38,
+      "tape_key": "trl-grpo:SAMPLED-2000083000862-best_intervention-decision-a9",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 39,
+      "tape_key": "trl-grpo:SAMPLED-2000041-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 40,
+      "tape_key": "trl-grpo:SAMPLED-2000042-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 41,
+      "tape_key": "trl-grpo:SAMPLED-2000043-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 42,
+      "tape_key": "trl-grpo:SAMPLED-2000044-backadj_minimal_sets-discovery-a7",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 43,
+      "tape_key": "trl-grpo:SAMPLED-2000137002369-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 44,
+      "tape_key": "trl-grpo:SAMPLED-2000046-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 45,
+      "tape_key": "trl-grpo:SAMPLED-2000047-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 46,
+      "tape_key": "trl-grpo:SAMPLED-2000049-individual_counterfactual_probability-target_query-a6",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 47,
+      "tape_key": "trl-grpo:SAMPLED-2000050-backadj_minimal_sets-discovery-a8",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 48,
+      "tape_key": "trl-grpo:SAMPLED-2000155003029-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 49,
+      "tape_key": "trl-grpo:SAMPLED-2000052-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 50,
+      "tape_key": "trl-grpo:SAMPLED-2000053-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 51,
+      "tape_key": "trl-grpo:SAMPLED-2000055-individual_counterfactual_probability-target_query-a17",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 52,
+      "tape_key": "trl-grpo:SAMPLED-2000056-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 53,
+      "tape_key": "trl-grpo:SAMPLED-2000115001653-best_intervention-decision-a4",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 54,
+      "tape_key": "trl-grpo:SAMPLED-2000058-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 55,
+      "tape_key": "trl-grpo:SAMPLED-2000059-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 56,
+      "tape_key": "trl-grpo:SAMPLED-2000061-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 57,
+      "tape_key": "trl-grpo:SAMPLED-2000062-backadj_minimal_sets-discovery-a6",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 58,
+      "tape_key": "trl-grpo:SAMPLED-2000151002862-best_intervention-decision-a7",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 59,
+      "tape_key": "trl-grpo:SAMPLED-2000064-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 60,
+      "tape_key": "trl-grpo:SAMPLED-2000065-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 61,
+      "tape_key": "trl-grpo:SAMPLED-2000066-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 62,
+      "tape_key": "trl-grpo:SAMPLED-2000067-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 63,
+      "tape_key": "trl-grpo:SAMPLED-2000145002632-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 64,
+      "tape_key": "trl-grpo:SAMPLED-2000069-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 65,
+      "tape_key": "trl-grpo:SAMPLED-2000070-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 66,
+      "tape_key": "trl-grpo:SAMPLED-2000071-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 67,
+      "tape_key": "trl-grpo:SAMPLED-2000072-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 68,
+      "tape_key": "trl-grpo:SAMPLED-2000165003412-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 69,
+      "tape_key": "trl-grpo:SAMPLED-2000074-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 70,
+      "tape_key": "trl-grpo:SAMPLED-2000075-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 71,
+      "tape_key": "trl-grpo:SAMPLED-2000076-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 72,
+      "tape_key": "trl-grpo:SAMPLED-2000077-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 73,
+      "tape_key": "trl-grpo:SAMPLED-2000205005277-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 74,
+      "tape_key": "trl-grpo:SAMPLED-2000079-mediator_set-discovery-a4",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 75,
+      "tape_key": "trl-grpo:SAMPLED-2000080-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 76,
+      "tape_key": "trl-grpo:SAMPLED-2000081-individual_counterfactual_probability-target_query-a24",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 77,
+      "tape_key": "trl-grpo:SAMPLED-2000082-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 78,
+      "tape_key": "trl-grpo:SAMPLED-2000167003486-best_intervention-decision-a13",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 79,
+      "tape_key": "trl-grpo:SAMPLED-2000084-mediator_set-discovery-a3",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 80,
+      "tape_key": "trl-grpo:SAMPLED-2000085-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 81,
+      "tape_key": "trl-grpo:SAMPLED-2000087-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 82,
+      "tape_key": "trl-grpo:SAMPLED-2000088-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 83,
+      "tape_key": "trl-grpo:SAMPLED-2000239007170-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 84,
+      "tape_key": "trl-grpo:SAMPLED-2000090-mediator_set-discovery-a4",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 85,
+      "tape_key": "trl-grpo:SAMPLED-2000091-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 86,
+      "tape_key": "trl-grpo:SAMPLED-2000092-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 87,
+      "tape_key": "trl-grpo:SAMPLED-2000093-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 88,
+      "tape_key": "trl-grpo:SAMPLED-2000215005791-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 89,
+      "tape_key": "trl-grpo:SAMPLED-2000095-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 90,
+      "tape_key": "trl-grpo:SAMPLED-2000096-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 91,
+      "tape_key": "trl-grpo:SAMPLED-2000097-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 92,
+      "tape_key": "trl-grpo:SAMPLED-2000098-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 93,
+      "tape_key": "trl-grpo:SAMPLED-2000265008811-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 94,
+      "tape_key": "trl-grpo:SAMPLED-2000100-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 95,
+      "tape_key": "trl-grpo:SAMPLED-2000101-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 96,
+      "tape_key": "trl-grpo:SAMPLED-2000103-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 97,
+      "tape_key": "trl-grpo:SAMPLED-2000104-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 98,
+      "tape_key": "trl-grpo:SAMPLED-2000253008022-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 99,
+      "tape_key": "trl-grpo:SAMPLED-2000106-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 100,
+      "tape_key": "trl-grpo:SAMPLED-2000107-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 101,
+      "tape_key": "trl-grpo:SAMPLED-2000108-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 102,
+      "tape_key": "trl-grpo:SAMPLED-2000109-backadj_minimal_sets-discovery-a8",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 103,
+      "tape_key": "trl-grpo:SAMPLED-2000221006105-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 104,
+      "tape_key": "trl-grpo:SAMPLED-2000111-mediator_set-discovery-a6",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 105,
+      "tape_key": "trl-grpo:SAMPLED-2000112-ate-target_query-a5",
+      "query_type": "ate"
+    },
+    {
+      "index": 106,
+      "tape_key": "trl-grpo:SAMPLED-2000113-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 107,
+      "tape_key": "trl-grpo:SAMPLED-2000114-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 108,
+      "tape_key": "trl-grpo:SAMPLED-2000265008795-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 109,
+      "tape_key": "trl-grpo:SAMPLED-2000116-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 110,
+      "tape_key": "trl-grpo:SAMPLED-2000117-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 111,
+      "tape_key": "trl-grpo:SAMPLED-2000118-individual_counterfactual_probability-target_query-a4",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 112,
+      "tape_key": "trl-grpo:SAMPLED-2000119-backadj_minimal_sets-discovery-a6",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 113,
+      "tape_key": "trl-grpo:SAMPLED-2000247007629-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 114,
+      "tape_key": "trl-grpo:SAMPLED-2000121-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 115,
+      "tape_key": "trl-grpo:SAMPLED-2000122-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 116,
+      "tape_key": "trl-grpo:SAMPLED-2000123-individual_counterfactual_probability-target_query-a6",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 117,
+      "tape_key": "trl-grpo:SAMPLED-2000124-backadj_minimal_sets-discovery-a14",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 118,
+      "tape_key": "trl-grpo:SAMPLED-2000255008130-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 119,
+      "tape_key": "trl-grpo:SAMPLED-2000126-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 120,
+      "tape_key": "trl-grpo:SAMPLED-2000127-ate-target_query-a19",
+      "query_type": "ate"
+    },
+    {
+      "index": 121,
+      "tape_key": "trl-grpo:SAMPLED-2000128-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 122,
+      "tape_key": "trl-grpo:SAMPLED-2000129-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 123,
+      "tape_key": "trl-grpo:SAMPLED-2000301011345-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 124,
+      "tape_key": "trl-grpo:SAMPLED-2000131-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 125,
+      "tape_key": "trl-grpo:SAMPLED-2000132-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 126,
+      "tape_key": "trl-grpo:SAMPLED-2000136-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 127,
+      "tape_key": "trl-grpo:SAMPLED-2000137-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 128,
+      "tape_key": "trl-grpo:SAMPLED-2000277009591-best_intervention-decision-a4",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 129,
+      "tape_key": "trl-grpo:SAMPLED-2000139-mediator_set-discovery-a11",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 130,
+      "tape_key": "trl-grpo:SAMPLED-2000140-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 131,
+      "tape_key": "trl-grpo:SAMPLED-2000142-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 132,
+      "tape_key": "trl-grpo:SAMPLED-2000143-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 133,
+      "tape_key": "trl-grpo:SAMPLED-2000365016691-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 134,
+      "tape_key": "trl-grpo:SAMPLED-2000145-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 135,
+      "tape_key": "trl-grpo:SAMPLED-2000146-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 136,
+      "tape_key": "trl-grpo:SAMPLED-2000147-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 137,
+      "tape_key": "trl-grpo:SAMPLED-2000148-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 138,
+      "tape_key": "trl-grpo:SAMPLED-2000315012411-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 139,
+      "tape_key": "trl-grpo:SAMPLED-2000150-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 140,
+      "tape_key": "trl-grpo:SAMPLED-2000151-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 141,
+      "tape_key": "trl-grpo:SAMPLED-2000152-individual_counterfactual_probability-target_query-a5",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 142,
+      "tape_key": "trl-grpo:SAMPLED-2000153-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 143,
+      "tape_key": "trl-grpo:SAMPLED-2000371017236-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 144,
+      "tape_key": "trl-grpo:SAMPLED-2000155-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 145,
+      "tape_key": "trl-grpo:SAMPLED-2000156-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 146,
+      "tape_key": "trl-grpo:SAMPLED-2000157-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 147,
+      "tape_key": "trl-grpo:SAMPLED-2000158-backadj_minimal_sets-discovery-a7",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 148,
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 149,
+      "tape_key": "trl-grpo:SAMPLED-2000160-mediator_set-discovery-a9",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 150,
+      "tape_key": "trl-grpo:SAMPLED-2000161-ate-target_query-a5",
+      "query_type": "ate"
+    },
+    {
+      "index": 151,
+      "tape_key": "trl-grpo:SAMPLED-2000164-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 152,
+      "tape_key": "trl-grpo:SAMPLED-2000165-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 153,
+      "tape_key": "trl-grpo:SAMPLED-2000333013861-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 154,
+      "tape_key": "trl-grpo:SAMPLED-2000167-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 155,
+      "tape_key": "trl-grpo:SAMPLED-2000168-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 156,
+      "tape_key": "trl-grpo:SAMPLED-2000171-individual_counterfactual_probability-target_query-a11",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 157,
+      "tape_key": "trl-grpo:SAMPLED-2000172-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 158,
+      "tape_key": "trl-grpo:SAMPLED-2000385018547-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 159,
+      "tape_key": "trl-grpo:SAMPLED-2000174-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 160,
+      "tape_key": "trl-grpo:SAMPLED-2000175-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 161,
+      "tape_key": "trl-grpo:SAMPLED-2000177-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 162,
+      "tape_key": "trl-grpo:SAMPLED-2000178-backadj_minimal_sets-discovery-a4",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 163,
+      "tape_key": "trl-grpo:SAMPLED-2000395019521-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 164,
+      "tape_key": "trl-grpo:SAMPLED-2000180-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 165,
+      "tape_key": "trl-grpo:SAMPLED-2000181-ate-target_query-a11",
+      "query_type": "ate"
+    },
+    {
+      "index": 166,
+      "tape_key": "trl-grpo:SAMPLED-2000182-individual_counterfactual_probability-target_query-a13",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 167,
+      "tape_key": "trl-grpo:SAMPLED-2000183-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 168,
+      "tape_key": "trl-grpo:SAMPLED-2000387018730-best_intervention-decision-a4",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 169,
+      "tape_key": "trl-grpo:SAMPLED-2000185-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 170,
+      "tape_key": "trl-grpo:SAMPLED-2000186-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 171,
+      "tape_key": "trl-grpo:SAMPLED-2000188-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 172,
+      "tape_key": "trl-grpo:SAMPLED-2000189-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 173,
+      "tape_key": "trl-grpo:SAMPLED-2000415021545-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 174,
+      "tape_key": "trl-grpo:SAMPLED-2000191-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 175,
+      "tape_key": "trl-grpo:SAMPLED-2000192-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 176,
+      "tape_key": "trl-grpo:SAMPLED-2000193-individual_counterfactual_probability-target_query-a4",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 177,
+      "tape_key": "trl-grpo:SAMPLED-2000194-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 178,
+      "tape_key": "trl-grpo:SAMPLED-2000391019110-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 179,
+      "tape_key": "trl-grpo:SAMPLED-2000196-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 180,
+      "tape_key": "trl-grpo:SAMPLED-2000197-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 181,
+      "tape_key": "trl-grpo:SAMPLED-2000198-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 182,
+      "tape_key": "trl-grpo:SAMPLED-2000199-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 183,
+      "tape_key": "trl-grpo:SAMPLED-2000431023235-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 184,
+      "tape_key": "trl-grpo:SAMPLED-2000201-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 185,
+      "tape_key": "trl-grpo:SAMPLED-2000202-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 186,
+      "tape_key": "trl-grpo:SAMPLED-2000203-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 187,
+      "tape_key": "trl-grpo:SAMPLED-2000204-backadj_minimal_sets-discovery-a11",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 188,
+      "tape_key": "trl-grpo:SAMPLED-2000437023884-best_intervention-decision-a9",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 189,
+      "tape_key": "trl-grpo:SAMPLED-2000206-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 190,
+      "tape_key": "trl-grpo:SAMPLED-2000207-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 191,
+      "tape_key": "trl-grpo:SAMPLED-2000208-individual_counterfactual_probability-target_query-a4",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 192,
+      "tape_key": "trl-grpo:SAMPLED-2000209-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 193,
+      "tape_key": "trl-grpo:SAMPLED-2000425022580-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 194,
+      "tape_key": "trl-grpo:SAMPLED-2000211-mediator_set-discovery-a3",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 195,
+      "tape_key": "trl-grpo:SAMPLED-2000212-ate-target_query-a5",
+      "query_type": "ate"
+    },
+    {
+      "index": 196,
+      "tape_key": "trl-grpo:SAMPLED-2000214-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 197,
+      "tape_key": "trl-grpo:SAMPLED-2000215-backadj_minimal_sets-discovery-a13",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 198,
+      "tape_key": "trl-grpo:SAMPLED-2000553038286-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 199,
+      "tape_key": "trl-grpo:SAMPLED-2000217-mediator_set-discovery-a5",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 200,
+      "tape_key": "trl-grpo:SAMPLED-2000218-ate-target_query-a9",
+      "query_type": "ate"
+    },
+    {
+      "index": 201,
+      "tape_key": "trl-grpo:SAMPLED-2000220-individual_counterfactual_probability-target_query-a18",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 202,
+      "tape_key": "trl-grpo:SAMPLED-2000221-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 203,
+      "tape_key": "trl-grpo:SAMPLED-2000445024753-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 204,
+      "tape_key": "trl-grpo:SAMPLED-2000223-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 205,
+      "tape_key": "trl-grpo:SAMPLED-2000224-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 206,
+      "tape_key": "trl-grpo:SAMPLED-2000226-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 207,
+      "tape_key": "trl-grpo:SAMPLED-2000227-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 208,
+      "tape_key": "trl-grpo:SAMPLED-2000525034487-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 209,
+      "tape_key": "trl-grpo:SAMPLED-2000229-mediator_set-discovery-a6",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 210,
+      "tape_key": "trl-grpo:SAMPLED-2000230-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 211,
+      "tape_key": "trl-grpo:SAMPLED-2000231-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 212,
+      "tape_key": "trl-grpo:SAMPLED-2000232-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 213,
+      "tape_key": "trl-grpo:SAMPLED-2000527034746-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 214,
+      "tape_key": "trl-grpo:SAMPLED-2000234-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 215,
+      "tape_key": "trl-grpo:SAMPLED-2000235-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 216,
+      "tape_key": "trl-grpo:SAMPLED-2000236-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 217,
+      "tape_key": "trl-grpo:SAMPLED-2000237-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 218,
+      "tape_key": "trl-grpo:SAMPLED-2000479028681-best_intervention-decision-a6",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 219,
+      "tape_key": "trl-grpo:SAMPLED-2000239-mediator_set-discovery-a4",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 220,
+      "tape_key": "trl-grpo:SAMPLED-2000240-ate-target_query-a17",
+      "query_type": "ate"
+    },
+    {
+      "index": 221,
+      "tape_key": "trl-grpo:SAMPLED-2000241-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 222,
+      "tape_key": "trl-grpo:SAMPLED-2000242-backadj_minimal_sets-discovery-a10",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 223,
+      "tape_key": "trl-grpo:SAMPLED-2000507032141-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 224,
+      "tape_key": "trl-grpo:SAMPLED-2000244-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 225,
+      "tape_key": "trl-grpo:SAMPLED-2000245-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 226,
+      "tape_key": "trl-grpo:SAMPLED-2000247-individual_counterfactual_probability-target_query-a5",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 227,
+      "tape_key": "trl-grpo:SAMPLED-2000248-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 228,
+      "tape_key": "trl-grpo:SAMPLED-2000501031376-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 229,
+      "tape_key": "trl-grpo:SAMPLED-2000250-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 230,
+      "tape_key": "trl-grpo:SAMPLED-2000251-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 231,
+      "tape_key": "trl-grpo:SAMPLED-2000253-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 232,
+      "tape_key": "trl-grpo:SAMPLED-2000254-backadj_minimal_sets-discovery-a17",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 233,
+      "tape_key": "trl-grpo:SAMPLED-2000597044594-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 234,
+      "tape_key": "trl-grpo:SAMPLED-2000256-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 235,
+      "tape_key": "trl-grpo:SAMPLED-2000257-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 236,
+      "tape_key": "trl-grpo:SAMPLED-2000258-individual_counterfactual_probability-target_query-a11",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 237,
+      "tape_key": "trl-grpo:SAMPLED-2000259-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 238,
+      "tape_key": "trl-grpo:SAMPLED-2000549037689-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 239,
+      "tape_key": "trl-grpo:SAMPLED-2000261-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 240,
+      "tape_key": "trl-grpo:SAMPLED-2000262-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 241,
+      "tape_key": "trl-grpo:SAMPLED-2000263-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 242,
+      "tape_key": "trl-grpo:SAMPLED-2000264-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 243,
+      "tape_key": "trl-grpo:SAMPLED-2000615047320-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 244,
+      "tape_key": "trl-grpo:SAMPLED-2000266-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 245,
+      "tape_key": "trl-grpo:SAMPLED-2000267-ate-target_query-a4",
+      "query_type": "ate"
+    },
+    {
+      "index": 246,
+      "tape_key": "trl-grpo:SAMPLED-2000271-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 247,
+      "tape_key": "trl-grpo:SAMPLED-2000272-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 248,
+      "tape_key": "trl-grpo:SAMPLED-2000557038786-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 249,
+      "tape_key": "trl-grpo:SAMPLED-2000274-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 250,
+      "tape_key": "trl-grpo:SAMPLED-2000275-ate-target_query-a4",
+      "query_type": "ate"
+    },
+    {
+      "index": 251,
+      "tape_key": "trl-grpo:SAMPLED-2000278-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 252,
+      "tape_key": "trl-grpo:SAMPLED-2000279-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 253,
+      "tape_key": "trl-grpo:SAMPLED-2000561039340-best_intervention-decision-a5",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 254,
+      "tape_key": "trl-grpo:SAMPLED-2000281-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 255,
+      "tape_key": "trl-grpo:SAMPLED-2000282-ate-target_query-a8",
+      "query_type": "ate"
+    },
+    {
+      "index": 256,
+      "tape_key": "trl-grpo:SAMPLED-2000283-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 257,
+      "tape_key": "trl-grpo:SAMPLED-2000284-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 258,
+      "tape_key": "trl-grpo:SAMPLED-2000595044265-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 259,
+      "tape_key": "trl-grpo:SAMPLED-2000286-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 260,
+      "tape_key": "trl-grpo:SAMPLED-2000287-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 261,
+      "tape_key": "trl-grpo:SAMPLED-2000288-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 262,
+      "tape_key": "trl-grpo:SAMPLED-2000289-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 263,
+      "tape_key": "trl-grpo:SAMPLED-2000595044260-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 264,
+      "tape_key": "trl-grpo:SAMPLED-2000291-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 265,
+      "tape_key": "trl-grpo:SAMPLED-2000292-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 266,
+      "tape_key": "trl-grpo:SAMPLED-2000294-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 267,
+      "tape_key": "trl-grpo:SAMPLED-2000295-backadj_minimal_sets-discovery-a4",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 268,
+      "tape_key": "trl-grpo:SAMPLED-2000597044553-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 269,
+      "tape_key": "trl-grpo:SAMPLED-2000297-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 270,
+      "tape_key": "trl-grpo:SAMPLED-2000298-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 271,
+      "tape_key": "trl-grpo:SAMPLED-2000299-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 272,
+      "tape_key": "trl-grpo:SAMPLED-2000300-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 273,
+      "tape_key": "trl-grpo:SAMPLED-2000615047284-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 274,
+      "tape_key": "trl-grpo:SAMPLED-2000302-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 275,
+      "tape_key": "trl-grpo:SAMPLED-2000303-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 276,
+      "tape_key": "trl-grpo:SAMPLED-2000304-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 277,
+      "tape_key": "trl-grpo:SAMPLED-2000305-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 278,
+      "tape_key": "trl-grpo:SAMPLED-2000613046971-best_intervention-decision-a10",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 279,
+      "tape_key": "trl-grpo:SAMPLED-2000307-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 280,
+      "tape_key": "trl-grpo:SAMPLED-2000308-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 281,
+      "tape_key": "trl-grpo:SAMPLED-2000309-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 282,
+      "tape_key": "trl-grpo:SAMPLED-2000310-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 283,
+      "tape_key": "trl-grpo:SAMPLED-2000669055968-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 284,
+      "tape_key": "trl-grpo:SAMPLED-2000312-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 285,
+      "tape_key": "trl-grpo:SAMPLED-2000313-ate-target_query-a12",
+      "query_type": "ate"
+    },
+    {
+      "index": 286,
+      "tape_key": "trl-grpo:SAMPLED-2000314-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 287,
+      "tape_key": "trl-grpo:SAMPLED-2000315-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 288,
+      "tape_key": "trl-grpo:SAMPLED-2000647052333-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 289,
+      "tape_key": "trl-grpo:SAMPLED-2000317-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 290,
+      "tape_key": "trl-grpo:SAMPLED-2000318-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 291,
+      "tape_key": "trl-grpo:SAMPLED-2000319-individual_counterfactual_probability-target_query-a7",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 292,
+      "tape_key": "trl-grpo:SAMPLED-2000320-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 293,
+      "tape_key": "trl-grpo:SAMPLED-2000731066839-best_intervention-decision-a8",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 294,
+      "tape_key": "trl-grpo:SAMPLED-2000322-mediator_set-discovery-a4",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 295,
+      "tape_key": "trl-grpo:SAMPLED-2000323-ate-target_query-a9",
+      "query_type": "ate"
+    },
+    {
+      "index": 296,
+      "tape_key": "trl-grpo:SAMPLED-2000324-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 297,
+      "tape_key": "trl-grpo:SAMPLED-2000325-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 298,
+      "tape_key": "trl-grpo:SAMPLED-2000851090624-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 299,
+      "tape_key": "trl-grpo:SAMPLED-2000327-mediator_set-discovery-a11",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 300,
+      "tape_key": "trl-grpo:SAMPLED-2000328-ate-target_query-a4",
+      "query_type": "ate"
+    },
+    {
+      "index": 301,
+      "tape_key": "trl-grpo:SAMPLED-2000329-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 302,
+      "tape_key": "trl-grpo:SAMPLED-2000330-backadj_minimal_sets-discovery-a7",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 303,
+      "tape_key": "trl-grpo:SAMPLED-2000663054946-best_intervention-decision-a4",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 304,
+      "tape_key": "trl-grpo:SAMPLED-2000332-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 305,
+      "tape_key": "trl-grpo:SAMPLED-2000333-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 306,
+      "tape_key": "trl-grpo:SAMPLED-2000334-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 307,
+      "tape_key": "trl-grpo:SAMPLED-2000335-backadj_minimal_sets-discovery-a7",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 308,
+      "tape_key": "trl-grpo:SAMPLED-2000785077084-best_intervention-decision-a6",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 309,
+      "tape_key": "trl-grpo:SAMPLED-2000337-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 310,
+      "tape_key": "trl-grpo:SAMPLED-2000338-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 311,
+      "tape_key": "trl-grpo:SAMPLED-2000339-individual_counterfactual_probability-target_query-a5",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 312,
+      "tape_key": "trl-grpo:SAMPLED-2000340-backadj_minimal_sets-discovery-a16",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 313,
+      "tape_key": "trl-grpo:SAMPLED-2000693060036-best_intervention-decision-a18",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 314,
+      "tape_key": "trl-grpo:SAMPLED-2000342-mediator_set-discovery-a17",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 315,
+      "tape_key": "trl-grpo:SAMPLED-2000343-ate-target_query-a24",
+      "query_type": "ate"
+    },
+    {
+      "index": 316,
+      "tape_key": "trl-grpo:SAMPLED-2000345-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 317,
+      "tape_key": "trl-grpo:SAMPLED-2000346-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 318,
+      "tape_key": "trl-grpo:SAMPLED-2000761072423-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 319,
+      "tape_key": "trl-grpo:SAMPLED-2000348-mediator_set-discovery-a5",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 320,
+      "tape_key": "trl-grpo:SAMPLED-2000349-ate-target_query-a8",
+      "query_type": "ate"
+    },
+    {
+      "index": 321,
+      "tape_key": "trl-grpo:SAMPLED-2000350-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 322,
+      "tape_key": "trl-grpo:SAMPLED-2000351-backadj_minimal_sets-discovery-a6",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 323,
+      "tape_key": "trl-grpo:SAMPLED-2000735067543-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 324,
+      "tape_key": "trl-grpo:SAMPLED-2000353-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 325,
+      "tape_key": "trl-grpo:SAMPLED-2000354-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 326,
+      "tape_key": "trl-grpo:SAMPLED-2000355-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 327,
+      "tape_key": "trl-grpo:SAMPLED-2000356-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 328,
+      "tape_key": "trl-grpo:SAMPLED-2000717064262-best_intervention-decision-a8",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 329,
+      "tape_key": "trl-grpo:SAMPLED-2000358-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 330,
+      "tape_key": "trl-grpo:SAMPLED-2000359-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 331,
+      "tape_key": "trl-grpo:SAMPLED-2000360-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 332,
+      "tape_key": "trl-grpo:SAMPLED-2000361-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 333,
+      "tape_key": "trl-grpo:SAMPLED-2000733067165-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 334,
+      "tape_key": "trl-grpo:SAMPLED-2000363-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 335,
+      "tape_key": "trl-grpo:SAMPLED-2000364-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 336,
+      "tape_key": "trl-grpo:SAMPLED-2000365-individual_counterfactual_probability-target_query-a8",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 337,
+      "tape_key": "trl-grpo:SAMPLED-2000366-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 338,
+      "tape_key": "trl-grpo:SAMPLED-2000741068638-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 339,
+      "tape_key": "trl-grpo:SAMPLED-2000368-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 340,
+      "tape_key": "trl-grpo:SAMPLED-2000369-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 341,
+      "tape_key": "trl-grpo:SAMPLED-2000370-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 342,
+      "tape_key": "trl-grpo:SAMPLED-2000371-backadj_minimal_sets-discovery-a4",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 343,
+      "tape_key": "trl-grpo:SAMPLED-2000759072017-best_intervention-decision-a9",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 344,
+      "tape_key": "trl-grpo:SAMPLED-2000373-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 345,
+      "tape_key": "trl-grpo:SAMPLED-2000374-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 346,
+      "tape_key": "trl-grpo:SAMPLED-2000375-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 347,
+      "tape_key": "trl-grpo:SAMPLED-2000376-backadj_minimal_sets-discovery-a5",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 348,
+      "tape_key": "trl-grpo:SAMPLED-2000799079822-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 349,
+      "tape_key": "trl-grpo:SAMPLED-2000378-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 350,
+      "tape_key": "trl-grpo:SAMPLED-2000379-ate-target_query-a19",
+      "query_type": "ate"
+    },
+    {
+      "index": 351,
+      "tape_key": "trl-grpo:SAMPLED-2000380-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 352,
+      "tape_key": "trl-grpo:SAMPLED-2000381-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 353,
+      "tape_key": "trl-grpo:SAMPLED-2000765073153-best_intervention-decision-a5",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 354,
+      "tape_key": "trl-grpo:SAMPLED-2000383-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 355,
+      "tape_key": "trl-grpo:SAMPLED-2000384-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 356,
+      "tape_key": "trl-grpo:SAMPLED-2000385-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 357,
+      "tape_key": "trl-grpo:SAMPLED-2000386-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 358,
+      "tape_key": "trl-grpo:SAMPLED-2000837087602-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 359,
+      "tape_key": "trl-grpo:SAMPLED-2000388-mediator_set-discovery-a7",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 360,
+      "tape_key": "trl-grpo:SAMPLED-2000389-ate-target_query-a8",
+      "query_type": "ate"
+    },
+    {
+      "index": 361,
+      "tape_key": "trl-grpo:SAMPLED-2000390-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 362,
+      "tape_key": "trl-grpo:SAMPLED-2000391-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 363,
+      "tape_key": "trl-grpo:SAMPLED-2000801080208-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 364,
+      "tape_key": "trl-grpo:SAMPLED-2000393-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 365,
+      "tape_key": "trl-grpo:SAMPLED-2000394-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 366,
+      "tape_key": "trl-grpo:SAMPLED-2000395-individual_counterfactual_probability-target_query-a9",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 367,
+      "tape_key": "trl-grpo:SAMPLED-2000396-backadj_minimal_sets-discovery-a17",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 368,
+      "tape_key": "trl-grpo:SAMPLED-2000823084680-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 369,
+      "tape_key": "trl-grpo:SAMPLED-2000398-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 370,
+      "tape_key": "trl-grpo:SAMPLED-2000399-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 371,
+      "tape_key": "trl-grpo:SAMPLED-2000404-individual_counterfactual_probability-target_query-a1",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 372,
+      "tape_key": "trl-grpo:SAMPLED-2000405-backadj_minimal_sets-discovery-a7",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 373,
+      "tape_key": "trl-grpo:SAMPLED-2000941110749-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 374,
+      "tape_key": "trl-grpo:SAMPLED-2000407-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 375,
+      "tape_key": "trl-grpo:SAMPLED-2000408-ate-target_query-a8",
+      "query_type": "ate"
+    },
+    {
+      "index": 376,
+      "tape_key": "trl-grpo:SAMPLED-2000409-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 377,
+      "tape_key": "trl-grpo:SAMPLED-2000410-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 378,
+      "tape_key": "trl-grpo:SAMPLED-2000823084666-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 379,
+      "tape_key": "trl-grpo:SAMPLED-2000412-mediator_set-discovery-a6",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 380,
+      "tape_key": "trl-grpo:SAMPLED-2000413-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 381,
+      "tape_key": "trl-grpo:SAMPLED-2000414-individual_counterfactual_probability-target_query-a7",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 382,
+      "tape_key": "trl-grpo:SAMPLED-2000415-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 383,
+      "tape_key": "trl-grpo:SAMPLED-2000837087573-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 384,
+      "tape_key": "trl-grpo:SAMPLED-2000417-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 385,
+      "tape_key": "trl-grpo:SAMPLED-2000418-ate-target_query-a12",
+      "query_type": "ate"
+    },
+    {
+      "index": 386,
+      "tape_key": "trl-grpo:SAMPLED-2000419-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 387,
+      "tape_key": "trl-grpo:SAMPLED-2000420-backadj_minimal_sets-discovery-a7",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 388,
+      "tape_key": "trl-grpo:SAMPLED-2000847089678-best_intervention-decision-a5",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 389,
+      "tape_key": "trl-grpo:SAMPLED-2000422-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 390,
+      "tape_key": "trl-grpo:SAMPLED-2000423-ate-target_query-a8",
+      "query_type": "ate"
+    },
+    {
+      "index": 391,
+      "tape_key": "trl-grpo:SAMPLED-2000424-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 392,
+      "tape_key": "trl-grpo:SAMPLED-2000425-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 393,
+      "tape_key": "trl-grpo:SAMPLED-2000901101499-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 394,
+      "tape_key": "trl-grpo:SAMPLED-2000427-mediator_set-discovery-a6",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 395,
+      "tape_key": "trl-grpo:SAMPLED-2000428-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 396,
+      "tape_key": "trl-grpo:SAMPLED-2000429-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 397,
+      "tape_key": "trl-grpo:SAMPLED-2000430-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 398,
+      "tape_key": "trl-grpo:SAMPLED-2000891099249-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 399,
+      "tape_key": "trl-grpo:SAMPLED-2000432-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 400,
+      "tape_key": "trl-grpo:SAMPLED-2000433-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 401,
+      "tape_key": "trl-grpo:SAMPLED-2000434-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 402,
+      "tape_key": "trl-grpo:SAMPLED-2000435-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 403,
+      "tape_key": "trl-grpo:SAMPLED-2000875095704-best_intervention-decision-a8",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 404,
+      "tape_key": "trl-grpo:SAMPLED-2000437-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 405,
+      "tape_key": "trl-grpo:SAMPLED-2000438-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 406,
+      "tape_key": "trl-grpo:SAMPLED-2000439-individual_counterfactual_probability-target_query-a5",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 407,
+      "tape_key": "trl-grpo:SAMPLED-2000440-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 408,
+      "tape_key": "trl-grpo:SAMPLED-2000895100134-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 409,
+      "tape_key": "trl-grpo:SAMPLED-2000442-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 410,
+      "tape_key": "trl-grpo:SAMPLED-2000443-ate-target_query-a4",
+      "query_type": "ate"
+    },
+    {
+      "index": 411,
+      "tape_key": "trl-grpo:SAMPLED-2000444-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 412,
+      "tape_key": "trl-grpo:SAMPLED-2000445-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 413,
+      "tape_key": "trl-grpo:SAMPLED-2000943111181-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 414,
+      "tape_key": "trl-grpo:SAMPLED-2000447-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 415,
+      "tape_key": "trl-grpo:SAMPLED-2000448-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 416,
+      "tape_key": "trl-grpo:SAMPLED-2000449-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 417,
+      "tape_key": "trl-grpo:SAMPLED-2000450-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 418,
+      "tape_key": "trl-grpo:SAMPLED-2000983120826-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 419,
+      "tape_key": "trl-grpo:SAMPLED-2000452-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 420,
+      "tape_key": "trl-grpo:SAMPLED-2000453-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 421,
+      "tape_key": "trl-grpo:SAMPLED-2000454-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 422,
+      "tape_key": "trl-grpo:SAMPLED-2000455-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 423,
+      "tape_key": "trl-grpo:SAMPLED-2000947112118-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 424,
+      "tape_key": "trl-grpo:SAMPLED-2000457-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 425,
+      "tape_key": "trl-grpo:SAMPLED-2000458-ate-target_query-a3",
+      "query_type": "ate"
+    },
+    {
+      "index": 426,
+      "tape_key": "trl-grpo:SAMPLED-2000459-individual_counterfactual_probability-target_query-a4",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 427,
+      "tape_key": "trl-grpo:SAMPLED-2000460-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 428,
+      "tape_key": "trl-grpo:SAMPLED-2000923106491-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 429,
+      "tape_key": "trl-grpo:SAMPLED-2000462-mediator_set-discovery-a8",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 430,
+      "tape_key": "trl-grpo:SAMPLED-2000463-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 431,
+      "tape_key": "trl-grpo:SAMPLED-2000464-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 432,
+      "tape_key": "trl-grpo:SAMPLED-2000465-backadj_minimal_sets-discovery-a11",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 433,
+      "tape_key": "trl-grpo:SAMPLED-2001099151058-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 434,
+      "tape_key": "trl-grpo:SAMPLED-2000467-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 435,
+      "tape_key": "trl-grpo:SAMPLED-2000468-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 436,
+      "tape_key": "trl-grpo:SAMPLED-2000469-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 437,
+      "tape_key": "trl-grpo:SAMPLED-2000470-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 438,
+      "tape_key": "trl-grpo:SAMPLED-2000953113531-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 439,
+      "tape_key": "trl-grpo:SAMPLED-2000472-mediator_set-discovery-a6",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 440,
+      "tape_key": "trl-grpo:SAMPLED-2000473-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 441,
+      "tape_key": "trl-grpo:SAMPLED-2000474-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 442,
+      "tape_key": "trl-grpo:SAMPLED-2000475-backadj_minimal_sets-discovery-a3",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 443,
+      "tape_key": "trl-grpo:SAMPLED-2000953113526-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 444,
+      "tape_key": "trl-grpo:SAMPLED-2000477-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 445,
+      "tape_key": "trl-grpo:SAMPLED-2000478-ate-target_query-a5",
+      "query_type": "ate"
+    },
+    {
+      "index": 446,
+      "tape_key": "trl-grpo:SAMPLED-2000480-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 447,
+      "tape_key": "trl-grpo:SAMPLED-2000481-backadj_minimal_sets-discovery-a2",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 448,
+      "tape_key": "trl-grpo:SAMPLED-2001025131358-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 449,
+      "tape_key": "trl-grpo:SAMPLED-2000483-mediator_set-discovery-a10",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 450,
+      "tape_key": "trl-grpo:SAMPLED-2000484-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 451,
+      "tape_key": "trl-grpo:SAMPLED-2000485-individual_counterfactual_probability-target_query-a3",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 452,
+      "tape_key": "trl-grpo:SAMPLED-2000486-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 453,
+      "tape_key": "trl-grpo:SAMPLED-2000975118828-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 454,
+      "tape_key": "trl-grpo:SAMPLED-2000488-mediator_set-discovery-a2",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 455,
+      "tape_key": "trl-grpo:SAMPLED-2000489-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 456,
+      "tape_key": "trl-grpo:SAMPLED-2000490-individual_counterfactual_probability-target_query-a8",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 457,
+      "tape_key": "trl-grpo:SAMPLED-2000491-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 458,
+      "tape_key": "trl-grpo:SAMPLED-2001095149933-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 459,
+      "tape_key": "trl-grpo:SAMPLED-2000493-mediator_set-discovery-a1",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 460,
+      "tape_key": "trl-grpo:SAMPLED-2000494-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 461,
+      "tape_key": "trl-grpo:SAMPLED-2000496-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 462,
+      "tape_key": "trl-grpo:SAMPLED-2000497-backadj_minimal_sets-discovery-a5",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 463,
+      "tape_key": "trl-grpo:SAMPLED-2001027131856-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 464,
+      "tape_key": "trl-grpo:SAMPLED-2000499-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 465,
+      "tape_key": "trl-grpo:SAMPLED-2000500-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 466,
+      "tape_key": "trl-grpo:SAMPLED-2000501-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 467,
+      "tape_key": "trl-grpo:SAMPLED-2000502-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 468,
+      "tape_key": "trl-grpo:SAMPLED-2001015128782-best_intervention-decision-a6",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 469,
+      "tape_key": "trl-grpo:SAMPLED-2000504-mediator_set-discovery-a6",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 470,
+      "tape_key": "trl-grpo:SAMPLED-2000505-ate-target_query-a1",
+      "query_type": "ate"
+    },
+    {
+      "index": 471,
+      "tape_key": "trl-grpo:SAMPLED-2000507-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 472,
+      "tape_key": "trl-grpo:SAMPLED-2000508-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 473,
+      "tape_key": "trl-grpo:SAMPLED-2001047137040-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 474,
+      "tape_key": "trl-grpo:SAMPLED-2000510-mediator_set-discovery-a5",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 475,
+      "tape_key": "trl-grpo:SAMPLED-2000511-ate-target_query-a14",
+      "query_type": "ate"
+    },
+    {
+      "index": 476,
+      "tape_key": "trl-grpo:SAMPLED-2000512-individual_counterfactual_probability-target_query-a2",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 477,
+      "tape_key": "trl-grpo:SAMPLED-2000513-backadj_minimal_sets-discovery-a6",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 478,
+      "tape_key": "trl-grpo:SAMPLED-2001029132355-best_intervention-decision-a2",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 479,
+      "tape_key": "trl-grpo:SAMPLED-2000515-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 480,
+      "tape_key": "trl-grpo:SAMPLED-2000516-ate-target_query-a2",
+      "query_type": "ate"
+    },
+    {
+      "index": 481,
+      "tape_key": "trl-grpo:SAMPLED-2000517-individual_counterfactual_probability-target_query-a4",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 482,
+      "tape_key": "trl-grpo:SAMPLED-2000518-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 483,
+      "tape_key": "trl-grpo:SAMPLED-2001153166233-best_intervention-decision-a3",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 484,
+      "tape_key": "trl-grpo:SAMPLED-2000520-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 485,
+      "tape_key": "trl-grpo:SAMPLED-2000521-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 486,
+      "tape_key": "trl-grpo:SAMPLED-2000522-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 487,
+      "tape_key": "trl-grpo:SAMPLED-2000523-backadj_minimal_sets-discovery-a18",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 488,
+      "tape_key": "trl-grpo:SAMPLED-2001167170295-best_intervention-decision-a1",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 489,
+      "tape_key": "trl-grpo:SAMPLED-2000525-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 490,
+      "tape_key": "trl-grpo:SAMPLED-2000526-ate-target_query-a17",
+      "query_type": "ate"
+    },
+    {
+      "index": 491,
+      "tape_key": "trl-grpo:SAMPLED-2000527-individual_counterfactual_probability-target_query-a7",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 492,
+      "tape_key": "trl-grpo:SAMPLED-2000528-backadj_minimal_sets-discovery-a0",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 493,
+      "tape_key": "trl-grpo:SAMPLED-2001101151546-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 494,
+      "tape_key": "trl-grpo:SAMPLED-2000530-mediator_set-discovery-a0",
+      "query_type": "mediator_set"
+    },
+    {
+      "index": 495,
+      "tape_key": "trl-grpo:SAMPLED-2000531-ate-target_query-a0",
+      "query_type": "ate"
+    },
+    {
+      "index": 496,
+      "tape_key": "trl-grpo:SAMPLED-2000532-individual_counterfactual_probability-target_query-a0",
+      "query_type": "individual_counterfactual_probability"
+    },
+    {
+      "index": 497,
+      "tape_key": "trl-grpo:SAMPLED-2000533-backadj_minimal_sets-discovery-a1",
+      "query_type": "backadj_minimal_sets"
+    },
+    {
+      "index": 498,
+      "tape_key": "trl-grpo:SAMPLED-2001071143381-best_intervention-decision-a0",
+      "query_type": "best_intervention"
+    },
+    {
+      "index": 499,
+      "tape_key": "trl-grpo:SAMPLED-2000535-mediator_set-discovery-a14",
+      "query_type": "mediator_set"
+    }
+  ],
+  "official_sampler_order": [
+    42,
+    32,
+    120,
+    29,
+    478,
+    70,
+    496,
+    324,
+    306,
+    461,
+    178,
+    81,
+    158,
+    366,
+    437,
+    14,
+    75,
+    282,
+    433,
+    142,
+    489,
+    33,
+    291,
+    352,
+    335,
+    413,
+    295,
+    213,
+    22,
+    93,
+    162,
+    169,
+    219,
+    318,
+    15,
+    444,
+    383,
+    45,
+    408,
+    197,
+    226,
+    53,
+    369,
+    12,
+    263,
+    98,
+    399,
+    30,
+    9,
+    62,
+    170,
+    61,
+    358,
+    266,
+    488,
+    464,
+    1,
+    49,
+    148,
+    395,
+    86,
+    296,
+    472,
+    69,
+    66,
+    241,
+    91,
+    449,
+    46,
+    245,
+    87,
+    377,
+    136,
+    134,
+    234,
+    84,
+    143,
+    105,
+    484,
+    177,
+    374,
+    114,
+    184,
+    272,
+    194,
+    85,
+    183,
+    498,
+    479,
+    38,
+    97,
+    425,
+    39,
+    355,
+    463,
+    385,
+    317,
+    462,
+    391,
+    278,
+    370,
+    284,
+    137,
+    448,
+    477,
+    426,
+    223,
+    450,
+    313,
+    104,
+    185,
+    117,
+    119,
+    43,
+    326,
+    0,
+    364,
+    99,
+    191,
+    419,
+    68,
+    60,
+    481,
+    174,
+    384,
+    329,
+    2,
+    287,
+    347,
+    268,
+    457,
+    265,
+    380,
+    13,
+    5,
+    378,
+    476,
+    35,
+    470,
+    372,
+    499,
+    94,
+    485,
+    244,
+    403,
+    407,
+    250,
+    393,
+    420,
+    210,
+    222,
+    325,
+    368,
+    376,
+    160,
+    90,
+    74,
+    56,
+    182,
+    118,
+    166,
+    421,
+    387,
+    344,
+    357,
+    438,
+    333,
+    52,
+    494,
+    138,
+    495,
+    442,
+    238,
+    199,
+    88,
+    334,
+    4,
+    455,
+    236,
+    315,
+    89,
+    41,
+    92,
+    304,
+    256,
+    77,
+    235,
+    487,
+    258,
+    180,
+    83,
+    116,
+    72,
+    243,
+    414,
+    106,
+    205,
+    26,
+    346,
+    44,
+    110,
+    401,
+    8,
+    298,
+    215,
+    217,
+    239,
+    228,
+    405,
+    6,
+    434,
+    466,
+    416,
+    220,
+    394,
+    230,
+    140,
+    115,
+    319,
+    171,
+    167,
+    261,
+    473,
+    339,
+    151,
+    200,
+    492,
+    224,
+    412,
+    232,
+    63,
+    113,
+    411,
+    293,
+    301,
+    285,
+    417,
+    129,
+    248,
+    281,
+    441,
+    71,
+    24,
+    337,
+    474,
+    64,
+    292,
+    7,
+    436,
+    73,
+    173,
+    192,
+    367,
+    145,
+    432,
+    348,
+    418,
+    271,
+    125,
+    203,
+    460,
+    307,
+    153,
+    135,
+    390,
+    456,
+    193,
+    443,
+    100,
+    168,
+    397,
+    286,
+    267,
+    211,
+    312,
+    305,
+    78,
+    269,
+    111,
+    359,
+    127,
+    276,
+    95,
+    189,
+    48,
+    497,
+    57,
+    133,
+    247,
+    342,
+    330,
+    490,
+    388,
+    392,
+    67,
+    345,
+    17,
+    96,
+    155,
+    231,
+    356,
+    112,
+    82,
+    288,
+    208,
+    406,
+    483,
+    161,
+    144,
+    309,
+    253,
+    188,
+    128,
+    181,
+    430,
+    410,
+    264,
+    354,
+    131,
+    396,
+    59,
+    31,
+    299,
+    212,
+    20,
+    273,
+    152,
+    109,
+    36,
+    341,
+    300,
+    467,
+    79,
+    465,
+    451,
+    398,
+    163,
+    122,
+    130,
+    34,
+    277,
+    147,
+    424,
+    338,
+    76,
+    65,
+    480,
+    165,
+    47,
+    50,
+    216,
+    249,
+    139,
+    16,
+    459,
+    80,
+    373,
+    382,
+    314,
+    146,
+    331,
+    121,
+    159,
+    447,
+    237,
+    482,
+    156,
+    260,
+    27,
+    316,
+    332,
+    361,
+    101,
+    154,
+    254,
+    124,
+    475,
+    308,
+    350,
+    415,
+    360,
+    150,
+    201,
+    429,
+    468,
+    469,
+    458,
+    452,
+    218,
+    445,
+    255,
+    439,
+    491,
+    343,
+    275,
+    102,
+    175,
+    51,
+    322,
+    242,
+    280,
+    195,
+    103,
+    303,
+    229,
+    311,
+    37,
+    454,
+    431,
+    493,
+    172,
+    353,
+    294,
+    386,
+    289,
+    290,
+    54,
+    23,
+    204,
+    427,
+    221,
+    336,
+    283,
+    132,
+    187,
+    262,
+    28,
+    471,
+    196,
+    404,
+    179,
+    402,
+    40,
+    209,
+    349,
+    371,
+    279,
+    423,
+    198,
+    157,
+    257,
+    225,
+    428,
+    362,
+    141,
+    58,
+    206,
+    25,
+    107,
+    123,
+    202,
+    126,
+    435,
+    186,
+    363,
+    381,
+    409,
+    214,
+    18,
+    10,
+    19,
+    321,
+    207,
+    11,
+    422,
+    375,
+    233,
+    176,
+    440,
+    351,
+    297,
+    251,
+    270,
+    246,
+    164,
+    3,
+    446,
+    190,
+    379,
+    327,
+    149,
+    55,
+    302,
+    259,
+    323,
+    274,
+    486,
+    340,
+    310,
+    320,
+    108,
+    365,
+    227,
+    252,
+    389,
+    328,
+    21,
+    240,
+    400,
+    453
+  ],
+  "data_shuffle": true,
+  "data_seed": 42,
+  "sampler_source_sha256": "8aafeebd8c962f5c336f6bb32d1b32c65ffa5eff8766f37de94926e9aaf0aefc"
+}

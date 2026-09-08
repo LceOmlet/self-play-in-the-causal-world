@@ -136,7 +136,7 @@ def main():
         f"{len(steps)} 次真实更新 · {len(rows)} 条保留轨迹 · {generated} 个生成题组（含过滤组）",
         color=style.MUTED,
     )
-    axis(axes[0], "终止质量：浅色为单条轨迹，实点为同题组均值")
+    axis(axes[0], "最终答案得分（未扣超长惩罚）：浅色为单条轨迹，实点为同题组均值")
     for family, _, color in style.TASKS:
         draw(
             axes[0],
@@ -155,7 +155,7 @@ def main():
     )
     minimum_reward = min(0.0, min(m["critic/score/mean"] for m in metrics.values()))
     axes[0].set_ylim(minimum_reward - 0.04, 1.04)
-    axes[0].set_ylabel("环境终止质量")
+    axes[0].set_ylabel("最终答案得分")
     axes[0].legend(ncol=3, frameon=False, fontsize=9, loc="upper left", bbox_to_anchor=(0, 1.39))
     maximum = max(m["timing_s/step"] / 60 for m in metrics.values())
     axis(
