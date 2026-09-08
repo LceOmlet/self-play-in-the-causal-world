@@ -10,7 +10,7 @@ if [[ -n "${CPT_WORLD_INITIAL_ADAPTER:-}" || -n "${RESUME_FROM_CHECKPOINT:-}" ]]
   echo "Historical RL checkpoints are disqualified. Unset checkpoint initialization/resume variables and start from the original base model." >&2
   exit 2
 fi
-: "${CPT_WORLD_TRAIN_DATA:?Set the prepared training parquet path}"
+: "${CPT_WORLD_TRAIN_DATA:?Set the continuous training stream descriptor JSON path}"
 : "${CPT_WORLD_VAL_DATA:?Set the prepared validation parquet path}"
 : "${CPT_WORLD_RUN_DIR:?Set an isolated output directory}"
 export CPT_WORLD_TRAIN_DATA CPT_WORLD_VAL_DATA CPT_WORLD_RUN_DIR

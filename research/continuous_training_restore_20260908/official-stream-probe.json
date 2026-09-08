@@ -1,0 +1,1072 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "continuous_filtering",
+      "target": 8,
+      "explicit_target": 8,
+      "epochs": 1,
+      "rows_generated": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "actor_rpcs": [
+        {
+          "step": 1,
+          "row": 0
+        },
+        {
+          "step": 2,
+          "row": 2
+        },
+        {
+          "step": 3,
+          "row": 4
+        },
+        {
+          "step": 4,
+          "row": 6
+        },
+        {
+          "step": 5,
+          "row": 8
+        },
+        {
+          "step": 6,
+          "row": 10
+        },
+        {
+          "step": 7,
+          "row": 12
+        },
+        {
+          "step": 8,
+          "row": 14
+        }
+      ],
+      "save_rpcs": [
+        {
+          "saved_step": 1,
+          "last_actual_rpc_step": 1,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 2,
+          "last_actual_rpc_step": 2,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 3,
+          "last_actual_rpc_step": 3,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 4,
+          "last_actual_rpc_step": 4,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 5,
+          "last_actual_rpc_step": 5,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 6,
+          "last_actual_rpc_step": 6,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 7,
+          "last_actual_rpc_step": 7,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 8,
+          "last_actual_rpc_step": 8,
+          "fixture_only": true
+        }
+      ],
+      "load_rpcs": [],
+      "reported_global_steps": 8,
+      "generated_counter": 15,
+      "data_epoch": 0,
+      "error": null,
+      "checkpoint_root": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints",
+      "logged_gen_batches": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "descriptor": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous-journal/continuous.json",
+      "new_fixture_worlds": 15,
+      "generated_groups": [
+        {
+          "index": 0,
+          "tape_key": "fixture:1001",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 1
+        },
+        {
+          "index": 1,
+          "tape_key": "fixture:1003",
+          "group_size": 4,
+          "upcoming_update": 2,
+          "generated_counter": 2
+        },
+        {
+          "index": 2,
+          "tape_key": "fixture:1005",
+          "group_size": 4,
+          "upcoming_update": 2,
+          "generated_counter": 3
+        },
+        {
+          "index": 3,
+          "tape_key": "fixture:1007",
+          "group_size": 4,
+          "upcoming_update": 3,
+          "generated_counter": 4
+        },
+        {
+          "index": 4,
+          "tape_key": "fixture:1009",
+          "group_size": 4,
+          "upcoming_update": 3,
+          "generated_counter": 5
+        },
+        {
+          "index": 5,
+          "tape_key": "fixture:1011",
+          "group_size": 4,
+          "upcoming_update": 4,
+          "generated_counter": 6
+        },
+        {
+          "index": 6,
+          "tape_key": "fixture:1013",
+          "group_size": 4,
+          "upcoming_update": 4,
+          "generated_counter": 7
+        },
+        {
+          "index": 7,
+          "tape_key": "fixture:1015",
+          "group_size": 4,
+          "upcoming_update": 5,
+          "generated_counter": 8
+        },
+        {
+          "index": 8,
+          "tape_key": "fixture:1017",
+          "group_size": 4,
+          "upcoming_update": 5,
+          "generated_counter": 9
+        },
+        {
+          "index": 9,
+          "tape_key": "fixture:1019",
+          "group_size": 4,
+          "upcoming_update": 6,
+          "generated_counter": 10
+        },
+        {
+          "index": 10,
+          "tape_key": "fixture:1021",
+          "group_size": 4,
+          "upcoming_update": 6,
+          "generated_counter": 11
+        },
+        {
+          "index": 11,
+          "tape_key": "fixture:1023",
+          "group_size": 4,
+          "upcoming_update": 7,
+          "generated_counter": 12
+        },
+        {
+          "index": 12,
+          "tape_key": "fixture:1025",
+          "group_size": 4,
+          "upcoming_update": 7,
+          "generated_counter": 13
+        },
+        {
+          "index": 13,
+          "tape_key": "fixture:1027",
+          "group_size": 4,
+          "upcoming_update": 8,
+          "generated_counter": 14
+        },
+        {
+          "index": 14,
+          "tape_key": "fixture:1029",
+          "group_size": 4,
+          "upcoming_update": 8,
+          "generated_counter": 15
+        }
+      ],
+      "retained_groups": [
+        {
+          "index": 0,
+          "tape_key": "fixture:1001",
+          "update": 1
+        },
+        {
+          "index": 2,
+          "tape_key": "fixture:1005",
+          "update": 2
+        },
+        {
+          "index": 4,
+          "tape_key": "fixture:1009",
+          "update": 3
+        },
+        {
+          "index": 6,
+          "tape_key": "fixture:1013",
+          "update": 4
+        },
+        {
+          "index": 8,
+          "tape_key": "fixture:1017",
+          "update": 5
+        },
+        {
+          "index": 10,
+          "tape_key": "fixture:1021",
+          "update": 6
+        },
+        {
+          "index": 12,
+          "tape_key": "fixture:1025",
+          "update": 7
+        },
+        {
+          "index": 14,
+          "tape_key": "fixture:1029",
+          "update": 8
+        }
+      ],
+      "journal_state": {
+        "version": 1,
+        "kind": "cpt_world_continuous_journal",
+        "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+        "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+        "next_index": 15,
+        "last_record_sha256": "ad7b120d4a0479c3c798f9046e6dcba79f8270d59ec288eab689e36eae661a59"
+      },
+      "saved_data_cursors": [
+        {
+          "update": 1,
+          "generated": 1,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 1,
+            "last_record_sha256": "1772af40d5959fd06944648f72df764b8f06e4953f57f8afecc8c0792b46908a"
+          }
+        },
+        {
+          "update": 2,
+          "generated": 3,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 3,
+            "last_record_sha256": "31168d40082e733faea63e4dd85672296b4188925c9919972d522ae9ab1dae2c"
+          }
+        },
+        {
+          "update": 3,
+          "generated": 5,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 5,
+            "last_record_sha256": "73f06221877c8ac323dd9ce6bdaecceca2ef5b269afeacd0604f581a28440a57"
+          }
+        },
+        {
+          "update": 4,
+          "generated": 7,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 7,
+            "last_record_sha256": "d43e1267b66e1b26b7d84040496bc27cea25748f200ae32bb3219283431e6eca"
+          }
+        },
+        {
+          "update": 5,
+          "generated": 9,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 9,
+            "last_record_sha256": "6314933f083bea6e062b2004fff08b0f94f7fdba6325f9f19f52da2d3885c4e6"
+          }
+        },
+        {
+          "update": 6,
+          "generated": 11,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 11,
+            "last_record_sha256": "afd1b20440581891799091d59fe581cf13600b8a007103624a884a3be08789b6"
+          }
+        },
+        {
+          "update": 7,
+          "generated": 13,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 13,
+            "last_record_sha256": "f01a3ea765391e9b3721902f5adefb7f15ad9294c366e96b23a2c09ee74e2344"
+          }
+        },
+        {
+          "update": 8,
+          "generated": 15,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+            "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+            "next_index": 15,
+            "last_record_sha256": "ad7b120d4a0479c3c798f9046e6dcba79f8270d59ec288eab689e36eae661a59"
+          }
+        }
+      ]
+    },
+    {
+      "case": "filtered_prefix",
+      "target": 5,
+      "explicit_target": 5,
+      "epochs": 1,
+      "rows_generated": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "actor_rpcs": [
+        {
+          "step": 1,
+          "row": 0
+        },
+        {
+          "step": 2,
+          "row": 2
+        },
+        {
+          "step": 3,
+          "row": 4
+        },
+        {
+          "step": 4,
+          "row": 6
+        },
+        {
+          "step": 5,
+          "row": 8
+        }
+      ],
+      "save_rpcs": [
+        {
+          "saved_step": 1,
+          "last_actual_rpc_step": 1,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 2,
+          "last_actual_rpc_step": 2,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 3,
+          "last_actual_rpc_step": 3,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 4,
+          "last_actual_rpc_step": 4,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 5,
+          "last_actual_rpc_step": 5,
+          "fixture_only": true
+        }
+      ],
+      "load_rpcs": [],
+      "reported_global_steps": 5,
+      "generated_counter": 9,
+      "data_epoch": 0,
+      "error": null,
+      "checkpoint_root": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints",
+      "logged_gen_batches": [
+        1,
+        2,
+        2,
+        2,
+        2
+      ],
+      "descriptor": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/split-journal/continuous.json",
+      "new_fixture_worlds": 9,
+      "generated_groups": [
+        {
+          "index": 0,
+          "tape_key": "fixture:1001",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 1
+        },
+        {
+          "index": 1,
+          "tape_key": "fixture:1003",
+          "group_size": 4,
+          "upcoming_update": 2,
+          "generated_counter": 2
+        },
+        {
+          "index": 2,
+          "tape_key": "fixture:1005",
+          "group_size": 4,
+          "upcoming_update": 2,
+          "generated_counter": 3
+        },
+        {
+          "index": 3,
+          "tape_key": "fixture:1007",
+          "group_size": 4,
+          "upcoming_update": 3,
+          "generated_counter": 4
+        },
+        {
+          "index": 4,
+          "tape_key": "fixture:1009",
+          "group_size": 4,
+          "upcoming_update": 3,
+          "generated_counter": 5
+        },
+        {
+          "index": 5,
+          "tape_key": "fixture:1011",
+          "group_size": 4,
+          "upcoming_update": 4,
+          "generated_counter": 6
+        },
+        {
+          "index": 6,
+          "tape_key": "fixture:1013",
+          "group_size": 4,
+          "upcoming_update": 4,
+          "generated_counter": 7
+        },
+        {
+          "index": 7,
+          "tape_key": "fixture:1015",
+          "group_size": 4,
+          "upcoming_update": 5,
+          "generated_counter": 8
+        },
+        {
+          "index": 8,
+          "tape_key": "fixture:1017",
+          "group_size": 4,
+          "upcoming_update": 5,
+          "generated_counter": 9
+        }
+      ],
+      "retained_groups": [
+        {
+          "index": 0,
+          "tape_key": "fixture:1001",
+          "update": 1
+        },
+        {
+          "index": 2,
+          "tape_key": "fixture:1005",
+          "update": 2
+        },
+        {
+          "index": 4,
+          "tape_key": "fixture:1009",
+          "update": 3
+        },
+        {
+          "index": 6,
+          "tape_key": "fixture:1013",
+          "update": 4
+        },
+        {
+          "index": 8,
+          "tape_key": "fixture:1017",
+          "update": 5
+        }
+      ],
+      "journal_state": {
+        "version": 1,
+        "kind": "cpt_world_continuous_journal",
+        "journal_id": "76a231abac264ea6b148b580be24f077",
+        "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+        "next_index": 9,
+        "last_record_sha256": "a035560fe2148ab161180ddfb050dcc3738c3bc76dfc3b734783b6fd8c99bf40"
+      },
+      "saved_data_cursors": [
+        {
+          "update": 1,
+          "generated": 1,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 1,
+            "last_record_sha256": "bd37dbc99931f0600cafa9fb648bf9c19564cc8cc6aac034b487d90371b68507"
+          }
+        },
+        {
+          "update": 2,
+          "generated": 3,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 3,
+            "last_record_sha256": "a757b752ee32c7fbd8b570f05fc99d42a14447d359b62b274fa0864321f92d42"
+          }
+        },
+        {
+          "update": 3,
+          "generated": 5,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 5,
+            "last_record_sha256": "181cfcb0213372af03fb6579b6cbe459121749f563dd403db829f1f63cd43999"
+          }
+        },
+        {
+          "update": 4,
+          "generated": 7,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 7,
+            "last_record_sha256": "dc2c018a116c1703f0c259be0b4d85b191dd5ed82168961e0336f4cf458e9e1e"
+          }
+        },
+        {
+          "update": 5,
+          "generated": 9,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 9,
+            "last_record_sha256": "a035560fe2148ab161180ddfb050dcc3738c3bc76dfc3b734783b6fd8c99bf40"
+          }
+        }
+      ]
+    },
+    {
+      "case": "filtered_continuation",
+      "target": 8,
+      "explicit_target": 8,
+      "epochs": 1,
+      "rows_generated": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "actor_rpcs": [
+        {
+          "step": 6,
+          "row": 10
+        },
+        {
+          "step": 7,
+          "row": 12
+        },
+        {
+          "step": 8,
+          "row": 14
+        }
+      ],
+      "save_rpcs": [
+        {
+          "saved_step": 6,
+          "last_actual_rpc_step": 6,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 7,
+          "last_actual_rpc_step": 7,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 8,
+          "last_actual_rpc_step": 8,
+          "fixture_only": true
+        }
+      ],
+      "load_rpcs": [
+        "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_5/actor"
+      ],
+      "reported_global_steps": 8,
+      "generated_counter": 15,
+      "data_epoch": 0,
+      "error": null,
+      "checkpoint_root": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_continuation/checkpoints",
+      "logged_gen_batches": [
+        2,
+        2,
+        2
+      ],
+      "descriptor": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/split-journal/continuous.json",
+      "new_fixture_worlds": 4,
+      "generated_groups": [
+        {
+          "index": 9,
+          "tape_key": "fixture:1019",
+          "group_size": 4,
+          "upcoming_update": 6,
+          "generated_counter": 10
+        },
+        {
+          "index": 10,
+          "tape_key": "fixture:1021",
+          "group_size": 4,
+          "upcoming_update": 6,
+          "generated_counter": 11
+        },
+        {
+          "index": 11,
+          "tape_key": "fixture:1023",
+          "group_size": 4,
+          "upcoming_update": 7,
+          "generated_counter": 12
+        },
+        {
+          "index": 12,
+          "tape_key": "fixture:1025",
+          "group_size": 4,
+          "upcoming_update": 7,
+          "generated_counter": 13
+        },
+        {
+          "index": 13,
+          "tape_key": "fixture:1027",
+          "group_size": 4,
+          "upcoming_update": 8,
+          "generated_counter": 14
+        },
+        {
+          "index": 14,
+          "tape_key": "fixture:1029",
+          "group_size": 4,
+          "upcoming_update": 8,
+          "generated_counter": 15
+        }
+      ],
+      "retained_groups": [
+        {
+          "index": 10,
+          "tape_key": "fixture:1021",
+          "update": 6
+        },
+        {
+          "index": 12,
+          "tape_key": "fixture:1025",
+          "update": 7
+        },
+        {
+          "index": 14,
+          "tape_key": "fixture:1029",
+          "update": 8
+        }
+      ],
+      "journal_state": {
+        "version": 1,
+        "kind": "cpt_world_continuous_journal",
+        "journal_id": "76a231abac264ea6b148b580be24f077",
+        "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+        "next_index": 15,
+        "last_record_sha256": "84b14fdc4bbde6e57b01df25ac43970ea48fd885420cf319109d6a25e534128e"
+      },
+      "saved_data_cursors": [
+        {
+          "update": 6,
+          "generated": 11,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 11,
+            "last_record_sha256": "7dcefec7cc8b2c35d2962360aafe4ef32a2c456a16a369e6d6c5e2e56fdc77da"
+          }
+        },
+        {
+          "update": 7,
+          "generated": 13,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 13,
+            "last_record_sha256": "dcb077bbe1b9c7cf070475dada60377e651e07736f5630e34b410a6db95b33b0"
+          }
+        },
+        {
+          "update": 8,
+          "generated": 15,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "76a231abac264ea6b148b580be24f077",
+            "descriptor_sha256": "8421f05313e5f75e37792f09fb50adf7490eade49f7af928ef670631e8ad8113",
+            "next_index": 15,
+            "last_record_sha256": "84b14fdc4bbde6e57b01df25ac43970ea48fd885420cf319109d6a25e534128e"
+          }
+        }
+      ]
+    },
+    {
+      "case": "completed_target",
+      "target": 8,
+      "explicit_target": 8,
+      "epochs": 1,
+      "rows_generated": [],
+      "actor_rpcs": [],
+      "save_rpcs": [],
+      "load_rpcs": [
+        "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_8/actor"
+      ],
+      "reported_global_steps": 8,
+      "generated_counter": 15,
+      "data_epoch": 0,
+      "error": null,
+      "checkpoint_root": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/completed_target/checkpoints",
+      "logged_gen_batches": [],
+      "descriptor": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous-journal/continuous.json",
+      "new_fixture_worlds": 0,
+      "generated_groups": [],
+      "retained_groups": [],
+      "journal_state": {
+        "version": 1,
+        "kind": "cpt_world_continuous_journal",
+        "journal_id": "28f23fe25326444ea0fc684b2c63f96d",
+        "descriptor_sha256": "67fd40ba316e82df9c90f5bfb2859df881b60739bd10782a3899cc7aa2b8cd4e",
+        "next_index": 15,
+        "last_record_sha256": "ad7b120d4a0479c3c798f9046e6dcba79f8270d59ec288eab689e36eae661a59"
+      },
+      "saved_data_cursors": []
+    },
+    {
+      "case": "constant_group_limit",
+      "target": 8,
+      "explicit_target": 8,
+      "epochs": 1,
+      "rows_generated": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "actor_rpcs": [],
+      "save_rpcs": [],
+      "load_rpcs": [],
+      "reported_global_steps": 1,
+      "generated_counter": 10,
+      "data_epoch": 0,
+      "error": {
+        "type": "ValueError",
+        "message": "num_gen_batches=10 >= max_num_gen_batches=10. Generated too many. Please check if your data are too difficult. You could also try set max_num_gen_batches=0 to enable endless trials."
+      },
+      "checkpoint_root": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/constant_group_limit/checkpoints",
+      "logged_gen_batches": [],
+      "descriptor": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/constant-journal/continuous.json",
+      "new_fixture_worlds": 10,
+      "generated_groups": [
+        {
+          "index": 0,
+          "tape_key": "fixture:1001",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 1
+        },
+        {
+          "index": 1,
+          "tape_key": "fixture:1003",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 2
+        },
+        {
+          "index": 2,
+          "tape_key": "fixture:1005",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 3
+        },
+        {
+          "index": 3,
+          "tape_key": "fixture:1007",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 4
+        },
+        {
+          "index": 4,
+          "tape_key": "fixture:1009",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 5
+        },
+        {
+          "index": 5,
+          "tape_key": "fixture:1011",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 6
+        },
+        {
+          "index": 6,
+          "tape_key": "fixture:1013",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 7
+        },
+        {
+          "index": 7,
+          "tape_key": "fixture:1015",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 8
+        },
+        {
+          "index": 8,
+          "tape_key": "fixture:1017",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 9
+        },
+        {
+          "index": 9,
+          "tape_key": "fixture:1019",
+          "group_size": 4,
+          "upcoming_update": 1,
+          "generated_counter": 10
+        }
+      ],
+      "retained_groups": [],
+      "journal_state": {
+        "version": 1,
+        "kind": "cpt_world_continuous_journal",
+        "journal_id": "726e905b55d0435eb07b48660c39931e",
+        "descriptor_sha256": "2a01ab3a176df71d41f72e5c82099b0190530c93c284b8901cb67d2862314549",
+        "next_index": 10,
+        "last_record_sha256": "f240977d11ca7955d3142d69450cef600bbf08cb264b090d3a087778d758794e"
+      },
+      "saved_data_cursors": []
+    },
+    {
+      "case": "cross_old_500_boundary",
+      "target": 251,
+      "explicit_target": 251,
+      "epochs": 1,
+      "rows_generated": [
+        499,
+        500,
+        501,
+        502
+      ],
+      "actor_rpcs": [
+        {
+          "step": 250,
+          "row": 500
+        },
+        {
+          "step": 251,
+          "row": 502
+        }
+      ],
+      "save_rpcs": [
+        {
+          "saved_step": 250,
+          "last_actual_rpc_step": 250,
+          "fixture_only": true
+        },
+        {
+          "saved_step": 251,
+          "last_actual_rpc_step": 251,
+          "fixture_only": true
+        }
+      ],
+      "load_rpcs": [
+        "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/explicit-cursor-fixture/global_step_249/actor"
+      ],
+      "reported_global_steps": 251,
+      "generated_counter": 503,
+      "data_epoch": 0,
+      "error": null,
+      "checkpoint_root": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/cross_old_500_boundary/checkpoints",
+      "logged_gen_batches": [
+        2,
+        2
+      ],
+      "descriptor": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/boundary-journal/continuous.json",
+      "new_fixture_worlds": 4,
+      "generated_groups": [
+        {
+          "index": 499,
+          "tape_key": "fixture:1999",
+          "group_size": 4,
+          "upcoming_update": 250,
+          "generated_counter": 500
+        },
+        {
+          "index": 500,
+          "tape_key": "fixture:2001",
+          "group_size": 4,
+          "upcoming_update": 250,
+          "generated_counter": 501
+        },
+        {
+          "index": 501,
+          "tape_key": "fixture:2003",
+          "group_size": 4,
+          "upcoming_update": 251,
+          "generated_counter": 502
+        },
+        {
+          "index": 502,
+          "tape_key": "fixture:2005",
+          "group_size": 4,
+          "upcoming_update": 251,
+          "generated_counter": 503
+        }
+      ],
+      "retained_groups": [
+        {
+          "index": 500,
+          "tape_key": "fixture:2001",
+          "update": 250
+        },
+        {
+          "index": 502,
+          "tape_key": "fixture:2005",
+          "update": 251
+        }
+      ],
+      "journal_state": {
+        "version": 1,
+        "kind": "cpt_world_continuous_journal",
+        "journal_id": "442565c637fc4be283c3f5197cf60904",
+        "descriptor_sha256": "764e8225b4a0412bf5ed20acec558c8fed24957445393e384e6dfad38139a754",
+        "next_index": 503,
+        "last_record_sha256": "85e8e463aa7584dc79ea77bcb881a7fe505a682cba89b373665ed53161d05b90"
+      },
+      "saved_data_cursors": [
+        {
+          "update": 250,
+          "generated": 501,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "442565c637fc4be283c3f5197cf60904",
+            "descriptor_sha256": "764e8225b4a0412bf5ed20acec558c8fed24957445393e384e6dfad38139a754",
+            "next_index": 501,
+            "last_record_sha256": "620d71f25636a9ac72623af0a68e35cea6d11d9ba89acacdc782e9b74dfca148"
+          }
+        },
+        {
+          "update": 251,
+          "generated": 503,
+          "dataset_state": {
+            "version": 1,
+            "kind": "cpt_world_continuous_journal",
+            "journal_id": "442565c637fc4be283c3f5197cf60904",
+            "descriptor_sha256": "764e8225b4a0412bf5ed20acec558c8fed24957445393e384e6dfad38139a754",
+            "next_index": 503,
+            "last_record_sha256": "85e8e463aa7584dc79ea77bcb881a7fe505a682cba89b373665ed53161d05b90"
+          }
+        }
+      ]
+    }
+  ],
+  "cuda_initialized": false,
+  "source_sha256": {
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/research/continuous_training_restore_20260908/probe_official_stream.py": "1149a42c38b39ed1a48c817c7982301d1834e0a8a0e2be146f03f3a0cf762cf3",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/research/dapo_progress_20260908/probe_progress.py": "2096d7d0a1d900587fadaa03b1e82e9e63dd8c933e85e6477dc79670ed901540",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/tests/test_verl_streaming_dataset.py": "d91fc5344092c06b15c8c0f30665c27220f0d660b7c80281d45289e8a70512b8",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/src/cpt_world/verl_streaming_dataset.py": "2b1dc7b8583f1ffdc9a84b5e56ddd90791c418035e230d66b56be16407b0a459",
+    "/home/chen/runs/continuous-training-restore-20260908/candidate/scripts/migrate_dapo_continuous_data.py": "96e1c560a63b275eb64d4b2a31656b42912ba32b5ee648ff671df76d58d02935",
+    "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/trainer/ppo/utils.py": "8aafeebd8c962f5c336f6bb32d1b32c65ffa5eff8766f37de94926e9aaf0aefc",
+    "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/trainer/ppo/ray_trainer.py": "4ade49b9c8e80d51a21240e3f07df1fb1215afac365e9424af076b84e88f8e7b",
+    "/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/utils/dataset/rl_dataset.py": "0973a7df6008193d1f14e7df0b608b220a81039dbb721ce8f189a95a8f820fe4",
+    "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2/dapo/dapo_ray_trainer.py": "b8e66a6037e3b2922f560c24eb10a94dc28a916579d2f163b506adb82559f491"
+  },
+  "config_sha256": "24f6b23a8c0ee8c9743a36f7fbb85356c0a01eef141fcdcb2ba07d6e14800025",
+  "scope": "Actual official fit/save/load, CPTWorldStreamingDataset, journal, official getitem/collate/sampler and StatefulDataLoader. Task contents and GPU RPCs are explicit fixtures; no model learning or GPU restoration claim.",
+  "runner_reuse": "The old progress probe's run function is reused with only two fixture row-ID reads adapted. No official loop or filtering implementation is copied.",
+  "boundary_fixture": "IndexOnlyDataset/native_cursor primes logical position 499 without generating past tasks; U249/G499 is an explicit synthetic checkpoint."
+}

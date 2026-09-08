@@ -1,0 +1,11 @@
+{
+  "scope": "Synchronous balanced producer extraction and original environment suite; no GPU.",
+  "exit_code": 0,
+  "source_sha256": {
+    "src/cpt_world/trl_environment.py": "36ff8eb94c43bae01136755443f15347cd0fdbc0f8261ea0aa3b1a9234034f88",
+    "tests/test_balanced_stream_state.py": "31990006db8f3483e3b8ef6d2de2ba12dafdc63f4800625300d6938496d84fbc",
+    "tests/test_trl_environment.py": "bc4f58b41d42dfc4b0c478974d70a98b62ab8d0e42706cd52cdb69953ad516e8"
+  },
+  "log_sha256": "80e710ecfce1431f32bceda58acc2793f860ec3593d28a2c23898ed629f95151",
+  "golden_source_record": "golden-before-refactor.json"
+}

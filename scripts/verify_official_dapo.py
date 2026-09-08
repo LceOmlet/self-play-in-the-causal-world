@@ -148,6 +148,25 @@ def verify():
     report["datasets"] = {}
     for role, variable in [("train", "CPT_WORLD_TRAIN_DATA"), ("validation", "CPT_WORLD_VAL_DATA")]:
         path = Path(os.environ[variable]).resolve()
+        if role == "train":
+            # Training keeps the original continual task-generation semantics.
+            # A finite parquet cohort is not a substitute for that stream.
+            if path.suffix != ".json":
+                raise RuntimeError("CPT-World training requires a continuous-stream descriptor")
+            from cpt_world.verl_streaming_dataset import validate_stream_descriptor
+
+            descriptor = validate_stream_descriptor(path)
+            report["datasets"][role] = {
+                "path": str(path),
+                "kind": "continuous",
+                "rows": None,
+                "start_seed": descriptor["start_seed"],
+                "stream_start_index": descriptor["stream_start_index"],
+                "journal_dir": descriptor["journal_dir"],
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "source_fingerprints": descriptor["source_fingerprints"],
+            }
+            continue
         count = 0
         for batch in pq.ParquetFile(path).iter_batches(columns=["extra_info"]):
             for row in batch.to_pylist():

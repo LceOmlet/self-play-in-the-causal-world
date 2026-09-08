@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "scope": "CPU preparation and native continuation acceptance only. No model inference, GPU update, learning gain or completed production switch is claimed by these artifacts.",
+  "remote_root": "/home/chen/runs/continuous-training-restore-20260908",
+  "remote_preflight": "preflight-01/cpu-preflight",
+  "archived_files": {
+    "prepared.json": "47376a8ca2177482ac8c6ab2e53a6edf4d215a57b5ac442294ce419e3a75a803",
+    "checkpoint-acceptance.json": "35c8fd9d309bf7cac24f6bc663e19a65cbe69bcbac844a5a0ec7482f5fdd3263",
+    "preflight-source-verification.json": "d79a233f133032a3c9ae72770d2813a44761fb526c053554c30608bea455cbde",
+    "resolved.yaml": "6c94d7030c8ed9521f5eb62cd8a55bc32cbd240fe360b05121412b166dad4c98",
+    "owner-tests-final.json": "8911b4996def049acebdbdaaaf68e3a08cf71d821954f4c5c2a71a8da871df7e",
+    "owner-tests-final.log": "80e710ecfce1431f32bceda58acc2793f860ec3593d28a2c23898ed629f95151",
+    "executed-control.py": "ad97d2d4a3ac8e12944c87f04c4d6055b36a24b7f4cee1f3ed7cbe0ad6fc65e3"
+  },
+  "archive_integrity": "The six data/log artifacts were compared byte-for-byte by SHA256 with read-only server sha256sum output. executed-control.py was downloaded from candidate/research/continuous_training_restore_20260908/control.py and matches prepared.json.controller_sha256; the working controller was subsequently formatted separately.",
+  "native_preflight": {
+    "fixture_source": "Previously preserved native global_step_50; not the later live checkpoint used for production switching.",
+    "completed_updates_before_and_after": 50,
+    "generated_batches_before_and_after": 58,
+    "next_global_index": 58,
+    "old_batches_per_epoch": 500,
+    "new_batches_per_epoch": 9223372036854775807,
+    "new_data_epoch": 0,
+    "modified_training_files": ["data.pt", "dapo_progress.json"],
+    "retained_source_files": 12,
+    "source_read_only": true,
+    "official_source_files_verified": 427,
+    "load_path": "Actual official base and DAPO _load_checkpoint; only GPU actor RPC mocked. The index-only wrapper retains actual dataset journal state without requesting tasks."
+  },
+  "owner_suite": {
+    "evidence": "Archived server JSON and raw log",
+    "exit_code": 0,
+    "tests_passed": 17,
+    "subtests_passed": 17,
+    "seconds": 19.13,
+    "scope": "Balanced producer extraction and original environment suite; CPU only."
+  },
+  "migration_suite": {
+    "evidence": "Observed execution tool output; no server log file was saved or found. This summary is not a reconstructed raw log.",
+    "command": "python -m unittest discover -s tests -p test_dapo_continuous_migration.py -v",
+    "directory": "/home/chen/runs/continuous-training-restore-20260908/candidate",
+    "exit_code": 0,
+    "tests_passed": 7,
+    "seconds": 1.191,
+    "execution_session": 29284,
+    "coverage": "Unchanged source/model/Adam/scheduler/RNG bytes, native official restore, actual adapter next-index generation, stable journal replay, nonzero old epoch, rejected existing destination/incompatible descriptor/missing optimizer/scheduler mismatch/unknown or inconsistent sampler state."
+  },
+  "adapter_suite": {
+    "evidence": "Agent legacy_learning_exposure observed execution tool output; no server log or JSON was saved. Runtime source hashes were not collected before later formatting, so this is not an exact-final-source test attestation.",
+    "command": "python -m unittest discover -s tests -p test_verl_streaming_dataset.py -v",
+    "directory": "/home/chen/runs/continuous-training-restore-20260908/candidate",
+    "exit_code": 0,
+    "tests_passed": 15,
+    "seconds": 1.881,
+    "execution_session": 5686,
+    "real_five_family_generation_seconds": 1.2991064690286294,
+    "real_stream_start_seed": 1000,
+    "real_logical_indices": [74, 75, 76, 77, 78],
+    "later_changes": "Two adapter formatting changes and one test formatting change by Ruff; no semantic changes reported. The final adapter fingerprint is independently present in preflight-source-verification.json."
+  },
+  "additional_archived_integration_evidence": "../official-stream-probe.json and ../official-stream-probe.log cover six actual official fit/save/load CPU fixture cases, including dynamic filtering and crossing logical index 499."
+}

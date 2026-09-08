@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "source": "/home/chen/runs/heldout-learning-20260908/resume-no-val-01/preserved/global_step_50",
+  "destination": "/home/chen/runs/continuous-training-restore-20260908/preflight-01/cpu-preflight/preserved/global_step_50",
+  "source_files": {
+    "actor/extra_state_world_size_1_rank_0.pt": {
+      "size": 15077,
+      "sha256": "7d3d5ec04cf35a4e11bf742eeeefbd1923b53fcc8d5ed823e5af06b8d360144b"
+    },
+    "actor/fsdp_config.json": {
+      "size": 46,
+      "sha256": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f"
+    },
+    "actor/huggingface/chat_template.jinja": {
+      "size": 7756,
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+    },
+    "actor/huggingface/config.json": {
+      "size": 2940,
+      "sha256": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7"
+    },
+    "actor/huggingface/processor_config.json": {
+      "size": 1191,
+      "sha256": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1"
+    },
+    "actor/huggingface/tokenizer.json": {
+      "size": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+    },
+    "actor/huggingface/tokenizer_config.json": {
+      "size": 1165,
+      "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b"
+    },
+    "actor/lora_train_meta.json": {
+      "size": 66,
+      "sha256": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445"
+    },
+    "actor/model_world_size_1_rank_0.pt": {
+      "size": 43532475,
+      "sha256": "0afa6002c3f3db8632b92ebacb37ac0399f4558c8f2bcd0833aad030b5e05b5d"
+    },
+    "actor/optim_world_size_1_rank_0.pt": {
+      "size": 87100836,
+      "sha256": "a9b327ad563754c995cee1533bd3fd39e400b5222ef33c61707d57880efba415"
+    },
+    "dapo_progress.json": {
+      "size": 107,
+      "sha256": "3f3175d5f8b9370554e2d3362bf49eb79238af9877a88e630604e768601ddf04"
+    },
+    "data.pt": {
+      "size": 6868,
+      "sha256": "a09da9b0a82d037f8aa48db8667ddac91e21ee9a95bef4dfbce4e3f30e3bcbb4"
+    }
+  },
+  "old_progress": {
+    "version": 1,
+    "completed_updates": 50,
+    "generated_batches": 58,
+    "data_epoch": 0,
+    "batches_per_epoch": 500
+  },
+  "new_progress": {
+    "version": 1,
+    "completed_updates": 50,
+    "generated_batches": 58,
+    "data_epoch": 0,
+    "batches_per_epoch": 9223372036854775807
+  },
+  "changed_training_files": [
+    "data.pt",
+    "dapo_progress.json"
+  ],
+  "descriptor_path": "/home/chen/runs/continuous-training-restore-20260908/preflight-01/cpu-preflight/stream.json",
+  "descriptor_sha256": "5b52125e7f08adf801963f35cf17138970ff35e79365a3db8d0f8dad20b5390f",
+  "native_acceptance": {
+    "completed_updates": 50,
+    "generated_batches": 58,
+    "data_epoch": 0,
+    "next_global_index": 58,
+    "recipe_source": "/home/chen/vendor/dapo-official-20260906/verl-recipe-progress-candidate-v2/dapo/dapo_ray_trainer.py",
+    "scope": "Actual official load hooks/native loader; only GPU actor RPC mocked; index-only dataset preserves actual journal state without generating tasks."
+  },
+  "torch_version": "2.11.0+cu130",
+  "migration_script_sha256": "96e1c560a63b275eb64d4b2a31656b42912ba32b5ee648ff671df76d58d02935",
+  "new_data_sha256": "7ba31535f31f8af228e93d7e0b861f2554410e5f298512e87e767f252fa94977",
+  "new_progress_sha256": "a70ed805f900ea5a2d0ed752c32d72003a80ed9aa576dd20fc28d053e1f6bc79",
+  "source_read_only": true
+}

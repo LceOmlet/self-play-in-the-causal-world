@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import math
 import os
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from fractions import Fraction
 from pathlib import Path
@@ -245,63 +245,120 @@ def build_balanced_training_rows(
     return tuple(rows)
 
 
-def _iter_random_balanced_training_rows(
-    *,
-    start_seed: int = 0,
-    grammar: WorldGrammar | None = None,
-    counterfactual_endpoint_time_limit_seconds: float = (
-        COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS
-    ),
-) -> Iterator[dict[str, Any]]:
-    """Yield an infinite reproducible stream with exact-uniform task-family mixing.
+class BalancedTrainingRowStream(Iterator[dict[str, Any]]):
+    """The original balanced task producer with a resumable delivery cursor.
 
-    Each yielded row owns a fresh sampler seed. Counterfactual truth is solved
-    before rollout and cached in the row. Exact and epsilon-sharp certificates
-    are accepted; a larger unresolved endpoint gap rejects that candidate and
-    advances to another sampled task.
+    This synchronous owner does not prefetch. Snapshots describe the position
+    between delivered rows. A caller must persist each delivered row and its
+    certified truth together with this cursor: rerunning a timed CF solver is
+    not a deterministic way to reconstruct previously accepted/rejected work.
+    Grammar, source fingerprints and endpoint allowance belong to that caller's
+    stream manifest and must remain unchanged when loading a cursor.
     """
 
-    if start_seed < 0:
-        raise ValueError("start_seed must be nonnegative")
-    if counterfactual_endpoint_time_limit_seconds <= 0:
-        raise ValueError("counterfactual endpoint time limit must be positive")
-    resolved_grammar = grammar or WorldGrammar()
-    sample_index = start_seed
-    best_intervention_balance_slot = 0
-    while True:
-        for query_type in TASK_FAMILY_QUERY_TYPES:
-            attempts = 0
-            while True:
-                row, world, seed = _training_row(
-                    resolved_grammar,
-                    sample_index,
-                    query_type,
-                    best_intervention_balance_slot=(
-                        best_intervention_balance_slot
-                        if query_type == "best_intervention"
+    def __init__(
+        self,
+        *,
+        start_seed: int = 0,
+        grammar: WorldGrammar | None = None,
+        counterfactual_endpoint_time_limit_seconds: float = (
+            COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS
+        ),
+    ) -> None:
+        if type(start_seed) is not int or start_seed < 0:
+            raise ValueError("start_seed must be a nonnegative integer")
+        if counterfactual_endpoint_time_limit_seconds <= 0:
+            raise ValueError("counterfactual endpoint time limit must be positive")
+        self.grammar = grammar or WorldGrammar()
+        self.counterfactual_endpoint_time_limit_seconds = counterfactual_endpoint_time_limit_seconds
+        self.next_sample_index = start_seed
+        self.next_family_offset = 0
+        self.best_intervention_balance_slot = 0
+        self.accepted_rows = 0
+        self.last_attempts: list[dict[str, Any]] = []
+
+    def __iter__(self) -> BalancedTrainingRowStream:
+        return self
+
+    def state_dict(self) -> dict[str, int]:
+        return {
+            "version": 1,
+            "next_sample_index": self.next_sample_index,
+            "next_family_offset": self.next_family_offset,
+            "best_intervention_balance_slot": self.best_intervention_balance_slot,
+            "accepted_rows": self.accepted_rows,
+        }
+
+    def load_state_dict(self, state: Mapping[str, Any]) -> None:
+        fields = set(self.state_dict())
+        if not isinstance(state, Mapping) or set(state) != fields:
+            raise ValueError("Unexpected balanced stream cursor fields")
+        if any(type(state[key]) is not int for key in fields):
+            raise ValueError("Balanced stream cursor fields must be integers")
+        if state["version"] != 1 or any(state[key] < 0 for key in fields):
+            raise ValueError("Unsupported or negative balanced stream cursor")
+        count = state["accepted_rows"]
+        cycles, phase = divmod(count, len(TASK_FAMILY_QUERY_TYPES))
+        best_phase = TASK_FAMILY_QUERY_TYPES.index("best_intervention")
+        if (
+            state["next_family_offset"] != phase
+            or state["best_intervention_balance_slot"] != cycles + int(phase > best_phase)
+            or state["next_sample_index"] < count
+        ):
+            raise ValueError("Balanced stream cursor disagrees with its family/balance phase")
+        self.next_sample_index = state["next_sample_index"]
+        self.next_family_offset = phase
+        self.best_intervention_balance_slot = state["best_intervention_balance_slot"]
+        self.accepted_rows = count
+        self.last_attempts = []
+
+    def __next__(self) -> dict[str, Any]:
+        self.last_attempts = []
+        query_type = TASK_FAMILY_QUERY_TYPES[self.next_family_offset]
+        attempts = 0
+        while True:
+            candidate_index = self.next_sample_index
+            row, world, seed = _training_row(
+                self.grammar,
+                candidate_index,
+                query_type,
+                best_intervention_balance_slot=(
+                    self.best_intervention_balance_slot
+                    if query_type == "best_intervention"
+                    else None
+                ),
+            )
+            self.next_sample_index += 1
+            record = {
+                "seed_id": seed["seed_id"],
+                "query_type": query_type,
+                "sample_index": candidate_index,
+            }
+            if query_type != _COUNTERFACTUAL_QUERY_TYPE:
+                self.last_attempts.append({**record, "status": "accepted"})
+                break
+            attempts += 1
+            try:
+                truth = compute_counterfactual_truth_isolated(
+                    world,
+                    seed,
+                    endpoint_time_limit_seconds=(self.counterfactual_endpoint_time_limit_seconds),
+                    diagnostic_dir=(
+                        Path(diagnostic_dir)
+                        if (diagnostic_dir := os.environ.get("CPT_WORLD_RESOURCE_DIAGNOSTIC_DIR"))
                         else None
                     ),
                 )
-                sample_index += 1
-                if query_type != _COUNTERFACTUAL_QUERY_TYPE:
-                    break
-                attempts += 1
-                try:
-                    truth = compute_counterfactual_truth_isolated(
-                        world,
-                        seed,
-                        endpoint_time_limit_seconds=(counterfactual_endpoint_time_limit_seconds),
-                        diagnostic_dir=(
-                            Path(diagnostic_dir)
-                            if (
-                                diagnostic_dir := os.environ.get(
-                                    "CPT_WORLD_RESOURCE_DIAGNOSTIC_DIR"
-                                )
-                            )
-                            else None
-                        ),
-                    )
-                except CounterfactualResourceLimitError as error:
+            except (CounterfactualResourceLimitError, RuntimeError) as error:
+                self.last_attempts.append(
+                    {
+                        **record,
+                        "status": "rejected",
+                        "error_type": type(error).__name__,
+                        "error": str(error),
+                    }
+                )
+                if isinstance(error, CounterfactualResourceLimitError):
                     print(
                         "CPT_WORLD_COUNTERFACTUAL_SKIP="
                         + json.dumps(
@@ -311,26 +368,40 @@ def _iter_random_balanced_training_rows(
                         ),
                         flush=True,
                     )
-                    if attempts >= _MAX_COUNTERFACTUAL_RESAMPLES:
-                        raise RuntimeError(
-                            "could not sample a counterfactual task with certified bounded truth"
-                        ) from error
-                    continue
-                except RuntimeError as error:
-                    if attempts >= _MAX_COUNTERFACTUAL_RESAMPLES:
-                        raise RuntimeError(
-                            "could not sample a counterfactual task with certified bounded truth"
-                        ) from error
-                    continue
-                row["terminal_truth_json"] = json.dumps(
-                    truth,
-                    ensure_ascii=False,
-                    separators=(",", ":"),
-                )
-                break
-            if query_type == "best_intervention":
-                best_intervention_balance_slot += 1
-            yield row
+                if attempts >= _MAX_COUNTERFACTUAL_RESAMPLES:
+                    raise RuntimeError(
+                        "could not sample a counterfactual task with certified bounded truth"
+                    ) from error
+                continue
+            row["terminal_truth_json"] = json.dumps(
+                truth,
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+            self.last_attempts.append({**record, "status": "accepted"})
+            break
+        if query_type == "best_intervention":
+            self.best_intervention_balance_slot += 1
+        self.accepted_rows += 1
+        self.next_family_offset = self.accepted_rows % len(TASK_FAMILY_QUERY_TYPES)
+        return row
+
+
+def _iter_random_balanced_training_rows(
+    *,
+    start_seed: int = 0,
+    grammar: WorldGrammar | None = None,
+    counterfactual_endpoint_time_limit_seconds: float = (
+        COUNTERFACTUAL_ENDPOINT_TIME_LIMIT_SECONDS
+    ),
+) -> Iterator[dict[str, Any]]:
+    """Yield the same infinite task stream through its synchronous state owner."""
+
+    yield from BalancedTrainingRowStream(
+        start_seed=start_seed,
+        grammar=grammar,
+        counterfactual_endpoint_time_limit_seconds=(counterfactual_endpoint_time_limit_seconds),
+    )
 
 
 def iter_random_balanced_training_rows(

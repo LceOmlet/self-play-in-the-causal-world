@@ -1,0 +1,250 @@
+WARNING:2026-09-08 16:36:48,694:Platform 'nvidia' (PlatformCUDA) is registered but not available. This may be due to this ray actor being a CPU-only actor.
+/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/workers/engine/__init__.py:32: UserWarning: torchtitan engine is not available: ModuleNotFoundError("No module named 'torchtitan'")
+  warnings.warn(f"torchtitan engine is not available: {e!r}", stacklevel=1)
+/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/workers/engine/__init__.py:41: UserWarning: veomni engine is not available: ModuleNotFoundError("No module named 'veomni'")
+  warnings.warn(f"veomni engine is not available: {e!r}", stacklevel=1)
+/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/workers/engine/__init__.py:50: UserWarning: automodel engine is not available: ModuleNotFoundError("No module named 'nemo_automodel'")
+  warnings.warn(f"automodel engine is not available: {e!r}", stacklevel=1)
+/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/workers/engine/__init__.py:60: UserWarning: mindspeed engine is not available: ModuleNotFoundError("No module named 'megatron'")
+  warnings.warn(f"mindspeed engine is not available: {e!r}", stacklevel=1)
+/home/chen/vendor/dapo-official-20260906/verl-progress-candidate-v2/verl/workers/engine/__init__.py:69: UserWarning: megatron engine is not available: ModuleNotFoundError("No module named 'megatron'")
+  warnings.warn(f"megatron engine is not available: {e!r}", stacklevel=1)
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_1
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_2
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_3
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_4
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_5
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_6
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_7
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_8
+'Final validation metrics: None'
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_1
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_2
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_3
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_4
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_5
+'Final validation metrics: None'
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+Checkpoint tracker file does not exist: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_continuation/checkpoints/latest_checkpointed_iteration.txt
+Load from checkpoint folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_5
+Setting global step to 5
+Resuming from /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_prefix/checkpoints/global_step_5
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_continuation/checkpoints/global_step_6
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_continuation/checkpoints/global_step_7
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/filtered_continuation/checkpoints/global_step_8
+'Final validation metrics: None'
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+Checkpoint tracker file does not exist: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/completed_target/checkpoints/latest_checkpointed_iteration.txt
+Load from checkpoint folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_8
+Setting global step to 8
+Resuming from /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/continuous_filtering/checkpoints/global_step_8
+Target already reached: 8 completed updates
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=2. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=3. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=4. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=5. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=6. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=7. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=8. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=9. Keep generating...
+num_prompt_in_batch=0 < prompt_bsz=1
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+{
+  "type": "function",
+  "function": {
+    "name": "act",
+    "description": "Execute one CPT-World experiment or terminal answer.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "object",
+          "description": "The exact command JSON object required by the task protocol."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  }
+}
+Checkpoint tracker file does not exist: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/cross_old_500_boundary/checkpoints/latest_checkpointed_iteration.txt
+Load from checkpoint folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/explicit-cursor-fixture/global_step_249
+Setting global step to 249
+Resuming from /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/explicit-cursor-fixture/global_step_249
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/cross_old_500_boundary/checkpoints/global_step_250
+num_prompt_in_batch=0 < prompt_bsz=1
+num_gen_batches=1. Keep generating...
+local_global_step_folder: /home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02/cross_old_500_boundary/checkpoints/global_step_251
+'Final validation metrics: None'
+{"passed": true, "cases": 6, "output": "/home/chen/runs/continuous-training-restore-20260908/official-stream-probe-02"}

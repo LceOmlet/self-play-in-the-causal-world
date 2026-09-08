@@ -13,6 +13,11 @@ data:
   max_response_length: 30720
   shuffle: false
   seed: 42
+  # The descriptor supplies new tasks on demand. Static validation files keep
+  # the original official RLHFDataset path through the same extension class.
+  custom_cls:
+    path: ${oc.env:CPT_WORLD_PROJECT}/src/cpt_world/verl_streaming_dataset.py
+    name: CPTWorldStreamingDataset
   dataloader_num_workers: 0
   filter_overlong_prompts: false
   truncation: error
