@@ -24,6 +24,7 @@ from __future__ import annotations
 import time
 from collections.abc import Mapping
 from dataclasses import dataclass
+from fractions import Fraction
 from itertools import combinations, pairwise, product
 from typing import Any
 
@@ -1182,6 +1183,29 @@ def _two_mediator_joint_bounds(
                         upper_cost[states] = min(
                             left_probability, right_probability
                         )
+                        left_context = tuple(
+                            baseline_value if parent == treatment
+                            else left_first if parent == first
+                            else left_second if parent == second
+                            else shared_values[parent]
+                            for parent in world.parents[outcome]
+                        )
+                        right_context = tuple(
+                            treatment_value if parent == treatment
+                            else right_first if parent == first
+                            else right_second if parent == second
+                            else shared_values[parent]
+                            for parent in world.parents[outcome]
+                        )
+                        if left_context == right_context:
+                            intersection = outcome_event_probability(
+                                baseline_value,
+                                left_first,
+                                left_second,
+                                shared_values,
+                                tuple(set(left_event) & set(right_event)),
+                            )
+                            lower_cost[states] = upper_cost[states] = intersection
         terminal_costs.append((shared_values, probability, lower_cost, upper_cost))
 
     total_started = time.perf_counter()
@@ -2285,6 +2309,63 @@ def _coarsen_terminal_event_outcome(
     return quotient, quotient_events
 
 
+def _terminal_event_packing_is_attainable(
+    world: WorldSpec,
+    treatment: int,
+    outcome: int,
+    outcome_events: tuple[tuple[int, ...], tuple[int, ...]],
+    endpoint: str,
+) -> bool:
+    """Certify one common terminal response by disjoint event packing.
+
+    Conditions are evaluated as exact rationals of the supplied CPT values;
+    no positive acceptance tolerance can turn an infeasible packing feasible.
+    Each shared-parent assignment owns disjoint response contexts. Their
+    constructions can be joined inside U_outcome, independently of all other
+    node disturbances. Same-context costs must retain the event intersection.
+    """
+    left, right = map(frozenset, outcome_events)
+    same = left == right
+    if not ((endpoint == "lower" and same) or
+            (endpoint == "upper" and left.isdisjoint(right))):
+        return False
+    affected = _descendants(world, treatment)
+    groups: dict[tuple[int, ...], list[tuple[Fraction, Fraction]]] = {}
+    for context, row in zip(
+        product(*(range(world.domains[parent]) for parent in world.parents[outcome])),
+        world.cpt[outcome],
+        strict=True,
+    ):
+        shared = tuple(
+            state for parent, state in zip(world.parents[outcome], context, strict=True)
+            if parent not in affected
+        )
+        a = sum((Fraction(row[state]) for state in left), Fraction())
+        b = sum((Fraction(row[state]) for state in right), Fraction())
+        if not (0 <= a <= 1 and 0 <= b <= 1):
+            return False
+        if not same and a + b > 1:
+            return False
+        groups.setdefault(shared, []).append((a, b))
+    for probabilities in groups.values():
+        total_a = sum((a for a, _ in probabilities), Fraction())
+        total_b = sum((b for _, b in probabilities), Fraction())
+        if same:
+            # Pack the events, or pack their complements, on one U coordinate.
+            if total_a <= 1 or len(probabilities) - total_a <= 1:
+                continue
+        elif (
+            total_a <= 1 and all(a + b >= total_a for a, b in probabilities)
+        ) or (
+            total_b <= 1 and all(a + b >= total_b for a, b in probabilities)
+        ):
+            # If the A_i are disjoint, B_i contains all A_j except A_i.
+            # The remaining B_i mass is filled outside the union of the A_i.
+            continue
+        return False
+    return bool(groups)
+
+
 def _terminal_event_endpoint_is_jointly_attainable(
     world: WorldSpec,
     treatment: int,
@@ -2316,9 +2397,13 @@ def _terminal_event_endpoint_is_jointly_attainable(
     ):
         return True
     left_event, right_event = map(frozenset, outcome_events)
-    if endpoint == "lower":
-        return left_event.isdisjoint(right_event)
-    return left_event == right_event
+    if endpoint == "lower" and left_event.isdisjoint(right_event):
+        return True
+    if endpoint == "upper" and left_event == right_event:
+        return True
+    return _terminal_event_packing_is_attainable(
+        world, treatment, outcome, outcome_events, endpoint
+    )
 
 
 def _terminal_lower_is_constant_zero(
@@ -3274,6 +3359,11 @@ class _SparseResponseModel:
             right_row = self.world.cpt[self.outcome][
                 _row_index(self.world, self.outcome, tuple(right_context))
             ]
+            if left_context == right_context:
+                return sum(
+                    float(left_row[state])
+                    for state in set(outcome_events[0]) & set(outcome_events[1])
+                )
             left_probability = sum(float(left_row[state]) for state in outcome_events[0])
             right_probability = sum(
                 float(right_row[state]) for state in outcome_events[1]

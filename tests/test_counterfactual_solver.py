@@ -4,6 +4,8 @@ import unittest
 from fractions import Fraction
 from unittest.mock import MagicMock, patch
 
+from pyscipopt import SCIP_RESULT, Model
+
 from cpt_world import (
     WorldSpec,
     reference_counterfactual_transition_bounds,
@@ -27,7 +29,6 @@ from cpt_world.query_truth import (
     interventional_frechet_transition_outer_bounds,
     interventional_probability,
 )
-from pyscipopt import SCIP_RESULT, Model
 
 
 def _uniform_multivalued_chain() -> WorldSpec:
@@ -843,8 +844,52 @@ class CounterfactualSolverOptimizationTests(unittest.TestCase):
         self.assertAlmostEqual(actual.upper, float(expected[1]), places=8)
         self.assertEqual(actual.backend, "terminal_event_endpoint_decomposition")
 
-    def test_uncertified_terminal_endpoint_is_rejected(self) -> None:
+    def test_previously_uncertified_terminal_packing_matches_exact_bound(self) -> None:
         world = _non_direct_terminal_world()
+        owner = _SparseResponseModel(
+            world,
+            0,
+            2,
+            baseline_value=0,
+            treatment_value=1,
+            outcome_state=None,
+            outcome_events=((0,), (1,)),
+            sense="maximize",
+            target_outer_bounds=(0.0, 1.0),
+            terminal_event_endpoint="upper",
+        )
+        # T00=t in [1/10,3/10]. Consistency fixes both terminal diagonals
+        # to zero, so the joint objective is 47/200 - (9/20)t.
+        actual, _ = owner.optimize(time_limit_seconds=5.0)
+        self.assertAlmostEqual(actual, float(Fraction(19, 100)), places=8)
+        reference = reference_individual_counterfactual_probability_bounds(
+            world,
+            0,
+            2,
+            factual_value=0,
+            counterfactual_value=1,
+            factual_outcome_state=0,
+            target_outcome_state=1,
+        )
+        self.assertEqual(reference[1], Fraction(19, 21))
+
+    def test_uncertified_terminal_endpoint_is_rejected(self) -> None:
+        # Three contexts form a cycle: each cross-pair upper cannot be
+        # attained by the same fair three-state complete response.
+        world = WorldSpec(
+            family="test_dag",
+            topology="unattainable-fair-terminal-triangle",
+            variables=("X", "M", "Y"),
+            domains=(2, 3, 3),
+            state_names=(("0", "1"), ("0", "1", "2"), ("0", "1", "2")),
+            edges=((0, 1), (1, 2)),
+            parents={0: (), 1: (0,), 2: (1,)},
+            cpt={
+                0: ((Fraction(1, 2), Fraction(1, 2)),),
+                1: ((Fraction(1, 3),) * 3,) * 2,
+                2: ((Fraction(1, 3),) * 3,) * 3,
+            },
+        )
         with self.assertRaisesRegex(ValueError, "no joint response certificate"):
             _SparseResponseModel(
                 world,
