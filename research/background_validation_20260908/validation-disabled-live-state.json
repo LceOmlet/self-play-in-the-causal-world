@@ -1,0 +1,47 @@
+{
+  "time": 1788845204.943177,
+  "trainer": {
+    "pid": 605645,
+    "create_time": 1788844173.03
+  },
+  "runner_pid": 606536,
+  "trainer_alive": true,
+  "native51": {
+    "version": 1,
+    "completed_updates": 51,
+    "generated_batches": 59,
+    "data_epoch": 0,
+    "batches_per_epoch": 500
+  },
+  "same_original_deadline": 1788880085.4616497,
+  "cancelled_extra_validation": {
+    "time": 1788844986.3498733,
+    "reason": "User cancelled all extra validation; inspect training curves only.",
+    "diagnostic": {
+      "pid": 612272,
+      "create_time": 1788844917.76,
+      "command": [
+        "/home/chen/.venvs/dolens-dapo-official/bin/python",
+        "/home/chen/runs/heldout-learning-20260908/borrow_vllm.py",
+        "--run",
+        "/home/chen/runs/heldout-learning-20260908/resume-no-val-01",
+        "--dataset",
+        "/home/chen/runs/training-submission-20260907/data/validation.parquet",
+        "--index",
+        "20",
+        "--output",
+        "/home/chen/runs/heldout-learning-20260908/borrowed-diagnostic-20-v2",
+        "--seconds",
+        "600"
+      ]
+    },
+    "diagnostic_stopped": true,
+    "trainer_identity": {
+      "pid": 605645,
+      "create_time": 1788844173.03
+    },
+    "trainer_alive": true,
+    "native_step": 51
+  },
+  "remaining_diagnostic_processes": []
+}

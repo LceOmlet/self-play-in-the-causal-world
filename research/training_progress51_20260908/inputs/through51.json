@@ -1,0 +1,1008 @@
+{
+  "snapshot_time": 1788845071.1757665,
+  "run": "/home/chen/runs/heldout-learning-20260908/resume-no-val-01",
+  "same_process_live": true,
+  "process": {
+    "pid": 605645,
+    "create_time": 1788844173.03
+  },
+  "source_prefixes": {
+    "environment/environment-607126.jsonl": {
+      "bytes": 6014,
+      "sha256": "c3df205ba970eaaeabc4c6b3fff03efdc8101408adde529d66a72261c6bb847e"
+    },
+    "environment/environment-608309.jsonl": {
+      "bytes": 102937,
+      "sha256": "a3ff3458ca1c8652ff6074f8c64a6c15f0e70216d6286e0c1f61a1f81a4efb4e"
+    },
+    "process.json": {
+      "bytes": 52,
+      "sha256": "0d7ccc490c12224e62582e81f72bc4b7fbe7d11074bc90f86706fcc525bb5602"
+    },
+    "rollouts/51.jsonl": {
+      "bytes": 133358,
+      "sha256": "96824021790d8861a532e398d8069f71ee43d92b1b22abeb1fca28de22639d54"
+    },
+    "train.log": {
+      "bytes": 162294,
+      "sha256": "eab9118a1628ce2bd92406caf91f1eff88fd4ff0d594026368b9bc07b467b8ee"
+    },
+    "task-runner-stdout.log": {
+      "bytes": 72247,
+      "sha256": "f5eee66da0bdf79b1c6237023b49b7bf3e9812cd6ac5c75b326f4ffa9851148a"
+    },
+    "task-runner-source.json": {
+      "bytes": 424,
+      "sha256": "72d28b0b2782e1158689fe9b04eb224e5ff44d2e2b9fc0651876b8d68142a479"
+    }
+  },
+  "event_counts": {
+    "raw_score": 5,
+    "act": 130
+  },
+  "trajectories": [
+    {
+      "trajectory_id": "bfd739cee3594a5785c7ede2dca89841",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "sample_index": 2000327013370,
+      "query_type": "best_intervention",
+      "actions": 11,
+      "protocol_errors": {
+        "intervention target is not manipulable": 1
+      },
+      "valid_experiments": {
+        "observe": 5,
+        "intervene": 4
+      },
+      "observations_used": 1536,
+      "measured_scalar_counts": {
+        "ESM": 640,
+        "NNI": 768,
+        "LJO": 128
+      },
+      "intervention_calls_by_target": {
+        "LJO": 4
+      },
+      "completed": true,
+      "quality": 0.5295774823262224,
+      "answer": {
+        "type": "answer",
+        "value": "state_1"
+      },
+      "task_metrics": {
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "optimal_action": false
+      },
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 1
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 1
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.08196959523418541,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": false,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "trajectory_id": "8224f33bf6424778b89aaa6f9a00cd65",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "sample_index": 2000327013370,
+      "query_type": "best_intervention",
+      "actions": 27,
+      "protocol_errors": {
+        "intervention target is not manipulable": 1
+      },
+      "valid_experiments": {
+        "observe": 4,
+        "intervene": 21
+      },
+      "observations_used": 1152,
+      "measured_scalar_counts": {
+        "ESM": 560,
+        "NNI": 560,
+        "LJO": 16,
+        "HQT": 16
+      },
+      "intervention_calls_by_target": {
+        "LJO": 4,
+        "HQT": 2,
+        "QOW": 4,
+        "QPQ": 5,
+        "JTE": 4,
+        "HJG": 2
+      },
+      "completed": true,
+      "quality": 0.5295774823262224,
+      "answer": {
+        "type": "answer",
+        "value": "state_1"
+      },
+      "task_metrics": {
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "optimal_action": false
+      },
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 1
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 1
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.08196959523418541,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": false,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "trajectory_id": "1081796a91644eb69b9164072bc66f7a",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "sample_index": 2000327013370,
+      "query_type": "best_intervention",
+      "actions": 7,
+      "protocol_errors": {
+        "intervention target is not manipulable": 1,
+        "batch_size and measure exceed the remaining observation budget": 1
+      },
+      "valid_experiments": {
+        "observe": 4
+      },
+      "observations_used": 12200,
+      "measured_scalar_counts": {
+        "ESM": 5600,
+        "NNI": 5600,
+        "JTE": 1000
+      },
+      "intervention_calls_by_target": {},
+      "completed": true,
+      "quality": 0.5295774823262224,
+      "answer": {
+        "type": "answer",
+        "value": "state_1"
+      },
+      "task_metrics": {
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "optimal_action": false
+      },
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 1
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 1
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.08196959523418541,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": false,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "trajectory_id": "c0d4a9720adf4ce8bd0f94be1ed41c6f",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "sample_index": 2000327013370,
+      "query_type": "best_intervention",
+      "actions": 8,
+      "protocol_errors": {
+        "the intervention target must not appear in measure": 1
+      },
+      "valid_experiments": {
+        "observe": 2,
+        "intervene": 4
+      },
+      "observations_used": 832,
+      "measured_scalar_counts": {
+        "ESM": 112,
+        "NNI": 112,
+        "JTE": 112,
+        "LJO": 80,
+        "HQT": 96,
+        "HJG": 112,
+        "QOW": 96,
+        "QPQ": 112
+      },
+      "intervention_calls_by_target": {
+        "LJO": 2,
+        "HQT": 1,
+        "QOW": 1
+      },
+      "completed": true,
+      "quality": 1.0,
+      "answer": {
+        "type": "answer",
+        "value": "state_3"
+      },
+      "task_metrics": {
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "optimal_action": true
+      },
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 3
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 3
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.017555963162398325,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": true,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "trajectory_id": "53fa8d4f35e940aab37b110afea60911",
+      "tape_key": "trl-grpo:SAMPLED-2000428-ate-target_query-a0",
+      "sample_index": 2000428,
+      "query_type": "ate",
+      "actions": 37,
+      "protocol_errors": {
+        "intervention target is not manipulable": 1,
+        "response must be a JSON object": 1
+      },
+      "valid_experiments": {
+        "observe": 5,
+        "intervene": 29
+      },
+      "observations_used": 4992,
+      "measured_scalar_counts": {
+        "UHJ": 384,
+        "IVQ": 4096,
+        "WKQ": 128,
+        "FNL": 128,
+        "IRL": 128,
+        "MFH": 128
+      },
+      "intervention_calls_by_target": {
+        "WKQ": 7,
+        "FNL": 2,
+        "IRL": 1,
+        "MFH": 3,
+        "WNM": 2,
+        "DUT": 2,
+        "VTI": 3,
+        "OPH": 2,
+        "RLJ": 4,
+        "JPT": 3
+      },
+      "completed": true,
+      "quality": 0.3370590482080822,
+      "answer": {
+        "type": "answer",
+        "effect": {
+          "state_0": -0.0158,
+          "state_1": 0.0963,
+          "state_2": -0.1078,
+          "state_3": 0,
+          "state_4": 0.0273
+        }
+      },
+      "task_metrics": {
+        "total_variation_error": 0.049444792247805285
+      },
+      "terminal_score": {
+        "kind": "target_query",
+        "truth": [
+          -0.019532875126259036,
+          0.08764620616455249,
+          -0.08721844572228277,
+          0.028863237970088055,
+          -0.009758123286098729
+        ],
+        "prediction": [
+          -0.0158,
+          0.0963,
+          -0.1078,
+          0.0,
+          0.0273
+        ],
+        "component_errors": [
+          0.0037328751262590346,
+          0.00865379383544751,
+          0.02058155427771724,
+          0.028863237970088055,
+          0.037058123286098726
+        ],
+        "l1_error": 0.09888958449561057,
+        "total_variation_error": 0.049444792247805285,
+        "squared_error": 0.0005437627777093838,
+        "observational_shortcut": [
+          -0.01773195814727282,
+          0.08824337265789725,
+          -0.09012303300962364,
+          0.028725697932035034,
+          -0.009114079433035821
+        ],
+        "observational_shortcut_error": 0.0030421273253938876,
+        "reward_scalarization": "terminal-quality-v10"
+      }
+    },
+    {
+      "trajectory_id": "7ab1258ae6c145b1922c408f8aefdd42",
+      "tape_key": "trl-grpo:SAMPLED-2000428-ate-target_query-a0",
+      "sample_index": 2000428,
+      "query_type": "ate",
+      "actions": 28,
+      "protocol_errors": {
+        "intervention target is not manipulable": 1,
+        "the intervention target must not appear in measure": 2
+      },
+      "valid_experiments": {
+        "observe": 2,
+        "intervene": 23
+      },
+      "observations_used": 4224,
+      "measured_scalar_counts": {
+        "IVQ": 2112,
+        "UHJ": 2112
+      },
+      "intervention_calls_by_target": {
+        "WKQ": 5,
+        "IRL": 5,
+        "FNL": 2,
+        "DUT": 2,
+        "VTI": 3,
+        "OPH": 1,
+        "RLJ": 1,
+        "JPT": 1,
+        "MFH": 3
+      },
+      "completed": false,
+      "quality": null,
+      "answer": null,
+      "task_metrics": null,
+      "terminal_score": null
+    },
+    {
+      "trajectory_id": "4afb928edce64a049b3c33bd6cb048ab",
+      "tape_key": "trl-grpo:SAMPLED-2000428-ate-target_query-a0",
+      "sample_index": 2000428,
+      "query_type": "ate",
+      "actions": 6,
+      "protocol_errors": {
+        "intervention target is not manipulable": 1,
+        "effect components must sum to zero": 1,
+        "effect.state_0 must be a real number": 1
+      },
+      "valid_experiments": {
+        "observe": 1,
+        "intervene": 2
+      },
+      "observations_used": 40960,
+      "measured_scalar_counts": {
+        "IVQ": 20480,
+        "UHJ": 20480
+      },
+      "intervention_calls_by_target": {
+        "FNL": 1,
+        "IRL": 1
+      },
+      "completed": false,
+      "quality": null,
+      "answer": null,
+      "task_metrics": null,
+      "terminal_score": null
+    },
+    {
+      "trajectory_id": "bdb56c24156d41d29d27d33a41ce990e",
+      "tape_key": "trl-grpo:SAMPLED-2000428-ate-target_query-a0",
+      "sample_index": 2000428,
+      "query_type": "ate",
+      "actions": 6,
+      "protocol_errors": {
+        "batch_size and measure exceed the remaining observation budget": 1
+      },
+      "valid_experiments": {
+        "observe": 3,
+        "intervene": 2
+      },
+      "observations_used": 6300,
+      "measured_scalar_counts": {
+        "IVQ": 2900,
+        "UHJ": 2900,
+        "FNL": 500
+      },
+      "intervention_calls_by_target": {
+        "FNL": 2
+      },
+      "completed": false,
+      "quality": null,
+      "answer": null,
+      "task_metrics": null,
+      "terminal_score": null
+    }
+  ],
+  "raw_score_events": [
+    {
+      "event": "raw_score",
+      "data_source": "cpt_world/best_intervention",
+      "query_type": "best_intervention",
+      "sample_index": 2000327013370,
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "raw_reward": 0.5295774823262224,
+      "completed": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 1
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 1
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.08196959523418541,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": false,
+        "reward_scalarization": "terminal-quality-v10"
+      },
+      "observations_used": 12200,
+      "queries_used": 4,
+      "score": 0.5295774823262224,
+      "acc": 0.5295774823262224
+    },
+    {
+      "event": "raw_score",
+      "data_source": "cpt_world/best_intervention",
+      "query_type": "best_intervention",
+      "sample_index": 2000327013370,
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "raw_reward": 0.5295774823262224,
+      "completed": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 1
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 1
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.08196959523418541,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": false,
+        "reward_scalarization": "terminal-quality-v10"
+      },
+      "observations_used": 1536,
+      "queries_used": 9,
+      "score": 0.5295774823262224,
+      "acc": 0.5295774823262224
+    },
+    {
+      "event": "raw_score",
+      "data_source": "cpt_world/best_intervention",
+      "query_type": "best_intervention",
+      "sample_index": 2000327013370,
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "raw_reward": 1.0,
+      "completed": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 3
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 3
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.017555963162398325,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": true,
+        "reward_scalarization": "terminal-quality-v10"
+      },
+      "observations_used": 832,
+      "queries_used": 6,
+      "score": 1.0,
+      "acc": 1.0
+    },
+    {
+      "event": "raw_score",
+      "data_source": "cpt_world/best_intervention",
+      "query_type": "best_intervention",
+      "sample_index": 2000327013370,
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "raw_reward": 0.5295774823262224,
+      "completed": 1.0,
+      "terminal_score": {
+        "kind": "decision",
+        "optimal": {
+          "target": "V2",
+          "value": 3
+        },
+        "chosen": {
+          "target": "V2",
+          "value": 1
+        },
+        "prediction": {
+          "target": "V2",
+          "value": 1
+        },
+        "optimal_probability": 0.017555963162398325,
+        "chosen_probability": 0.08196959523418541,
+        "candidate_probabilities": [
+          0.018570414925887967,
+          0.08196959523418541,
+          0.38411662983978073,
+          0.017555963162398325
+        ],
+        "minimum_probability": 0.017555963162398325,
+        "maximum_probability": 0.38411662983978073,
+        "probability_span": 0.3665606666773824,
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "observational_shortcut": [
+          0.03764811640267587,
+          0.024359736791080187,
+          0.33959267412619704,
+          0.030648922538533605
+        ],
+        "observational_choice": 1,
+        "observational_shortcut_error": 0.06441363207178709,
+        "observational_shortcut_normalized_regret": 0.1757243423186996,
+        "optimal_action": false,
+        "reward_scalarization": "terminal-quality-v10"
+      },
+      "observations_used": 1152,
+      "queries_used": 25,
+      "score": 0.5295774823262224,
+      "acc": 0.5295774823262224
+    },
+    {
+      "event": "raw_score",
+      "data_source": "cpt_world/ate",
+      "query_type": "ate",
+      "sample_index": 2000428,
+      "tape_key": "trl-grpo:SAMPLED-2000428-ate-target_query-a0",
+      "raw_reward": 0.3370590482080822,
+      "completed": 1.0,
+      "terminal_score": {
+        "kind": "target_query",
+        "truth": [
+          -0.019532875126259036,
+          0.08764620616455249,
+          -0.08721844572228277,
+          0.028863237970088055,
+          -0.009758123286098729
+        ],
+        "prediction": [
+          -0.0158,
+          0.0963,
+          -0.1078,
+          0.0,
+          0.0273
+        ],
+        "component_errors": [
+          0.0037328751262590346,
+          0.00865379383544751,
+          0.02058155427771724,
+          0.028863237970088055,
+          0.037058123286098726
+        ],
+        "l1_error": 0.09888958449561057,
+        "total_variation_error": 0.049444792247805285,
+        "squared_error": 0.0005437627777093838,
+        "observational_shortcut": [
+          -0.01773195814727282,
+          0.08824337265789725,
+          -0.09012303300962364,
+          0.028725697932035034,
+          -0.009114079433035821
+        ],
+        "observational_shortcut_error": 0.0030421273253938876,
+        "reward_scalarization": "terminal-quality-v10"
+      },
+      "observations_used": 4992,
+      "queries_used": 34,
+      "score": 0.3370590482080822,
+      "acc": 0.3370590482080822
+    }
+  ],
+  "official_metrics": [
+    {
+      "step": 51,
+      "actor/entropy": 0.23655086755752563,
+      "perf/mfu/actor_infer": 0.0,
+      "rollout_corr/rollout_is_mean": 1.0001980066299438,
+      "rollout_corr/rollout_is_ratio_fraction_high": 0.0,
+      "rollout_corr/rollout_is_ratio_fraction_low": 0.0,
+      "rollout_corr/rollout_is_max": 1.67048180103302,
+      "rollout_corr/rollout_is_min": 0.5596176385879517,
+      "rollout_corr/rollout_is_std": 0.02971302717924118,
+      "rollout_corr/rollout_is_eff_sample_size": 0.9991182717602443,
+      "rollout_corr/rollout_is_seq_mean": 1.0001887083053589,
+      "rollout_corr/rollout_is_seq_std": 0.00014909538731444627,
+      "rollout_corr/rollout_is_seq_max": 1.0003644227981567,
+      "rollout_corr/rollout_is_seq_min": 1.0000346899032593,
+      "rollout_corr/rollout_is_seq_max_deviation": 0.0003644227981567383,
+      "rollout_corr/rollout_is_seq_fraction_high": 0.0,
+      "rollout_corr/rollout_is_seq_fraction_low": 0.0,
+      "rollout_corr/training_ppl": 1.2585127353668213,
+      "rollout_corr/training_log_ppl": 0.22957280278205872,
+      "rollout_corr/kl": 0.00023638654965907335,
+      "rollout_corr/k3_kl": 0.0004343134060036391,
+      "rollout_corr/rollout_ppl": 1.258209228515625,
+      "rollout_corr/rollout_log_ppl": 0.22933362424373627,
+      "rollout_corr/log_ppl_diff": 0.0002391822636127472,
+      "rollout_corr/log_ppl_abs_diff": 0.0002391822636127472,
+      "rollout_corr/log_ppl_diff_max": 0.0003556162118911743,
+      "rollout_corr/log_ppl_diff_min": 9.231269359588623e-05,
+      "rollout_corr/ppl_ratio": 1.0002392530441284,
+      "rollout_corr/chi2_token": 0.0012788772583007812,
+      "rollout_corr/chi2_seq": -0.9191880226135254,
+      "training/rollout_probs_diff_valid": 1.0,
+      "training/rollout_probs_diff_max": 0.30247771739959717,
+      "training/rollout_probs_diff_mean": 0.002993190661072731,
+      "training/rollout_probs_diff_std": 0.008514093235135078,
+      "training/rollout_actor_probs_pearson_corr": 0.9993191361427307,
+      "actor/pg_clipfrac": 0.0,
+      "actor/ppo_kl": 0.0,
+      "actor/pg_clipfrac_lower": 0.0,
+      "actor/pg_loss": -0.0615454763174057,
+      "actor/loss": -0.0615454763174057,
+      "actor/grad_norm": 0.16015625,
+      "actor/lr": 1e-06,
+      "actor/perf/max_memory_allocated_gb": 28.18281364440918,
+      "actor/perf/max_memory_reserved_gb": 29.904296875,
+      "actor/perf/cpu_memory_used_gb": 38.58711624145508,
+      "perf/mfu/actor": 0.0,
+      "critic/score/mean": 0.6471831202507019,
+      "critic/score/max": 1.0,
+      "critic/score/min": 0.5295774936676025,
+      "critic/rewards/mean": 0.6471831202507019,
+      "critic/rewards/max": 1.0,
+      "critic/rewards/min": 0.5295774936676025,
+      "critic/advantages/mean": 0.06158763915300369,
+      "critic/advantages/max": 1.4999936819076538,
+      "critic/advantages/min": -0.4999978840351105,
+      "critic/returns/mean": 0.06158763915300369,
+      "critic/returns/max": 1.4999936819076538,
+      "critic/returns/min": -0.4999978840351105,
+      "response_length/mean": 11311.0,
+      "response_length/max": 16179.0,
+      "response_length/min": 5989.0,
+      "response_length/clip_ratio": 0.0,
+      "response_length_non_aborted/mean": 11311.0,
+      "response_length_non_aborted/max": 16179.0,
+      "response_length_non_aborted/min": 5989.0,
+      "response_length_non_aborted/clip_ratio": 0.0,
+      "response/aborted_ratio": 0.0,
+      "prompt_length/mean": 1282.0,
+      "prompt_length/max": 1282.0,
+      "prompt_length/min": 1282.0,
+      "prompt_length/clip_ratio": 0.0,
+      "num_turns/min": 14.0,
+      "num_turns/max": 54.0,
+      "num_turns/mean": 26.5,
+      "timing_s/start_profile": 0.0001181609695777297,
+      "timing_s/agent_loop/num_preempted/min": -1.0,
+      "timing_s/agent_loop/num_preempted/max": -1.0,
+      "timing_s/agent_loop/num_preempted/mean": -1.0,
+      "timing_s/agent_loop/generate_sequences/min": 138.43710597907193,
+      "timing_s/agent_loop/generate_sequences/max": 353.05620922520757,
+      "timing_s/agent_loop/generate_sequences/mean": 255.6743172899005,
+      "timing_s/agent_loop/tool_calls/min": 0.06558476807549596,
+      "timing_s/agent_loop/tool_calls/max": 0.8787234198534861,
+      "timing_s/agent_loop/tool_calls/mean": 0.34833266472560354,
+      "timing_s/agent_loop/compute_score/min": 0.07185909803956747,
+      "timing_s/agent_loop/compute_score/max": 0.11943290091585368,
+      "timing_s/agent_loop/compute_score/mean": 0.08924760122317821,
+      "timing_s/agent_loop/slowest/generate_sequences": 353.05620922520757,
+      "timing_s/agent_loop/slowest/tool_calls": 0.21315107273403555,
+      "timing_s/agent_loop/slowest/compute_score": 0.09095078997779638,
+      "timing_s/agent_loop/slowest/num_preempted": -1.0,
+      "timing_s/agent_loop/slowest/prompt_length": 1282.0,
+      "timing_s/agent_loop/slowest/response_length": 16179.0,
+      "timing_s/gen": 354.719038503943,
+      "timing_s/reward": 0.0001564709236845374,
+      "timing_s/old_log_prob": 12.90604039398022,
+      "timing_s/adv": 0.0013546259142458439,
+      "timing_s/update_actor": 35.25955072802026,
+      "timing_s/save_checkpoint": 2.868813331006095,
+      "timing_s/update_weights": 6.7677337899804115,
+      "timing_s/dump_rollout_generations": 0.04857417906168848,
+      "timing_s/step": 415.63963107101154,
+      "timing_s/stop_profile": 8.87230271473527e-05,
+      "timing_per_token_ms/update_actor": 0.699983139998814,
+      "timing_per_token_ms/gen": 7.840134349393135,
+      "timing_per_token_ms/adv": 2.6892438542163185e-05,
+      "perf/total_num_tokens": 50372.0,
+      "perf/time_per_step": 415.63963107101154,
+      "perf/throughput": 121.1915232197721,
+      "train/num_gen_batches": 1.0,
+      "training/generated_batches_total": 59.0,
+      "training/data_epoch": 0.0
+    }
+  ],
+  "official_updates_logged": [
+    51
+  ],
+  "official_metric_sources": {
+    "51": [
+      "train.log",
+      "task-runner-stdout.log"
+    ]
+  },
+  "nonfinite_metrics": [],
+  "retained_rollouts": [
+    {
+      "step": 51,
+      "request_id": "1081796a91644eb69b9164072bc66f7a",
+      "event_join_method": "unique_full_command_sequence",
+      "raw_quality": 0.5295774823262224,
+      "official_overlong_reward": 0.0,
+      "shaped_reward_from_components": 0.5295774823262224,
+      "original_dump_score": 0.5295774823262224,
+      "completed": true,
+      "query_type": "best_intervention",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "task_metrics": {
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "optimal_action": false
+      }
+    },
+    {
+      "step": 51,
+      "request_id": "c0d4a9720adf4ce8bd0f94be1ed41c6f",
+      "event_join_method": "unique_full_command_sequence",
+      "raw_quality": 1.0,
+      "official_overlong_reward": 0.0,
+      "shaped_reward_from_components": 1.0,
+      "original_dump_score": 1.0,
+      "completed": true,
+      "query_type": "best_intervention",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "task_metrics": {
+        "regret": 0.0,
+        "normalized_regret": 0.0,
+        "optimal_action": true
+      }
+    },
+    {
+      "step": 51,
+      "request_id": "bfd739cee3594a5785c7ede2dca89841",
+      "event_join_method": "unique_full_command_sequence",
+      "raw_quality": 0.5295774823262224,
+      "official_overlong_reward": 0.0,
+      "shaped_reward_from_components": 0.5295774823262224,
+      "original_dump_score": 0.5295774823262224,
+      "completed": true,
+      "query_type": "best_intervention",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "task_metrics": {
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "optimal_action": false
+      }
+    },
+    {
+      "step": 51,
+      "request_id": "8224f33bf6424778b89aaa6f9a00cd65",
+      "event_join_method": "unique_full_command_sequence",
+      "raw_quality": 0.5295774823262224,
+      "official_overlong_reward": 0.0,
+      "shaped_reward_from_components": 0.5295774823262224,
+      "original_dump_score": 0.5295774823262224,
+      "completed": true,
+      "query_type": "best_intervention",
+      "tape_key": "trl-grpo:SAMPLED-2000327013370-best_intervention-decision-a0",
+      "task_metrics": {
+        "regret": 0.06441363207178709,
+        "normalized_regret": 0.1757243423186996,
+        "optimal_action": false
+      }
+    }
+  ],
+  "retained_groups": [
+    {
+      "step": 51,
+      "dumped_rows": 4,
+      "families": {
+        "best_intervention": 4
+      },
+      "raw_qualities": [
+        0.5295774823262224,
+        1.0,
+        0.5295774823262224,
+        0.5295774823262224
+      ],
+      "shaped_rewards": [
+        0.5295774823262224,
+        1.0,
+        0.5295774823262224,
+        0.5295774823262224
+      ],
+      "raw_group_varies": true
+    }
+  ],
+  "scope": "Read-only append-prefix snapshot. Update logs are execution evidence, not post-update capability measurements. Missing/in-flight records are not failed trajectories. Raw-score events lack request IDs and are not individually joined.",
+  "dump_score_semantics": "Pinned official writer overwrites shaped score with raw score metadata. Shaped rewards here are reconstructed from recorded raw_reward and overlong_reward, not from decoded-token length."
+}

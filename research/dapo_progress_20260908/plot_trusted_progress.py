@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--inputs", nargs="+", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--native-progress", nargs="*", type=Path, default=[])
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     style_path = Path(__file__).resolve().parents[1] / (
@@ -41,18 +42,30 @@ def main():
                 assert metric["step"] not in metrics
                 metrics[metric["step"]] = metric
         rows.extend(data["retained_rollouts"])
-    steps = sorted(metrics)
-    assert steps == list(range(1, max(steps) + 1))
+    native = {
+        record["completed_updates"]: record
+        for record in [json.loads(p.read_text(encoding="utf-8")) for p in args.native_progress]
+    }
     assert all(r["event_join_method"] != "unresolved" for r in rows)
     assert len({r["request_id"] for r in rows}) == len(rows)
     by_step = defaultdict(list)
     for row in rows:
         by_step[row["step"]].append(row)
-    assert set(by_step) == set(steps)
+    steps = sorted(by_step)
+    assert steps == list(range(1, max(steps) + 1))
+    missing_metrics = set(steps) - set(metrics)
+    assert set(metrics) <= set(steps) and missing_metrics <= set(native)
     generated = 0
     for step in steps:
         batch = by_step[step]
         assert len(batch) == 4 and len({r["query_type"] for r in batch}) == 1
+        if step in missing_metrics:
+            # A saved native update can precede validation and final logging.
+            # Preserve the reward/error samples; do not fabricate missing logs.
+            assert native[step]["version"] == 1
+            assert native[step]["generated_batches"] >= generated + 1
+            generated = native[step]["generated_batches"]
+            continue
         assert (
             abs(
                 np.mean([r["shaped_reward_from_components"] for r in batch])
@@ -68,7 +81,10 @@ def main():
         ax.set_title(title, pad=12)
         ax.set_xlim(0.5, max(steps) + 0.5)
         stride = max(5, 5 * ((max(steps) + 49) // 50))
-        ax.set_xticks(sorted({1, max(steps), *range(stride, max(steps), stride)}))
+        regular_ticks = [
+            s for s in range(stride, max(steps), stride) if max(steps) - s >= stride / 3
+        ]
+        ax.set_xticks(sorted({1, max(steps), *regular_ticks}))
         ax.set_xlabel("官方累计更新步数")
         ax.set_ylim(-0.03 * ymax, ymax)
         ax.grid(axis="y")
@@ -130,24 +146,24 @@ def main():
         )
     axes[0].plot(
         steps,
-        [metrics[s]["critic/score/mean"] for s in steps],
+        [metrics.get(s, {}).get("critic/score/mean", np.nan) for s in steps],
         "--",
         color="#566675",
         lw=1,
         alpha=0.8,
         label="训练奖励均值（含长度惩罚）",
     )
-    minimum_reward = min(0.0, min(metrics[s]["critic/score/mean"] for s in steps))
+    minimum_reward = min(0.0, min(m["critic/score/mean"] for m in metrics.values()))
     axes[0].set_ylim(minimum_reward - 0.04, 1.04)
     axes[0].set_ylabel("环境终止质量")
     axes[0].legend(ncol=3, frameon=False, fontsize=9, loc="upper left", bbox_to_anchor=(0, 1.39))
-    maximum = max(metrics[s]["timing_s/step"] / 60 for s in steps)
+    maximum = max(m["timing_s/step"] / 60 for m in metrics.values())
     axis(
         axes[1], "训练步耗时（验证另计）：题目、轨迹长度及补采样次数均会改变工作量", maximum * 1.13
     )
     axes[1].plot(
         steps,
-        [metrics[s]["timing_s/step"] / 60 for s in steps],
+        [metrics.get(s, {}).get("timing_s/step", np.nan) / 60 for s in steps],
         "-o",
         color="#284c6b",
         ms=4,
@@ -156,7 +172,7 @@ def main():
     )
     axes[1].plot(
         steps,
-        [metrics[s]["timing_s/gen"] / 60 for s in steps],
+        [metrics.get(s, {}).get("timing_s/gen", np.nan) / 60 for s in steps],
         "-o",
         color="#df9b42",
         ms=3,
@@ -167,7 +183,7 @@ def main():
     axes[1].legend(frameon=False, loc="upper right")
     validation_seconds = {
         s: metrics[s]["timing_s/testing"]
-        for s in steps
+        for s in metrics
         if metrics[s].get("timing_s/testing", 0) > 0
     }
     if validation_seconds:
@@ -181,9 +197,13 @@ def main():
             color=style.MUTED,
             fontsize=9,
         )
-    fig.text(
-        0.075, 0.06, "虚线：第 6 步起启用编译；第 16 步起使用已验收的进度补丁。", color=style.MUTED
-    )
+    footnote = "虚线：第 6 步起启用编译；第 16 步起使用已验收的进度补丁。"
+    if missing_metrics:
+        footnote = (
+            "第 " + "、".join(map(str, sorted(missing_metrics)))
+            + " 步原生更新已保存；取消验证时尚未打印最终日志，相关曲线留空。"
+        )
+    fig.text(0.075, 0.06, footnote, color=style.MUTED)
     fig.text(
         0.075,
         0.027,
@@ -253,6 +273,8 @@ def main():
         "script_sha256": sha(Path(__file__)),
         "adapted_style_sha256": sha(style_path),
         "updates": steps,
+        "missing_official_metric_steps": sorted(missing_metrics),
+        "native_progress_inputs": {str(p): sha(p) for p in args.native_progress},
         "retained_trajectories": len(rows),
         "incomplete_trajectories": sum(not row["completed"] for row in rows),
         "generated_groups": generated,

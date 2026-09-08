@@ -1,0 +1,33 @@
+{
+  "time": 1788842057.5432296,
+  "source_run": "/home/chen/runs/heldout-learning-20260908/resume-after-user-hold-01",
+  "source_checkpoint": "/home/chen/runs/heldout-learning-20260908/resume-after-user-hold-01/checkpoints/global_step_50",
+  "checkpoint": "/home/chen/runs/heldout-learning-20260908/preserved-update50/global_step_50",
+  "main_process": {
+    "pid": 550811,
+    "create_time": 1788836308.6,
+    "still_live": true
+  },
+  "progress": {
+    "version": 1,
+    "completed_updates": 50,
+    "generated_batches": 58,
+    "data_epoch": 0,
+    "batches_per_epoch": 500
+  },
+  "files": {
+    "data.pt": "a09da9b0a82d037f8aa48db8667ddac91e21ee9a95bef4dfbce4e3f30e3bcbb4",
+    "dapo_progress.json": "3f3175d5f8b9370554e2d3362bf49eb79238af9877a88e630604e768601ddf04",
+    "actor/model_world_size_1_rank_0.pt": "0afa6002c3f3db8632b92ebacb37ac0399f4558c8f2bcd0833aad030b5e05b5d",
+    "actor/fsdp_config.json": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f",
+    "actor/extra_state_world_size_1_rank_0.pt": "7d3d5ec04cf35a4e11bf742eeeefbd1923b53fcc8d5ed823e5af06b8d360144b",
+    "actor/optim_world_size_1_rank_0.pt": "a9b327ad563754c995cee1533bd3fd39e400b5222ef33c61707d57880efba415",
+    "actor/lora_train_meta.json": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445",
+    "actor/huggingface/chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "actor/huggingface/tokenizer_config.json": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+    "actor/huggingface/processor_config.json": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1",
+    "actor/huggingface/config.json": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7",
+    "actor/huggingface/tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+  },
+  "scope": "Published native update50 copied without stopping training. File identity and progress checked; no new parameter-update or learning-gain claim."
+}
