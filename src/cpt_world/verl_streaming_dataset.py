@@ -11,11 +11,13 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.util
 import json
 import os
 import sys
 import threading
 from contextlib import contextmanager, suppress
+from functools import lru_cache
 from pathlib import Path
 from uuid import uuid4
 
@@ -77,10 +79,23 @@ def _make_stream(start_seed):
     return BalancedTrainingRowStream(start_seed=start_seed)
 
 
-def _convert_row(row, index):
-    from scripts.prepare_verl_cpt_data import convert_row
+@lru_cache(maxsize=1)
+def _row_converter():
+    # The official TaskRunner runs from verl, where another installed `scripts`
+    # package can shadow this project's directory. Load the fingerprinted file
+    # itself without changing sys.path or depending on that generic namespace.
+    path = _PROJECT / "scripts/prepare_verl_cpt_data.py"
+    name = "_cpt_world_row_converter_" + _digest(str(path).encode("utf-8"))
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load the CPT-World row converter from {path}")
+    converter_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(converter_module)
+    return converter_module.convert_row
 
-    return convert_row(row, index)
+
+def _convert_row(row, index):
+    return _row_converter()(row, index)
 
 
 def _atomic_json(path, value):

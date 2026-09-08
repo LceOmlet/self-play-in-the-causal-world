@@ -1,0 +1,25 @@
+{
+  "time": 1788857425.910382,
+  "old_run": "/home/chen/runs/heldout-learning-20260908/resume-no-val-01",
+  "identity": {
+    "pid": 605645,
+    "create_time": 1788844173.03
+  },
+  "checkpoint": "/home/chen/runs/continuous-training-restore-20260908/hold-01/global_step_77",
+  "step": 77,
+  "files": {
+    "data.pt": "52ea76db2e41c266ce9928ea01714fd9d54669ec4e9380c8823087b256bd0c80",
+    "dapo_progress.json": "8948420f88a863f16736279bc729cbbe1f2e992a5f6cb52710767960cefbda0c",
+    "actor/model_world_size_1_rank_0.pt": "046d26c8cabe083d3e038d9ab47605b0523ee851e986069c1cc51b5e4a1aaf2c",
+    "actor/fsdp_config.json": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f",
+    "actor/extra_state_world_size_1_rank_0.pt": "c24d3273edef3cd427a4185ac8eb1f69055d27634e06e41ee42b5bddf203cb05",
+    "actor/optim_world_size_1_rank_0.pt": "8db26690d35b8149e0bf77c9899a8895d41c3ca3b2fc445c4264a2260b9b91b8",
+    "actor/lora_train_meta.json": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445",
+    "actor/huggingface/chat_template.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "actor/huggingface/tokenizer_config.json": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+    "actor/huggingface/processor_config.json": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1",
+    "actor/huggingface/config.json": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7",
+    "actor/huggingface/tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523"
+  },
+  "reason": "User requires continual new tasks; migrate fixed-cohort data state."
+}

@@ -1,0 +1,26 @@
+test_checkpoint_replay_preserves_rows_generated_after_checkpoint (test_verl_streaming_dataset.StreamingDatasetTests.test_checkpoint_replay_preserves_rows_generated_after_checkpoint) ... ok
+test_committed_row_survives_a_crash_before_head_publication (test_verl_streaming_dataset.StreamingDatasetTests.test_committed_row_survives_a_crash_before_head_publication) ... ok
+test_descriptor_validation_does_not_create_a_journal (test_verl_streaming_dataset.StreamingDatasetTests.test_descriptor_validation_does_not_create_a_journal) ... ok
+test_incomplete_temporary_row_is_not_a_committed_task (test_verl_streaming_dataset.StreamingDatasetTests.test_incomplete_temporary_row_is_not_a_committed_task) ... ok
+test_missing_or_modified_checkpoint_prefix_is_rejected (test_verl_streaming_dataset.StreamingDatasetTests.test_missing_or_modified_checkpoint_prefix_is_rejected) ... ok
+test_official_factory_loads_custom_file_and_uses_official_getitem (test_verl_streaming_dataset.StreamingDatasetTests.test_official_factory_loads_custom_file_and_uses_official_getitem) ... ok
+test_official_file_factory_real_families_with_external_scripts_and_cwd (test_verl_streaming_dataset.StreamingDatasetTests.test_official_file_factory_real_families_with_external_scripts_and_cwd) ... Using dataset class: CPTWorldStreamingDataset
+Using dataset class: CPTWorldStreamingDataset
+Using dataset class: CPTWorldStreamingDataset
+EXTERNAL_SCRIPTS_REAL_STREAM={"query_types": ["ate", "individual_counterfactual_probability", "backadj_minimal_sets", "best_intervention", "mediator_set"], "total_seconds": 2.0396917830221355, "converter_loaded_from_fingerprinted_absolute_path": true, "all_committed_rows_replayed_without_generation": true}
+ok
+test_out_of_order_or_premigration_indices_do_not_generate (test_verl_streaming_dataset.StreamingDatasetTests.test_out_of_order_or_premigration_indices_do_not_generate) ... ok
+test_pickle_reopens_journal_without_regenerating_a_row (test_verl_streaming_dataset.StreamingDatasetTests.test_pickle_reopens_journal_without_regenerating_a_row) ... ok
+test_real_generator_and_converter_round_trip_complete_tool_row (test_verl_streaming_dataset.StreamingDatasetTests.test_real_generator_and_converter_round_trip_complete_tool_row) ... REAL_STREAM_ROUND_TRIP={"start_seed": 1000, "rows": [{"query_type": "ate", "seconds": 0.06422577099874616}, {"query_type": "individual_counterfactual_probability", "seconds": 0.3339303199900314}, {"query_type": "backadj_minimal_sets", "seconds": 0.16472064005210996}, {"query_type": "best_intervention", "seconds": 0.6049190629273653}, {"query_type": "mediator_set", "seconds": 0.09790369402617216}], "total_seconds": 1.2878271379740909, "all_committed_rows_replayed_without_generation": true}
+ok
+test_recreated_journal_cannot_impersonate_a_checkpoint_dependency (test_verl_streaming_dataset.StreamingDatasetTests.test_recreated_journal_cannot_impersonate_a_checkpoint_dependency) ... ok
+test_sequential_fresh_rows_and_repeated_official_getitem (test_verl_streaming_dataset.StreamingDatasetTests.test_sequential_fresh_rows_and_repeated_official_getitem) ... ok
+test_source_changes_are_rejected_before_new_generation (test_verl_streaming_dataset.StreamingDatasetTests.test_source_changes_are_rejected_before_new_generation) ... ok
+test_stream_incompatible_data_options_are_rejected (test_verl_streaming_dataset.StreamingDatasetTests.test_stream_incompatible_data_options_are_rejected) ... ok
+test_two_instances_concurrently_generate_the_same_index_once (test_verl_streaming_dataset.StreamingDatasetTests.test_two_instances_concurrently_generate_the_same_index_once) ... ok
+test_validation_files_follow_original_download_read_and_getitem (test_verl_streaming_dataset.StreamingDatasetTests.test_validation_files_follow_original_download_read_and_getitem) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 3.932s
+
+OK

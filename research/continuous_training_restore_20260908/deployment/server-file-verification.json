@@ -1,0 +1,90 @@
+{
+  "scope": "Read-only hashes of immutable preserved source and migrated checkpoint; no model/GPU computation or live log monitoring.",
+  "archived_file_sha256": {
+    "prepared.json": "668afd87fdd548de0aa061d10e951aa1a7f784251c60de7d2df52ccb287d86b8",
+    "checkpoint-acceptance.json": "b72a5620aecc631c45b342a85e281f956dd1aaf0120207aea219022615e3bb5a",
+    "resolved.yaml": "48419ad7df4943ce0994cf04555bdcfbfb5675b5113382bc9bbfa037e18900f7",
+    "stream.json": "d453693230c0c41e1db0a852261f36e6223e28cb6cc9afa118ed9687868bcd25",
+    "official-source-verification.json": "a98545c91348c19e4a0f30620cf27955415c65f300052b9fae2c153b21e9a969",
+    "process.json": "e8810d35c7bc6654017ef0a33f07a5516868d68d06410d04e01c392adb3c9f7e",
+    "preserved.json": "efe28c81570e823ad5cac19c5e6017001ab1515cc6eb4706111998dc05b2513e",
+    "stopped.json": "a0a49fe3bcc702dd2a25e3504d2be5cff541bd5a51dff4997d2a31293f4239e3"
+  },
+  "preserved_files": {
+    "actor/extra_state_world_size_1_rank_0.pt": {
+      "size": 15077,
+      "sha256": "c24d3273edef3cd427a4185ac8eb1f69055d27634e06e41ee42b5bddf203cb05",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/fsdp_config.json": {
+      "size": 46,
+      "sha256": "a9f7e97dba5fe2553928a5bd7802ec2e301d1560aa4460753d881dc86d8c154f",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/huggingface/chat_template.jinja": {
+      "size": 7756,
+      "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/huggingface/config.json": {
+      "size": 2940,
+      "sha256": "6ea91b42898b655d1d15e85c080fb9f8bd3b27c4bc9a218da9e08809cc678af7",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/huggingface/processor_config.json": {
+      "size": 1191,
+      "sha256": "d89ef49ce9cd37fbf510158e13c1ef063d9286411c1ec9049932dbe0487143b1",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/huggingface/tokenizer.json": {
+      "size": 19989325,
+      "sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/huggingface/tokenizer_config.json": {
+      "size": 1165,
+      "sha256": "792fa3f0cb88b111e54ef3134c873531008c4df471d108da17903426e308aa7b",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/lora_train_meta.json": {
+      "size": 66,
+      "sha256": "3d75201fd66a19efd7ef210d92134ede0784ec98068c658c9af3fa0ffcec4445",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/model_world_size_1_rank_0.pt": {
+      "size": 43532475,
+      "sha256": "046d26c8cabe083d3e038d9ab47605b0523ee851e986069c1cc51b5e4a1aaf2c",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "actor/optim_world_size_1_rank_0.pt": {
+      "size": 87100836,
+      "sha256": "8db26690d35b8149e0bf77c9899a8895d41c3ca3b2fc445c4264a2260b9b91b8",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "dapo_progress.json": {
+      "size": 107,
+      "sha256": "8948420f88a863f16736279bc729cbbe1f2e992a5f6cb52710767960cefbda0c",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    },
+    "data.pt": {
+      "size": 6868,
+      "sha256": "52ea76db2e41c266ce9928ea01714fd9d54669ec4e9380c8823087b256bd0c80",
+      "source_matches_preservation": true,
+      "destination_bytes_unchanged": true
+    }
+  },
+  "new_data_sha256": "3982221f1d002b48d903885d0c59cf9c5cb22874c022e6572cc467bfed70f531",
+  "new_progress_sha256": "23349f8219bc143418d43a01a533ea66e921e43bdc46b9d73c8dc7876b974c09",
+  "all_checks_passed": true
+}

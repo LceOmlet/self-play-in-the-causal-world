@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "scope": "Static deployment preparation, source provenance and checkpoint byte preservation only. Process identity records launch; initialization is not an optimizer update. Runtime progress is monitored separately and is not asserted here.",
+  "remote_run": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-01",
+  "remote_hold": "/home/chen/runs/continuous-training-restore-20260908/hold-01",
+  "completed_updates_preserved": 77,
+  "generated_batches_preserved": 86,
+  "next_logical_index": 86,
+  "stream_start_seed": 4000000,
+  "actor_files_verified_by_read_only_source_and_destination_hash": 10,
+  "original_data_and_progress_preserved_in_migration_provenance": true,
+  "changed_training_files": [
+    "data.pt",
+    "dapo_progress.json"
+  ],
+  "archived_files_sha256": {
+    "prepared.json": "668afd87fdd548de0aa061d10e951aa1a7f784251c60de7d2df52ccb287d86b8",
+    "checkpoint-acceptance.json": "b72a5620aecc631c45b342a85e281f956dd1aaf0120207aea219022615e3bb5a",
+    "resolved.yaml": "48419ad7df4943ce0994cf04555bdcfbfb5675b5113382bc9bbfa037e18900f7",
+    "stream.json": "d453693230c0c41e1db0a852261f36e6223e28cb6cc9afa118ed9687868bcd25",
+    "official-source-verification.json": "a98545c91348c19e4a0f30620cf27955415c65f300052b9fae2c153b21e9a969",
+    "process.json": "e8810d35c7bc6654017ef0a33f07a5516868d68d06410d04e01c392adb3c9f7e",
+    "preserved.json": "efe28c81570e823ad5cac19c5e6017001ab1515cc6eb4706111998dc05b2513e",
+    "stopped.json": "a0a49fe3bcc702dd2a25e3504d2be5cff541bd5a51dff4997d2a31293f4239e3"
+  },
+  "verification_report_sha256": "17b1a7c2c2caf8891e402c8a117b34054fee5820dea614967e58814ea6be156a",
+  "launcher_record": {
+    "pid": 702342,
+    "create_time": 1788857599.5
+  },
+  "runtime_updates_after_migration_verified": false,
+  "cross_file_checks": "All update counts equal 77; all generated counts and next indices equal 86; descriptor/resolved SHA, source/destination paths, and all 12 original file hashes agree across records. Ten actor files were freshly hashed on the server at both preserved source and migrated destination; all matched byte-for-byte. No model data was downloaded."
+}

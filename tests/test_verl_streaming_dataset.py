@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import importlib
 import json
 import pickle
 import sys
@@ -10,7 +11,9 @@ import tempfile
 import time
 import unittest
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import chdir
 from pathlib import Path
+from types import ModuleType
 from unittest.mock import patch
 
 from verl.utils.dataset.rl_dataset import RLHFDataset
@@ -248,6 +251,67 @@ class StreamingDatasetTests(unittest.TestCase):
         ):
             self.assertEqual(dataset[74]["extra_info"]["tape_key"], "fixture:1001")
             self.assertEqual(self.calls, [1000])
+
+    def test_official_file_factory_real_families_with_external_scripts_and_cwd(self):
+        from omegaconf import OmegaConf
+        from verl.trainer.ppo.utils import create_rl_dataset
+
+        from cpt_world.registry import TASK_FAMILY_QUERY_TYPES
+
+        self.path.write_text(
+            json.dumps(dict(self.descriptor, source_fingerprints=self.actual_sources)),
+            encoding="utf-8",
+        )
+        external_scripts = ModuleType("scripts")
+        external_scripts.__path__ = [str(self.root / "external-package/scripts")]
+        config = OmegaConf.create(
+            dict(
+                self.config,
+                custom_cls={"path": str(Path(module.__file__)), "name": "CPTWorldStreamingDataset"},
+            )
+        )
+        started = time.perf_counter()
+        with patch.dict(sys.modules, {"scripts": external_scripts}), chdir(self.root):
+            sys.modules.pop("scripts.prepare_verl_cpt_data", None)
+            with self.assertRaises(ModuleNotFoundError):
+                importlib.import_module("scripts.prepare_verl_cpt_data")
+            dataset = create_rl_dataset([str(self.path)], config, None, None, is_train=True)
+            self.assertIs(dataset.__class__.__getitem__, RLHFDataset.__getitem__)
+            rows = [dataset[index] for index in range(74, 79)]
+            self.assertEqual(
+                [row["extra_info"]["query_type"] for row in rows], list(TASK_FAMILY_QUERY_TYPES)
+            )
+            namespace = dataset.dataframe.__class__.__getitem__.__globals__
+            converter = namespace["_row_converter"]()
+            self.assertEqual(
+                Path(converter.__code__.co_filename),
+                Path(module.__file__).resolve().parents[2] / "scripts/prepare_verl_cpt_data.py",
+            )
+            self.assertIs(namespace["_row_converter"](), converter)
+            restored = create_rl_dataset([str(self.path)], config, None, None, is_train=True)
+            restored.load_state_dict(dataset.state_dict())
+            replay_namespace = restored.dataframe.__class__.__getitem__.__globals__
+            with patch.dict(
+                replay_namespace,
+                {"_make_stream": lambda _: self.fail("committed rows must replay")},
+            ):
+                for index, expected in enumerate(rows, 74):
+                    self.assertEqual(restored[index]["tools_kwargs"], expected["tools_kwargs"])
+                    self.assertEqual(restored[index]["raw_prompt"], expected["raw_prompt"])
+            self.assertIs(sys.modules["scripts"], external_scripts)
+            self.assertNotIn("scripts.prepare_verl_cpt_data", sys.modules)
+        print(
+            "EXTERNAL_SCRIPTS_REAL_STREAM="
+            + json.dumps(
+                {
+                    "query_types": [row["extra_info"]["query_type"] for row in rows],
+                    "total_seconds": time.perf_counter() - started,
+                    "converter_loaded_from_fingerprinted_absolute_path": True,
+                    "all_committed_rows_replayed_without_generation": True,
+                }
+            ),
+            flush=True,
+        )
 
     def test_committed_row_survives_a_crash_before_head_publication(self):
         dataset = self.dataset()

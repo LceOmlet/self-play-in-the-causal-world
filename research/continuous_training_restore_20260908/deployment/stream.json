@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "kind": "cpt_world_continuous",
+  "environment_version": "full-nonanchor-identification-v1",
+  "start_seed": 4000000,
+  "stream_start_index": 86,
+  "journal_dir": "/home/chen/runs/continuous-training-restore-20260908/resume-stream-01/task-journal",
+  "source_fingerprints": {
+    "src/cpt_world/__init__.py": "fdf90b64b532a81f9e8de2bda7459c320ec8a04bd8c4c41d677b09b4763b0757",
+    "src/cpt_world/counterfactual_isolation.py": "290529ddfc906dd497738b9aae324a566c3644cc5c805a63b14823d79011f7b5",
+    "src/cpt_world/counterfactual_solver.py": "4249c54301fe001ecb109749a41f293ff514f04b9e004af8b174e9c7b5e263b3",
+    "src/cpt_world/episode.py": "8ef6a0c407548618b55662612d7a7ee4054e9ecad8b61d595d64a952917892dc",
+    "src/cpt_world/identification.py": "d553f197c7b06085e02c67a30af7a3d27c025da358cf64a08aadd4af3b8e4348",
+    "src/cpt_world/query_truth.py": "e47fb6b8c85b64ce4af830a8fba890cb05739eab5725363be56ff5cba41989cf",
+    "src/cpt_world/registry.py": "af7b9f092374879fd0a18178850771d0a3aee1abd298cf03a8476e615a338530",
+    "src/cpt_world/rendering.py": "ce4d3a5e2a7bd71ed277b20e3a0208e194e569c633c8de1f685f89444134c647",
+    "src/cpt_world/rewards.py": "11be80115cf36556f0e778cc4dd96b8fc26f38710b8ce24af61cdeb52cac7120",
+    "src/cpt_world/seeds.py": "709b76f5ecc488d6cc696b886707480849fa08735336858d7e2ba7c19343d90c",
+    "src/cpt_world/task_scoring.py": "145edfa037613d86e530683dfd970c7d3177d5c1b7d089f2009a87ad49d514fe",
+    "src/cpt_world/trl_environment.py": "36ff8eb94c43bae01136755443f15347cd0fdbc0f8261ea0aa3b1a9234034f88",
+    "src/cpt_world/verl_environment.py": "9deed2b23c4b07f8327de46f9bff81be2e484cf3d402e8e7ac1130eaa4836fdb",
+    "src/cpt_world/verl_streaming_dataset.py": "2b1dc7b8583f1ffdc9a84b5e56ddd90791c418035e230d66b56be16407b0a459",
+    "src/cpt_world/world.py": "112a973e69c09dcbc8a0427a7e4d312137d9b7fc2257129b77f656b1436a1536",
+    "src/cpt_world/world_runtime.py": "f1159966eb12006d74133b834dc11f6ea5d22be27552cadae710b45a87350447",
+    "src/cpt_world/world_space.py": "58ab2194b77e00f68bef10a524ce4fcd908c2d21b5bffcc78d9af5e87b09301b",
+    "scripts/prepare_verl_cpt_data.py": "e8422e35d519c5d473e9a99012ff8ffd83bfa8bbddc3e09d63c498840749a17a"
+  }
+}
