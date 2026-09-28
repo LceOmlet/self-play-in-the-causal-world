@@ -1,0 +1,110 @@
+{
+  "official_component_checks": [
+    {
+      "fixture": "tool_fixture",
+      "total_tokens": 2048,
+      "field": "logprob",
+      "atol": 0.005,
+      "rtol": 0.005,
+      "source": "TestPatchChunkedLMHead.test_forward",
+      "max_abs": 6.705638952553272e-05,
+      "status": "PASS_RECORDED_UPSTREAM_COMPONENT_ASSERTION"
+    },
+    {
+      "fixture": "tool_fixture",
+      "total_tokens": 2048,
+      "field": "entropy",
+      "atol": 0.005,
+      "rtol": 0.005,
+      "source": "TestPatchChunkedLMHead.test_forward",
+      "max_abs": 0.00045405328273773193,
+      "status": "PASS_RECORDED_UPSTREAM_COMPONENT_ASSERTION"
+    },
+    {
+      "fixture": "tool_fixture",
+      "total_tokens": 2048,
+      "field": "hidden_gradient",
+      "atol": 0.01,
+      "rtol": 0.01,
+      "source": "TestChunkedLogProbFunction.test_backward_bfloat16",
+      "max_abs": 0.0009765625,
+      "status": "PASS_RECORDED_UPSTREAM_COMPONENT_ASSERTION"
+    },
+    {
+      "fixture": "random_fixture",
+      "total_tokens": 2048,
+      "field": "logprob",
+      "atol": 0.005,
+      "rtol": 0.005,
+      "source": "TestPatchChunkedLMHead.test_forward",
+      "max_abs": 1.9073486328125e-06,
+      "status": "PASS_RECORDED_UPSTREAM_COMPONENT_ASSERTION"
+    },
+    {
+      "fixture": "random_fixture",
+      "total_tokens": 2048,
+      "field": "entropy",
+      "atol": 0.005,
+      "rtol": 0.005,
+      "source": "TestPatchChunkedLMHead.test_forward",
+      "max_abs": 8.58306884765625e-06,
+      "status": "PASS_RECORDED_UPSTREAM_COMPONENT_ASSERTION"
+    },
+    {
+      "fixture": "random_fixture",
+      "total_tokens": 2048,
+      "field": "hidden_gradient",
+      "atol": 0.01,
+      "rtol": 0.01,
+      "source": "TestChunkedLogProbFunction.test_backward_bfloat16",
+      "max_abs": 0.0009765625,
+      "status": "PASS_RECORDED_UPSTREAM_COMPONENT_ASSERTION"
+    }
+  ],
+  "component_scope": "Checkpoint-2400, BF16 frozen output head, temperature 1, 2K fixtures. Forward logprob/entropy and hidden-state backward only; not full LoRA/Adam tolerances.",
+  "upstream_test_sha256": "a7c316d7efc63582fbc26f4a5c384abcde6d754c6d90308dd1e4c0c17efd4e41",
+  "real_rl_effects": {
+    "status": "RECORDED_OBJECTIVE_EFFECTS_NOT_A_NEW_TOLERANCE",
+    "scheduling_patch_same_frozen_inputs": true,
+    "scheduling_patch_same_observed_objective_quantities": true,
+    "head_comparison_effective_tokens": 1765,
+    "head_comparison_changed_low_clip_decisions": 0,
+    "head_comparison_changed_high_clip_decisions": 0,
+    "head_comparison_max_microbatch_loss_abs_difference": 5.820766091346741e-10,
+    "scope": "Actual 2K prefix of a real Qwen rollout, with fixed old logprobs, advantages and IS. Compares the two official head paths under the SAME off-policy objective; reports actual clip decisions and losses. Fixed IS is not recomputed here. No universal tolerance or learning-quality claim."
+  },
+  "speed": {
+    "status": "GENERATION_OVERHEAD_REPAIRED_IN_MATCHED_SMALL_BENCHMARK",
+    "new_tokens_per_group": 2560,
+    "prefix_sha256": "92457c1e9ac46965f42696befb07f3d952d07868274aeabb69481e07573719b1",
+    "warmups_per_mode": 1,
+    "steady_repeats_per_mode": 2,
+    "profiled_ablation_seconds": {
+      "off": 45.49367838248145,
+      "residency": 36.528042443009326,
+      "residency-cache": 24.34140459250193
+    },
+    "unprofiled_seconds": {
+      "candidate": 23.226592994498787,
+      "legacy": 23.227326129504945
+    },
+    "scope": "Same saved prefixes, output-token count, precision and sampling; includes sync/sleep. Not complete training-pipeline throughput."
+  },
+  "whole_training_official_tolerance": "NO_APPLICABLE_SINGLE_THRESHOLD_ESTABLISHED",
+  "remaining": [
+    "Equal-work complete training-pipeline throughput",
+    "All five families autonomous behavior",
+    "Long-run learning and plateau cause"
+  ],
+  "version": "1.14.0+cpt.rollout1",
+  "official_unmodified_distribution": false,
+  "production_deployed": false,
+  "inference_check": {
+    "passed": true,
+    "scope": "Original vLLM hybrid-prefix-cache top-5 protocol adapted to actual Qwen checkpoint and fixed task prefixes. The original comparator checks reciprocal top-k membership at the first differing token, then stops. It is NOT a numerical logprob tolerance, exact autoregressive equality, or whole-RL certificate."
+  },
+  "task_source_commit": "85cb577c73b17ccc6cde3bc6944db3ce2e80376f",
+  "private_evidence_archive_sha256": "2a7b9f609bed7b78f669ee2cc7a83310793157e05c28cbebec20ff75fda8c016",
+  "publication_scope": "Source, reproducible CPU checks and aggregate results only; no task instances, trajectories, tensors, logs or evidence archives.",
+  "withdrawn_verdict": "Generic dtype defaults, gradient relative-L2 and exactness are not whole-RL acceptance gates"
+}

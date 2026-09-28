@@ -1,0 +1,164 @@
+--- a/trl/generation/vllm_generation.py
++++ b/trl/generation/vllm_generation.py
+@@ -17,7 +17,8 @@
+ import logging
+ import math
+ import os
+-from contextlib import nullcontext
++from contextlib import contextmanager, nullcontext
++from functools import wraps
+ from typing import TYPE_CHECKING
+ 
+ import torch
+@@ -45,6 +46,17 @@
+ 
+ 
+ logger = logging.getLogger(__name__)
++
++
++def with_vllm_rollout_session(method):
++    """Scope inference residency around the unchanged official generation body."""
++    @wraps(method)
++    def wrapped(trainer, *args, **kwargs):
++        backend = getattr(trainer, "vllm_generation", None)
++        context = backend.rollout_session() if backend is not None else nullcontext()
++        with context:
++            return method(trainer, *args, **kwargs)
++    return wrapped
+ 
+ 
+ def empty_cache() -> None:
+@@ -233,6 +245,8 @@
+         max_model_length: int | None = None,
+         max_num_seqs: int | None = None,
+         enable_sleep_mode: bool = False,
++        rollout_residency: bool = False,
++        enable_prefix_caching: bool | None = None,
+         model_impl: str = "auto",
+         trust_remote_code: bool = False,
+         # Generation configuration
+@@ -267,6 +281,9 @@
+         self.max_model_length = max_model_length
+         self.max_num_seqs = max_num_seqs
+         self.enable_sleep_mode = enable_sleep_mode
++        self.rollout_residency = rollout_residency
++        self.enable_prefix_caching = enable_prefix_caching
++        self._rollout_session_depth = 0
+         self.model_impl = model_impl
+         self.trust_remote_code = trust_remote_code
+ 
+@@ -351,6 +368,7 @@
+                 max_model_len=self.max_model_length,
+                 max_num_seqs=self.max_num_seqs,
+                 enable_sleep_mode=self.enable_sleep_mode,
++                enable_prefix_caching=self.enable_prefix_caching,
+                 model_impl=self.model_impl,
+                 distributed_executor_backend="external_launcher",
+                 # Feed identical seed for tp groups to ensure sampling results are the same across workers
+@@ -366,6 +384,7 @@
+                 self.llm.sleep(level=2)
+             # Sleep level 2 discards the weights; track it so that generate() knows it must re-push them
+             self._llm_weights_sleeping = self.enable_sleep_mode
++            self._llm_kv_cache_sleeping = self.enable_sleep_mode
+         else:
+             raise ValueError(f"vllm_mode must be either 'server' or 'colocate', got '{self.mode}'.")
+ 
+@@ -373,6 +392,26 @@
+         # desynchronization and seems to lead to DeepSpeed hanging during initialization. To prevent this, we
+         # synchronize all processes after vLLM has been fully initialized.
+         accelerator.wait_for_everyone()
++
++    @contextmanager
++    def rollout_session(self):
++        """Keep unchanged weights/cache resident until the full tool group exits.
++
++        Normal and exceptional exits release inference memory before scoring or
++        optimization. Nested scopes release once. Defaults retain upstream behavior.
++        """
++        if not (self.mode == "colocate" and self.enable_sleep_mode and self.rollout_residency):
++            yield
++            return
++        self._rollout_session_depth += 1
++        try:
++            yield
++        finally:
++            self._rollout_session_depth -= 1
++            if self._rollout_session_depth == 0:
++                self.llm.sleep(level=2)
++                self._llm_weights_sleeping = True
++                self._llm_kv_cache_sleeping = True
+ 
+     def _fix_param_name_to_vllm(self, name: str, extra_prefixes: list[str] | None = None) -> str:
+         """Fix parameter name for vLLM compatibility."""
+@@ -701,8 +740,9 @@
+                 all_prompts = prompts
+                 all_images = images
+ 
+-            if self.enable_sleep_mode:
++            if self.enable_sleep_mode and (not self.rollout_residency or self._llm_kv_cache_sleeping):
+                 self.llm.wake_up(tags=["kv_cache"])
++                self._llm_kv_cache_sleeping = False
+ 
+             # Build vLLM-compatible prompt inputs with token IDs and optional multi-modal data
+             vllm_prompts = []
+@@ -747,8 +787,9 @@
+                 logprobs = all_logprobs
+                 logprob_token_ids = all_logprob_token_ids
+ 
+-            if self.enable_sleep_mode:
++            if self.enable_sleep_mode and self._rollout_session_depth == 0:
+                 self.llm.sleep(level=2)
+                 self._llm_weights_sleeping = True
++                self._llm_kv_cache_sleeping = True
+ 
+         return prompt_ids, completion_ids, logprobs, logprob_token_ids
+--- a/trl/trainer/grpo_trainer.py
++++ b/trl/trainer/grpo_trainer.py
+@@ -68,7 +68,7 @@
+ from ..data_utils import apply_chat_template, is_conversational, prepare_multimodal_messages
+ from ..distributed import DistributedBackend
+ from ..extras.profiling import profiling_context, profiling_decorator
+-from ..generation.vllm_generation import VLLMGeneration
++from ..generation.vllm_generation import VLLMGeneration, with_vllm_rollout_session
+ from ..import_utils import is_jmespath_available, is_liger_kernel_available
+ from ..models import prepare_deepspeed, prepare_fsdp, unwrap_model_for_generation
+ from ..models.utils import _ForwardRedirection, disable_gradient_checkpointing
+@@ -1088,6 +1088,8 @@
+                 * args.vllm_tensor_parallel_size
+                 * args.steps_per_generation,
+                 enable_sleep_mode=args.vllm_enable_sleep_mode,
++                rollout_residency=args.vllm_rollout_residency,
++                enable_prefix_caching=args.vllm_enable_prefix_caching,
+                 model_impl=args.vllm_model_impl,
+                 trust_remote_code=args.trust_remote_code,
+                 # Generation configuration
+@@ -2249,6 +2251,7 @@
+ 
+         return tool_mask, completions, completion_ids, logprobs, tool_call_count, tool_failure_count, tool_images
+ 
++    @with_vllm_rollout_session
+     def _generate(self, prompts: list):
+         device = self.accelerator.device
+         mode = "train" if self.model.training else "eval"
+--- a/trl/trainer/grpo_config.py
++++ b/trl/trainer/grpo_config.py
+@@ -611,6 +611,14 @@
+             "usage low, but waking the engine adds host–device transfer latency."
+         },
+     )
++    vllm_rollout_residency: bool = field(
++        default=False,
++        metadata={"help": "Registered CPT scheduling extension: keep vLLM resident for one complete tool rollout."},
++    )
++    vllm_enable_prefix_caching: bool | None = field(
++        default=None,
++        metadata={"help": "Forward the public vLLM prefix-cache option; None retains the upstream model default."},
++    )
+     vllm_structured_outputs_regex: str | None = field(
+         default=None,
+         metadata={"help": "Regex for vLLM structured outputs. If `None` (default), structured outputs is disabled."},
+--- a/VERSION
++++ b/VERSION
+@@ -1 +1 @@
+-1.14.0
++1.14.0+cpt.rollout1

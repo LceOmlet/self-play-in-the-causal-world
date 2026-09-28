@@ -1,5 +1,10 @@
 # DoLens
 
+The 2026-09-28 [TRL 32K candidate and rollout-efficiency repair](research/rollout_efficiency_repair_20260928/README.md)
+publishes an explicit scheduling patch, component-specific official tolerances
+and measured results. It uses the preserved task source at `85cb577`, has not
+been deployed, and does not establish full-pipeline throughput or learning gains.
+
 DoLens is a reference environment for active causal reasoning in hidden, finite
 CPT worlds. A model sees an anonymized task, gathers selected
 measurements through passive observation or batched hard interventions, and
@@ -17,10 +22,11 @@ mixture.
 The active correctness work is tracked in the
 [2026-09-07 goal and remaining proof obligations](docs/rl-correctness-goal-20260907.md).
 [Reproducible research and execution evidence](research/rl_correctness_20260907/README.md)
-include successful checks and disqualified runs. The current training entry is
-`scripts/run_official_dapo.sh`; historical TRL patches and scripts are retained
-for provenance only. Long training remains stopped, and old checkpoints must
-not initialize new training. An isolated audit is not evidence of learning gains.
+include successful checks and disqualified runs. `scripts/run_official_dapo.sh`
+and the earlier TRL scripts document historical training paths. The September 13
+decision restored the original TRL branch and superseded the earlier ban on its
+checkpoints. The September 28 candidate is a separate validation environment;
+an isolated audit is not evidence of learning gains.
 
 ## Paper
 

@@ -1,5 +1,14 @@
 # Pinned upstream patches
 
+## TRL 1.14.0 candidate, 2026-09-28
+
+`trl-1.14.0-rollout-residency.patch` is the complete registered diff for
+`1.14.0+cpt.rollout1`. It scopes inference residency to one complete tool group
+and exposes vLLM prefix caching without replacing the official RL math.
+See the [candidate report and scoped validation](../research/rollout_efficiency_repair_20260928/README.md).
+This candidate is isolated and has not replaced a production training run.
+The older sections below describe their respective historical versions.
+
 ## Current official verl DAPO path
 
 Only `scripts/run_official_dapo.sh` is the current training entry. It uses the

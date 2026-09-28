@@ -1,0 +1,46 @@
+{
+  "upstream": {
+    "name": "trl-v1.14.0",
+    "url": "https://codeload.github.com/huggingface/trl/tar.gz/refs/tags/v1.14.0",
+    "sha256": "571d6ad3777edfa05e6f4f6706e2cdbeeb27ce9f2fb87c606fee7df30039eaf6"
+  },
+  "version": "1.14.0+cpt.rollout1",
+  "official_unmodified_distribution": false,
+  "trainer_method_body_checks": {
+    "_set_signature_columns_if_needed": true,
+    "get_train_dataloader": true,
+    "_get_train_sampler": true,
+    "_get_eval_sampler": true,
+    "get_eval_dataloader": true,
+    "get_high_entropy_mask": true,
+    "_get_per_token_logps_and_entropies": true,
+    "_chunked_logps": true,
+    "_full_logits_logps": true,
+    "training_step": true,
+    "_prepare_inputs": true,
+    "_log_completion_extra": true,
+    "_log_metric": true,
+    "_calculate_rewards": true,
+    "_tokenize_prompts": true,
+    "_generate_single_turn": true,
+    "_get_tool_suffix_ids": true,
+    "_tool_call_loop": true,
+    "_generate": true,
+    "_generate_and_score_completions": true,
+    "compute_loss": true,
+    "get_off_policy_mask": true,
+    "get_gamma_weights": true,
+    "_compute_loss": true,
+    "prediction_step": true,
+    "log": true,
+    "_save_checkpoint": true,
+    "_load_optimizer_and_scheduler": true
+  },
+  "declared_changed_files": [
+    "trl/generation/vllm_generation.py",
+    "trl/trainer/grpo_trainer.py",
+    "trl/trainer/grpo_config.py",
+    "VERSION"
+  ],
+  "patch_sha256": "b7440941bbbd4f5dec720190c6aeb573f1821ce34fbff451fe8aa19420a391a2"
+}

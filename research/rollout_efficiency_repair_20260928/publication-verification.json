@@ -1,0 +1,17 @@
+{
+  "unchanged_trainer_methods": 28,
+  "registered_changed_python_files": [
+    "trl/generation/vllm_generation.py",
+    "trl/trainer/grpo_config.py",
+    "trl/trainer/grpo_trainer.py"
+  ],
+  "lifecycle_cases": [
+    "nested normal return",
+    "exceptional cleanup",
+    "disabled mode",
+    "decorator boundary"
+  ],
+  "scope": "CPU source/lifecycle check; not a new GPU, numerical or throughput measurement",
+  "patched_files_match_measured_source": true,
+  "patch_sha256": "b7440941bbbd4f5dec720190c6aeb573f1821ce34fbff451fe8aa19420a391a2"
+}
