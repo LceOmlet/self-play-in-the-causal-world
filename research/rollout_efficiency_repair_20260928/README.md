@@ -2,8 +2,10 @@
 
 This candidate uses **TRL 1.14.0+cpt.rollout1**, an explicitly versioned derivative
 of TRL 1.14.0. It retains the official GRPO Trainer and its configured `dapo` loss;
-it does not implement the full DAPO dynamic-filtering recipe. It is an isolated
-validation candidate and has not been deployed for long training.
+it does not implement the full DAPO dynamic-filtering recipe. The measurements
+below were isolated validation. This runtime was subsequently used for the
+[fresh numerical-tool training branch](../numeric_training_from_zero_20260928/README.md);
+that deployment does not expand the scope of these validation results.
 
 The [complete patch](../../patches/trl-1.14.0-rollout-residency.patch) adds two
 default-off/default-inherited configuration fields: `vllm_rollout_residency` and

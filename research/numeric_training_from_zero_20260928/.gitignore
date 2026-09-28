@@ -1,0 +1,17 @@
+*.tar.gz
+__pycache__/
+checks/
+check-attempts/
+latest/
+latest*.json
+telemetry/
+preflights/
+*-validation/
+security-validation/
+secure-smoke/
+rootfs-staging/
+runtime/
+run-01/
+preflight-passed.json
+*.log
+*.parquet

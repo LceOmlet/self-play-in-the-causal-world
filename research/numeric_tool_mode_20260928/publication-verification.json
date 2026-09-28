@@ -1,0 +1,12 @@
+{
+  "core_files_unchanged_from_validated_deployment": {
+    "tool_mode.py": "99b7037258d785d1ce8e865a323e107df2a0c257175c0b62f900fb484aeef25d",
+    "secure_backend.py": "9a2f93f973c8601a745aa02d0666f6fdeb0a5a4b064cca2f4e98482e9072c930",
+    "sandbox_bridge.py": "8821aa83ac01ef7c29760fa0dd3c62bc3ae3328940a33cdd34beee075d953d53",
+    "nsjail-secure.cfg.in": "66a09ee72bd8212055bd1ff6f0dc9007b44358d6ca96394d5cc7eb775b365e22"
+  },
+  "publication_changes": "Deployment model/build paths parameterized; no core sandbox or Trainer mathematics changed.",
+  "offline_boundary_tests_passed": 10,
+  "offline_monitor_tests_passed": 8,
+  "private_evidence_included": false
+}
