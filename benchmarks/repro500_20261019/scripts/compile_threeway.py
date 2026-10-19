@@ -3,10 +3,37 @@ import argparse
 import csv
 import hashlib
 import io
+from fractions import Fraction
+import statistics
 from pathlib import Path
 import sys
 
 import compile_results as paired
+
+
+def native_diagnostics(records):
+    """Conditional errors plus all-case exact rates; unfinished stays explicit."""
+    result = {'n':len(records), 'submitted':sum(r['submitted'] for r in records)}
+    numeric = ('total_variation_error','mean_absolute_endpoint_error','normalized_regret',
+        'regret','edit_distance','mediator_f1','order_f1')
+    for field in numeric:
+        values = [float(Fraction(str(r['terminal_score'][field]))) for r in records
+            if r['submitted'] and r.get('terminal_score') is not None
+            and r['terminal_score'].get(field) is not None]
+        if values:
+            result['mean_'+field+'_on_submitted'] = statistics.mean(values)
+            result[field+'_submitted_count'] = len(values)
+    for flag in ('optimal_action','valid_adjustment_set'):
+        if any(flag in (r.get('terminal_score') or {}) for r in records):
+            count = sum(bool((r.get('terminal_score') or {}).get(flag,False)) for r in records)
+            result[flag+'_count'] = count
+            result[flag+'_rate_all_cases'] = count/len(records)
+    if any('mediators_exact_match' in (r.get('terminal_score') or {}) for r in records):
+        count = sum(bool((r.get('terminal_score') or {}).get('mediators_exact_match',False))
+            and bool((r.get('terminal_score') or {}).get('order_exact_match',False)) for r in records)
+        result['mediators_and_order_exact_count'] = count
+        result['mediators_and_order_exact_rate_all_cases'] = count/len(records)
+    return result
 
 
 def all_three_gate(agent_runtime, base_runtime):
@@ -64,10 +91,35 @@ def main():
             for model in ('agent','base','checkpoint2350')}
         delta = paired.paired_summary([(rows[t]['checkpoint2350'],rows[t]['base']) for t in ids])
         report['groups'][group] = {'n':len(ids),'models':metrics,
+            'native_diagnostics':{model:native_diagnostics([rows[t][model] for t in ids])
+                for model in ('agent','base','checkpoint2350')} if group!='Overall' else {},
             'trained_minus_base':delta['mean_agent_minus_qwen'],
             'trained_minus_base_paired_bootstrap_95pct':delta['paired_bootstrap_95pct'],
             'trained_wins':delta['agent_wins'],'ties':delta['ties'],'base_wins':delta['qwen_wins']}
         lines.append(f"| {group} | {len(ids)} | {metrics['agent']['mean_reward']:.4f} | {metrics['base']['mean_reward']:.4f} | {metrics['checkpoint2350']['mean_reward']:.4f} | {delta['mean_agent_minus_qwen']:+.4f} |")
+    lines += ['', 'Native diagnostics (errors are averaged over submitted answers only; exact counts use every assigned case):', '',
+        '| Family | Metric | Isolated agents | Original 9B | Checkpoint-2350 |',
+        '|---|---|---:|---:|---:|']
+    specs = {
+        'ate':('TV error ↓','total_variation_error',False),
+        'individual_counterfactual_probability':('Endpoint MAE ↓','mean_absolute_endpoint_error',False),
+        'best_intervention':('Optimal actions ↑','optimal_action',True),
+        'backadj_minimal_sets':('Valid adjustment sets ↑','valid_adjustment_set',True),
+        'mediator_set':('Mediators and order both exact ↑','mediators_and_order_exact',True)}
+    for family in evaluation['task_ids_by_family']:
+        if family not in specs:
+            continue
+        label, field, exact = specs[family]
+        values = []
+        for model in ('agent','base','checkpoint2350'):
+            d = report['groups'][family]['native_diagnostics'][model]
+            if exact:
+                values.append(f"{d.get(field+'_count',0)}/{d['n']}")
+            else:
+                mean = d.get('mean_'+field+'_on_submitted')
+                count = d.get(field+'_submitted_count',0)
+                values.append(f'{mean:.4f} ({count}/{d["n"]} submitted)' if mean is not None else f'— (0/{d["n"]} submitted)')
+        lines.append('| '+ ' | '.join([family,label]+values)+' |')
     lines += ['',report['context_note'],'',
         'The five-family subset was fixed before solving. Both 9B runs began after the original 100 agent cases terminated. No terminal case was resampled.',
         '', 'Each pair directory contains exact diagnostics, per-case CSV/JSON and raw owner/model transcripts. Confidence intervals are descriptive paired bootstrap intervals with 10,000 draws and seed 20261019; each family contains only 20 cases.']

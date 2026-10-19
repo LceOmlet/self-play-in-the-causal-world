@@ -157,6 +157,12 @@ python benchmarks/repro500_20261019/scripts/compile_threeway.py \
 
 `scripts/tests_export.py` checks the unsealing gates, identical case pairing,
 summary-file handling, metrics and archives using 100 synthetic cases only.
+The main table reports native reward over all assigned cases, with unfinished
+cases scoring zero. A second table reports native TV error / CF endpoint MAE
+over submitted cases (with the submitted denominator shown), and optimal
+action / valid adjustment set / joint mediator-and-order exact counts over
+all 20 assigned cases. These diagnostics were specified before unsealing any
+formal score; continuous reward is not presented as an accuracy percentage.
 `scripts/tests_base_gate.py` checks the base-owner admission proof without
 opening any real capsule. Preparation and synthetic tests are not evaluation
 results. The final three-way table and raw transcript provenance will be

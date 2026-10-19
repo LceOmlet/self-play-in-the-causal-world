@@ -20,6 +20,7 @@
   "phase_gate": "Server rejects Qwen task opening until every assigned agent case is terminal; base owner verifies original completed-agent proof and creates new episodes",
   "score_gate": "Parent/three-way exporter reads no private results until all THREE 100-case phases are terminal",
   "score_metric": "Unchanged native terminal-quality-v10 reward, range [0,1], unfinished=0",
+  "secondary_metrics_declared_before_unsealing": "Native TV error / CF endpoint MAE averaged over submitted answers with counts; optimal action, valid adjustment set and joint mediator/order exact counts over all assigned family cases. Unfinished answers do not disappear from exact-rate denominators.",
   "sampling_retries": 0,
   "transport_recovery": "Identical payload and request UUID only; no resampling or redoing a terminal case",
   "agent_transport_optimization": "Persistent SSH localhost forward introduced during agent phase; first post-change status 44/100. Same opaque endpoint, commands and request UUIDs, with original SSH fallback. No owner/task/model changes.",

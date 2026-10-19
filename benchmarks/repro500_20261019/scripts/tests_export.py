@@ -18,6 +18,13 @@ def write(path, value):
 
 
 def main():
+    diagnostics = threeway.native_diagnostics([
+        {'submitted':True,'terminal_score':{'mean_absolute_endpoint_error':'1/5','valid_adjustment_set':True}},
+        {'submitted':False,'terminal_score':None}])
+    assert diagnostics['mean_mean_absolute_endpoint_error_on_submitted']==0.2
+    assert diagnostics['mean_absolute_endpoint_error_submitted_count']==1
+    assert diagnostics['valid_adjustment_set_rate_all_cases']==0.5
+    print('conditional error and all-case exact denominator with unfinished answer: PASS')
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
         runtime = root/'runtime'
@@ -35,7 +42,15 @@ def main():
         print('unfinished gate rejects before any private file exists: PASS')
         write(runtime/'progress.json', {k:{'total':100,'completed':100} for k in ('agent','qwen')})
         write(runtime/'private-control.json', {'roles':[{'token':'synthetic-secret-not-in-results'}]})
-        grouped = {f'family_{i}':[f'family_{i}-{j:03d}' for j in range(20)] for i in range(5)}
+        families = ['ate','backadj_minimal_sets','best_intervention',
+            'individual_counterfactual_probability','mediator_set']
+        grouped = {family:[f'{family}-{j:03d}' for j in range(20)] for family in families}
+        scores = {'ate':{'total_variation_error':'1/5'},
+            'individual_counterfactual_probability':{'mean_absolute_endpoint_error':'1/10'},
+            'best_intervention':{'optimal_action':True,'normalized_regret':0},
+            'backadj_minimal_sets':{'valid_adjustment_set':True,'edit_distance':0},
+            'mediator_set':{'mediators_exact_match':True,'order_exact_match':True,
+                'mediator_f1':1,'order_f1':1}}
         ids = [task for members in grouped.values() for task in members]
         write(root/'suite/data/manifest.json', {'tasks_merkle_input_sha256':'synthetic-dataset', 'eval100_sha256':'synthetic-selection'})
         write(root/'suite/data/eval100.json', {'task_ids':ids,'task_ids_by_family':grouped})
@@ -48,7 +63,8 @@ def main():
                 write(folder/'private-result.json', {'task_id':task_id, 'family':task_id.split('-')[0],
                     'role':kind, 'reward':0.75 if kind=='agent' else 0.25, 'submitted':True,
                     'observations_used':10 if kind=='agent' else 20, 'budget':100,
-                    'tool_calls':3,'reason':'terminal_answer'})
+                    'tool_calls':3,'reason':'terminal_answer',
+                    'terminal_score':scores[task_id.split('-')[0]]})
                 (folder/'events.jsonl').write_text(json.dumps({'utc':'2026-01-01T00:00:00Z' if kind=='agent' else '2026-01-02T00:00:00Z'})+'\n')
             write(transcripts/(hashlib.sha256(task_id.encode()).hexdigest()+'.json'),
                 {'task_id':task_id,'model':'checkpoint2350','messages':prompt['messages'],
@@ -102,6 +118,11 @@ def main():
         assert overall['models']['base']['mean_reward']==0.125
         assert overall['models']['checkpoint2350']['mean_reward']==0.25
         assert overall['trained_minus_base']==0.125
+        assert overall['native_diagnostics']=={}
+        assert report['groups']['ate']['native_diagnostics']['agent']['mean_total_variation_error_on_submitted']==0.2
+        assert report['groups']['best_intervention']['native_diagnostics']['base']['optimal_action_count']==20
+        markdown = (three_output/'COMPARISON.md').read_text(encoding='utf-8')
+        assert '0.2000 (20/20 submitted)' in markdown and '20/20' in markdown
         assert len((three_output/'threeway-results.csv').read_text().splitlines())==101
         print('three-way gate and identical 100-case agent/base/trained table: PASS')
 
