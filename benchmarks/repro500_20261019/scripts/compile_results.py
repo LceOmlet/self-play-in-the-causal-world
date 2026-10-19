@@ -95,7 +95,13 @@ def main():
     assert max(agent_end_times) <= min(qwen_start_times), 'Phase order violated'
     for kind in ('agent','qwen'):
         assert {p.name for p in (args.runtime/kind).iterdir() if p.is_dir()} == set(ids)
-    assert len(list(args.model_transcripts.glob('*.json'))) == 100
+    expected_transcripts = {hashlib.sha256(task_id.encode()).hexdigest()+'.json' for task_id in ids}
+    actual_transcripts = {p.name for p in args.model_transcripts.glob('*.json') if p.name != 'run_summary.json'}
+    assert actual_transcripts == expected_transcripts
+    run_summary = read(args.model_transcripts/'run_summary.json')
+    assert {r['task_id'] for r in run_summary['tasks']} == set(ids)
+    assert len(run_summary['tasks']) == 100
+    archive_sources.append((args.model_transcripts/'run_summary.json', 'model/run_summary.json'))
     report = {'dataset_sha256':manifest['tasks_merkle_input_sha256'],
         'selection_sha256':manifest['eval100_sha256'], 'paired_prompts_and_tools_identical':True,
         'all_agent_submissions_precede_qwen_actions':True,
@@ -111,7 +117,7 @@ def main():
     table = io.StringIO(newline='')
     fields = ['task_id','family','agent_reward','qwen_reward','agent_minus_qwen',
         'agent_submitted','qwen_submitted','agent_observations','qwen_observations','model_termination_reason']
-    writer = csv.DictWriter(table, fieldnames=fields)
+    writer = csv.DictWriter(table, fieldnames=fields, lineterminator='\n')
     writer.writeheader()
     for task_id in ids:
         a,q = by_id[task_id]['agent'],by_id[task_id]['qwen']
