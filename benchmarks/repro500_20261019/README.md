@@ -65,11 +65,15 @@ retry an experiment under a new UUID after a transport interruption.
 
 The service normalizes public prompt/tool-history accounting to the Qwen
 tokenizer with a 32768-token ceiling. Qwen additionally counts its complete
-native message context, including generated assistant text. Agents use a fresh
-question context and receive no owner source, capsules, answers, prior-task
-solutions, or parent solution advice. Only public task prompts and tool
-feedback are permitted as question evidence. Local Python is transport only;
-all analysis computations use the question's numerics tool.
+native message context, including generated assistant text. Agents use five
+independent conversations, one per family of 20 cases, and receive no owner
+source, capsules, answers, other-agent solutions, or parent solution advice.
+The solver runtime does not expose a context-reset tool: each agent can retain
+its own conversation across its 20 cases, whereas Qwen starts fresh per case.
+Numerical state is fresh per case for both. Thus this compares agent systems,
+not strictly matched reasoning-token/context budgets. Only the current case's
+public prompt and acquired feedback are permitted as question evidence.
+Local Python is transport only; all analysis computations use numerics.
 
 Each numerical session uses NsJail, 1 CPU, 1 GiB, no external network/host
 files, persistent per-answer NumPy/SciPy, 30 seconds per call and 8192 output

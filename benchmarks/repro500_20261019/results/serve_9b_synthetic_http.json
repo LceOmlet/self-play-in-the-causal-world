@@ -1,0 +1,88 @@
+{
+  "request": {
+    "model": "checkpoint2350",
+    "messages": [
+      {
+        "role": "user",
+        "content": "This is a synthetic API plumbing check. Call the numerics tool with code exactly print(2 + 2)."
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "numerics",
+          "description": "A synthetic code tool.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code"
+            ]
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto",
+    "temperature": 0,
+    "seed": 20261019,
+    "max_tokens": 256,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "response": {
+    "id": "chatcmpl-a90a6f3523f76f27",
+    "object": "chat.completion",
+    "created": 1792422203,
+    "model": "checkpoint2350",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "refusal": null,
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [
+            {
+              "id": "chatcmpl-tool-a830efbfd519fe3f",
+              "type": "function",
+              "function": {
+                "name": "numerics",
+                "arguments": "{\"code\": \"print(2 + 2)\"}"
+              }
+            }
+          ],
+          "reasoning": null
+        },
+        "logprobs": null,
+        "finish_reason": "tool_calls",
+        "stop_reason": null,
+        "token_ids": null,
+        "routed_experts": null
+      }
+    ],
+    "service_tier": null,
+    "system_fingerprint": "vllm-0.26.0-4cc3ac25",
+    "usage": {
+      "prompt_tokens": 291,
+      "total_tokens": 324,
+      "completion_tokens": 33,
+      "prompt_tokens_details": null
+    },
+    "prompt_logprobs": null,
+    "prompt_token_ids": null,
+    "prompt_text": null,
+    "kv_transfer_params": null,
+    "ec_transfer_params": null,
+    "metrics": null
+  }
+}
