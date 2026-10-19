@@ -1,0 +1,74 @@
+{
+  "synthetic_only": true,
+  "idempotent_experiment": true,
+  "real_nsjail_numpy": true,
+  "public_observation_bridge": true,
+  "agent_completion_gate": true,
+  "qwen_phase_gate": true,
+  "progress": {
+    "agent": {
+      "by_family": {
+        "synthetic_0": {
+          "total": 1,
+          "started": 1,
+          "completed": 1
+        },
+        "synthetic_1": {
+          "total": 1,
+          "started": 1,
+          "completed": 1
+        },
+        "synthetic_2": {
+          "total": 1,
+          "started": 1,
+          "completed": 1
+        },
+        "synthetic_3": {
+          "total": 1,
+          "started": 1,
+          "completed": 1
+        },
+        "synthetic_4": {
+          "total": 1,
+          "started": 1,
+          "completed": 1
+        }
+      },
+      "completed": 5,
+      "started": 5,
+      "total": 5
+    },
+    "qwen": {
+      "by_family": {
+        "synthetic_0": {
+          "total": 1,
+          "started": 1,
+          "completed": 0
+        },
+        "synthetic_1": {
+          "total": 1,
+          "started": 0,
+          "completed": 0
+        },
+        "synthetic_2": {
+          "total": 1,
+          "started": 0,
+          "completed": 0
+        },
+        "synthetic_3": {
+          "total": 1,
+          "started": 0,
+          "completed": 0
+        },
+        "synthetic_4": {
+          "total": 1,
+          "started": 0,
+          "completed": 0
+        }
+      },
+      "completed": 0,
+      "started": 1,
+      "total": 5
+    }
+  }
+}

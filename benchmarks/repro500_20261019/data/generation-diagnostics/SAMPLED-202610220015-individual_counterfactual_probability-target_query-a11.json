@@ -1,0 +1,14 @@
+{
+  "candidate_id": "SAMPLED-202610220015-individual_counterfactual_probability-target_query-a11",
+  "elapsed_seconds": 11.042004753020592,
+  "exit_code": -15,
+  "hard_wall_seconds": 11.0,
+  "memory_limit_bytes": 8589934592,
+  "process_memory_kib": {
+    "VmHWM": 174736,
+    "VmRSS": 174736,
+    "VmSwap": 0
+  },
+  "stack_path": "/home/chen/runs/repro-benchmark500-20261019/suite/data/generation-diagnostics/SAMPLED-202610220015-individual_counterfactual_probability-target_query-a11.stack.txt",
+  "status": "hard_timeout"
+}

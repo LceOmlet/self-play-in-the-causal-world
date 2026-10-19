@@ -1,0 +1,2 @@
+# Frozen source and JSON hashes are byte-sensitive across Windows/Linux checkouts.
+* -text

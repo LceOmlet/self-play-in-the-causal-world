@@ -1,0 +1,23 @@
+{
+  "profile_version": "repro500-9b-v1",
+  "default_model": "checkpoint2350",
+  "base_model_path": "/home/chen/models/Qwen/Qwen3.5-9B",
+  "adapter_path": "/home/chen/runs/official-numerics-group-from-zero-20260929/run-02/checkpoints/checkpoint-2350",
+  "models": {"base": "base", "checkpoint2350": "checkpoint2350"},
+  "temperature": 0,
+  "seed": 20261019,
+  "enable_thinking": false,
+  "thinking_provenance": "checkpoint-2350/training_args.bin and run-02/configuration.json both specify chat_template_kwargs.enable_thinking=false",
+  "max_model_len": 32768,
+  "max_tokens_per_turn": 8192,
+  "concurrency": 4,
+  "tool_call_parser": "qwen3_xml",
+  "reasoning_parser": "qwen3",
+  "gpu_memory_utilization": 0.75,
+  "max_num_batched_tokens": 4096,
+  "enforce_eager": true,
+  "max_lora_rank": 8,
+  "model_api": "http://127.0.0.1:18821/v1/chat/completions",
+  "sampling_retries": 0,
+  "owner_transport_attempts": 3
+}

@@ -1,0 +1,10 @@
+Current thread 0x00007789c6d22080 (most recent call first):
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/counterfactual_solver.py", line 3227 in optimize
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/counterfactual_solver.py", line 3350 in _direct_treatment_terminal_bounds
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/counterfactual_solver.py", line 3850 in _solve_sparse_two_world_event_bounds
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/counterfactual_solver.py", line 4070 in sparse_individual_counterfactual_probability_bounds
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/query_truth.py", line 642 in _individual_counterfactual_probability_certificate
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/query_truth.py", line 1695 in compute_query_truth
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/counterfactual_isolation.py", line 89 in _worker_result
+  File "/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/cpt_world/counterfactual_isolation.py", line 141 in _worker_main
+  File "<string>", line 1 in <module>

@@ -1,0 +1,54 @@
+# Both Jupyter parser and numerical kernel are inside one answer's resource limit.
+name: "cpt-numerics-v2"
+mode: ONCE
+hostname: "cpt-numerics"
+cwd: "/tmp"
+time_limit: 0
+keep_env: false
+keep_caps: false
+disable_no_new_privs: false
+stderr_to_null: true
+clone_newuser: true
+clone_newns: true
+clone_newpid: true
+clone_newipc: true
+clone_newuts: true
+clone_newnet: true
+clone_newcgroup: true
+iface_no_lo: true
+mount_proc: true
+use_cgroupv2: true
+cgroupv2_mount: "@CGROUP@"
+cgroup_mem_max: 1073741824
+cgroup_mem_swap_max: 0
+cgroup_pids_max: 64
+cgroup_cpu_ms_per_sec: 1000
+max_cpus: 1
+rlimit_cpu_type: SOFT
+rlimit_as_type: SOFT
+rlimit_nofile: 256
+rlimit_fsize: 1024
+envar: "HOME=/tmp"
+envar: "IPYTHONDIR=/tmp/ipython"
+envar: "OPENBLAS_NUM_THREADS=1"
+envar: "OMP_NUM_THREADS=1"
+envar: "MKL_NUM_THREADS=1"
+envar: "JUPYTER_PLATFORM_DIRS=1"
+mount { src: "/opt/cpt-numerics/rootfs" dst: "/" is_bind: true rw: false nosuid: true nodev: true }
+mount { dst: "/tmp" fstype: "tmpfs" options: "size=1073741824,nr_inodes=16384" rw: true nosuid: true nodev: true noexec: true }
+mount { src: "/dev/null" dst: "/dev/null" is_bind: true rw: true is_dir: false }
+mount { src: "/dev/urandom" dst: "/dev/urandom" is_bind: true rw: false is_dir: false }
+# No host-writable directory or Jupyter channel/socket is mounted.
+pass_fd: @FD@
+seccomp_string: "ERRNO(1) { ptrace, process_vm_readv, process_vm_writev, mount, umount, pivot_root, unshare, setns, bpf, kexec_load, reboot, keyctl, add_key, request_key, userfaultfd, perf_event_open, open_by_handle_at, pidfd_getfd, fsopen, fsconfig, fsmount, move_mount, open_tree, mount_setattr }"
+# Stock ipykernel uses a private loopback TCP pipe even with IPC channels.
+# Permit ordinary IP sockets only inside the empty network namespace (lo down).
+seccomp_string: "ERRNO(1) { socket { family != 1 && family != 2 && family != 10 && family != 16 }, socket { family == 16 && protocol != 0 }, socketpair { family != 1 }, clone { (clone_flags & 0x7e020080) != 0 } }"
+seccomp_string: "ERRNO(38) { clone3, io_uring_setup, io_uring_enter, io_uring_register }"
+seccomp_string: "DEFAULT ALLOW"
+exec_bin {
+  path: "/opt/numerics/bin/python"
+  arg: "-I"
+  arg: "/opt/bridge/sandbox_bridge.py"
+  arg: "@FD@"
+}
