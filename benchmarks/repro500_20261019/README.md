@@ -173,3 +173,23 @@ formal score; continuous reward is not presented as an accuracy percentage.
 opening any real capsule. Preparation and synthetic tests are not evaluation
 results. The final three-way table and raw transcript provenance will be
 added after all three runs complete.
+
+## Executor incident and exact continuation
+
+The initial two model passes aborted after their first API replies and before
+any tool dispatch. The local HF token counter incorrectly took the length of a
+`BatchEncoding` mapping (2), and passed OpenAI JSON-string tool arguments into
+a Qwen template requiring argument mappings. These infrastructure aborts are
+invalid trials, not model zero scores. Their original transcripts are retained.
+
+The repaired counter counts `input_ids` and normalizes only a deep copy for HF
+rendering; raw API messages and arguments stay unchanged. Recovery uses new
+owners restored from the same capsules and `--resume-first-responses` to reuse
+each exact saved first reply. It refuses recovery if the original request
+payload differs, and never resamples that first reply. The 200-case audit in
+`results/recovery-audit.json` confirms identical requests and legal context
+limits; `results/native-multiturn-preflight.json` confirms local/API token counts
+match after a native tool receipt. Synthetic regression tests cover this path.
+The exporter now rejects runner/API infrastructure failures before opening
+private scores. The premature invalid export incidentally exposed the agent
+aggregate; model prompts, weights, budgets and first replies remain fixed.

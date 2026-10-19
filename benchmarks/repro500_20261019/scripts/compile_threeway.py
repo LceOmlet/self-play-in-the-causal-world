@@ -36,10 +36,11 @@ def native_diagnostics(records):
     return result
 
 
-def all_three_gate(agent_runtime, base_runtime):
+def all_three_gate(agent_runtime, base_runtime, trained_runtime=None):
     original = paired.read(agent_runtime/'progress.json')
     baseline = paired.read(base_runtime/'progress.json')
-    for phase in (original['agent'],original['qwen'],baseline['qwen']):
+    trained = paired.read((trained_runtime or agent_runtime)/'progress.json')
+    for phase in (original['agent'],trained['qwen'],baseline['qwen']):
         assert phase['completed'] == phase['total'] == 100, 'All THREE phases must finish before unsealing'
 
 
@@ -47,16 +48,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--agent-runtime', type=Path, required=True)
     parser.add_argument('--trained-transcripts', type=Path, required=True)
+    parser.add_argument('--trained-runtime', type=Path,help='Independent repaired trained-model owner')
     parser.add_argument('--base-runtime', type=Path, required=True)
     parser.add_argument('--base-transcripts', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    all_three_gate(args.agent_runtime, args.base_runtime)
+    all_three_gate(args.agent_runtime, args.base_runtime,args.trained_runtime)
     # Gate above precedes all score/transcript reads, including paired exports.
     original_argv = sys.argv
     try:
         for model, runtime, transcripts in (
-            ('checkpoint2350',args.agent_runtime,args.trained_transcripts),
+            ('checkpoint2350',args.trained_runtime or args.agent_runtime,args.trained_transcripts),
             ('base',args.base_runtime,args.base_transcripts)):
             sys.argv = ['compile_results.py','--runtime',str(args.agent_runtime),
                 '--qwen-runtime',str(runtime),'--model-label',model,

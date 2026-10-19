@@ -62,6 +62,14 @@ def main():
     evaluation = read(SUITE/'data/eval100.json')
     ids = evaluation['task_ids']
     assert len(ids) == len(set(ids)) == 100
+    # A terminal owner counter is insufficient: infrastructure aborts are not
+    # evidence of model performance. Validate transcripts before private scores.
+    for task_id in ids:
+        path = args.model_transcripts/(hashlib.sha256(task_id.encode()).hexdigest()+'.json')
+        model_record = read(path)
+        assert not model_record.get('error_type') and not model_record.get('finish_error_type'), 'Infrastructure failure: comparison invalid'
+        assert model_record.get('termination_reason') not in ('runner_or_owner_failure','model_api_failure'), 'Infrastructure failure: comparison invalid'
+        assert model_record.get('model_requests',0)>0, 'No model response attempted: comparison invalid'
     controls = read(args.runtime/'private-control.json')
     secrets = [r['token'].encode() for r in controls['roles']]
     if model_runtime != args.runtime:

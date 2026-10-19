@@ -41,7 +41,7 @@ class BaselineExam(server.Exam):
                     self.cases[('agent',task_id)] = {'ended':True, 'imported_completion':True}
         control_path = self.runtime/'private-control.json'
         controls = json.loads(control_path.read_text())
-        controls['model_label'] = 'base'
+        controls['model_label'] = args.model_label
         controls['prior_agent_completion_proof'] = 'prior-agent-proof.json'
         server.write(control_path, controls)
         server.write(self.runtime/'prior-agent-proof.json', proof)
@@ -59,12 +59,13 @@ def main():
     parser.add_argument('--runtime', type=Path, required=True)
     parser.add_argument('--agent-runtime', type=Path, required=True)
     parser.add_argument('--port', type=int, default=18730)
+    parser.add_argument('--model-label',choices=('base','checkpoint2350'),default='base')
     parser.add_argument('--tokenizer', default='/home/chen/models/Qwen/Qwen3.5-9B')
     args = parser.parse_args()
     exam = BaselineExam(args)
     http = ThreadingHTTPServer(('127.0.0.1',args.port), server.Handler)
     http.exam = exam
-    print(json.dumps({'ready':True,'port':args.port,'model':'base',
+    print(json.dumps({'ready':True,'port':args.port,'model':args.model_label,
         'dataset_sha256':exam.manifest['tasks_merkle_input_sha256'],
         'original_agent_completion_verified':True}), flush=True)
     try:

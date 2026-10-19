@@ -70,6 +70,21 @@ def main():
                 {'task_id':task_id,'model':'checkpoint2350','messages':prompt['messages'],
                 'tools':[], 'termination_reason':'owner_ended','usage':{},'model_requests':1})
         write(transcripts/'run_summary.json', {'model':'checkpoint2350','tasks':[{'task_id':t} for t in ids]})
+        failing_path=transcripts/(hashlib.sha256(ids[0].encode()).hexdigest()+'.json')
+        valid_record=json.loads(failing_path.read_text())
+        write(failing_path,{**valid_record,'error_type':'TypeError'})
+        original_read=export.read
+        def no_private_scores(path):
+            assert path.name!='private-result.json', 'Infrastructure gate opened a score'
+            return original_read(path)
+        with patch.object(sys,'argv',argv),patch.object(export,'SUITE',root/'suite'),patch.object(export,'read',side_effect=no_private_scores):
+            try:
+                export.main()
+                raise RuntimeError('Infrastructure failure accepted as model score')
+            except AssertionError as error:
+                assert 'Infrastructure failure' in str(error)
+        write(failing_path,valid_record)
+        print('infrastructure abort rejected before opening any private score: PASS')
         with patch.object(sys, 'argv', argv), patch.object(export, 'SUITE', root/'suite'):
             export.main()
         report = json.loads((output/'comparison.json').read_text())

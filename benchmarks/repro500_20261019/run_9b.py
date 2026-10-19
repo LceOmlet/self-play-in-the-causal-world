@@ -51,11 +51,30 @@ def owner_request(url: str, payload: dict, timeout: float, attempts: int = 3) ->
 
 
 def count_tokens(tokenizer: Any, messages: list, tools: list, *, generation: bool) -> int:
+    rendered_messages = copy.deepcopy(messages)
+    # HF Qwen templates require mappings; keep OpenAI wire records untouched.
+    for message in rendered_messages:
+        for call in message.get("tool_calls") or []:
+            function = call.get("function", {})
+            arguments = function.get("arguments")
+            if isinstance(arguments, str):
+                try:
+                    parsed = json.loads(arguments)
+                except ValueError:
+                    parsed = None
+                function["arguments"] = parsed if isinstance(parsed, dict) else {"invalid_raw_arguments": arguments}
     tokens = tokenizer.apply_chat_template(
-        messages, tools=tools, tokenize=True, add_generation_prompt=generation,
-        enable_thinking=False,
+        rendered_messages, tools=tools, tokenize=True, add_generation_prompt=generation,
+        enable_thinking=False, return_dict=True,
     )
-    return len(tokens)
+    ids = tokens["input_ids"] if hasattr(tokens, "keys") else tokens
+    if hasattr(ids,"tolist"):
+        ids = ids.tolist()
+    if ids and isinstance(ids[0],list):
+        if len(ids)!=1:
+            raise ValueError("Expected one conversation for token accounting")
+        ids=ids[0]
+    return len(ids)
 
 
 def run_task(
@@ -63,6 +82,7 @@ def run_task(
     model_api: str, output_dir: Path, timeout: float = 600,
     owner: Callable[..., dict] = owner_request,
     completion: Callable[..., dict] = post_json,
+    resume_first_responses: Path | None = None,
 ) -> dict:
     """Dependency injection supports synthetic tests with no private data/API."""
     path = output_dir / (hashlib.sha256(task_id.encode()).hexdigest() + ".json")
@@ -71,7 +91,8 @@ def run_task(
     record: dict = {
         "task_id": task_id, "model": model, "profile": copy.deepcopy(profile),
         "started_unix": time.time(), "messages": [], "tools": [], "events": [],
-        "model_requests": 0, "usage": {}, "termination_reason": None,
+        "model_requests": 0, "api_requests_this_run": 0, "reused_responses": 0,
+        "usage": {}, "termination_reason": None,
     }
     messages = record["messages"]
     ended = False
@@ -102,6 +123,24 @@ def run_task(
             raise ValueError("owner prompt must contain messages and tools arrays")
         messages.extend(copy.deepcopy(prompt["messages"]))
         tools = record["tools"] = copy.deepcopy(prompt["tools"])
+        pending_original = None
+        if resume_first_responses is not None:
+            source = resume_first_responses/path.name
+            source_bytes = source.read_bytes()
+            original = json.loads(source_bytes)
+            original_turns = [e for e in original["events"] if e["kind"]=="completion"]
+            if not (original["task_id"]==task_id and original["model"]==model
+                    and original["profile"]==profile and original["model_requests"]==1
+                    and original.get("error_type")=="TypeError"
+                    and original["termination_reason"]=="runner_or_owner_failure"
+                    and len(original_turns)==1 and "response" in original_turns[0]
+                    and not any(e["kind"]=="tool" for e in original["events"])
+                    and original["messages"][:-1]==messages and original["tools"]==tools):
+                raise ValueError("Original first-response recovery preconditions failed")
+            pending_original = original_turns[0]
+            record["recovery_source"] = {"filename":source.name,
+                "sha256":hashlib.sha256(source_bytes).hexdigest(),
+                "original_failure":"TypeError before any tool dispatch"}
         save()
         while not ended:
             prompt_tokens = count_tokens(tokenizer, messages, tools, generation=True)
@@ -123,7 +162,19 @@ def run_task(
             record["model_requests"] += 1
             save()
             try:
-                response = completion(model_api, payload, timeout)
+                if pending_original is not None:
+                    if pending_original["request"]!=payload:
+                        raise ValueError("Recovery payload differs; refusing to resample")
+                    response = copy.deepcopy(pending_original["response"])
+                    turn["reused_original_completion"] = {
+                        "source_sha256":record["recovery_source"]["sha256"],
+                        "original_started_unix":pending_original["started_unix"],
+                        "original_ended_unix":pending_original["ended_unix"]}
+                    record["reused_responses"] += 1
+                    pending_original = None
+                else:
+                    record["api_requests_this_run"] += 1
+                    response = completion(model_api, payload, timeout)
             except Exception as error:
                 # Exception text may contain URLs; persist only its safe type.
                 turn["error_type"] = type(error).__name__
@@ -221,6 +272,8 @@ def main() -> None:
     parser.add_argument("--tokenizer", default=None)
     parser.add_argument("--concurrency", type=int, default=4)
     parser.add_argument("--timeout", type=float, default=600)
+    parser.add_argument("--resume-first-responses", type=Path,
+        help="Recover saved first response of the known pre-tool TypeError without resampling")
     args = parser.parse_args()
     profile = json.loads(Path(__file__).with_name("model_profile.json").read_text())
     if not 1 <= args.concurrency <= 4:
@@ -242,6 +295,7 @@ def main() -> None:
             run_task, task_id, tokenizer=tokenizer, profile=profile, model=args.model,
             owner_url=args.owner_url, model_api=args.model_api or profile["model_api"],
             output_dir=args.output_dir, timeout=args.timeout,
+            resume_first_responses=args.resume_first_responses,
         ) for task_id in task_ids]
         for future in as_completed(futures):
             summary = future.result()
