@@ -46,19 +46,26 @@ def paired_summary(pairs):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--runtime', type=Path, required=True)
+    parser.add_argument('--qwen-runtime', type=Path, help='Separate model owner; agent records remain in --runtime')
+    parser.add_argument('--model-label', choices=('checkpoint2350','base'), default='checkpoint2350')
     parser.add_argument('--model-transcripts', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
+    model_runtime = args.qwen_runtime or args.runtime
     progress = read(args.runtime/'progress.json')
+    model_progress = read(model_runtime/'progress.json')
     # This check MUST precede opening any private score/answer files.
     for kind in ('agent','qwen'):
-        assert progress[kind]['total'] == progress[kind]['completed'] == 100, 'Both phases must finish first'
+        phase = progress['agent'] if kind=='agent' else model_progress['qwen']
+        assert phase['total'] == phase['completed'] == 100, 'Both phases must finish first'
     manifest = read(SUITE/'data/manifest.json')
     evaluation = read(SUITE/'data/eval100.json')
     ids = evaluation['task_ids']
     assert len(ids) == len(set(ids)) == 100
     controls = read(args.runtime/'private-control.json')
     secrets = [r['token'].encode() for r in controls['roles']]
+    if model_runtime != args.runtime:
+        secrets.extend(r['token'].encode() for r in read(model_runtime/'private-control.json')['roles'])
     pairs = []
     by_id = {}
     archive_sources = []
@@ -68,7 +75,7 @@ def main():
         records = []
         prompts = []
         for kind in ('agent','qwen'):
-            folder = args.runtime/kind/task_id
+            folder = (args.runtime if kind=='agent' else model_runtime)/kind/task_id
             result = read(folder/'private-result.json')
             assert result['task_id'] == task_id and result['role'] == kind
             assert 0 <= result['reward'] <= 1
@@ -84,7 +91,7 @@ def main():
         assert prompts[0] == prompts[1], 'Paired public prompt/tools/capsule differ'
         transcript = args.model_transcripts/(hashlib.sha256(task_id.encode()).hexdigest()+'.json')
         model = read(transcript)
-        assert model['task_id'] == task_id and model['model'] == 'checkpoint2350'
+        assert model['task_id'] == task_id and model['model'] == args.model_label
         assert model['messages'][:len(prompts[0]['messages'])] == prompts[0]['messages']
         assert model['tools'] == prompts[0]['tools']
         archive_sources.append((transcript, 'model/'+transcript.name))
@@ -94,7 +101,8 @@ def main():
             'model_requests':model['model_requests']}
     assert max(agent_end_times) <= min(qwen_start_times), 'Phase order violated'
     for kind in ('agent','qwen'):
-        assert {p.name for p in (args.runtime/kind).iterdir() if p.is_dir()} == set(ids)
+        owner_runtime = args.runtime if kind=='agent' else model_runtime
+        assert {p.name for p in (owner_runtime/kind).iterdir() if p.is_dir()} == set(ids)
     expected_transcripts = {hashlib.sha256(task_id.encode()).hexdigest()+'.json' for task_id in ids}
     actual_transcripts = {p.name for p in args.model_transcripts.glob('*.json') if p.name != 'run_summary.json'}
     assert actual_transcripts == expected_transcripts
@@ -102,7 +110,7 @@ def main():
     assert {r['task_id'] for r in run_summary['tasks']} == set(ids)
     assert len(run_summary['tasks']) == 100
     archive_sources.append((args.model_transcripts/'run_summary.json', 'model/run_summary.json'))
-    report = {'dataset_sha256':manifest['tasks_merkle_input_sha256'],
+    report = {'model_label':args.model_label, 'dataset_sha256':manifest['tasks_merkle_input_sha256'],
         'selection_sha256':manifest['eval100_sha256'], 'paired_prompts_and_tools_identical':True,
         'all_agent_submissions_precede_qwen_actions':True,
         'agent_last_terminal_utc':max(agent_end_times),'qwen_first_action_utc':min(qwen_start_times),
@@ -128,7 +136,7 @@ def main():
             'qwen_observations':q['observations_used'],
             'model_termination_reason':by_id[task_id]['model_termination_reason']})
     (args.output/'paired-results.csv').write_text(table.getvalue(), encoding='utf-8')
-    lines = ['# Agent versus checkpoint-2350, same 100 tasks', '',
+    lines = [f'# Agent versus {args.model_label}, same 100 tasks', '',
         'Native terminal-quality-v10 mean reward (higher is better, 0–1). Unfinished cases remain zero.', '',
         '| Family | n | Isolated agent | 9B | Difference | Agent / tie / 9B wins |',
         '|---|---:|---:|---:|---:|---:|']

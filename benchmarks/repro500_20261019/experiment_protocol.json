@@ -8,17 +8,19 @@
   "agent_model": "Inherited Codex session model; concrete model identifier is not exposed by the subagent tool",
   "agent_context": "Five fork_turns=none conversations, one per task family; no shared solutions or parent hints. Context-reset tool unavailable in solver runtime; each conversation may retain its own 20-case history.",
   "agent_solver_names": ["exam_cf20", "exam_backadj20", "exam_mediator20", "exam_ate20", "exam_best20"],
-  "qwen_model": "Qwen3.5-9B with checkpoint-2350 LoRA",
+  "qwen_models": ["Original Qwen3.5-9B", "Qwen3.5-9B with checkpoint-2350 LoRA"],
+  "weight_selection": "User explicitly requested both weights and a three-way comparison",
+  "total_evaluation_episodes": 300,
   "qwen_context": "Independent messages and numerical session for every task",
   "context_accounting": "32768 Qwen-normalized public prompt and tool history per case for both; Qwen additionally counts native generated text. Internal agent reasoning tokens are not matched.",
   "numerics": {"per_case_state": "fresh", "cpu": 1, "memory_bytes": 1073741824, "seconds_per_call": 30, "output_utf8_bytes_per_call": 8192},
   "allowed_solver_information": "Current public prompt, tool schemas and current task's legally acquired feedback only",
   "tools": ["act", "numerics"],
   "local_solver_execution": "Transport only; no local statistical or algorithmic data analysis",
-  "phase_gate": "Server rejects Qwen task opening until every assigned agent case is terminal",
-  "score_gate": "Parent/exporter reads no private results until both 100-case phases are terminal",
+  "phase_gate": "Server rejects Qwen task opening until every assigned agent case is terminal; base owner verifies original completed-agent proof and creates new episodes",
+  "score_gate": "Parent/three-way exporter reads no private results until all THREE 100-case phases are terminal",
   "score_metric": "Unchanged native terminal-quality-v10 reward, range [0,1], unfinished=0",
   "sampling_retries": 0,
   "transport_recovery": "Identical payload and request UUID only; no resampling or redoing a terminal case",
-  "interpretation": "Paired evaluation of two agent systems, not a matched reasoning-compute or identical cross-question-context experiment"
+  "interpretation": "Paired evaluation of three agent systems, not a matched reasoning-compute or identical cross-question-context experiment"
 }

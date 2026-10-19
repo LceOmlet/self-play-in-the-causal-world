@@ -3,11 +3,13 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import shutil
 import tarfile
 import tempfile
 from unittest.mock import patch
 
 import compile_results as export
+import compile_threeway as threeway
 
 
 def write(path, value):
@@ -66,6 +68,42 @@ def main():
             assert 'model/run_summary.json' in archive.getnames()
             assert not any('private-control' in name for name in archive.getnames())
         print('100 paired cases, run summary, metrics, phase order and safe archive: PASS')
+        base_runtime = root/'base-runtime'
+        base_model = root/'base-model'
+        shutil.copytree(runtime, base_runtime)
+        shutil.copytree(transcripts, base_model)
+        for task_id in ids:
+            path = base_runtime/'qwen'/task_id/'private-result.json'
+            value = json.loads(path.read_text())
+            value['reward'] = 0.125
+            write(path,value)
+            path = base_model/(hashlib.sha256(task_id.encode()).hexdigest()+'.json')
+            value = json.loads(path.read_text())
+            value['model'] = 'base'
+            write(path,value)
+        write(base_runtime/'prior-agent-proof.json',{'synthetic_only':True})
+        write(base_runtime/'progress.json', {k:{'total':100,'completed':99} for k in ('agent','qwen')})
+        three_output = root/'three-output'
+        three_argv = ['compile_threeway.py','--agent-runtime',str(runtime),
+            '--trained-transcripts',str(transcripts),'--base-runtime',str(base_runtime),
+            '--base-transcripts',str(base_model),'--output',str(three_output)]
+        with patch.object(sys,'argv',three_argv), patch.object(export,'SUITE',root/'suite'):
+            try:
+                threeway.main()
+                raise RuntimeError('Incomplete baseline was unsealed')
+            except AssertionError as error:
+                assert 'All THREE phases' in str(error)
+            assert not three_output.exists()
+            write(base_runtime/'progress.json', {k:{'total':100,'completed':100} for k in ('agent','qwen')})
+            threeway.main()
+        report = json.loads((three_output/'comparison.json').read_text())
+        overall = report['groups']['Overall']
+        assert overall['models']['agent']['mean_reward']==0.75
+        assert overall['models']['base']['mean_reward']==0.125
+        assert overall['models']['checkpoint2350']['mean_reward']==0.25
+        assert overall['trained_minus_base']==0.125
+        assert len((three_output/'threeway-results.csv').read_text().splitlines())==101
+        print('three-way gate and identical 100-case agent/base/trained table: PASS')
 
 
 if __name__ == '__main__':

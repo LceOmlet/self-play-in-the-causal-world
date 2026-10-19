@@ -2,7 +2,7 @@
 
 This directory freezes 100 fresh native tasks from each of five families (500
 total), and a predetermined subset of 20 per family (100 total) for a paired
-isolated-agent versus Qwen3.5-9B evaluation.
+three-way evaluation: isolated agents, original Qwen3.5-9B, and checkpoint-2350.
 
 Dataset SHA256: `c8cf45ae84272984bfd707982da7c8f2d8ae320f2f90820375595e6e970f2de5`.
 
@@ -58,7 +58,8 @@ for runtime and verification provenance. Its replay digest is
 
 `server.py` provides the same act/numerics owner to five isolated family agents
 and the 9B runner. A role can open only its assigned IDs. Qwen cannot open any
-case until every agent case is terminal. Results remain private until both
+case until every agent case is terminal. At the user's explicit request both
+base and trained weights are evaluated. Results remain private until all three
 100-case runs finish. Requests are journaled before execution and UUID retries
 are deduplicated within the running service. Do not restart a live exam or
 retry an experiment under a new UUID after a transport interruption.
@@ -99,6 +100,11 @@ concurrent cases, and no model sampling retries. A failed or truncated answer
 is retained, never resampled. Each case gets its own transcript and numerical
 session. Model files remain in the existing model/checkpoint store.
 
+Both weight sets use this same profile (thinking=false, temperature=0, seed,
+context and tool limits). The base model is already served alongside the LoRA
+model by the same inference server. Model/config/tokenizer file hashes for
+both are recorded in `results/model-identity.json`.
+
 ```sh
 python benchmarks/repro500_20261019/run_9b.py --self-test
 python benchmarks/repro500_20261019/serve_9b.py --model checkpoint2350
@@ -113,5 +119,34 @@ a process-local platform override for the host's NVML/kernel mismatch.
 No installed package, driver, model weight, or training state is modified.
 Do not commit runtime role credentials or numerical private sockets.
 
-The final paired results and transcript provenance will be added after both
-runs complete; preparation and synthetic tests are not evaluation results.
+After the original agent phase finishes, `serve_base_owner.py` starts a second
+owner on port 18730 in a new runtime directory. It verifies the original
+completed-agent phase and fingerprints its opaque completion records, but
+does not import scores, episodes or numerical state. Run it in its own
+`cpt-numerics-*.service` with `Delegate=yes`:
+
+```sh
+python benchmarks/repro500_20261019/serve_base_owner.py \
+  --agent-runtime ORIGINAL_EXAM_RUNTIME --runtime NEW_BASE_RUNTIME
+python benchmarks/repro500_20261019/run_9b.py --model base \
+  --owner-url http://127.0.0.1:18730/PRIVATE_BASE_ROLE_TOKEN \
+  --index benchmarks/repro500_20261019/data/eval100.json \
+  --output-dir NEW_BASE_TRANSCRIPT_DIRECTORY
+```
+
+Only after all 300 cases terminate, export the three-way comparison:
+
+```sh
+python benchmarks/repro500_20261019/scripts/compile_threeway.py \
+  --agent-runtime ORIGINAL_EXAM_RUNTIME \
+  --trained-transcripts TRAINED_TRANSCRIPT_DIRECTORY \
+  --base-runtime BASE_EXAM_RUNTIME --base-transcripts BASE_TRANSCRIPT_DIRECTORY \
+  --output NEW_RESULTS_DIRECTORY
+```
+
+`scripts/tests_export.py` checks the unsealing gates, identical case pairing,
+summary-file handling, metrics and archives using 100 synthetic cases only.
+`scripts/tests_base_gate.py` checks the base-owner admission proof without
+opening any real capsule. Preparation and synthetic tests are not evaluation
+results. The final three-way table and raw transcript provenance will be
+added after all three runs complete.
