@@ -193,3 +193,19 @@ match after a native tool receipt. Synthetic regression tests cover this path.
 The exporter now rejects runner/API infrastructure failures before opening
 private scores. The premature invalid export incidentally exposed the agent
 aggregate; model prompts, weights, budgets and first replies remain fixed.
+
+The repaired checkpoint pass also revealed a transport limit: its default
+600-second HTTP read timeout can expire before an 8192-token turn finishes
+at the observed four-request throughput. Such censored requests are excluded
+from model scores. `resume_timeouts.py` keeps successful terminal transcripts
+byte-for-byte and never reopens those cases. `serve_continuation_owner.py`
+copies their opaque owner records without parsing scores. For a censored case,
+every returned completion is reused, every prior tool operation is replayed,
+and its feedback must match exactly before any further inference. Only the
+request for which no response arrived is reissued with its identical payload.
+A mismatch blocks continuation. HTTP waits become 3600 seconds for continuation
+and the base run; context and generation token limits remain unchanged.
+`scripts/tests_timeout_continuation.py` checks response preservation and both
+mismatch gates; `scripts/tests_continuation_owner.py` checks opaque copying and
+refusal to reopen completed cases using synthetic fixtures only. The final
+audit and source traces record these infrastructure deviations explicitly.
