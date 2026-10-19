@@ -209,3 +209,10 @@ and the base run; context and generation token limits remain unchanged.
 mismatch gates; `scripts/tests_continuation_owner.py` checks opaque copying and
 refusal to reopen completed cases using synthetic fixtures only. The final
 audit and source traces record these infrastructure deviations explicitly.
+
+Before the timeout continuation, an excluded infrastructure probe restored one
+already censored trajectory in a separate owner. All 13 recorded tool receipts
+reproduced exactly, with zero model API calls and no grade reads; receipt hashes
+are in `results/recorded-tool-replay-probe.json`. The probe owner was then stopped.
+`scripts/verify_recorded_tools.py` reproduces this mechanical check without
+printing tool contents. This probe is not an additional formal evaluation case.
