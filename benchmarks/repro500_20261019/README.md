@@ -64,6 +64,17 @@ base and trained weights are evaluated. Results remain private until all three
 are deduplicated within the running service. Do not restart a live exam or
 retry an experiment under a new UUID after a transport interruption.
 
+The workstation `public_client.py` first uses an optional persistent SSH local
+forward, `127.0.0.1:28429` to the original owner's `127.0.0.1:18729`. If the
+forward is absent or disconnects, it falls back to the original SSH transport
+with the exact same payload and UUID; SSH timeouts also retain that UUID.
+This transport optimization was introduced during the agent phase (first
+post-change status: 44 completed cases). Task commands, owner execution,
+budgets and model settings are unchanged. `scripts/tests_transport.py` verifies
+the happy path and disconnected-tunnel/SSH-timeout recovery synthetically.
+An execution tool's returned `session_id` means the local client is still
+running: poll that process for its result before attempting transport recovery.
+
 The service normalizes public prompt/tool-history accounting to the Qwen
 tokenizer with a 32768-token ceiling. Qwen additionally counts its complete
 native message context, including generated assistant text. Agents use five
