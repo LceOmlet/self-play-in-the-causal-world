@@ -79,7 +79,7 @@ def count_tokens(tokenizer: Any, messages: list, tools: list, *, generation: boo
 
 def run_task(
     task_id: str, *, tokenizer: Any, profile: dict, model: str, owner_url: str,
-    model_api: str, output_dir: Path, timeout: float = 600,
+    model_api: str, output_dir: Path, timeout: float = 3600,
     owner: Callable[..., dict] = owner_request,
     completion: Callable[..., dict] = post_json,
     resume_first_responses: Path | None = None,
@@ -271,7 +271,7 @@ def main() -> None:
     parser.add_argument("--model-api", default=None)
     parser.add_argument("--tokenizer", default=None)
     parser.add_argument("--concurrency", type=int, default=4)
-    parser.add_argument("--timeout", type=float, default=600)
+    parser.add_argument("--timeout", type=float, default=3600)
     parser.add_argument("--resume-first-responses", type=Path,
         help="Recover saved first response of the known pre-tool TypeError without resampling")
     args = parser.parse_args()

@@ -203,8 +203,10 @@ copies their opaque owner records without parsing scores. For a censored case,
 every returned completion is reused, every prior tool operation is replayed,
 and its feedback must match exactly before any further inference. Only the
 request for which no response arrived is reissued with its identical payload.
-A mismatch blocks continuation. HTTP waits become 3600 seconds for continuation
-and the base run; context and generation token limits remain unchanged.
+A mismatch blocks continuation. The runner now defaults to a 3600-second HTTP
+timeout, as do continuation and the base run. An already running process retains
+its original timeout; changing the source does not alter its open requests.
+Context and generation token limits remain unchanged.
 `scripts/tests_timeout_continuation.py` checks response preservation and both
 mismatch gates; `scripts/tests_continuation_owner.py` checks opaque copying and
 refusal to reopen completed cases using synthetic fixtures only. The final
