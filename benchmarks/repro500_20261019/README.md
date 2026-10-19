@@ -115,6 +115,12 @@ Both weight sets use this same profile (thinking=false, temperature=0, seed,
 context and tool limits). The base model is already served alongside the LoRA
 model by the same inference server. Model/config/tokenizer file hashes for
 both are recorded in `results/model-identity.json`.
+The saved base/checkpoint tokenizer files have different serialized bytes, but
+their loaded backend, vocabulary, special tokens and chat template match.
+`scripts/check_tokenizers.py` additionally verifies identical initial token IDs
+for all 100 public evaluation prompts with the actual tool schemas. Its
+metadata-only audit is `results/tokenizer-identity.json`; no evaluation grade
+files are opened by this check.
 
 ```sh
 python benchmarks/repro500_20261019/run_9b.py --self-test
