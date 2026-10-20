@@ -1,0 +1,240 @@
+{
+  "model_label": "base",
+  "dataset_sha256": "c8cf45ae84272984bfd707982da7c8f2d8ae320f2f90820375595e6e970f2de5",
+  "selection_sha256": "92eddd40142d7bdd1b7dc40e63bc9a1b269fbb02cfb11dc278954338f654c114",
+  "paired_prompts_and_tools_identical": true,
+  "all_agent_submissions_precede_qwen_actions": true,
+  "agent_last_terminal_utc": "2026-10-19T16:51:43.300922+00:00",
+  "qwen_first_action_utc": "2026-10-20T11:49:33.299946+00:00",
+  "metric": "unchanged terminal-quality-v10 native reward, [0,1]; unfinished=0",
+  "context_note": "Five isolated agent conversations of 20 cases; Qwen fresh conversation per case. Fresh numerical sessions for both; reasoning-token budgets are not matched.",
+  "overall": {
+    "n": 100,
+    "agent": {
+      "n": 100,
+      "submitted": 100,
+      "mean_reward": 0.6959694608255553,
+      "mean_observations": 40425.6,
+      "mean_budget_fraction": 0.9285139635991992,
+      "mean_tool_calls": 20.62,
+      "termination_counts": {
+        "terminal_answer": 100
+      }
+    },
+    "qwen": {
+      "n": 100,
+      "submitted": 20,
+      "mean_reward": 0.1202924708014214,
+      "mean_observations": 4446.65,
+      "mean_budget_fraction": 0.14281807271504537,
+      "mean_tool_calls": 32.77,
+      "termination_counts": {
+        "unfinished:model_length_limit": 58,
+        "unfinished:unsupported_tool_or_arguments": 11,
+        "terminal_answer": 20,
+        "unfinished:context_exhausted": 11
+      }
+    },
+    "mean_agent_minus_qwen": 0.575676990024134,
+    "paired_bootstrap_95pct": [
+      0.5015541525171048,
+      0.6487655138335375
+    ],
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 20261019,
+    "agent_wins": 83,
+    "ties": 16,
+    "qwen_wins": 1
+  },
+  "by_family": {
+    "ate": {
+      "n": 20,
+      "agent": {
+        "n": 20,
+        "submitted": 20,
+        "mean_reward": 0.6578036673058243,
+        "mean_observations": 40319.85,
+        "mean_budget_fraction": 0.9638353620256697,
+        "mean_tool_calls": 13.3,
+        "termination_counts": {
+          "terminal_answer": 20
+        }
+      },
+      "qwen": {
+        "n": 20,
+        "submitted": 2,
+        "mean_reward": 0.030919393039897606,
+        "mean_observations": 10825.6,
+        "mean_budget_fraction": 0.2379873511904762,
+        "mean_tool_calls": 26,
+        "termination_counts": {
+          "unfinished:model_length_limit": 8,
+          "unfinished:unsupported_tool_or_arguments": 7,
+          "terminal_answer": 2,
+          "unfinished:context_exhausted": 3
+        }
+      },
+      "mean_agent_minus_qwen": 0.6268842742659266,
+      "paired_bootstrap_95pct": [
+        0.5209866742179883,
+        0.7230495070912404
+      ],
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 20261019,
+      "agent_wins": 20,
+      "ties": 0,
+      "qwen_wins": 0
+    },
+    "backadj_minimal_sets": {
+      "n": 20,
+      "agent": {
+        "n": 20,
+        "submitted": 20,
+        "mean_reward": 0.9535714285714285,
+        "mean_observations": 24640.8,
+        "mean_budget_fraction": 0.8348412698412698,
+        "mean_tool_calls": 34,
+        "termination_counts": {
+          "terminal_answer": 20
+        }
+      },
+      "qwen": {
+        "n": 20,
+        "submitted": 7,
+        "mean_reward": 0.3,
+        "mean_observations": 814.2,
+        "mean_budget_fraction": 0.034331597222222225,
+        "mean_tool_calls": 30.7,
+        "termination_counts": {
+          "terminal_answer": 7,
+          "unfinished:context_exhausted": 1,
+          "unfinished:model_length_limit": 11,
+          "unfinished:unsupported_tool_or_arguments": 1
+        }
+      },
+      "mean_agent_minus_qwen": 0.6535714285714286,
+      "paired_bootstrap_95pct": [
+        0.45714285714285713,
+        0.8392857142857143
+      ],
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 20261019,
+      "agent_wins": 17,
+      "ties": 3,
+      "qwen_wins": 0
+    },
+    "best_intervention": {
+      "n": 20,
+      "agent": {
+        "n": 20,
+        "submitted": 20,
+        "mean_reward": 0.8770750809605371,
+        "mean_observations": 52209.25,
+        "mean_budget_fraction": 0.9282400263971462,
+        "mean_tool_calls": 16.8,
+        "termination_counts": {
+          "terminal_answer": 20
+        }
+      },
+      "qwen": {
+        "n": 20,
+        "submitted": 7,
+        "mean_reward": 0.22692167484592324,
+        "mean_observations": 3987.4,
+        "mean_budget_fraction": 0.18044782067975426,
+        "mean_tool_calls": 33.1,
+        "termination_counts": {
+          "terminal_answer": 7,
+          "unfinished:model_length_limit": 11,
+          "unfinished:context_exhausted": 1,
+          "unfinished:unsupported_tool_or_arguments": 1
+        }
+      },
+      "mean_agent_minus_qwen": 0.6501534061146138,
+      "paired_bootstrap_95pct": [
+        0.47478878907581573,
+        0.8223475677238029
+      ],
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 20261019,
+      "agent_wins": 16,
+      "ties": 4,
+      "qwen_wins": 0
+    },
+    "individual_counterfactual_probability": {
+      "n": 20,
+      "agent": {
+        "n": 20,
+        "submitted": 20,
+        "mean_reward": 0.672885222528082,
+        "mean_observations": 54183.8,
+        "mean_budget_fraction": 0.9821482304164342,
+        "mean_tool_calls": 13.85,
+        "termination_counts": {
+          "terminal_answer": 20
+        }
+      },
+      "qwen": {
+        "n": 20,
+        "submitted": 0,
+        "mean_reward": 0.0,
+        "mean_observations": 2615.2,
+        "mean_budget_fraction": 0.06831647952741703,
+        "mean_tool_calls": 28.4,
+        "termination_counts": {
+          "unfinished:model_length_limit": 17,
+          "unfinished:unsupported_tool_or_arguments": 1,
+          "unfinished:context_exhausted": 2
+        }
+      },
+      "mean_agent_minus_qwen": 0.672885222528082,
+      "paired_bootstrap_95pct": [
+        0.5809159479739763,
+        0.749716298996661
+      ],
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 20261019,
+      "agent_wins": 20,
+      "ties": 0,
+      "qwen_wins": 0
+    },
+    "mediator_set": {
+      "n": 20,
+      "agent": {
+        "n": 20,
+        "submitted": 20,
+        "mean_reward": 0.3185119047619048,
+        "mean_observations": 30774.3,
+        "mean_budget_fraction": 0.9335049293154762,
+        "mean_tool_calls": 25.15,
+        "termination_counts": {
+          "terminal_answer": 20
+        }
+      },
+      "qwen": {
+        "n": 20,
+        "submitted": 4,
+        "mean_reward": 0.04362128612128612,
+        "mean_observations": 3990.85,
+        "mean_budget_fraction": 0.19300711495535713,
+        "mean_tool_calls": 45.65,
+        "termination_counts": {
+          "unfinished:context_exhausted": 4,
+          "unfinished:model_length_limit": 11,
+          "terminal_answer": 4,
+          "unfinished:unsupported_tool_or_arguments": 1
+        }
+      },
+      "mean_agent_minus_qwen": 0.27489061864061864,
+      "paired_bootstrap_95pct": [
+        0.1173407610907611,
+        0.44976190476190475
+      ],
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 20261019,
+      "agent_wins": 10,
+      "ties": 9,
+      "qwen_wins": 1
+    }
+  }
+}

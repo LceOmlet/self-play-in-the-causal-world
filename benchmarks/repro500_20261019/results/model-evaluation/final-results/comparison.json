@@ -1,0 +1,458 @@
+{
+  "dataset_sha256": "c8cf45ae84272984bfd707982da7c8f2d8ae320f2f90820375595e6e970f2de5",
+  "paired_cases": 100,
+  "phase_counts": {
+    "agent": 100,
+    "base": 100,
+    "checkpoint2350": 100
+  },
+  "all_model_prompts_tools_capsules_match_agent": true,
+  "groups": {
+    "ate": {
+      "n": 20,
+      "models": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_reward": 0.6578036673058243,
+          "mean_observations": 40319.85,
+          "mean_budget_fraction": 0.9638353620256697,
+          "mean_tool_calls": 13.3,
+          "termination_counts": {
+            "terminal_answer": 20
+          }
+        },
+        "base": {
+          "n": 20,
+          "submitted": 2,
+          "mean_reward": 0.030919393039897606,
+          "mean_observations": 10825.6,
+          "mean_budget_fraction": 0.2379873511904762,
+          "mean_tool_calls": 26,
+          "termination_counts": {
+            "unfinished:model_length_limit": 8,
+            "unfinished:unsupported_tool_or_arguments": 7,
+            "terminal_answer": 2,
+            "unfinished:context_exhausted": 3
+          }
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 2,
+          "mean_reward": 0.05328655759040357,
+          "mean_observations": 4300.8,
+          "mean_budget_fraction": 0.19560825892857142,
+          "mean_tool_calls": 24.85,
+          "termination_counts": {
+            "unfinished:context_exhausted": 4,
+            "unfinished:model_length_limit": 12,
+            "terminal_answer": 2,
+            "unfinished:unsupported_tool_or_arguments": 2
+          }
+        }
+      },
+      "native_diagnostics": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_total_variation_error_on_submitted": 0.030503142023776044,
+          "total_variation_error_submitted_count": 20
+        },
+        "base": {
+          "n": 20,
+          "submitted": 2,
+          "mean_total_variation_error_on_submitted": 0.11921138297060832,
+          "total_variation_error_submitted_count": 2
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 2,
+          "mean_total_variation_error_on_submitted": 0.06414119271611654,
+          "total_variation_error_submitted_count": 2
+        }
+      },
+      "trained_minus_base": 0.022367164550505966,
+      "trained_minus_base_paired_bootstrap_95pct": [
+        -0.06183878607979521,
+        0.11034040306129257
+      ],
+      "trained_wins": 2,
+      "ties": 16,
+      "base_wins": 2
+    },
+    "backadj_minimal_sets": {
+      "n": 20,
+      "models": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_reward": 0.9535714285714285,
+          "mean_observations": 24640.8,
+          "mean_budget_fraction": 0.8348412698412698,
+          "mean_tool_calls": 34,
+          "termination_counts": {
+            "terminal_answer": 20
+          }
+        },
+        "base": {
+          "n": 20,
+          "submitted": 7,
+          "mean_reward": 0.3,
+          "mean_observations": 814.2,
+          "mean_budget_fraction": 0.034331597222222225,
+          "mean_tool_calls": 30.7,
+          "termination_counts": {
+            "terminal_answer": 7,
+            "unfinished:context_exhausted": 1,
+            "unfinished:model_length_limit": 11,
+            "unfinished:unsupported_tool_or_arguments": 1
+          }
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 8,
+          "mean_reward": 0.3464285714285714,
+          "mean_observations": 909.8,
+          "mean_budget_fraction": 0.04349219465430403,
+          "mean_tool_calls": 41.25,
+          "termination_counts": {
+            "unfinished:unsupported_tool_or_arguments": 4,
+            "unfinished:model_length_limit": 5,
+            "terminal_answer": 8,
+            "unfinished:context_exhausted": 3
+          }
+        }
+      },
+      "native_diagnostics": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_edit_distance_on_submitted": 0.65,
+          "edit_distance_submitted_count": 20,
+          "valid_adjustment_set_count": 13,
+          "valid_adjustment_set_rate_all_cases": 0.65
+        },
+        "base": {
+          "n": 20,
+          "submitted": 7,
+          "mean_edit_distance_on_submitted": 2.0,
+          "edit_distance_submitted_count": 7,
+          "valid_adjustment_set_count": 1,
+          "valid_adjustment_set_rate_all_cases": 0.05
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 8,
+          "mean_edit_distance_on_submitted": 1.875,
+          "edit_distance_submitted_count": 8,
+          "valid_adjustment_set_count": 1,
+          "valid_adjustment_set_rate_all_cases": 0.05
+        }
+      },
+      "trained_minus_base": 0.04642857142857143,
+      "trained_minus_base_paired_bootstrap_95pct": [
+        -0.2357142857142857,
+        0.3178571428571429
+      ],
+      "trained_wins": 7,
+      "ties": 8,
+      "base_wins": 5
+    },
+    "best_intervention": {
+      "n": 20,
+      "models": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_reward": 0.8770750809605371,
+          "mean_observations": 52209.25,
+          "mean_budget_fraction": 0.9282400263971462,
+          "mean_tool_calls": 16.8,
+          "termination_counts": {
+            "terminal_answer": 20
+          }
+        },
+        "base": {
+          "n": 20,
+          "submitted": 7,
+          "mean_reward": 0.22692167484592324,
+          "mean_observations": 3987.4,
+          "mean_budget_fraction": 0.18044782067975426,
+          "mean_tool_calls": 33.1,
+          "termination_counts": {
+            "terminal_answer": 7,
+            "unfinished:model_length_limit": 11,
+            "unfinished:context_exhausted": 1,
+            "unfinished:unsupported_tool_or_arguments": 1
+          }
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 10,
+          "mean_reward": 0.32838110341567356,
+          "mean_observations": 5159.4,
+          "mean_budget_fraction": 0.23386936881748893,
+          "mean_tool_calls": 31.1,
+          "termination_counts": {
+            "terminal_answer": 10,
+            "unfinished:model_length_limit": 6,
+            "unfinished:context_exhausted": 4
+          }
+        }
+      },
+      "native_diagnostics": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_normalized_regret_on_submitted": 0.18015966295047361,
+          "normalized_regret_submitted_count": 20,
+          "mean_regret_on_submitted": 0.01834678761480053,
+          "regret_submitted_count": 20,
+          "optimal_action_count": 14,
+          "optimal_action_rate_all_cases": 0.7
+        },
+        "base": {
+          "n": 20,
+          "submitted": 7,
+          "mean_normalized_regret_on_submitted": 0.5857463543670002,
+          "normalized_regret_submitted_count": 7,
+          "mean_regret_on_submitted": 0.11805280554754502,
+          "regret_submitted_count": 7,
+          "optimal_action_count": 2,
+          "optimal_action_rate_all_cases": 0.1
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 10,
+          "mean_normalized_regret_on_submitted": 0.49723100022401573,
+          "normalized_regret_submitted_count": 10,
+          "mean_regret_on_submitted": 0.05681918580302324,
+          "regret_submitted_count": 10,
+          "optimal_action_count": 4,
+          "optimal_action_rate_all_cases": 0.2
+        }
+      },
+      "trained_minus_base": 0.10145942856975033,
+      "trained_minus_base_paired_bootstrap_95pct": [
+        -0.07574618456874535,
+        0.276891238286402
+      ],
+      "trained_wins": 7,
+      "ties": 11,
+      "base_wins": 2
+    },
+    "individual_counterfactual_probability": {
+      "n": 20,
+      "models": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_reward": 0.672885222528082,
+          "mean_observations": 54183.8,
+          "mean_budget_fraction": 0.9821482304164342,
+          "mean_tool_calls": 13.85,
+          "termination_counts": {
+            "terminal_answer": 20
+          }
+        },
+        "base": {
+          "n": 20,
+          "submitted": 0,
+          "mean_reward": 0.0,
+          "mean_observations": 2615.2,
+          "mean_budget_fraction": 0.06831647952741703,
+          "mean_tool_calls": 28.4,
+          "termination_counts": {
+            "unfinished:model_length_limit": 17,
+            "unfinished:unsupported_tool_or_arguments": 1,
+            "unfinished:context_exhausted": 2
+          }
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 2,
+          "mean_reward": 0.07835226832989006,
+          "mean_observations": 2306.8,
+          "mean_budget_fraction": 0.0837463198354922,
+          "mean_tool_calls": 39,
+          "termination_counts": {
+            "unfinished:model_length_limit": 13,
+            "terminal_answer": 2,
+            "unfinished:context_exhausted": 3,
+            "unfinished:unsupported_tool_or_arguments": 2
+          }
+        }
+      },
+      "native_diagnostics": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_mean_absolute_endpoint_error_on_submitted": 0.09026065824632472,
+          "mean_absolute_endpoint_error_submitted_count": 20
+        },
+        "base": {
+          "n": 20,
+          "submitted": 0
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 2,
+          "mean_mean_absolute_endpoint_error_on_submitted": 0.0816753930315767,
+          "mean_absolute_endpoint_error_submitted_count": 2
+        }
+      },
+      "trained_minus_base": 0.07835226832989006,
+      "trained_minus_base_paired_bootstrap_95pct": [
+        0.0,
+        0.1995048145542285
+      ],
+      "trained_wins": 2,
+      "ties": 18,
+      "base_wins": 0
+    },
+    "mediator_set": {
+      "n": 20,
+      "models": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_reward": 0.3185119047619048,
+          "mean_observations": 30774.3,
+          "mean_budget_fraction": 0.9335049293154762,
+          "mean_tool_calls": 25.15,
+          "termination_counts": {
+            "terminal_answer": 20
+          }
+        },
+        "base": {
+          "n": 20,
+          "submitted": 4,
+          "mean_reward": 0.04362128612128612,
+          "mean_observations": 3990.85,
+          "mean_budget_fraction": 0.19300711495535713,
+          "mean_tool_calls": 45.65,
+          "termination_counts": {
+            "unfinished:context_exhausted": 4,
+            "unfinished:model_length_limit": 11,
+            "terminal_answer": 4,
+            "unfinished:unsupported_tool_or_arguments": 1
+          }
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 2,
+          "mean_reward": 0.012878787878787878,
+          "mean_observations": 2276.6,
+          "mean_budget_fraction": 0.09444768996465774,
+          "mean_tool_calls": 39.95,
+          "termination_counts": {
+            "terminal_answer": 2,
+            "unfinished:context_exhausted": 3,
+            "unfinished:model_length_limit": 14,
+            "unfinished:unsupported_tool_or_arguments": 1
+          }
+        }
+      },
+      "native_diagnostics": {
+        "agent": {
+          "n": 20,
+          "submitted": 20,
+          "mean_mediator_f1_on_submitted": 0.2733333333333333,
+          "mediator_f1_submitted_count": 20,
+          "mean_order_f1_on_submitted": 0.3636904761904762,
+          "order_f1_submitted_count": 20,
+          "mediators_and_order_exact_count": 3,
+          "mediators_and_order_exact_rate_all_cases": 0.15
+        },
+        "base": {
+          "n": 20,
+          "submitted": 4,
+          "mean_mediator_f1_on_submitted": 0.13846153846153847,
+          "mediator_f1_submitted_count": 4,
+          "mean_order_f1_on_submitted": 0.29775132275132277,
+          "order_f1_submitted_count": 4,
+          "mediators_and_order_exact_count": 0,
+          "mediators_and_order_exact_rate_all_cases": 0.0
+        },
+        "checkpoint2350": {
+          "n": 20,
+          "submitted": 2,
+          "mean_mediator_f1_on_submitted": 0.16666666666666666,
+          "mediator_f1_submitted_count": 2,
+          "mean_order_f1_on_submitted": 0.09090909090909091,
+          "order_f1_submitted_count": 2,
+          "mediators_and_order_exact_count": 0,
+          "mediators_and_order_exact_rate_all_cases": 0.0
+        }
+      },
+      "trained_minus_base": -0.030742498242498244,
+      "trained_minus_base_paired_bootstrap_95pct": [
+        -0.07938542938542938,
+        0.017943722943722942
+      ],
+      "trained_wins": 1,
+      "ties": 15,
+      "base_wins": 4
+    },
+    "Overall": {
+      "n": 100,
+      "models": {
+        "agent": {
+          "n": 100,
+          "submitted": 100,
+          "mean_reward": 0.6959694608255553,
+          "mean_observations": 40425.6,
+          "mean_budget_fraction": 0.9285139635991992,
+          "mean_tool_calls": 20.62,
+          "termination_counts": {
+            "terminal_answer": 100
+          }
+        },
+        "base": {
+          "n": 100,
+          "submitted": 20,
+          "mean_reward": 0.1202924708014214,
+          "mean_observations": 4446.65,
+          "mean_budget_fraction": 0.14281807271504537,
+          "mean_tool_calls": 32.77,
+          "termination_counts": {
+            "unfinished:model_length_limit": 58,
+            "unfinished:unsupported_tool_or_arguments": 11,
+            "terminal_answer": 20,
+            "unfinished:context_exhausted": 11
+          }
+        },
+        "checkpoint2350": {
+          "n": 100,
+          "submitted": 24,
+          "mean_reward": 0.16386545772866531,
+          "mean_observations": 2990.68,
+          "mean_budget_fraction": 0.13023276644010287,
+          "mean_tool_calls": 35.23,
+          "termination_counts": {
+            "unfinished:context_exhausted": 17,
+            "unfinished:model_length_limit": 50,
+            "terminal_answer": 24,
+            "unfinished:unsupported_tool_or_arguments": 9
+          }
+        }
+      },
+      "native_diagnostics": {},
+      "trained_minus_base": 0.04357298692724391,
+      "trained_minus_base_paired_bootstrap_95pct": [
+        -0.028610826974250412,
+        0.11707432369107194
+      ],
+      "trained_wins": 19,
+      "ties": 68,
+      "base_wins": 13
+    }
+  },
+  "agent_comparison_validity": "exploratory_only_not_fair_controlled_comparison",
+  "agent_comparison_limitations": [
+    "20-case agent history versus fresh 9B context per case",
+    "agent native generation and complete-context budgets were not matched"
+  ],
+  "metric": "Native terminal-quality-v10 reward [0,1], higher is better; unfinished=0",
+  "context_note": "Five isolated agent conversations of 20 tasks; each 9B run starts fresh per task. Numerical state is fresh per task for all three. Internal reasoning-token budgets are not matched."
+}

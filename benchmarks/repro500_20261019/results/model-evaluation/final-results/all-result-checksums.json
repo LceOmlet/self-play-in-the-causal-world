@@ -1,0 +1,19 @@
+{
+  "comparison.json": "878267f3338f780e0dd6cd0f886ff3ca12ecdfd8a8af6eba9f8076fa2e0ed305",
+  "threeway-results.json": "f54dd90ea77bfca4270677696ed2ed9c2a82e8b3fc4b4edee302f708c0f8c3e8",
+  "COMPARISON.md": "43468d4202ad5c90a73b5fe737166c7c389d79c31475611f61d76daa4f69dcf8",
+  "base-agent-completion-proof.json": "a97b7996eaad4aa17e0752667703085e017908167fd9f4d8511ba01a49484522",
+  "threeway-results.csv": "37d550d7eccc811e4802400e86b5e67be5e8813b49787cc597165a42408ae3f5",
+  "pair-base/comparison.json": "6c4e3cabb4ed86deb7c6ba67164d01b9b76f20f713da08fde7b765beed801506",
+  "pair-base/paired-results.json": "b3f4b08673d895c66b50c43ba7c5d2ff494a3d67e0998179ff536e9f2892d712",
+  "pair-base/COMPARISON.md": "0f6b2a7b1add122ec4a5cdc040d2ae7c009b03aa80501b3286c2b4920d6f2b6e",
+  "pair-base/paired-results.csv": "80a3aba7f9572f7217e5eb00c27aeed4ef49a122fa98bd3ede3150a306f420da",
+  "pair-base/result-checksums.json": "06de3c2fd63152297ce101d7668d253e297a4b46e45553dcb9c133d5eafdd3ae",
+  "pair-base/transcripts.tar.gz": "b78c6e61039a226ccbd7b0dd27bc903751caefe1e85f4474c62319faf4062979",
+  "pair-checkpoint2350/comparison.json": "4ec3dcaf38cf09cd4b5616586d0b2114b9094b24f526a2cab3c3cba12fc6c89e",
+  "pair-checkpoint2350/paired-results.json": "910aba50887e53ca676daf8a87c521481c6d7a6980bc8c08f00d416918524556",
+  "pair-checkpoint2350/COMPARISON.md": "d7362783b6d2e63b5b229fb4eed07c64a8dad0bc099dbab33cd858f55b865c33",
+  "pair-checkpoint2350/paired-results.csv": "a0ddcf24326d3b8131e724735949109d3303dc9d8cdfbc7ed72276cfdb2d6671",
+  "pair-checkpoint2350/result-checksums.json": "0d544407336810828916c5d98a8756ab2e6471ea55475855acc43702b0c01757",
+  "pair-checkpoint2350/transcripts.tar.gz": "b685aeb92358ac0070c7a6ef93d675592813c633db45a54efd84656556545417"
+}

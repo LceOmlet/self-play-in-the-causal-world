@@ -245,3 +245,24 @@ reproduced exactly, with zero model API calls and no grade reads; receipt hashes
 are in `results/recorded-tool-replay-probe.json`. The probe owner was then stopped.
 `scripts/verify_recorded_tools.py` reproduces this mechanical check without
 printing tool contents. This probe is not an additional formal evaluation case.
+
+## Completed original/trained 9B pair
+
+Both 100-case model evaluations have ended with valid terminal records. Original
+9B submitted 20 final answers; checkpoint-2350 submitted 24. Their native mean
+rewards are **0.1203** and **0.1639**, respectively (difference **+0.0436**).
+The descriptive paired-bootstrap 95% interval is **[-0.0286, +0.1171]**, including
+zero. These results do not establish a reliable improvement from training.
+
+See [the model comparison](results/model-evaluation/MODEL_COMPARISON.md) for all
+five families and submitted denominators. Legal model failures score zero;
+infrastructure failures do not. The original returned first replies, successful
+completion prefixes, exact tool feedback and shared task/profile settings were
+verified for all 200 model records from the downloaded archives. The verifier is
+`scripts/verify_model_export.py`; its receipt is
+`results/model-evaluation/download-verification.json`.
+
+The archived `results/model-evaluation/final-results/` includes the old exploratory
+five-agent group with its comparison-validity warning. The fresh per-case native
+subagent replacement is still in progress. Its final comparison and audit remain
+required; completing the model pair does not complete the full experiment.

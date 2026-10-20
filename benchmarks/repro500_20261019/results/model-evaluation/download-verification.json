@@ -1,0 +1,22 @@
+{
+  "status": "verified",
+  "dataset_sha256": "c8cf45ae84272984bfd707982da7c8f2d8ae320f2f90820375595e6e970f2de5",
+  "paired_cases": 100,
+  "models": {
+    "base": {
+      "valid_terminated": 100,
+      "submitted": 20
+    },
+    "checkpoint2350": {
+      "valid_terminated": 100,
+      "submitted": 24
+    }
+  },
+  "continued_http_timeout_cases": 64,
+  "all_first_replies_and_returned_completions_preserved": true,
+  "all_replayed_tool_requests_and_feedback_identical": true,
+  "public_prompts_tools_capsules_budgets_identical": true,
+  "model_profile_and_request_limits_verified": true,
+  "downloaded_file_checksums_verified": 20,
+  "legacy_agent_comparison": "exploratory only; replacement native run is separate"
+}
