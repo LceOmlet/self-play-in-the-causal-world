@@ -83,9 +83,17 @@ def main():
     report = {'dataset_sha256':paired.read(paired.SUITE/'data/manifest.json')['tasks_merkle_input_sha256'],
         'paired_cases':100,'phase_counts':{'agent':100,'base':100,'checkpoint2350':100},
         'all_model_prompts_tools_capsules_match_agent':True,'groups':{},
+        'agent_comparison_validity': 'exploratory_only_not_fair_controlled_comparison',
+        'agent_comparison_limitations': ['20-case agent history versus fresh 9B context per case',
+            'agent native generation and complete-context budgets were not matched'],
         'metric':'Native terminal-quality-v10 reward [0,1], higher is better; unfinished=0',
         'context_note':'Five isolated agent conversations of 20 tasks; each 9B run starts fresh per task. Numerical state is fresh per task for all three. Internal reasoning-token budgets are not matched.'}
-    lines = ['# Three-way comparison on the same 100 frozen cases','',report['metric'],'',
+    lines = ['# Three-way results on the same 100 frozen cases','',
+        '**The existing agent run is exploratory, not a fair controlled comparison with 9B.**',
+        'Agents retained 20-case histories and did not have the same enforced native generation/context budgets. '
+        'Matching task prompts, tools, capsules and observation budgets is insufficient. '
+        'These results do not fulfill the requested fair agent comparison. The two 9B runs share a runner and profile.',
+        '',report['metric'],'',
         '| Family | n | Isolated agents | Original 9B | Checkpoint-2350 | Trained − base |',
         '|---|---:|---:|---:|---:|---:|']
     for group, ids in groups.items():

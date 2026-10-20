@@ -4,6 +4,23 @@ This directory freezes 100 fresh native tasks from each of five families (500
 total), and a predetermined subset of 20 per family (100 total) for a paired
 three-way evaluation: isolated agents, original Qwen3.5-9B, and checkpoint-2350.
 
+**Comparison validity correction:** the existing five-agent run does not satisfy
+the requested fair comparison with 9B. Each agent retained a 20-case conversation,
+and its complete context and generation budgets were not enforced like the 9B
+runner's. Identical task prompts, tools, capsules and observation budgets do not
+remove these differences. Existing agent scores are exploratory records only;
+they must not be presented as a controlled model comparison or as completion of
+the fair-comparison requirement. The original/trained 9B pair uses the same
+runner and profile and remains a separate comparison.
+
+A replacement agent run requires a fresh conversation for every case, the same
+owner and numerical sandbox, identical task prompts and tool schemas, enforced
+complete-context and per-turn generation limits, and recorded usage and terminal
+reasons. The current subagent interface cannot set or verify native generation
+token limits. A prompt asking the agent to stay within a limit is not enforcement.
+Do not launch or label a replacement run fair until these controls are available.
+Preserve all original runs; never overwrite or silently combine them with a rerun.
+
 Dataset SHA256: `c8cf45ae84272984bfd707982da7c8f2d8ae320f2f90820375595e6e970f2de5`.
 
 ## What is frozen
