@@ -18,8 +18,18 @@ owner and numerical sandbox, identical task prompts and tool schemas, enforced
 complete-context and per-turn generation limits, and recorded usage and terminal
 reasons. The current subagent interface cannot set or verify native generation
 token limits. A prompt asking the agent to stay within a limit is not enforcement.
-Do not launch or label a replacement run fair until these controls are available.
+Do not label a replacement run compute-matched until these controls are available.
 Preserve all original runs; never overwrite or silently combine them with a rerun.
+
+At the user's explicit request to test the native Codex subagents themselves,
+`serve_isolated_agents.py` now provides a separate replacement run with 100
+single-task capabilities. Each case is assigned a new `fork_turns=none` native
+subagent, without parent history, scores or cross-case access. It reuses the
+unchanged owner, public 32768-token accounting, observation budget and numerical
+sandbox. `isolated_agent_client.py` permits only prompt/act/numerics/finish for
+the one assigned case. The old five-agent run remains separate. This corrects
+cross-question isolation; hidden native reasoning and generation limits remain
+unobservable and are explicitly not claimed to match the 9B generation budget.
 
 Dataset SHA256: `c8cf45ae84272984bfd707982da7c8f2d8ae320f2f90820375595e6e970f2de5`.
 
