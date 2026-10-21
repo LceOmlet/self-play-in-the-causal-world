@@ -1,0 +1,104 @@
+{
+  "version": "training-rollout-v4-graphs-no-8k-20261021",
+  "training_configuration": "/home/chen/runs/official-numerics-group-from-zero-20260929/run-02/configuration.json",
+  "training_configuration_sha256": "19ec4b61dfbb0b7fd15de4b6f59d4f12f5769199ab36a812b532041402f04db8",
+  "training_settings": {
+    "max_completion_length": 31497,
+    "vllm_max_model_length": 32768,
+    "max_tool_calling_iterations": null,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "min_p": null,
+    "repetition_penalty": 1.0,
+    "generation_kwargs": null,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "num_generations": 4,
+    "generation_batch_size": 4,
+    "seed": 42,
+    "vllm_model_impl": "vllm",
+    "vllm_enable_prefix_caching": true,
+    "vllm_speculative_config": null,
+    "model_init_kwargs": {
+      "dtype": "bfloat16"
+    }
+  },
+  "engine_seed": 0,
+  "extra_per_turn_generation_cap": null,
+  "task_interface": "Frozen on-demand-data-v1.1, retained for all fixed eval100 cases",
+  "training_task_interface_identical": false,
+  "completion_budget_includes_tool_feedback": true,
+  "rollouts_per_evaluation_case": 1,
+  "evaluation_cases_per_model": 100,
+  "inference_batch_size": 4,
+  "generation_methods_unmodified": [
+    "_generate",
+    "_generate_single_turn",
+    "_tokenize_prompts",
+    "_tool_call_loop",
+    "_get_tool_suffix_ids"
+  ],
+  "method_source_sha256": {
+    "_generate": "97e74ddd8ba87796d47eac0da0febc8efaf07284c909e020ae050b97c5774d02",
+    "_generate_single_turn": "03c33ff5cd8342ec953daec307810e4b772eba5ee19cf6d658aea771a7efc0dc",
+    "_tokenize_prompts": "d2d27f7c9bfda85f1c3225785fa2f09466c428803be6afa8a6c46290f7171a15",
+    "_tool_call_loop": "cd912b830a7ba9b6514df7e163de9ed1012b7504c170e2b5ba880456e981740c",
+    "_get_tool_suffix_ids": "e62362aef61aa88c2e5ef8dc5889e6ba80823f0429898b01079570dbd9a11285",
+    "VLLMGeneration.generate": "969aba6c0ec20e24ba2a84882963313cd308fbc7a03b732ed36459578119c477",
+    "GRPOTrainer.__init__": "b42830885d5c8d660511e6b8820d67570b1f23150ec58f19ff34033f7b51c80c"
+  },
+  "protocol_source_sha256": {
+    "tool_mode.py": {
+      "evaluation_sha256": "c147fb6a5265e1ed5f88b5a9c008b540b961a188cfe23726d3ebeda61a019cdd",
+      "training_sha256": "99b7037258d785d1ce8e865a323e107df2a0c257175c0b62f900fb484aeef25d",
+      "identical": false
+    },
+    "secure_backend.py": {
+      "evaluation_sha256": "9a2f93f973c8601a745aa02d0666f6fdeb0a5a4b064cca2f4e98482e9072c930",
+      "training_sha256": "9a2f93f973c8601a745aa02d0666f6fdeb0a5a4b064cca2f4e98482e9072c930",
+      "identical": true
+    },
+    "nsjail-secure.cfg.in": {
+      "evaluation_sha256": "66a09ee72bd8212055bd1ff6f0dc9007b44358d6ca96394d5cc7eb775b365e22",
+      "training_sha256": "66a09ee72bd8212055bd1ff6f0dc9007b44358d6ca96394d5cc7eb775b365e22",
+      "identical": true
+    }
+  },
+  "processor_class": "Qwen3VLProcessor",
+  "tokenizer_class": "Qwen2Tokenizer",
+  "training_chat_template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+  "response_template_sha256": "8948ff9daf363cece207aa3cb17d580cdc9e3cd5d87a1c9365b4527aecf7140b",
+  "versions": {
+    "trl": "1.14.0+cpt.rollout1",
+    "transformers": "5.15.1",
+    "vllm": "0.26.0"
+  },
+  "checkpoint_adapter_sha256": "6600536b6139e0c8acda61402086c92e7e6ee3a35156d468c6131161cd58fbe3",
+  "checkpoint_adapter_config_sha256": "809d4bb1a1640e88568088a913e677f7e9d8991a83cffc6c0b52e6725670131f",
+  "base_model": "/home/chen/models/Qwen/Qwen3.5-9B",
+  "checkpoint_adapter": "/home/chen/runs/official-numerics-group-from-zero-20260929/run-02/checkpoints/checkpoint-2350",
+  "inference_only_differences": [
+    "No optimizer, loss, reward normalization, weight updates or repeated training samples.",
+    "One rollout per fixed evaluation case; batches contain four distinct cases rather than four copies of a training question.",
+    "Standalone inference engine keeps weights resident; no training/inference sleep cycle or external distributed launcher.",
+    "Checkpoint is an independently saved PEFT-merged BF16 snapshot using the training merge recipe; CPU merge arithmetic need not be bitwise identical to training GPU arithmetic.",
+    "GPU memory reservation and eager execution are inference resource settings, not token caps."
+  ],
+  "engine_execution": {
+    "enforce_eager": false,
+    "profile": "decode_graph_sync",
+    "compilation_config": {
+      "mode": 0,
+      "cudagraph_mode": "FULL_DECODE_ONLY"
+    },
+    "environment": {
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0"
+    },
+    "in_process_engine_resets_driver_rng": true,
+    "environment_randomness": "Frozen per-case OutcomeTape; independent of driver global RNG",
+    "tolerance_report_sha256": "80410f087bfe2b9b8f271e2ff9d1b1856f93fb9b62cc77acf956f91365fd18d6",
+    "same_profile_both_models": true
+  }
+}

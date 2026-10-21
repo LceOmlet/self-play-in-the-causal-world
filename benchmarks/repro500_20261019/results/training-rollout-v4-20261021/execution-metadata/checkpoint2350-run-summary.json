@@ -1,0 +1,505 @@
+{
+  "model": "checkpoint2350",
+  "tasks": [
+    {
+      "task_id": "ate-004",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-018",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-022",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-026",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-030",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-033",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-043",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-052",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-053",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-054",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-055",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-061",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-062",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-065",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-070",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-074",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "ate-076",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-085",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-090",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "ate-092",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-002",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-003",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-010",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-019",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-020",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-027",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-028",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-032",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-034",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-035",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-037",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-040",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-045",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-048",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-060",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-061",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-065",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "individual_counterfactual_probability-093",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-095",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "individual_counterfactual_probability-099",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-006",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-007",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-008",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-013",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-015",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-028",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-031",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "backadj_minimal_sets-033",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-034",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-036",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-038",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-043",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "backadj_minimal_sets-044",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-046",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-056",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-063",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-081",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "backadj_minimal_sets-088",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-089",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "backadj_minimal_sets-095",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-005",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-016",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "best_intervention-017",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-027",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-028",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-032",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-034",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-042",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-050",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-051",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "best_intervention-055",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "best_intervention-056",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-059",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-061",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-064",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-067",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-069",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-092",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-095",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "best_intervention-097",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-004",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "mediator_set-009",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-012",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-018",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-020",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "mediator_set-032",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-033",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-040",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "mediator_set-043",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-047",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-049",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "mediator_set-051",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-057",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-058",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "mediator_set-063",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-067",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-072",
+      "valid_terminated": true,
+      "submitted": false
+    },
+    {
+      "task_id": "mediator_set-077",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-086",
+      "valid_terminated": true,
+      "submitted": true
+    },
+    {
+      "task_id": "mediator_set-090",
+      "valid_terminated": true,
+      "submitted": true
+    }
+  ]
+}

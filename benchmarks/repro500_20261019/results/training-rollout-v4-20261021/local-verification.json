@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "downloaded_export_files_verified": 28,
+  "archive_bytes": 224928447,
+  "archive_sha256": "4b0e2f00e8659b2abaa13382fffba17c148a14615e5b7a61b793ae12c20ccddc",
+  "archive_members_verified": 823,
+  "full_generation_response_tokens": {
+    "base": 1665752,
+    "checkpoint2350": 1694508
+  },
+  "token_note": "Full sampled response tokens are counted from archived events; rollout_model_tokens count only tokens retained by the unchanged training completion-budget logic. All response outputs remain archived."
+}

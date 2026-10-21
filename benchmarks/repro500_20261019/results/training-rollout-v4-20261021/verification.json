@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "paired_cases": 100,
+  "all_requested_generation_caps_31497": true,
+  "extra_per_turn_8k_limit": false,
+  "all_prompts_tools_capsules_paired": true,
+  "all_budgets_match_fixed_cases": true,
+  "all_completions_follow_training_total_budget": true,
+  "raw_archive_files": 823,
+  "infrastructure_failures_scored_as_zero": 0
+}

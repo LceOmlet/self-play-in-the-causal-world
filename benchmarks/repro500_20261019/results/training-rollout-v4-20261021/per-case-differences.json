@@ -1,0 +1,1002 @@
+[
+  {
+    "task_id": "ate-004",
+    "family": "ate",
+    "base_reward": 0.5652071817943184,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.5652071817943184,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-018",
+    "family": "ate",
+    "base_reward": 0.4223693657970784,
+    "checkpoint_reward": 0.68673118482855,
+    "checkpoint_minus_base": 0.2643618190314716,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-022",
+    "family": "ate",
+    "base_reward": 0.21517665925451512,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.21517665925451512,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-026",
+    "family": "ate",
+    "base_reward": 0.1987307656842549,
+    "checkpoint_reward": 0.4342212288504507,
+    "checkpoint_minus_base": 0.23549046316619582,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-030",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-033",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.6107175626734893,
+    "checkpoint_minus_base": 0.6107175626734893,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-043",
+    "family": "ate",
+    "base_reward": 0.28010488079671947,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.28010488079671947,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-052",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.12694184530990882,
+    "checkpoint_minus_base": 0.12694184530990882,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-053",
+    "family": "ate",
+    "base_reward": 0.9200745760477547,
+    "checkpoint_reward": 0.057603807198738005,
+    "checkpoint_minus_base": -0.8624707688490166,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-054",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.6456098161679187,
+    "checkpoint_minus_base": 0.6456098161679187,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-055",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-061",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-062",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-065",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-070",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-074",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "ate-076",
+    "family": "ate",
+    "base_reward": 0.16386938461256653,
+    "checkpoint_reward": 0.16220558140483454,
+    "checkpoint_minus_base": -0.0016638032077319898,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-085",
+    "family": "ate",
+    "base_reward": 0.4260276981872283,
+    "checkpoint_reward": 0.4044379898504396,
+    "checkpoint_minus_base": -0.021589708336788693,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-090",
+    "family": "ate",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.635678799126628,
+    "checkpoint_minus_base": 0.635678799126628,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "ate-092",
+    "family": "ate",
+    "base_reward": 0.527558281290847,
+    "checkpoint_reward": 0.38089475191016664,
+    "checkpoint_minus_base": -0.1466635293806804,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-002",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.16846797397604693,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.16846797397604693,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-003",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.1523181947608847,
+    "checkpoint_reward": 0.103415232918795,
+    "checkpoint_minus_base": -0.04890296184208971,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-010",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.4988554427716821,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.4988554427716821,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-019",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-020",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.3083208903542446,
+    "checkpoint_reward": 0.3504480202296499,
+    "checkpoint_minus_base": 0.04212712987540529,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-027",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.5202252858360971,
+    "checkpoint_minus_base": 0.5202252858360971,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-028",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.5295689684755203,
+    "checkpoint_reward": 0.4819565899787237,
+    "checkpoint_minus_base": -0.04761237849679656,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-032",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.5108129813717768,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.5108129813717768,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-034",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.6002865087077119,
+    "checkpoint_reward": 0.3615096309758503,
+    "checkpoint_minus_base": -0.23877687773186163,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-035",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.3966134695601014,
+    "checkpoint_reward": 0.3966134695601014,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-037",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-040",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-045",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.07321880780516055,
+    "checkpoint_reward": 0.14128667569143735,
+    "checkpoint_minus_base": 0.0680678678862768,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-048",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.53512594472996,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.53512594472996,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-060",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.1692571064034181,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.1692571064034181,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-061",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.5124105775172285,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.5124105775172285,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-065",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.5137118042617136,
+    "checkpoint_reward": 0.5137118042617136,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "individual_counterfactual_probability-093",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.26400437988697006,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.26400437988697006,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-095",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.05008024295431878,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.05008024295431878,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "individual_counterfactual_probability-099",
+    "family": "individual_counterfactual_probability",
+    "base_reward": 0.32952358440867974,
+    "checkpoint_reward": 0.27282503185330165,
+    "checkpoint_minus_base": -0.05669855255537809,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-006",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.7142857142857143,
+    "checkpoint_minus_base": 0.7142857142857143,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-007",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.8571428571428571,
+    "checkpoint_reward": 0.8571428571428571,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-008",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.9285714285714286,
+    "checkpoint_minus_base": 0.9285714285714286,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-013",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.6428571428571429,
+    "checkpoint_minus_base": 0.6428571428571429,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-015",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.7142857142857143,
+    "checkpoint_reward": 0.7142857142857143,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-028",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 0.7857142857142857,
+    "checkpoint_minus_base": -0.1428571428571429,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-031",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.8571428571428571,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.8571428571428571,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "backadj_minimal_sets-033",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.0714285714285714,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-034",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 0.8571428571428571,
+    "checkpoint_minus_base": -0.07142857142857151,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-036",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 0.9285714285714286,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-038",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.6428571428571429,
+    "checkpoint_minus_base": 0.6428571428571429,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-043",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "backadj_minimal_sets-044",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.8571428571428571,
+    "checkpoint_reward": 0.8571428571428571,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-046",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.8571428571428571,
+    "checkpoint_reward": 0.8571428571428571,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-056",
+    "family": "backadj_minimal_sets",
+    "base_reward": 1.0,
+    "checkpoint_reward": 0.9285714285714286,
+    "checkpoint_minus_base": -0.0714285714285714,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-063",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.9285714285714286,
+    "checkpoint_minus_base": 0.9285714285714286,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-081",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.9285714285714286,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "backadj_minimal_sets-088",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.8571428571428571,
+    "checkpoint_minus_base": 0.8571428571428571,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-089",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 0.7857142857142857,
+    "checkpoint_minus_base": -0.1428571428571429,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "backadj_minimal_sets-095",
+    "family": "backadj_minimal_sets",
+    "base_reward": 0.9285714285714286,
+    "checkpoint_reward": 0.7857142857142857,
+    "checkpoint_minus_base": -0.1428571428571429,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-005",
+    "family": "best_intervention",
+    "base_reward": 1.0,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-016",
+    "family": "best_intervention",
+    "base_reward": 0.5072923407759622,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.5072923407759622,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "best_intervention-017",
+    "family": "best_intervention",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.505463903552184,
+    "checkpoint_minus_base": 0.505463903552184,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-027",
+    "family": "best_intervention",
+    "base_reward": 0.5055259098807868,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.49447409011921317,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-028",
+    "family": "best_intervention",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.505463903552184,
+    "checkpoint_minus_base": 0.505463903552184,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-032",
+    "family": "best_intervention",
+    "base_reward": 0.5222566485611778,
+    "checkpoint_reward": 0.5222566485611778,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-034",
+    "family": "best_intervention",
+    "base_reward": 1.0,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-042",
+    "family": "best_intervention",
+    "base_reward": 0.505463903552184,
+    "checkpoint_reward": 0.505463903552184,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-050",
+    "family": "best_intervention",
+    "base_reward": 1.0,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-051",
+    "family": "best_intervention",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "best_intervention-055",
+    "family": "best_intervention",
+    "base_reward": 0.021619361991176863,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.021619361991176863,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "best_intervention-056",
+    "family": "best_intervention",
+    "base_reward": 0.505463903552184,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.49453609644781604,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-059",
+    "family": "best_intervention",
+    "base_reward": 0.0,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 1.0,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-061",
+    "family": "best_intervention",
+    "base_reward": 1.0,
+    "checkpoint_reward": 0.505463903552184,
+    "checkpoint_minus_base": -0.49453609644781604,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-064",
+    "family": "best_intervention",
+    "base_reward": 0.0,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 1.0,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-067",
+    "family": "best_intervention",
+    "base_reward": 0.505463903552184,
+    "checkpoint_reward": 0.505463903552184,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-069",
+    "family": "best_intervention",
+    "base_reward": 1.0,
+    "checkpoint_reward": 0.505463903552184,
+    "checkpoint_minus_base": -0.49453609644781604,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-092",
+    "family": "best_intervention",
+    "base_reward": 0.6137833818590983,
+    "checkpoint_reward": 0.5146874391573479,
+    "checkpoint_minus_base": -0.09909594270175037,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-095",
+    "family": "best_intervention",
+    "base_reward": 1.0,
+    "checkpoint_reward": 1.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "best_intervention-097",
+    "family": "best_intervention",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.6981509590216302,
+    "checkpoint_minus_base": 0.6981509590216302,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-004",
+    "family": "mediator_set",
+    "base_reward": 0.3333333333333333,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.3333333333333333,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "mediator_set-009",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.5,
+    "checkpoint_minus_base": 0.5,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-012",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.375,
+    "checkpoint_minus_base": 0.375,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-018",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.150997150997151,
+    "checkpoint_minus_base": 0.150997150997151,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-020",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "mediator_set-032",
+    "family": "mediator_set",
+    "base_reward": 0.16374269005847952,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.16374269005847952,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-033",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-040",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "mediator_set-043",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-047",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-049",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "mediator_set-051",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.325,
+    "checkpoint_minus_base": 0.325,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-057",
+    "family": "mediator_set",
+    "base_reward": 0.3,
+    "checkpoint_reward": 0.5,
+    "checkpoint_minus_base": 0.2,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-058",
+    "family": "mediator_set",
+    "base_reward": 0.3,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.3,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "mediator_set-063",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.2,
+    "checkpoint_minus_base": 0.2,
+    "winner": "checkpoint2350",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-067",
+    "family": "mediator_set",
+    "base_reward": 0.3333333333333333,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": -0.3333333333333333,
+    "winner": "base",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-072",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": false
+  },
+  {
+    "task_id": "mediator_set-077",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.38333333333333336,
+    "checkpoint_minus_base": 0.38333333333333336,
+    "winner": "checkpoint2350",
+    "base_submitted": true,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-086",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  },
+  {
+    "task_id": "mediator_set-090",
+    "family": "mediator_set",
+    "base_reward": 0.0,
+    "checkpoint_reward": 0.0,
+    "checkpoint_minus_base": 0.0,
+    "winner": "tie",
+    "base_submitted": false,
+    "checkpoint_submitted": true
+  }
+]

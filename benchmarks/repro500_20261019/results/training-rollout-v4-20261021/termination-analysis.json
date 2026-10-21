@@ -1,0 +1,18 @@
+{
+  "base": {
+    "termination_reasons": {
+      "terminal_answer": 62,
+      "training_rollout_ended_without_terminal_answer": 38
+    },
+    "mean_observations_used": 7792.74,
+    "mean_queries_used": 14.59
+  },
+  "checkpoint2350": {
+    "termination_reasons": {
+      "training_rollout_ended_without_terminal_answer": 33,
+      "terminal_answer": 67
+    },
+    "mean_observations_used": 11015.86,
+    "mean_queries_used": 15.7
+  }
+}

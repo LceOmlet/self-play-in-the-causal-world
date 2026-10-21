@@ -1,0 +1,36 @@
+{
+  "measurement": "Wall clock from runner-source.json mtime to final progress.json mtime; event spans use recorded unix timestamps. Generation/tool busy time is interval union across cases, while request-seconds sum overlaps. No GPU occupancy inference.",
+  "models": {
+    "base": {
+      "generation_requests": 4317,
+      "tool_requests": 4215,
+      "rollout_model_tokens": 1665752,
+      "rollout_tool_feedback_tokens": 724856,
+      "rollout_completion_tokens": 2390608,
+      "start_unix": 1792575985.9426441,
+      "end_unix": 1792598547.1165206,
+      "end_to_end_seconds": 22561.17387652397,
+      "generation_busy_union_seconds": 22108.535599946976,
+      "generation_request_seconds_sum": 66699.0524969101,
+      "tool_busy_union_seconds": 279.791198015213,
+      "tool_request_seconds_sum": 279.791198015213,
+      "model_tokens_per_end_to_end_second": 73.83268304728142
+    },
+    "checkpoint2350": {
+      "generation_requests": 4217,
+      "tool_requests": 4138,
+      "rollout_model_tokens": 1694508,
+      "rollout_tool_feedback_tokens": 720237,
+      "rollout_completion_tokens": 2414745,
+      "start_unix": 1792598560.768386,
+      "end_unix": 1792621687.1276171,
+      "end_to_end_seconds": 23126.359231233597,
+      "generation_busy_union_seconds": 22577.69720172882,
+      "generation_request_seconds_sum": 67816.00469779968,
+      "tool_busy_union_seconds": 305.7282316684723,
+      "tool_request_seconds_sum": 305.7282316684723,
+      "model_tokens_per_end_to_end_second": 73.27171488850094
+    }
+  },
+  "serial_two_model_wall_seconds": 45701.18497300148
+}

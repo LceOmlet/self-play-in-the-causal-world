@@ -1,0 +1,3 @@
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+{"paired_cases": 100, "archive_files": 823}

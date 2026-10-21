@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "members_verified": 823,
+  "all_original_result_checksums_verified": true,
+  "archive_sha256": "4b0e2f00e8659b2abaa13382fffba17c148a14615e5b7a61b793ae12c20ccddc",
+  "all_parts_reread_and_reassembled_sha256_verified": true,
+  "runner_source_sha256": "4146f53f964b8f9aede8954faf5aebb59a7fa8084a547f8394ee96c112517073"
+}

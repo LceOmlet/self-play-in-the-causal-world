@@ -1,0 +1,23 @@
+{
+  "archive": "raw-rollouts.tar.gz",
+  "bytes": 224928447,
+  "sha256": "4b0e2f00e8659b2abaa13382fffba17c148a14615e5b7a61b793ae12c20ccddc",
+  "parts_in_order": [
+    {
+      "name": "raw-rollouts.tar.gz.part001",
+      "bytes": 83886080,
+      "sha256": "57f12ab8576824eebfd234a76f91c4a200b1d1634c899a46981b0571153fca85"
+    },
+    {
+      "name": "raw-rollouts.tar.gz.part002",
+      "bytes": 83886080,
+      "sha256": "1719368ac230423e3129442bb1d2d2e36a3603cf68783cc986947e6152680c23"
+    },
+    {
+      "name": "raw-rollouts.tar.gz.part003",
+      "bytes": 57156287,
+      "sha256": "75874cd5e336f30c3ec54f4d4028c3ad070ac26bde1bb8f6b07bd1c4f928aa21"
+    }
+  ],
+  "restore": "Concatenate the binary bytes of parts_in_order, then verify the full SHA256 before opening the gzip tar. The complete original tar remains on the remote host."
+}
