@@ -4,6 +4,15 @@ This directory freezes 100 fresh native tasks from each of five families (500
 total), and a predetermined subset of 20 per family (100 total) for a paired
 three-way evaluation: isolated agents, original Qwen3.5-9B, and checkpoint-2350.
 
+**Completed 2026-10-21:** all 500 capsules passed restoration verification and
+all three replacement comparison groups have 100 valid terminal records. The
+fresh per-case native agents scored **0.7052**, original 9B **0.1203**, and
+checkpoint-2350 **0.1639** mean native reward. Final-answer submissions are
+**100/100**, **20/100**, and **24/100**, respectively. Reward is not accuracy.
+See [the completed per-case comparison](results/native-agent-v2/COMPARISON.md),
+its per-case CSV/JSON, owner archive, dispatch provenance and verification receipt.
+This fixes cross-case agent history; native hidden compute remains unmatched.
+
 **Comparison validity correction:** the existing five-agent run does not satisfy
 the requested fair comparison with 9B. Each agent retained a 20-case conversation,
 and its complete context and generation budgets were not enforced like the 9B
@@ -81,7 +90,7 @@ synthetic restore regression tests. See `data/restoration-verification.json`
 for runtime and verification provenance. Its replay digest is
 `34b140909f6bef2da8f5e082c57e9a22e60a0300a335bcae6fda00086cdd5eea`.
 
-## Sealed evaluation
+## Legacy sealed evaluation and model recovery
 
 `server.py` provides the same act/numerics owner to five isolated family agents
 and the 9B runner. A role can open only its assigned IDs. Qwen cannot open any
@@ -263,6 +272,54 @@ verified for all 200 model records from the downloaded archives. The verifier is
 `results/model-evaluation/download-verification.json`.
 
 The archived `results/model-evaluation/final-results/` includes the old exploratory
-five-agent group with its comparison-validity warning. The fresh per-case native
-subagent replacement is still in progress. Its final comparison and audit remain
-required; completing the model pair does not complete the full experiment.
+five-agent group with its comparison-validity warning. It is excluded from the
+completed replacement comparison below.
+
+## Completed native per-case comparison
+
+| Family (20 cases each) | Native subagents | Original 9B | Checkpoint-2350 |
+|---|---:|---:|---:|
+| ATE | 0.6291 | 0.0309 | 0.0533 |
+| Backdoor adjustment sets | 0.9500 | 0.3000 | 0.3464 |
+| Best intervention | 0.8757 | 0.2269 | 0.3284 |
+| Individual counterfactual | 0.6774 | 0.0000 | 0.0784 |
+| Mediator set | 0.3938 | 0.0436 | 0.0129 |
+| Overall | 0.7052 | 0.1203 | 0.1639 |
+
+The native group beats checkpoint-2350 on 80 paired cases, ties on 15, and loses
+on 5; mean difference +0.5414, descriptive paired-bootstrap 95% interval
+[+0.4616, +0.6201]. Against original 9B the counts are 85/13/2, difference
++0.5849, interval [+0.5098, +0.6580]. These describe this fixed evaluation,
+not equal hidden reasoning/generation compute or run-to-run variability.
+
+All 100 native agents ended with a submitted terminal answer. Mean owner
+act/numerics calls are 20.29 / 32.77 / 35.23 for native / original / trained;
+mean observation-budget utilization is 96.56% / 14.28% / 13.02%. Native agents
+used the available observations much more fully. Most model non-submissions
+ended at legal generation/context limits; infrastructure failures are excluded
+and their exact recovery evidence remains in the model archive.
+
+`scripts/compile_native_v2.py` first gates on 100 owner terminals, checks all
+single-task roles, task prompts/tools/capsules/budgets/initial public token
+counts against both model owners, and exports credential-free raw records.
+Its local comparison verifies every downloaded archive hash and checks every
+model counterpart against the previously verified model archives. The native
+archive contains 2,338 owner/source files including requests, responses and
+request-cache receipts. Numerical code/output is retained in owner events;
+hidden Codex reasoning is unavailable.
+
+`scripts/audit_native_dispatch.py` verifies 100 unique native solver names.
+The coordinator recorded 62 actual solver prompt digests, all matching the
+committed template; the initial 38 parent dispatches have no index prompt
+digest. Their fresh fork setting was checked against execution records. This
+provenance limitation is retained explicitly rather than inventing receipts.
+The protocol JSON was copied to the remote suite during export; it documents
+the pre-existing local committed protocol, while source hashes and owner role
+checks verify the executed interface separately.
+
+Results and full owner traces are in `results/native-agent-v2/`; the old agent
+group is never pooled into them. All assigned groups are complete, with no
+unresolved transport/executor failure. No native score was read until all 100
+native owner terminal files existed. Overall Codex system instructions,
+generation limits and hidden reasoning usage cannot be asserted identical
+to the 9B profile.

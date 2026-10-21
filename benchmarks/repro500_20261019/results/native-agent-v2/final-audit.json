@@ -1,0 +1,31 @@
+{
+  "completed_date_local": "2026-10-21",
+  "frozen_cases": 500,
+  "restoration_receipt": "../../data/restoration-verification.json",
+  "native_terminal_cases": 100,
+  "original_9b_terminal_cases": 100,
+  "checkpoint2350_terminal_cases": 100,
+  "native_final_answer_submissions": 100,
+  "original_9b_final_answer_submissions": 20,
+  "checkpoint2350_final_answer_submissions": 24,
+  "same_fixed_eval100_selection": true,
+  "native_owner_pairing_and_download_verification": "download-verification.json",
+  "single_task_capability_and_terminal_receipts": "owner-audit.json",
+  "dispatch_provenance": "dispatch-provenance.json",
+  "native_archive_files": 2338,
+  "native_archive_role_credential_scan_passed": true,
+  "model_verification_receipt": "../model-evaluation/download-verification.json",
+  "new_native_scores_opened_only_after_all_100_terminal": true,
+  "legacy_agent_results_pooled": false,
+  "sampling_retries": 0,
+  "unresolved_transport_or_executor_failures": 0,
+  "export_completion_and_role_gate_tests_passed": 3,
+  "strict_native_hidden_compute_match": false,
+  "limitations": [
+    "Native hidden reasoning, generation usage and complete system context are unavailable or not controllable; this is not a strict compute-matched model comparison.",
+    "The first 38 solver dispatches have no prompt SHA receipt in their index; fresh fork settings were checked against execution records. The remaining 62 prompt digests match the committed solver template.",
+    "The remote protocol JSON was copied during export from the committed local protocol; it is not a runtime-produced receipt.",
+    "Reward is not accuracy. Bootstrap intervals describe paired cases in this fixed run, not run-to-run variability.",
+    "Legal model non-submissions remain zero reward and are distinct from excluded and recovered infrastructure failures."
+  ]
+}

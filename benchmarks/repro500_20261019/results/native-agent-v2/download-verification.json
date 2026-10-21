@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "cases": 100,
+  "archive_files": 2338,
+  "all_archive_hashes_match": true,
+  "all_prompts_tools_capsules_budgets_initial_public_tokens_match_both_models": true,
+  "owner_capsule_server_and_protocol_source_match_local": true,
+  "both_model_archived_terminal_records_match_previously_verified_results": true
+}

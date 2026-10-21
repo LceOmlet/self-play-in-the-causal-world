@@ -1,0 +1,14 @@
+{
+  "archive-members-sha256.json": "7335487c61fc669d4c0aa1a8f789395c593507939310fa11d49b7ed8f2ca91c6",
+  "comparison.json": "b3aff9ce6901849690d500bb254725ffa0b061dad0ebeae142e573278203a3f2",
+  "COMPARISON.md": "664f0ab6e67058ac2cad095bcc4ac5e57fcaf2c44485ae07258fc26c429f6719",
+  "dispatch-provenance.json": "82ecfa670191506641dc7a1ad9dbe588dc45bcb397c3c757a1d95c5344db9690",
+  "download-verification.json": "7d9077d36b004ae2c43c6c8ea7eb82761472b80b4fbf6e65515eb175b1bd2ae3",
+  "export-sha256.json": "4aa4f0f5838891821bbfc6a1b6c0b8f4f9760c0395a34dee3e75fa635d77e966",
+  "final-audit.json": "5d626c6abb64190be5dee3640f05b26d9896c7992178625393fb28973a70b5a8",
+  "native-owner-transcripts.tar.gz": "fce624b3a0b5c0b5b3039ba62094935841de71145db3236f65ea408f81a4dfa9",
+  "native-results.json": "dd875df2a899f4776dd267441a43056f8ab10f9af9d8fa2be96fe3a235b918c8",
+  "owner-audit.json": "0ea5b6dfb4e93c9a3f9e215aa6f80c1c8c4d25083f5d6a739f3f32d0fb4e0b7a",
+  "threeway-results.csv": "b391987b387e6a8cad7feaa78a9d43ce2ce08acf97ebe46dcc058aefd189cc45",
+  "threeway-results.json": "928ef5a40b42d68c3ad850debf653f09ed15cbfde36b482ece65e9388377e48b"
+}
