@@ -91,7 +91,7 @@ def compile_run(root, output):
         assert read(receipt)['passed']
         sources.append((receipt,'source/tolerance-report.json'))
         for name in ('scripts/run_graph_rollout_pipeline.py','scripts/vllm_speed_tolerance.py',
-                     'scripts/tests_vllm_tolerance_gate.py'):
+                     'scripts/vllm_decode_graphs_tolerance.py','scripts/tests_vllm_tolerance_gate.py'):
             sources.append((SUITE/name,'source/'+name))
     with tarfile.open(output/'raw-rollouts.tar.gz','w:gz') as archive:
         for path,name in sources:

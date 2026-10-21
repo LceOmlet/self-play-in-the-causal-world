@@ -309,13 +309,15 @@ def merge_checkpoint(output):
 
 def run_model(args):
     contract = validate_contract(args.contract)
-    if args.engine_profile == 'graph':
+    if args.engine_profile != 'eager':
         evidence = read(args.tolerance_report)
+        assert evidence.get('engine_profile','graph') == args.engine_profile
         assert evidence['passed'] and all(evidence['models'][m]['passed']
             for m in ('base','checkpoint2350')), 'Both model gates must pass before evaluation'
         contract = copy.deepcopy(contract)
         contract['version'] = 'training-rollout-v4-graphs-no-8k-20261021'
-        contract['engine_execution'] = {'enforce_eager':False,
+        contract['engine_execution'] = {'enforce_eager':False,'profile':args.engine_profile,
+            'compilation_config':evidence.get('compilation_config','vLLM default'),
             'tolerance_report_sha256':digest(args.tolerance_report.read_bytes()),
             'same_profile_both_models':True}
     config = contract['training_settings']
@@ -352,7 +354,9 @@ def run_model(args):
         gpu_memory_utilization=0.75,max_num_batched_tokens=4096,
         seed=contract['engine_seed'],enable_prefix_caching=True,
         model_impl=config['vllm_model_impl'],enforce_eager=args.engine_profile == 'eager',
-        logprobs_mode='processed_logprobs',limit_mm_per_prompt={'image':0,'video':0})
+        logprobs_mode='processed_logprobs',limit_mm_per_prompt={'image':0,'video':0},
+        **({'compilation_config':{'mode':0,'cudagraph_mode':'FULL_DECODE_ONLY'}}
+           if args.engine_profile == 'decode_graph' else {}))
     write(runtime/'engine-execution.json',{'profile':args.engine_profile,
         'compilation_config':str(llm.llm_engine.vllm_config.compilation_config),
         'max_model_len':32768,'max_completion_length':31497})
@@ -447,7 +451,7 @@ if __name__ == '__main__':
     parser.add_argument('--contract',type=Path)
     parser.add_argument('--runtime',type=Path)
     parser.add_argument('--merged-checkpoint',type=Path)
-    parser.add_argument('--engine-profile',choices=('eager','graph'),default='eager')
+    parser.add_argument('--engine-profile',choices=('eager','graph','decode_graph'),default='eager')
     parser.add_argument('--tolerance-report',type=Path)
     arguments = parser.parse_args()
     if arguments.capture_contract:

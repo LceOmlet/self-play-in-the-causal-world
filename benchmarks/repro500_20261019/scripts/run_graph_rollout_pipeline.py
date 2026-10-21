@@ -1,4 +1,5 @@
 """Wait for the predeclared two-model experiment, then run a fresh unified eval."""
+import argparse
 import subprocess
 import sys
 import time
@@ -11,7 +12,7 @@ LAB = ROOT/'vllm-speed-tolerance-20261021'
 OUTPUT = ROOT/'training-rollout-v4-20261021'
 
 
-def main():
+def main(lab=LAB,profile='graph'):
     OUTPUT.mkdir(exist_ok=False)
     def status(stage,**kw):
         write(OUTPUT/'pipeline-status.json',{'stage':stage,'updated_unix':time.time(),**kw})
@@ -21,13 +22,14 @@ def main():
     try:
         status('waiting_for_tolerance_gate')
         while True:
-            state = read(LAB/'status.json')
+            state = read(lab/'status.json')
             if state['stage'] == 'failed':
                 raise RuntimeError('Tolerance experiment infrastructure failed; evaluation not started')
             if state['stage'] == 'complete':
                 break
             time.sleep(20)
-        report = read(LAB/'report.json')
+        report = read(lab/'report.json')
+        assert report.get('engine_profile','graph') == profile
         assert report['passed'], 'Predeclared speed/numeric gate failed; evaluation not started'
         write(OUTPUT/'tolerance-report.json',report)
         sys.path.insert(0,str(SUITE/'frozen/protocol'))
@@ -45,7 +47,7 @@ def main():
             status('running_'+model)
             run([SUITE/'run_training_rollout.py','--model',model,
                 '--contract',ROOT/'training-rollout-v3-contract.json','--runtime',OUTPUT/model,
-                '--merged-checkpoint',merged,'--engine-profile','graph',
+                '--merged-checkpoint',merged,'--engine-profile',profile,
                 '--tolerance-report',OUTPUT/'tolerance-report.json'],model+'.log')
             assert read(OUTPUT/model/'progress.json')['completed'] == 100
         status('exporting')
@@ -59,4 +61,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--lab',type=Path,default=LAB)
+    parser.add_argument('--engine-profile',choices=('graph','decode_graph'),default='graph')
+    args = parser.parse_args()
+    main(args.lab,args.engine_profile)
