@@ -1,0 +1,21 @@
+{
+  "source_adapter": "/home/chen/runs/official-numerics-group-from-zero-20260929/run-02/checkpoints/checkpoint-2350",
+  "source_adapter_sha256": "6600536b6139e0c8acda61402086c92e7e6ee3a35156d468c6131161cd58fbe3",
+  "source_base": "/home/chen/models/Qwen/Qwen3.5-9B",
+  "base_dtype": "bfloat16",
+  "adapter_dtype": "float32",
+  "merge": "PEFT merge_and_unload; same merge recipe as training weight synchronization",
+  "merge_device": "cpu",
+  "sources_modified": false,
+  "files": {
+    "model-00001-of-00006.safetensors": "dd63614f1dc80dce2d83be3f3e69af1f8a0ebc8add9b8e0abf3910f563e44344",
+    "model-00006-of-00006.safetensors": "db688e61fd7575e8537120bc7aaeff043d31d6ca2bafa14df1135c969a081013",
+    "model-00002-of-00006.safetensors": "ca5cd63af90ddfe5177f253487889cc05d12f7950a880018a7e1e5e0f821a732",
+    "model-00003-of-00006.safetensors": "b48bf1f5999b38bdd6414985a58a0d97cef8f5014a0e8122f0341e0905e8036e",
+    "model-00004-of-00006.safetensors": "03a5c19ee573d78ded6831bcea77f28745e52151daa028d621df5d4eead713b9",
+    "generation_config.json": "9dec65a86d712b56f1d049911c916dc97c8580fdbe77fee45e163f99a58ceecd",
+    "model.safetensors.index.json": "3d2f0ab780828a41449b9f32fee63e6ee0d27bf98fab0e52aa982f81e6c47cec",
+    "config.json": "3fa3504b9bb071cbd78bce935f0a172198fd77e3448ecd533672f3543aff40ea",
+    "model-00005-of-00006.safetensors": "ebc0313e7e38e052338af9360298c461e4376bc988c58ff1b760fc0db613d65e"
+  }
+}

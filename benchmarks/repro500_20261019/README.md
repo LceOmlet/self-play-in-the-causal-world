@@ -4,6 +4,16 @@ This directory freezes 100 fresh native tasks from each of five families (500
 total), and a predetermined subset of 20 per family (100 total) for a paired
 three-way evaluation: isolated agents, original Qwen3.5-9B, and checkpoint-2350.
 
+**2026-10-21 rollout correction and new two-model test:** the earlier 9B results
+below used a separate custom runner, temperature 0 and an extra 8192-token
+per-request generation cap. They do not measure the training rollout protocol
+and must not support a decision to replace GRPO with PPO. The user requested
+both 9B groups be rerun. The independent v3 run reuses the installed training
+TRL generation methods, temperature 1, 32768 context and 31497 total rollout
+completion budget, including tool feedback, with no extra per-turn cap. Old
+scores and traces remain archived; they will not be overwritten or pooled.
+The new two-model run is in progress, so its scores are not reported yet.
+
 **Completed 2026-10-21:** all 500 capsules passed restoration verification and
 all three replacement comparison groups have 100 valid terminal records. The
 fresh per-case native agents scored **0.7052**, original 9B **0.1203**, and
@@ -323,3 +333,63 @@ unresolved transport/executor failure. No native score was read until all 100
 native owner terminal files existed. Overall Codex system instructions,
 generation limits and hidden reasoning usage cannot be asserted identical
 to the 9B profile.
+
+## Training-rollout v3 rerun: no extra 8K generation cap
+
+`training_rollout_v3_contract.json` records the actual run-02 training configuration,
+generation method hashes, response parser/template fingerprints and differences
+in the evaluation setup. Training uses `max_completion_length=31497`,
+`vllm_max_model_length=32768`, temperature 1, top_p 1, top_k 0, repetition penalty 1
+and `enable_thinking=false`. The actual colocated TRL backend uses engine seed 0
+for rank 0; the training configuration's broader seed is 42. These are distinct
+settings and are recorded separately.
+
+`run_training_rollout.py` calls the installed, unchanged `GRPOTrainer._generate`,
+`_generate_single_turn`, `_tokenize_prompts`, `_tool_call_loop` and
+`_get_tool_suffix_ids`, and `VLLMGeneration.generate`. It does not reimplement
+those methods. A generation-only Trainer object supplies the same processor,
+training chat template, environment tool bindings, sampling settings and backend
+configuration; no optimizer/loss or weight update is created. Logging wrappers
+record inputs/results without altering generation or tool outputs. The engine
+receives the training `max_tokens=31497` on every call; upstream context handling
+and total completion truncation apply. This is not 31497 fresh usable tokens
+after every tool result: tool feedback and prior generated tokens share the
+rollout budget.
+
+The previous custom `run_9b.py` differed in more than the 8K cap: it re-rendered
+and re-counted the whole conversation, used OpenAI API tool parsing rather than
+the training Transformers response parser, terminated on invalid tool arguments
+instead of returning upstream error feedback, and stopped immediately when the
+owner accepted a final answer rather than generating the training acknowledgement.
+Its source and complete prior outputs are preserved as legacy evidence.
+
+The new tests retain exactly the frozen 100 cases and the **final on-demand-data
+v1.1 environment**: `act` returns a storage receipt, not the full sampled result;
+the original legal observation is stored by the trusted per-case adapter and
+provided to that case's NsJail numerical session through `public['observations']`.
+No replacement causal sampler or grader is introduced. The actual checkpoint
+training used an older adapter that automatically returned observation feedback,
+with a different stored-feedback representation. Only the requested rollout
+generation logic is matched to training; the frozen final task interface is
+intentionally retained and the difference is explicit. Secure backend and NsJail
+configuration hashes match the training sources exactly.
+
+Each model gets one independent rollout per task, 100 total, in batches of four
+distinct evaluation cases. Training's four responses per question support group
+advantages and are not an evaluation requirement. The original model and
+checkpoint use separate fresh processes and numerical states. The checkpoint is
+loaded from a separately saved BF16 PEFT merge of the original base and unchanged
+checkpoint-2350 adapter, following training's merge recipe. CPU merge arithmetic,
+standalone engine scheduling and eager execution are not claimed bitwise identical
+to the training GPU process. These differences and source hashes are recorded.
+
+`scripts/tests_training_rollout.py` checks the actual installed methods using
+synthetic outputs: generation beyond 8192 tokens, tool continuation and final
+acknowledgement, unknown-tool error feedback, overlong-tool-result rollback and
+post-tool total-budget clipping. The one-shot pipeline runs these checks before
+starting either model. It starts the original model first and checkpoint second,
+blocks on infrastructure failure, and refuses automatic restarts or resampling.
+No paused training or unrelated monitor is resumed. After both sets of 100 end,
+`scripts/compile_training_rollout.py` verifies pairing and exports scores and
+complete raw token/tool records separately. Progress counts are completed
+rollouts, not claims that every case has a submitted answer.

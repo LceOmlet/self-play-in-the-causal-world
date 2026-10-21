@@ -1,0 +1,26 @@
+{
+  "version": "training-rollout-v3-no-8k-20261021",
+  "date_local": "2026-10-21",
+  "pipeline_service": "cpt-numerics-repro500-training-rollout-v3-20261021.service",
+  "remote_runtime": "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021",
+  "status_at_verification": "running_base",
+  "base_started": 4,
+  "base_completed": 0,
+  "checkpoint_completed": 0,
+  "checkpoint_merge_complete": true,
+  "actual_first_generation_requests_verified": [
+    {"task_id": "ate-004", "max_tokens": 31497, "prompt_tokens": 2148},
+    {"task_id": "ate-018", "max_tokens": 31497, "prompt_tokens": 2223},
+    {"task_id": "ate-022", "max_tokens": 31497, "prompt_tokens": 2235},
+    {"task_id": "ate-026", "max_tokens": 31497, "prompt_tokens": 2045}
+  ],
+  "synthetic_upstream_generation_tests_passed": 5,
+  "extra_per_turn_8192_token_cap": false,
+  "legacy_8k_api_process_retired": true,
+  "old_records_overwritten": false,
+  "paused_training_resumed": false,
+  "task_interface": "Final frozen on-demand-data-v1.1",
+  "training_generation_methods_reused_unchanged": true,
+  "all_conditions_identical_to_training": false,
+  "configuration_and_scope": "../../training_rollout_v3_contract.json"
+}
