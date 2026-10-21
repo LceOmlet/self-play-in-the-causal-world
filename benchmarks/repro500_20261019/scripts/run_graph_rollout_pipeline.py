@@ -66,6 +66,6 @@ def main(lab=LAB,profile='graph'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--lab',type=Path,default=LAB)
-    parser.add_argument('--engine-profile',choices=('graph','decode_graph'),default='graph')
+    parser.add_argument('--engine-profile',choices=('graph','decode_graph','decode_graph_sync'),default='graph')
     args = parser.parse_args()
     main(args.lab,args.engine_profile)

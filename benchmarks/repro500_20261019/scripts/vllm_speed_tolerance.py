@@ -69,7 +69,7 @@ def prepare():
         'official_source':'https://raw.githubusercontent.com/vllm-project/vllm/v0.26.0/tests/models/utils.py'})
 
 
-def worker(model,mode,repeat):
+def worker(model,mode,repeat,*,shapes=('mixed','clone')):
     from vllm import LLM, SamplingParams
     fixtures = read(LAB/'fixtures.json')
     started = time.monotonic()
@@ -101,7 +101,7 @@ def worker(model,mode,repeat):
             probes.append({'fixture':f['id'],'offset':offset,'target':target,
                            'prefix_sha256':digest(json.dumps(prefix).encode()),'logprob':value})
     timings = []
-    for shape in ('mixed','clone'):
+    for shape in shapes:
         prefixes = [f['prefix'] for f in fixtures[:4]]
         if shape == 'clone':
             prefixes = [prefixes[0]]*4

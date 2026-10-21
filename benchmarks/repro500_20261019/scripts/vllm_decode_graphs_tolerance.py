@@ -18,7 +18,7 @@ LAB = FIRST.parent/'vllm-decode-graphs-tolerance-20261021'
 CONFIG = {'mode':0,'cudagraph_mode':'FULL_DECODE_ONLY'}
 
 
-def worker(model,repeat):
+def worker(model,repeat,*,shapes=('mixed','clone')):
     # Same measurements and ordering as original.worker, with explicit eager
     # operators + decode graphs replacing default Inductor compilation.
     import math
@@ -54,7 +54,7 @@ def worker(model,repeat):
             probes.append({'fixture':f['id'],'offset':offset,'target':target,
                            'prefix_sha256':digest(__import__('json').dumps(prefix).encode()),'logprob':value})
     timings = []
-    for shape in ('mixed','clone'):
+    for shape in shapes:
         prefixes = [f['prefix'] for f in fixtures[:4]]
         if shape == 'clone':
             prefixes = [prefixes[0]]*4

@@ -313,12 +313,19 @@ def run_model(args):
         evidence = read(args.tolerance_report)
         assert evidence['acceptance_policy'] == 'official-only-vllm-v0.26.0', 'Withdrawn project tolerances cannot authorize evaluation'
         assert evidence.get('engine_profile','graph') == args.engine_profile
+        if args.engine_profile.startswith('decode_graph'):
+            assert evidence['compilation_config'] == {'mode':0,'cudagraph_mode':'FULL_DECODE_ONLY'}
+        for name,value in evidence.get('environment',{}).items():
+            assert os.environ.get(name) == value, 'Engine environment differs from official comparison: '+name
         assert evidence['passed'] and all(evidence['models'][m]['passed']
             for m in ('base','checkpoint2350')), 'Both model gates must pass before evaluation'
         contract = copy.deepcopy(contract)
         contract['version'] = 'training-rollout-v4-graphs-no-8k-20261021'
         contract['engine_execution'] = {'enforce_eager':False,'profile':args.engine_profile,
             'compilation_config':evidence.get('compilation_config','vLLM default'),
+            'environment':evidence.get('environment',{}),
+            'in_process_engine_resets_driver_rng':args.engine_profile == 'decode_graph_sync',
+            'environment_randomness':'Frozen per-case OutcomeTape; independent of driver global RNG',
             'tolerance_report_sha256':digest(args.tolerance_report.read_bytes()),
             'same_profile_both_models':True}
     config = contract['training_settings']
@@ -357,8 +364,9 @@ def run_model(args):
         model_impl=config['vllm_model_impl'],enforce_eager=args.engine_profile == 'eager',
         logprobs_mode='processed_logprobs',limit_mm_per_prompt={'image':0,'video':0},
         **({'compilation_config':{'mode':0,'cudagraph_mode':'FULL_DECODE_ONLY'}}
-           if args.engine_profile == 'decode_graph' else {}))
+           if args.engine_profile.startswith('decode_graph') else {}))
     write(runtime/'engine-execution.json',{'profile':args.engine_profile,
+        'environment':{name:os.environ.get(name) for name in contract.get('engine_execution',{}).get('environment',{})},
         'compilation_config':str(llm.llm_engine.vllm_config.compilation_config),
         'max_model_len':32768,'max_completion_length':31497})
     proxy = LoggedLLM(llm)
@@ -452,7 +460,7 @@ if __name__ == '__main__':
     parser.add_argument('--contract',type=Path)
     parser.add_argument('--runtime',type=Path)
     parser.add_argument('--merged-checkpoint',type=Path)
-    parser.add_argument('--engine-profile',choices=('eager','graph','decode_graph'),default='eager')
+    parser.add_argument('--engine-profile',choices=('eager','graph','decode_graph','decode_graph_sync'),default='eager')
     parser.add_argument('--tolerance-report',type=Path)
     arguments = parser.parse_args()
     if arguments.capture_contract:

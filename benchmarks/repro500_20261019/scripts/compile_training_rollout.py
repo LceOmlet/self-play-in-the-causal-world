@@ -93,6 +93,8 @@ def compile_run(root, output):
         sources.append((receipt,'source/tolerance-report.json'))
         for name in ('scripts/run_graph_rollout_pipeline.py','scripts/vllm_speed_tolerance.py',
                      'scripts/vllm_decode_graphs_tolerance.py','scripts/official_vllm_validation.py',
+                     'scripts/vllm_sync_graphs_tolerance.py',
+                     'scripts/vllm_matched_schedule.py',
                      'scripts/tests_official_vllm_validation.py'):
             sources.append((SUITE/name,'source/'+name))
     with tarfile.open(output/'raw-rollouts.tar.gz','w:gz') as archive:
