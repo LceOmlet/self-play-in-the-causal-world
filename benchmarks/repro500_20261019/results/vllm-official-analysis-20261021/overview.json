@@ -1,0 +1,138 @@
+{
+  "status": "Official checks passed; fresh serial evaluation running",
+  "acceptance_policy": "official-only-vllm-v0.26.0",
+  "project_numeric_epsilon": null,
+  "models": {
+    "base": {
+      "official_graph_comparisons_passed": 32,
+      "official_graph_comparisons_total": 32,
+      "exact_token_id_comparisons": 32,
+      "official_batching_bridge_passed": true,
+      "warmed_mixed_tokens_per_second": {
+        "eager": 61.13103464813915,
+        "candidate": 190.41949430661595
+      },
+      "warmed_speedup": 3.114939823980427,
+      "fixed_context_target_logprob_max_delta_descriptive_only": 0.0
+    },
+    "checkpoint2350": {
+      "official_graph_comparisons_passed": 32,
+      "official_graph_comparisons_total": 32,
+      "exact_token_id_comparisons": 32,
+      "official_batching_bridge_passed": true,
+      "warmed_mixed_tokens_per_second": {
+        "eager": 62.34993381970369,
+        "candidate": 190.56547473590814
+      },
+      "warmed_speedup": 3.056386158916596,
+      "fixed_context_target_logprob_max_delta_descriptive_only": 0.0
+    }
+  },
+  "recipe": {
+    "enforce_eager": false,
+    "compilation_config": {
+      "mode": 0,
+      "cudagraph_mode": "FULL_DECODE_ONLY"
+    },
+    "environment": {
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0"
+    },
+    "same_profile_both_models": true,
+    "unmodified_training_generation_methods": true,
+    "max_model_length": 32768,
+    "max_total_rollout_completion_including_feedback": 31497,
+    "extra_8k_per_turn_cap": false,
+    "frozen_interface": "on-demand-data-v1.1",
+    "prompts_changed": false
+  },
+  "official_rules": {
+    "graph": "Same fixed scheduling on both sides; upstream TestFullCUDAGraph full greedy text.lower equality",
+    "scheduling_bridge": "Original asynchronous to fixed scheduling only: upstream hybrid test_batching/check_logprobs_close first-divergence reciprocal top5"
+  },
+  "scope": {
+    "prefixes": 8,
+    "greedy_tokens": 128,
+    "independent_process_repeats_per_mode_per_model": 2,
+    "numeric_probe_contexts_per_run": 24,
+    "probe_logprob_deltas_are_descriptive_only": true,
+    "warmed_speedup_is_not_a_full_task_wall_time_guarantee": true,
+    "no_full_vocabulary_or_arbitrary_future_trajectory_guarantee": true,
+    "upstream_comparison_logic_ported_to_actual_models_and_prefixes": true
+  },
+  "performance_findings": {
+    "recorded_ate_cases": 20,
+    "generation_calls": 223,
+    "generated_tokens": 317016,
+    "retained_tokens": 317016,
+    "generation_seconds": 12117.67799782753,
+    "all_tool_seconds": 70.9,
+    "output_length_derived_effective_decode_width": 1.6748432225104475,
+    "width_is_not_measured_gpu_occupancy": true,
+    "median_prompt_tokens": 11063,
+    "max_prompt_tokens": 32747,
+    "interpretation": "Generation dominates; long uneven outputs reduce batch width. Eager disables CUDA graphs. Fixed-schedule decode graphs preserve observed greedy outputs while increasing warmed throughput about threefold. Earlier asynchronous comparisons mixed kernel/runtime changes with scheduling variation."
+  },
+  "prior_attempts": {
+    "default_compiled_graph": "Measured about 203 token/s; first-token rounded-top5 comparison did not match. Asynchronous scheduling confounded compiler attribution; not deployed.",
+    "async_decode_graph": "About 188 token/s; second checkpoint process differed. Not deployed.",
+    "first_fixed_schedule_control": "Eager itself differed from old asynchronous reference; retained as first valid fixed-schedule control, then used with matching controls and a separate official batching bridge.",
+    "withdrawn_project_gate": "Archived with explicit withdrawal receipts; absent from active numerical acceptance."
+  },
+  "deployment_receipt": {
+    "unix": 1792576392.186941,
+    "service": "cpt-numerics-repro500-training-rollout-v4-fixed-official-20261021.service",
+    "pipeline_status": {
+      "stage": "running_base",
+      "updated_unix": 1792575973.2561176
+    },
+    "base_progress": {
+      "model": "base",
+      "total": 100,
+      "started": 4,
+      "completed": 0,
+      "submitted": 0,
+      "stage": "running",
+      "active_task_ids": [
+        "ate-004",
+        "ate-018",
+        "ate-022",
+        "ate-026"
+      ]
+    },
+    "checkpoint_phase": "Scheduled serially after base100",
+    "model_cases_per_phase": 100,
+    "official_report_sha256": "80410f087bfe2b9b8f271e2ff9d1b1856f93fb9b62cc77acf956f91365fd18d6",
+    "runner_sha256": "4146f53f964b8f9aede8954faf5aebb59a7fa8084a547f8394ee96c112517073",
+    "engine": {
+      "profile": "decode_graph_sync",
+      "environment": {
+        "VLLM_ENABLE_V1_MULTIPROCESSING": "0"
+      },
+      "compilation_config": "{'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [4096], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 8, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}",
+      "max_model_len": 32768,
+      "max_completion_length": 31497
+    },
+    "counts": {
+      "generation_requests": 84,
+      "act_responses": 45,
+      "numeric_responses": 34,
+      "tool_exceptions": 0
+    },
+    "actual_request_max_tokens": [
+      31497
+    ],
+    "no_8k_extra_limit": true,
+    "frozen_prompts_tools_interface_unchanged": true,
+    "reward_or_private_result_read": false
+  },
+  "evidence_archive": {
+    "passed": true,
+    "files": 141,
+    "archive_bytes": 2619053,
+    "archive_sha256": "d5b5eafde9e8a016ac3074c252d5742ce1bfb3f0f21740bca70b6b04b319a7eb",
+    "all_members_verified_by_reading_archive": true,
+    "formal_rollouts_included": false,
+    "training_or_weight_changes": false,
+    "acceptance_policy": "official-only-vllm-v0.26.0"
+  }
+}

@@ -1,0 +1,2761 @@
+{
+  "official_report": {
+    "acceptance_policy": "official-only-vllm-v0.26.0",
+    "engine_profile": "decode_graph_sync",
+    "passed": true,
+    "compilation_config": {
+      "mode": 0,
+      "cudagraph_mode": "FULL_DECODE_ONLY"
+    },
+    "environment": {
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0"
+    },
+    "official_sources_sha256": {
+      "tests__models__utils.py": "e50259272237a280120cfe957d2cbc61545d73abccc7245d533e0dc42bca3295",
+      "tests__models__language__generation__test_hybrid.py": "b7c5a13e81eb5c79bac5096f83441c2771d64a9f11a4cece0f2df40ac56a7e2b",
+      "tests__utils.py": "cf6d6006d9084e2f3025c3a48c64fd07a51aee1be17c97bd2e4e9cabfdb7b602",
+      "tests__compile__fullgraph__test_basic_correctness.py": "1ed4461ab5b88b80ce45072a43c48b4391959ce49d1e24b2217169b0250865a5",
+      "tests__compile__fullgraph__test_full_cudagraph.py": "cb48fec6e04f054c1a772c73030c7a16ed3a719dbabebc6cbffe89c5665f38a6"
+    },
+    "models": {
+      "base": {
+        "passed": true,
+        "official_rule_applied": "graph_greedy_text_passed",
+        "batching_bridge": {
+          "rule": "Official hybrid test_batching / check_logprobs_close",
+          "scope": "Scheduling/batch-shape bridge only; first divergence reciprocal top5, not full trajectory equality",
+          "checks": [
+            {
+              "asynchronous_repeat": 0,
+              "matched_repeat": 0,
+              "passed": true
+            },
+            {
+              "asynchronous_repeat": 0,
+              "matched_repeat": 1,
+              "passed": true
+            },
+            {
+              "asynchronous_repeat": 1,
+              "matched_repeat": 0,
+              "passed": true
+            },
+            {
+              "asynchronous_repeat": 1,
+              "matched_repeat": 1,
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        "pairs": [
+          {
+            "eager_repeat": 0,
+            "candidate_repeat": 0,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          },
+          {
+            "eager_repeat": 0,
+            "candidate_repeat": 1,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          },
+          {
+            "eager_repeat": 1,
+            "candidate_repeat": 0,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          },
+          {
+            "eager_repeat": 1,
+            "candidate_repeat": 1,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.16,
+                      "This": -2.29,
+                      "To": -3.79,
+                      "<tool_call>": -4.16,
+                      "Looking": -5.79
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.09,
+                      "This": -3.21,
+                      "<tool_call>": -4.09,
+                      "To": -4.09,
+                      "Looking": -6.21
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.55,
+                      "This": -1.05,
+                      "<tool_call>": -3.05,
+                      "To": -4.3,
+                      "Looking": -5.55
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.34,
+                      "This": -1.47,
+                      "<tool_call>": -3.34,
+                      "To": -4.34,
+                      "Looking": -5.97
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.0,
+                      "Du": -15.63,
+                      "ДУ": -16.63,
+                      "DO": -16.75
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.38,
+                      " =": -9.5,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.56
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.41,
+                      "counts": -1.91,
+                      "count": -2.35,
+                      "rc": -2.47,
+                      "_count": -2.6
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          }
+        ],
+        "mixed_tokens_per_second": {
+          "eager": 61.13103464813915,
+          "candidate": 190.41949430661595
+        },
+        "mixed_speedup": 3.114939823980427
+      },
+      "checkpoint2350": {
+        "passed": true,
+        "official_rule_applied": "graph_greedy_text_passed",
+        "batching_bridge": {
+          "rule": "Official hybrid test_batching / check_logprobs_close",
+          "scope": "Scheduling/batch-shape bridge only; first divergence reciprocal top5, not full trajectory equality",
+          "checks": [
+            {
+              "asynchronous_repeat": 0,
+              "matched_repeat": 0,
+              "passed": true
+            },
+            {
+              "asynchronous_repeat": 0,
+              "matched_repeat": 1,
+              "passed": true
+            },
+            {
+              "asynchronous_repeat": 1,
+              "matched_repeat": 0,
+              "passed": true
+            },
+            {
+              "asynchronous_repeat": 1,
+              "matched_repeat": 1,
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        "pairs": [
+          {
+            "eager_repeat": 0,
+            "candidate_repeat": 0,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          },
+          {
+            "eager_repeat": 0,
+            "candidate_repeat": 1,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          },
+          {
+            "eager_repeat": 1,
+            "candidate_repeat": 0,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          },
+          {
+            "eager_repeat": 1,
+            "candidate_repeat": 1,
+            "fixtures": [
+              {
+                "fixture": 0,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.15,
+                      "This": -2.4,
+                      "To": -3.77,
+                      "<tool_call>": -4.4,
+                      "Looking": -5.9
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 1,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.07,
+                      "This": -3.32,
+                      "To": -4.07,
+                      "<tool_call>": -4.45,
+                      "Looking": -6.2
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 2,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.49,
+                      "This": -1.12,
+                      "<tool_call>": -3.24,
+                      "To": -4.37,
+                      "Looking": -5.87
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 3,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "I": -0.28,
+                      "This": -1.65,
+                      "<tool_call>": -3.53,
+                      "To": -4.4,
+                      "Looking": -6.28
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 4,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "DU": -0.0,
+                      " DU": -14.25,
+                      "Du": -15.88,
+                      "ДУ": -16.88,
+                      "DO": -17.0
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 5,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "0": -0.0,
+                      "1": -9.25,
+                      "_given": -9.5,
+                      " =": -9.63,
+                      "2": -11.25
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 6,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      " (": -0.0,
+                      "\n": -9.25,
+                      " \n": -11.5,
+                      " ": -14.06,
+                      ",": -14.69
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              },
+              {
+                "fixture": 7,
+                "compile_rounded_top5_passed": true,
+                "compile_reference": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "compile_candidate": [
+                  {
+                    "test": "completion_close",
+                    "logprobs": {
+                      "_counts": -1.52,
+                      "counts": -1.89,
+                      "count": -2.33,
+                      "rc": -2.39,
+                      "_count": -2.52
+                    }
+                  }
+                ],
+                "graph_greedy_text_passed": true,
+                "exact_greedy_token_ids": true
+              }
+            ]
+          }
+        ],
+        "mixed_tokens_per_second": {
+          "eager": 62.34993381970369,
+          "candidate": 190.56547473590814
+        },
+        "mixed_speedup": 3.056386158916596
+      }
+    },
+    "scope": {
+      "compile_rule": "Unchanged _test_completion_close: top5 logprobs rounded to 2 decimals, whole dictionary equal.",
+      "graph_rule": "Unchanged TestFullCUDAGraph assertion: greedy response text lowercased, then exactly equal.",
+      "adaptation": "Actual 9B weights, 8 recorded token prefixes, batch size 4, first-token compile comparison and 128-token graph comparison; upstream fixtures/models replaced.",
+      "no_universal_epsilon": true,
+      "repeat_noise_is_not_an_acceptance_allowance": true,
+      "not_claimed": [
+        "Upstream pytest includes Qwen3.5-9B in these parametrizations",
+        "Whole-vocabulary raw-logit tolerance",
+        "Equivalence of arbitrary sampled full task trajectories"
+      ]
+    }
+  },
+  "models": {
+    "base": {
+      "timing": {
+        "eager": {
+          "cold_start_seconds": [
+            38.744093341054395,
+            38.27479638590012
+          ],
+          "mixed": {
+            "median": 61.13103464813915,
+            "min": 60.66971674252462,
+            "max": 61.592352553753685,
+            "measurements": [
+              60.66971674252462,
+              61.592352553753685
+            ]
+          }
+        },
+        "graph": {
+          "cold_start_seconds": [
+            41.11640428600367,
+            40.962517826934345
+          ],
+          "mixed": {
+            "median": 190.41949430661595,
+            "min": 190.3912256656064,
+            "max": 190.49934546446875,
+            "measurements": [
+              190.49934546446875,
+              190.4236703639664,
+              190.4153182492655,
+              190.3912256656064
+            ]
+          }
+        }
+      },
+      "greedy_pairs": [
+        {
+          "eager_repeat": 0,
+          "graph_repeat": 0,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        },
+        {
+          "eager_repeat": 0,
+          "graph_repeat": 1,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        },
+        {
+          "eager_repeat": 1,
+          "graph_repeat": 0,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        },
+        {
+          "eager_repeat": 1,
+          "graph_repeat": 1,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        }
+      ],
+      "fixed_prefix_logprob_differences": {
+        "role": "Descriptive; no acceptance threshold",
+        "eager_repeat": {
+          "mean": 0.0,
+          "p99": 0.0,
+          "max": 0.0,
+          "count": 24
+        },
+        "candidate_repeat": {
+          "mean": 0.0,
+          "p99": 0.0,
+          "max": 0.0,
+          "count": 24
+        },
+        "cross_mode": [
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          },
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          },
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          },
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          }
+        ]
+      },
+      "clone_over_mixed": {}
+    },
+    "checkpoint2350": {
+      "timing": {
+        "eager": {
+          "cold_start_seconds": [
+            38.439562545972876,
+            38.558876611990854
+          ],
+          "mixed": {
+            "median": 62.34993381970369,
+            "min": 62.33680654743686,
+            "max": 62.36306109197053,
+            "measurements": [
+              62.36306109197053,
+              62.33680654743686
+            ]
+          }
+        },
+        "graph": {
+          "cold_start_seconds": [
+            41.06505490094423,
+            41.14336903300136
+          ],
+          "mixed": {
+            "median": 190.56547473590814,
+            "min": 190.52049740644273,
+            "max": 190.62898804843192,
+            "measurements": [
+              190.52049740644273,
+              190.62898804843192,
+              190.5844967107417,
+              190.54645276107456
+            ]
+          }
+        }
+      },
+      "greedy_pairs": [
+        {
+          "eager_repeat": 0,
+          "graph_repeat": 0,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        },
+        {
+          "eager_repeat": 0,
+          "graph_repeat": 1,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        },
+        {
+          "eager_repeat": 1,
+          "graph_repeat": 0,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        },
+        {
+          "eager_repeat": 1,
+          "graph_repeat": 1,
+          "prefixes": [
+            {
+              "fixture": 0,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 1,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 2,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 3,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 4,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 5,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 6,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            },
+            {
+              "fixture": 7,
+              "first_divergence": null,
+              "exact_128_tokens": true,
+              "batch4_first_step_common_top5_tokens": 5,
+              "batch4_first_step_common_logprob_max_delta": 0.0
+            }
+          ]
+        }
+      ],
+      "fixed_prefix_logprob_differences": {
+        "role": "Descriptive; no acceptance threshold",
+        "eager_repeat": {
+          "mean": 0.0,
+          "p99": 0.0,
+          "max": 0.0,
+          "count": 24
+        },
+        "candidate_repeat": {
+          "mean": 0.0,
+          "p99": 0.0,
+          "max": 0.0,
+          "count": 24
+        },
+        "cross_mode": [
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          },
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          },
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          },
+          {
+            "mean": 0.0,
+            "p99": 0.0,
+            "max": 0.0,
+            "count": 24
+          }
+        ]
+      },
+      "clone_over_mixed": {}
+    }
+  },
+  "scope": {
+    "fixed_context_logprob_probes": "24 single-request contexts per engine",
+    "greedy_rank_probes": "8 prefixes in batches of four; top5 at first divergence",
+    "throughput": "four equal-length 512-token outputs; warmed; aggregate model tokens/s",
+    "not_estimated": [
+      "Full task wall-time speedup",
+      "Full-vocabulary numeric bounds",
+      "Numerical equivalence of every future task trajectory"
+    ]
+  },
+  "historical_observation": {
+    "v3_first20_ate": {
+      "minutes_per4": 40.72,
+      "model_tokens_per_case": 15850.8,
+      "end_to_end_model_tokens_per_second": 25.95,
+      "all_tool_seconds": 70.9
+    },
+    "training20_ate_steps2251_2346": {
+      "minutes_per4": 10.72,
+      "model_tokens_per_case": 10233.5,
+      "end_to_end_model_tokens_per_second": 63.63
+    },
+    "caveat": "Historical groups differ in questions, weights, output lengths and batch diversity; ratio is not a controlled causal estimate."
+  }
+}

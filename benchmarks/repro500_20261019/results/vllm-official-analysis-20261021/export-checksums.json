@@ -1,0 +1,19 @@
+{
+  "vllm-official-diagnostics-20261021.tar.gz": "d5b5eafde9e8a016ac3074c252d5742ce1bfb3f0f21740bca70b6b04b319a7eb",
+  "vllm-official-diagnostics-20261021-members.json": "f833755410139616eb7f138e3e91af8099143d92ce24d0ba0506037fe989bb8d",
+  "vllm-official-diagnostics-20261021-verification.json": "e762d07a6a98150e34cfc2b60069af20274ba8f8b84855d49a7d0fdb8c98524e",
+  "overview.json": "363b84ac559d3fb3285ce29dd0096052a58dbbc967ebfc1fa97e4b36cc1313ea",
+  "deployment/receipt.json": "9d37c6a2a1b1812491961e5f0e3731edc82a7ab3e1e629e20bb8f3e0efc7ccaf",
+  "selected/official-report.json": "80410f087bfe2b9b8f271e2ff9d1b1856f93fb9b62cc77acf956f91365fd18d6",
+  "selected/analysis.json": "50d93e0c1bf84bfc95cafb692d3f51de5c195ca758bb32139687c6c267357360",
+  "default-compiled/official-report.json": "182012c7759b2771d2b4a729d001300f5bc05a401ce073b47648f7e7931168ab",
+  "default-compiled/analysis.json": "1f79f0c799c08352239105a35736d515255c07a48867431ea03ea47fffe46eec",
+  "default-compiled/recorded-generation-profile.json": "eb935eb7e0f8dcf1cf63b7a80dcc566048a297780919661e861d5ed64d5234df",
+  "async-decode/official-report.json": "36ca33c96be7e785bfe1641ab976f267ad446ee43d77fb2ad40ca16232cebb7c",
+  "async-decode/analysis.json": "e08125c680a510b6ce1d02c0ef61585bee145d0ac85d143d1150671269e0364d",
+  "deployment/preflight.json": "3baa1f6f89f26aab471d394d6c9ca314aaba6b19aa19045e1b6f8622f0bce549",
+  "deployment/tolerance-report.json": "80410f087bfe2b9b8f271e2ff9d1b1856f93fb9b62cc77acf956f91365fd18d6",
+  "deployment/contract.json": "d5f043432bf3ab4307f2f91bbf548d5ebe01e575b25336c7a4c05b5bc34c27cb",
+  "deployment/runner-source.json": "bf7002dc04ac4d8524bc12bf93ce6f9f9afa72f9881e2b7927aaf66e7af9c7f3",
+  "deployment/engine-execution.json": "0e47ee764cf1c7a4efad7349866877ea5e5838509016aabc422139558d43f380"
+}

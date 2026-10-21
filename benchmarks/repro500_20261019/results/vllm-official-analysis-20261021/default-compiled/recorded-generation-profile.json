@@ -1,0 +1,3817 @@
+{
+  "case_count": 20,
+  "generation_calls": 223,
+  "generated_model_tokens_before_training_truncation": 317016,
+  "retained_model_tokens_after_training_truncation": 317016,
+  "discarded_fraction": 0.0,
+  "generation_wall_seconds": 12117.67799782753,
+  "raw_generated_tokens_per_second": 26.16144776720713,
+  "retained_tokens_per_generation_second": 26.16144776720713,
+  "weighted_effective_decode_width": 1.6748432225104475,
+  "median_prompt_length": 11063,
+  "max_prompt_length": 32747,
+  "call_details": [
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2148,
+        2223,
+        2235,
+        2045
+      ],
+      "output_lengths": [
+        217,
+        209,
+        383,
+        215
+      ],
+      "generation_wall_seconds": 30.669874906539917,
+      "decode_step_proxy": 383,
+      "generated_model_tokens": 1024,
+      "effective_decode_width": 2.6736292428198434
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2419,
+        2484,
+        2668,
+        2312
+      ],
+      "output_lengths": [
+        110,
+        186,
+        116,
+        517
+      ],
+      "generation_wall_seconds": 32.326433181762695,
+      "decode_step_proxy": 517,
+      "generated_model_tokens": 929,
+      "effective_decode_width": 1.7969052224371374
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2671,
+        2721,
+        4118,
+        2870
+      ],
+      "output_lengths": [
+        337,
+        114,
+        303,
+        182
+      ],
+      "generation_wall_seconds": 22.38968515396118,
+      "decode_step_proxy": 337,
+      "generated_model_tokens": 936,
+      "effective_decode_width": 2.777448071216617
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3333,
+        3561,
+        4471,
+        3264
+      ],
+      "output_lengths": [
+        228,
+        456,
+        63,
+        384
+      ],
+      "generation_wall_seconds": 30.007484912872314,
+      "decode_step_proxy": 456,
+      "generated_model_tokens": 1131,
+      "effective_decode_width": 2.4802631578947367
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3638,
+        4044,
+        4584,
+        3789
+      ],
+      "output_lengths": [
+        84,
+        100,
+        678,
+        208
+      ],
+      "generation_wall_seconds": 43.292025089263916,
+      "decode_step_proxy": 678,
+      "generated_model_tokens": 1070,
+      "effective_decode_width": 1.5781710914454277
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3771,
+        4222,
+        5301,
+        4074
+      ],
+      "output_lengths": [
+        270,
+        539,
+        258,
+        86
+      ],
+      "generation_wall_seconds": 34.82445502281189,
+      "decode_step_proxy": 539,
+      "generated_model_tokens": 1153,
+      "effective_decode_width": 2.1391465677179964
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        4288,
+        4788,
+        5589,
+        4210
+      ],
+      "output_lengths": [
+        428,
+        167,
+        76,
+        54
+      ],
+      "generation_wall_seconds": 27.4459228515625,
+      "decode_step_proxy": 428,
+      "generated_model_tokens": 725,
+      "effective_decode_width": 1.6939252336448598
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        5304,
+        5040,
+        6986,
+        4313
+      ],
+      "output_lengths": [
+        975,
+        381,
+        685,
+        218
+      ],
+      "generation_wall_seconds": 63.61325716972351,
+      "decode_step_proxy": 975,
+      "generated_model_tokens": 2259,
+      "effective_decode_width": 2.316923076923077
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        6777,
+        6359,
+        7951,
+        4607
+      ],
+      "output_lengths": [
+        1360,
+        809,
+        387,
+        84
+      ],
+      "generation_wall_seconds": 87.73199272155762,
+      "decode_step_proxy": 1360,
+      "generated_model_tokens": 2640,
+      "effective_decode_width": 1.9411764705882353
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        8421,
+        7653,
+        8388,
+        4741
+      ],
+      "output_lengths": [
+        799,
+        980,
+        50,
+        92
+      ],
+      "generation_wall_seconds": 63.88590860366821,
+      "decode_step_proxy": 980,
+      "generated_model_tokens": 1921,
+      "effective_decode_width": 1.9602040816326531
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        9403,
+        9128,
+        8488,
+        4883
+      ],
+      "output_lengths": [
+        190,
+        651,
+        544,
+        67
+      ],
+      "generation_wall_seconds": 42.62864685058594,
+      "decode_step_proxy": 651,
+      "generated_model_tokens": 1452,
+      "effective_decode_width": 2.230414746543779
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        9623,
+        10490,
+        9234,
+        5000
+      ],
+      "output_lengths": [
+        254,
+        882,
+        549,
+        950
+      ],
+      "generation_wall_seconds": 62.36546468734741,
+      "decode_step_proxy": 950,
+      "generated_model_tokens": 2635,
+      "effective_decode_width": 2.7736842105263158
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        12042,
+        10017,
+        6436
+      ],
+      "output_lengths": [
+        1210,
+        380,
+        1374
+      ],
+      "generation_wall_seconds": 90.19798493385315,
+      "decode_step_proxy": 1374,
+      "generated_model_tokens": 2964,
+      "effective_decode_width": 2.1572052401746724
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        13810,
+        10474,
+        8275
+      ],
+      "output_lengths": [
+        199,
+        80,
+        4184
+      ],
+      "generation_wall_seconds": 258.8162839412689,
+      "decode_step_proxy": 4184,
+      "generated_model_tokens": 4463,
+      "effective_decode_width": 1.0666826003824093
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        14101,
+        10604,
+        12879
+      ],
+      "output_lengths": [
+        156,
+        235,
+        597
+      ],
+      "generation_wall_seconds": 37.62643527984619,
+      "decode_step_proxy": 597,
+      "generated_model_tokens": 988,
+      "effective_decode_width": 1.6549413735343383
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        14306,
+        10945,
+        13526
+      ],
+      "output_lengths": [
+        1216,
+        60,
+        55
+      ],
+      "generation_wall_seconds": 74.50475859642029,
+      "decode_step_proxy": 1216,
+      "generated_model_tokens": 1331,
+      "effective_decode_width": 1.0945723684210527
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        15551,
+        11053,
+        13632
+      ],
+      "output_lengths": [
+        609,
+        215,
+        1274
+      ],
+      "generation_wall_seconds": 80.93743395805359,
+      "decode_step_proxy": 1274,
+      "generated_model_tokens": 2098,
+      "effective_decode_width": 1.6467817896389325
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16189,
+        11365,
+        15544
+      ],
+      "output_lengths": [
+        110,
+        1248,
+        1421
+      ],
+      "generation_wall_seconds": 92.3844301700592,
+      "decode_step_proxy": 1421,
+      "generated_model_tokens": 2779,
+      "effective_decode_width": 1.9556650246305418
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        17330,
+        12663,
+        17314
+      ],
+      "output_lengths": [
+        655,
+        206,
+        1242
+      ],
+      "generation_wall_seconds": 79.24712538719177,
+      "decode_step_proxy": 1242,
+      "generated_model_tokens": 2103,
+      "effective_decode_width": 1.6932367149758454
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18379,
+        12967,
+        18842
+      ],
+      "output_lengths": [
+        261,
+        721,
+        2383
+      ],
+      "generation_wall_seconds": 150.5687689781189,
+      "decode_step_proxy": 2383,
+      "generated_model_tokens": 3365,
+      "effective_decode_width": 1.4120856063785145
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18717,
+        13739,
+        21556
+      ],
+      "output_lengths": [
+        77,
+        63,
+        1204
+      ],
+      "generation_wall_seconds": 76.03434777259827,
+      "decode_step_proxy": 1204,
+      "generated_model_tokens": 1344,
+      "effective_decode_width": 1.1162790697674418
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18846,
+        13853,
+        22800
+      ],
+      "output_lengths": [
+        85,
+        63,
+        991
+      ],
+      "generation_wall_seconds": 62.206387996673584,
+      "decode_step_proxy": 991,
+      "generated_model_tokens": 1139,
+      "effective_decode_width": 1.1493440968718467
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18983,
+        13967,
+        24405
+      ],
+      "output_lengths": [
+        64,
+        917,
+        2623
+      ],
+      "generation_wall_seconds": 164.6714572906494,
+      "decode_step_proxy": 2623,
+      "generated_model_tokens": 3604,
+      "effective_decode_width": 1.3739992375142966
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        19099,
+        14924,
+        27054
+      ],
+      "output_lengths": [
+        601,
+        362,
+        1351
+      ],
+      "generation_wall_seconds": 86.32806468009949,
+      "decode_step_proxy": 1351,
+      "generated_model_tokens": 2314,
+      "effective_decode_width": 1.7128053293856402
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        20077,
+        15559,
+        28460
+      ],
+      "output_lengths": [
+        648,
+        613,
+        1120
+      ],
+      "generation_wall_seconds": 71.66331672668457,
+      "decode_step_proxy": 1120,
+      "generated_model_tokens": 2381,
+      "effective_decode_width": 2.125892857142857
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        20961,
+        16493,
+        30313
+      ],
+      "output_lengths": [
+        1015,
+        891,
+        1610
+      ],
+      "generation_wall_seconds": 102.86387085914612,
+      "decode_step_proxy": 1610,
+      "generated_model_tokens": 3516,
+      "effective_decode_width": 2.1838509316770187
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        22287,
+        17735,
+        32350
+      ],
+      "output_lengths": [
+        1423,
+        808,
+        418
+      ],
+      "generation_wall_seconds": 91.65232110023499,
+      "decode_step_proxy": 1423,
+      "generated_model_tokens": 2649,
+      "effective_decode_width": 1.8615600843288826
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        24006,
+        18826
+      ],
+      "output_lengths": [
+        1795,
+        945
+      ],
+      "generation_wall_seconds": 113.5743043422699,
+      "decode_step_proxy": 1795,
+      "generated_model_tokens": 2740,
+      "effective_decode_width": 1.5264623955431755
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        25953,
+        20057
+      ],
+      "output_lengths": [
+        1454,
+        1026
+      ],
+      "generation_wall_seconds": 93.47601556777954,
+      "decode_step_proxy": 1454,
+      "generated_model_tokens": 2480,
+      "effective_decode_width": 1.7056396148555708
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        27868,
+        21175
+      ],
+      "output_lengths": [
+        784,
+        107
+      ],
+      "generation_wall_seconds": 48.98481559753418,
+      "decode_step_proxy": 784,
+      "generated_model_tokens": 891,
+      "effective_decode_width": 1.1364795918367347
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        28682,
+        21312
+      ],
+      "output_lengths": [
+        142,
+        261
+      ],
+      "generation_wall_seconds": 16.493253231048584,
+      "decode_step_proxy": 261,
+      "generated_model_tokens": 403,
+      "effective_decode_width": 1.5440613026819923
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2286,
+        2148,
+        2231,
+        2024
+      ],
+      "output_lengths": [
+        182,
+        233,
+        174,
+        244
+      ],
+      "generation_wall_seconds": 16.382339239120483,
+      "decode_step_proxy": 244,
+      "generated_model_tokens": 833,
+      "effective_decode_width": 3.4139344262295084
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2517,
+        2473,
+        2482,
+        2344
+      ],
+      "output_lengths": [
+        85,
+        164,
+        150,
+        98
+      ],
+      "generation_wall_seconds": 10.743393421173096,
+      "decode_step_proxy": 164,
+      "generated_model_tokens": 497,
+      "effective_decode_width": 3.0304878048780486
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2770,
+        2691,
+        2710,
+        2490
+      ],
+      "output_lengths": [
+        494,
+        65,
+        342,
+        111
+      ],
+      "generation_wall_seconds": 31.493774890899658,
+      "decode_step_proxy": 494,
+      "generated_model_tokens": 1012,
+      "effective_decode_width": 2.048582995951417
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3695,
+        2810,
+        3105,
+        2762
+      ],
+      "output_lengths": [
+        195,
+        53,
+        633,
+        1469
+      ],
+      "generation_wall_seconds": 92.20090627670288,
+      "decode_step_proxy": 1469,
+      "generated_model_tokens": 2350,
+      "effective_decode_width": 1.5997277059223962
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3940,
+        2917,
+        3768,
+        4261
+      ],
+      "output_lengths": [
+        99,
+        52,
+        207,
+        65
+      ],
+      "generation_wall_seconds": 13.089775800704956,
+      "decode_step_proxy": 207,
+      "generated_model_tokens": 423,
+      "effective_decode_width": 2.0434782608695654
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        5532,
+        3047,
+        4348
+      ],
+      "output_lengths": [
+        168,
+        116,
+        393
+      ],
+      "generation_wall_seconds": 24.903106927871704,
+      "decode_step_proxy": 393,
+      "generated_model_tokens": 677,
+      "effective_decode_width": 1.72264631043257
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        5750,
+        3212,
+        4778
+      ],
+      "output_lengths": [
+        309,
+        254,
+        281
+      ],
+      "generation_wall_seconds": 19.918891429901123,
+      "decode_step_proxy": 309,
+      "generated_model_tokens": 844,
+      "effective_decode_width": 2.7313915857605178
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        6120,
+        3502,
+        5290
+      ],
+      "output_lengths": [
+        257,
+        219,
+        406
+      ],
+      "generation_wall_seconds": 26.25596332550049,
+      "decode_step_proxy": 406,
+      "generated_model_tokens": 882,
+      "effective_decode_width": 2.1724137931034484
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        6566,
+        3768,
+        5773
+      ],
+      "output_lengths": [
+        196,
+        264,
+        75
+      ],
+      "generation_wall_seconds": 17.407578468322754,
+      "decode_step_proxy": 264,
+      "generated_model_tokens": 535,
+      "effective_decode_width": 2.0265151515151514
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        6812,
+        4146,
+        5899
+      ],
+      "output_lengths": [
+        224,
+        345,
+        332
+      ],
+      "generation_wall_seconds": 22.773325204849243,
+      "decode_step_proxy": 345,
+      "generated_model_tokens": 901,
+      "effective_decode_width": 2.6115942028985506
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7220,
+        4522,
+        6335
+      ],
+      "output_lengths": [
+        304,
+        88,
+        263
+      ],
+      "generation_wall_seconds": 19.911758422851562,
+      "decode_step_proxy": 304,
+      "generated_model_tokens": 655,
+      "effective_decode_width": 2.1546052631578947
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7574,
+        5761,
+        6653
+      ],
+      "output_lengths": [
+        219,
+        214,
+        77
+      ],
+      "generation_wall_seconds": 14.491045236587524,
+      "decode_step_proxy": 219,
+      "generated_model_tokens": 510,
+      "effective_decode_width": 2.328767123287671
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7902,
+        6112,
+        6781
+      ],
+      "output_lengths": [
+        453,
+        232,
+        350
+      ],
+      "generation_wall_seconds": 29.723812341690063,
+      "decode_step_proxy": 453,
+      "generated_model_tokens": 1035,
+      "effective_decode_width": 2.2847682119205297
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8405,
+        6802,
+        7196
+      ],
+      "output_lengths": [
+        305,
+        649,
+        310
+      ],
+      "generation_wall_seconds": 41.73110890388489,
+      "decode_step_proxy": 649,
+      "generated_model_tokens": 1264,
+      "effective_decode_width": 1.9476117103235748
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8863,
+        7531,
+        7583
+      ],
+      "output_lengths": [
+        412,
+        1143,
+        303
+      ],
+      "generation_wall_seconds": 72.72573733329773,
+      "decode_step_proxy": 1143,
+      "generated_model_tokens": 1858,
+      "effective_decode_width": 1.625546806649169
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9353,
+        8701,
+        7935
+      ],
+      "output_lengths": [
+        100,
+        385,
+        292
+      ],
+      "generation_wall_seconds": 25.25547218322754,
+      "decode_step_proxy": 385,
+      "generated_model_tokens": 777,
+      "effective_decode_width": 2.018181818181818
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9503,
+        9268,
+        8485
+      ],
+      "output_lengths": [
+        343,
+        456,
+        775
+      ],
+      "generation_wall_seconds": 50.17665886878967,
+      "decode_step_proxy": 775,
+      "generated_model_tokens": 1574,
+      "effective_decode_width": 2.0309677419354837
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9980,
+        9766,
+        9337
+      ],
+      "output_lengths": [
+        563,
+        907,
+        71
+      ],
+      "generation_wall_seconds": 58.79019474983215,
+      "decode_step_proxy": 907,
+      "generated_model_tokens": 1541,
+      "effective_decode_width": 1.699007717750827
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        10567,
+        11053,
+        9458
+      ],
+      "output_lengths": [
+        80,
+        461,
+        421
+      ],
+      "generation_wall_seconds": 30.474184036254883,
+      "decode_step_proxy": 461,
+      "generated_model_tokens": 962,
+      "effective_decode_width": 2.0867678958785247
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        10692,
+        11544,
+        10249
+      ],
+      "output_lengths": [
+        58,
+        173,
+        1693
+      ],
+      "generation_wall_seconds": 106.28187227249146,
+      "decode_step_proxy": 1693,
+      "generated_model_tokens": 1924,
+      "effective_decode_width": 1.136444181925576
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        10774,
+        12246
+      ],
+      "output_lengths": [
+        158,
+        1792
+      ],
+      "generation_wall_seconds": 111.9369764328003,
+      "decode_step_proxy": 1792,
+      "generated_model_tokens": 1950,
+      "effective_decode_width": 1.0881696428571428
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        11006,
+        14115
+      ],
+      "output_lengths": [
+        425,
+        122
+      ],
+      "generation_wall_seconds": 27.056865215301514,
+      "decode_step_proxy": 425,
+      "generated_model_tokens": 547,
+      "effective_decode_width": 1.2870588235294118
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        11465,
+        14286
+      ],
+      "output_lengths": [
+        388,
+        54
+      ],
+      "generation_wall_seconds": 24.65125298500061,
+      "decode_step_proxy": 388,
+      "generated_model_tokens": 442,
+      "effective_decode_width": 1.1391752577319587
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        12172,
+        14389
+      ],
+      "output_lengths": [
+        1240,
+        953
+      ],
+      "generation_wall_seconds": 80.83115410804749,
+      "decode_step_proxy": 1240,
+      "generated_model_tokens": 2193,
+      "effective_decode_width": 1.7685483870967742
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        13467,
+        15769
+      ],
+      "output_lengths": [
+        611,
+        913
+      ],
+      "generation_wall_seconds": 59.06293559074402,
+      "decode_step_proxy": 913,
+      "generated_model_tokens": 1524,
+      "effective_decode_width": 1.669222343921139
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        14645,
+        17014
+      ],
+      "output_lengths": [
+        880,
+        6720
+      ],
+      "generation_wall_seconds": 422.0492227077484,
+      "decode_step_proxy": 6720,
+      "generated_model_tokens": 7600,
+      "effective_decode_width": 1.130952380952381
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        16209,
+        23780
+      ],
+      "output_lengths": [
+        456,
+        254
+      ],
+      "generation_wall_seconds": 29.60338020324707,
+      "decode_step_proxy": 456,
+      "generated_model_tokens": 710,
+      "effective_decode_width": 1.5570175438596492
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        16715,
+        24149
+      ],
+      "output_lengths": [
+        177,
+        122
+      ],
+      "generation_wall_seconds": 11.504514694213867,
+      "decode_step_proxy": 177,
+      "generated_model_tokens": 299,
+      "effective_decode_width": 1.689265536723164
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        16999,
+        24346
+      ],
+      "output_lengths": [
+        814,
+        88
+      ],
+      "generation_wall_seconds": 51.25291919708252,
+      "decode_step_proxy": 814,
+      "generated_model_tokens": 902,
+      "effective_decode_width": 1.1081081081081081
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        18075,
+        24480
+      ],
+      "output_lengths": [
+        382,
+        53
+      ],
+      "generation_wall_seconds": 24.2026264667511,
+      "decode_step_proxy": 382,
+      "generated_model_tokens": 435,
+      "effective_decode_width": 1.138743455497382
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        19043,
+        24578
+      ],
+      "output_lengths": [
+        857,
+        687
+      ],
+      "generation_wall_seconds": 55.69813275337219,
+      "decode_step_proxy": 857,
+      "generated_model_tokens": 1544,
+      "effective_decode_width": 1.8016336056009334
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        19976,
+        25551
+      ],
+      "output_lengths": [
+        959,
+        4182
+      ],
+      "generation_wall_seconds": 264.53051948547363,
+      "decode_step_proxy": 4182,
+      "generated_model_tokens": 5141,
+      "effective_decode_width": 1.2293161166905786
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        21293,
+        29763
+      ],
+      "output_lengths": [
+        651,
+        244
+      ],
+      "generation_wall_seconds": 41.79664969444275,
+      "decode_step_proxy": 651,
+      "generated_model_tokens": 895,
+      "effective_decode_width": 1.3748079877112136
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        21995
+      ],
+      "output_lengths": [
+        172
+      ],
+      "generation_wall_seconds": 10.8984215259552,
+      "decode_step_proxy": 172,
+      "generated_model_tokens": 172,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        22270
+      ],
+      "output_lengths": [
+        429
+      ],
+      "generation_wall_seconds": 27.090067625045776,
+      "decode_step_proxy": 429,
+      "generated_model_tokens": 429,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        22750
+      ],
+      "output_lengths": [
+        880
+      ],
+      "generation_wall_seconds": 54.94922423362732,
+      "decode_step_proxy": 880,
+      "generated_model_tokens": 880,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        23669
+      ],
+      "output_lengths": [
+        1018
+      ],
+      "generation_wall_seconds": 63.411558628082275,
+      "decode_step_proxy": 1018,
+      "generated_model_tokens": 1018,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        25036
+      ],
+      "output_lengths": [
+        760
+      ],
+      "generation_wall_seconds": 47.462843894958496,
+      "decode_step_proxy": 760,
+      "generated_model_tokens": 760,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        26008
+      ],
+      "output_lengths": [
+        1090
+      ],
+      "generation_wall_seconds": 68.27388858795166,
+      "decode_step_proxy": 1090,
+      "generated_model_tokens": 1090,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        27188
+      ],
+      "output_lengths": [
+        303
+      ],
+      "generation_wall_seconds": 18.925945520401,
+      "decode_step_proxy": 303,
+      "generated_model_tokens": 303,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        27521
+      ],
+      "output_lengths": [
+        189
+      ],
+      "generation_wall_seconds": 11.794475793838501,
+      "decode_step_proxy": 189,
+      "generated_model_tokens": 189,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2091,
+        2204,
+        2218,
+        2214
+      ],
+      "output_lengths": [
+        231,
+        265,
+        192,
+        100
+      ],
+      "generation_wall_seconds": 17.959433555603027,
+      "decode_step_proxy": 265,
+      "generated_model_tokens": 788,
+      "effective_decode_width": 2.973584905660377
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2399,
+        2518,
+        2463,
+        2364
+      ],
+      "output_lengths": [
+        82,
+        433,
+        193,
+        362
+      ],
+      "generation_wall_seconds": 28.226938009262085,
+      "decode_step_proxy": 433,
+      "generated_model_tokens": 1070,
+      "effective_decode_width": 2.4711316397228638
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2531,
+        3393,
+        5823,
+        2885
+      ],
+      "output_lengths": [
+        205,
+        203,
+        397,
+        523
+      ],
+      "generation_wall_seconds": 34.37133240699768,
+      "decode_step_proxy": 523,
+      "generated_model_tokens": 1328,
+      "effective_decode_width": 2.5391969407265775
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2766,
+        3676,
+        6336,
+        3558
+      ],
+      "output_lengths": [
+        94,
+        2777,
+        189,
+        302
+      ],
+      "generation_wall_seconds": 174.68001222610474,
+      "decode_step_proxy": 2777,
+      "generated_model_tokens": 3362,
+      "effective_decode_width": 1.2106589845156643
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3559,
+        6637,
+        6680,
+        3943
+      ],
+      "output_lengths": [
+        288,
+        650,
+        451,
+        532
+      ],
+      "generation_wall_seconds": 42.62631630897522,
+      "decode_step_proxy": 650,
+      "generated_model_tokens": 1921,
+      "effective_decode_width": 2.9553846153846153
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3898,
+        7317,
+        7184,
+        4687
+      ],
+      "output_lengths": [
+        733,
+        271,
+        370,
+        163
+      ],
+      "generation_wall_seconds": 47.327778339385986,
+      "decode_step_proxy": 733,
+      "generated_model_tokens": 1537,
+      "effective_decode_width": 2.096862210095498
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        4661,
+        7829,
+        4927
+      ],
+      "output_lengths": [
+        248,
+        773,
+        74
+      ],
+      "generation_wall_seconds": 48.99252653121948,
+      "decode_step_proxy": 773,
+      "generated_model_tokens": 1095,
+      "effective_decode_width": 1.4165588615782665
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        5057,
+        8655,
+        5051
+      ],
+      "output_lengths": [
+        813,
+        419,
+        636
+      ],
+      "generation_wall_seconds": 52.70812129974365,
+      "decode_step_proxy": 813,
+      "generated_model_tokens": 1868,
+      "effective_decode_width": 2.2976629766297663
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        6035,
+        9382,
+        5711
+      ],
+      "output_lengths": [
+        910,
+        104,
+        93
+      ],
+      "generation_wall_seconds": 57.3408260345459,
+      "decode_step_proxy": 910,
+      "generated_model_tokens": 1107,
+      "effective_decode_width": 1.2164835164835164
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        6989,
+        9539,
+        6014
+      ],
+      "output_lengths": [
+        687,
+        68,
+        734
+      ],
+      "generation_wall_seconds": 48.24078297615051,
+      "decode_step_proxy": 734,
+      "generated_model_tokens": 1489,
+      "effective_decode_width": 2.0286103542234333
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7869,
+        9660,
+        7262
+      ],
+      "output_lengths": [
+        234,
+        68,
+        196
+      ],
+      "generation_wall_seconds": 15.462117910385132,
+      "decode_step_proxy": 234,
+      "generated_model_tokens": 498,
+      "effective_decode_width": 2.128205128205128
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8154,
+        9777,
+        7508
+      ],
+      "output_lengths": [
+        635,
+        546,
+        57
+      ],
+      "generation_wall_seconds": 41.469035148620605,
+      "decode_step_proxy": 635,
+      "generated_model_tokens": 1238,
+      "effective_decode_width": 1.9496062992125984
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8940,
+        10375,
+        7615
+      ],
+      "output_lengths": [
+        498,
+        536,
+        57
+      ],
+      "generation_wall_seconds": 35.08068037033081,
+      "decode_step_proxy": 536,
+      "generated_model_tokens": 1091,
+      "effective_decode_width": 2.03544776119403
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9757,
+        11685,
+        7722
+      ],
+      "output_lengths": [
+        310,
+        777,
+        790
+      ],
+      "generation_wall_seconds": 52.138158559799194,
+      "decode_step_proxy": 790,
+      "generated_model_tokens": 1877,
+      "effective_decode_width": 2.3759493670886074
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        10139,
+        12916,
+        8579
+      ],
+      "output_lengths": [
+        89,
+        689,
+        424
+      ],
+      "generation_wall_seconds": 44.472020864486694,
+      "decode_step_proxy": 689,
+      "generated_model_tokens": 1202,
+      "effective_decode_width": 1.74455732946299
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        10279,
+        14513,
+        10016
+      ],
+      "output_lengths": [
+        505,
+        1121,
+        472
+      ],
+      "generation_wall_seconds": 71.72660875320435,
+      "decode_step_proxy": 1121,
+      "generated_model_tokens": 2098,
+      "effective_decode_width": 1.871543264942016
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        11100,
+        15892,
+        10537
+      ],
+      "output_lengths": [
+        83,
+        668,
+        441
+      ],
+      "generation_wall_seconds": 43.21913456916809,
+      "decode_step_proxy": 668,
+      "generated_model_tokens": 1192,
+      "effective_decode_width": 1.784431137724551
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        11234,
+        16824,
+        11558
+      ],
+      "output_lengths": [
+        508,
+        100,
+        442
+      ],
+      "generation_wall_seconds": 33.2424840927124,
+      "decode_step_proxy": 508,
+      "generated_model_tokens": 1050,
+      "effective_decode_width": 2.0669291338582676
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        12061,
+        16993,
+        12181
+      ],
+      "output_lengths": [
+        852,
+        803,
+        1142
+      ],
+      "generation_wall_seconds": 74.03435111045837,
+      "decode_step_proxy": 1142,
+      "generated_model_tokens": 2797,
+      "effective_decode_width": 2.449211908931699
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        12964,
+        18131,
+        13738
+      ],
+      "output_lengths": [
+        425,
+        1048,
+        2408
+      ],
+      "generation_wall_seconds": 153.11932682991028,
+      "decode_step_proxy": 2408,
+      "generated_model_tokens": 3881,
+      "effective_decode_width": 1.6117109634551494
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        13675,
+        19226,
+        16193
+      ],
+      "output_lengths": [
+        175,
+        354,
+        538
+      ],
+      "generation_wall_seconds": 34.73187732696533,
+      "decode_step_proxy": 538,
+      "generated_model_tokens": 1067,
+      "effective_decode_width": 1.983271375464684
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        13902,
+        20100,
+        17736
+      ],
+      "output_lengths": [
+        763,
+        1118,
+        1000
+      ],
+      "generation_wall_seconds": 72.83571290969849,
+      "decode_step_proxy": 1118,
+      "generated_model_tokens": 2881,
+      "effective_decode_width": 2.576923076923077
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        14870,
+        21598,
+        18783
+      ],
+      "output_lengths": [
+        1462,
+        1432,
+        247
+      ],
+      "generation_wall_seconds": 95.57985711097717,
+      "decode_step_proxy": 1462,
+      "generated_model_tokens": 3141,
+      "effective_decode_width": 2.1484268125854995
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16489,
+        23794,
+        19282
+      ],
+      "output_lengths": [
+        1141,
+        1363,
+        200
+      ],
+      "generation_wall_seconds": 87.91141128540039,
+      "decode_step_proxy": 1363,
+      "generated_model_tokens": 2704,
+      "effective_decode_width": 1.983859134262656
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18006,
+        25197,
+        19724
+      ],
+      "output_lengths": [
+        517,
+        759,
+        497
+      ],
+      "generation_wall_seconds": 49.57152819633484,
+      "decode_step_proxy": 759,
+      "generated_model_tokens": 1773,
+      "effective_decode_width": 2.33596837944664
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18850,
+        26414,
+        20255
+      ],
+      "output_lengths": [
+        1026,
+        1483,
+        577
+      ],
+      "generation_wall_seconds": 95.56731820106506,
+      "decode_step_proxy": 1483,
+      "generated_model_tokens": 3086,
+      "effective_decode_width": 2.080917060013486
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        19973,
+        27924,
+        22489
+      ],
+      "output_lengths": [
+        195,
+        1241,
+        997
+      ],
+      "generation_wall_seconds": 81.19316363334656,
+      "decode_step_proxy": 1241,
+      "generated_model_tokens": 2433,
+      "effective_decode_width": 1.960515713134569
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        20236,
+        29542,
+        23582
+      ],
+      "output_lengths": [
+        496,
+        1312,
+        1568
+      ],
+      "generation_wall_seconds": 101.69763517379761,
+      "decode_step_proxy": 1568,
+      "generated_model_tokens": 3376,
+      "effective_decode_width": 2.1530612244897958
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        20833,
+        30883,
+        25200
+      ],
+      "output_lengths": [
+        1088,
+        1344,
+        577
+      ],
+      "generation_wall_seconds": 87.72964692115784,
+      "decode_step_proxy": 1344,
+      "generated_model_tokens": 3009,
+      "effective_decode_width": 2.2388392857142856
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        22295,
+        32267,
+        25868
+      ],
+      "output_lengths": [
+        1054,
+        501,
+        641
+      ],
+      "generation_wall_seconds": 68.08768558502197,
+      "decode_step_proxy": 1054,
+      "generated_model_tokens": 2196,
+      "effective_decode_width": 2.0834914611005693
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        23701,
+        27400
+      ],
+      "output_lengths": [
+        666,
+        1012
+      ],
+      "generation_wall_seconds": 65.83999037742615,
+      "decode_step_proxy": 1012,
+      "generated_model_tokens": 1678,
+      "effective_decode_width": 1.658102766798419
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        24620,
+        28441
+      ],
+      "output_lengths": [
+        758,
+        889
+      ],
+      "generation_wall_seconds": 58.457321882247925,
+      "decode_step_proxy": 889,
+      "generated_model_tokens": 1647,
+      "effective_decode_width": 1.8526434195725534
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        25545,
+        29359
+      ],
+      "output_lengths": [
+        607,
+        269
+      ],
+      "generation_wall_seconds": 39.04014229774475,
+      "decode_step_proxy": 607,
+      "generated_model_tokens": 876,
+      "effective_decode_width": 1.443163097199341
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        26182,
+        30378
+      ],
+      "output_lengths": [
+        148,
+        898
+      ],
+      "generation_wall_seconds": 56.98470950126648,
+      "decode_step_proxy": 898,
+      "generated_model_tokens": 1046,
+      "effective_decode_width": 1.1648106904231625
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        31824
+      ],
+      "output_lengths": [
+        342
+      ],
+      "generation_wall_seconds": 21.59699296951294,
+      "decode_step_proxy": 342,
+      "generated_model_tokens": 342,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        32237
+      ],
+      "output_lengths": [
+        531
+      ],
+      "generation_wall_seconds": 33.30451846122742,
+      "decode_step_proxy": 531,
+      "generated_model_tokens": 531,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2227,
+        2214,
+        2255,
+        2276
+      ],
+      "output_lengths": [
+        189,
+        266,
+        261,
+        257
+      ],
+      "generation_wall_seconds": 18.22132968902588,
+      "decode_step_proxy": 266,
+      "generated_model_tokens": 973,
+      "effective_decode_width": 3.6578947368421053
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2493,
+        2528,
+        2593,
+        2583
+      ],
+      "output_lengths": [
+        90,
+        124,
+        85,
+        390
+      ],
+      "generation_wall_seconds": 25.098285675048828,
+      "decode_step_proxy": 390,
+      "generated_model_tokens": 689,
+      "effective_decode_width": 1.7666666666666666
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2632,
+        2932,
+        2726,
+        3003
+      ],
+      "output_lengths": [
+        335,
+        306,
+        119,
+        161
+      ],
+      "generation_wall_seconds": 22.13332772254944,
+      "decode_step_proxy": 335,
+      "generated_model_tokens": 921,
+      "effective_decode_width": 2.7492537313432837
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3288,
+        3288,
+        3209,
+        3188
+      ],
+      "output_lengths": [
+        246,
+        217,
+        168,
+        94
+      ],
+      "generation_wall_seconds": 16.36052918434143,
+      "decode_step_proxy": 246,
+      "generated_model_tokens": 725,
+      "effective_decode_width": 2.9471544715447155
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3583,
+        3528,
+        3426,
+        3505
+      ],
+      "output_lengths": [
+        57,
+        83,
+        857,
+        1053
+      ],
+      "generation_wall_seconds": 68.64457511901855,
+      "decode_step_proxy": 1053,
+      "generated_model_tokens": 2050,
+      "effective_decode_width": 1.94681861348528
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3689,
+        3700,
+        5994,
+        4581
+      ],
+      "output_lengths": [
+        57,
+        98,
+        242,
+        425
+      ],
+      "generation_wall_seconds": 27.71275520324707,
+      "decode_step_proxy": 425,
+      "generated_model_tokens": 822,
+      "effective_decode_width": 1.9341176470588235
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3795,
+        4083,
+        6442,
+        5192
+      ],
+      "output_lengths": [
+        489,
+        178,
+        191,
+        247
+      ],
+      "generation_wall_seconds": 31.60686683654785,
+      "decode_step_proxy": 489,
+      "generated_model_tokens": 1105,
+      "effective_decode_width": 2.259713701431493
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        5581,
+        4311,
+        6682,
+        6196
+      ],
+      "output_lengths": [
+        310,
+        102,
+        77,
+        336
+      ],
+      "generation_wall_seconds": 22.857646703720093,
+      "decode_step_proxy": 336,
+      "generated_model_tokens": 825,
+      "effective_decode_width": 2.455357142857143
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        5940,
+        4463,
+        6808,
+        6581
+      ],
+      "output_lengths": [
+        57,
+        206,
+        47,
+        280
+      ],
+      "generation_wall_seconds": 18.439671516418457,
+      "decode_step_proxy": 280,
+      "generated_model_tokens": 590,
+      "effective_decode_width": 2.107142857142857
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        6046,
+        4719,
+        6904,
+        8249
+      ],
+      "output_lengths": [
+        57,
+        64,
+        50,
+        498
+      ],
+      "generation_wall_seconds": 31.759486436843872,
+      "decode_step_proxy": 498,
+      "generated_model_tokens": 669,
+      "effective_decode_width": 1.3433734939759037
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        6152,
+        4833,
+        7003,
+        8824
+      ],
+      "output_lengths": [
+        393,
+        83,
+        853,
+        62
+      ],
+      "generation_wall_seconds": 54.95028853416443,
+      "decode_step_proxy": 853,
+      "generated_model_tokens": 1391,
+      "effective_decode_width": 1.630715123094959
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        7791,
+        4966,
+        7893,
+        8936
+      ],
+      "output_lengths": [
+        897,
+        64,
+        193,
+        547
+      ],
+      "generation_wall_seconds": 58.22404479980469,
+      "decode_step_proxy": 897,
+      "generated_model_tokens": 1701,
+      "effective_decode_width": 1.8963210702341138
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        8737,
+        5080,
+        8730,
+        10130
+      ],
+      "output_lengths": [
+        57,
+        64,
+        666,
+        155
+      ],
+      "generation_wall_seconds": 42.409552812576294,
+      "decode_step_proxy": 666,
+      "generated_model_tokens": 942,
+      "effective_decode_width": 1.4144144144144144
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        8844,
+        5194,
+        9448,
+        10335
+      ],
+      "output_lengths": [
+        57,
+        64,
+        142,
+        62
+      ],
+      "generation_wall_seconds": 9.38906455039978,
+      "decode_step_proxy": 142,
+      "generated_model_tokens": 325,
+      "effective_decode_width": 2.288732394366197
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        8951,
+        5309,
+        10025,
+        10447
+      ],
+      "output_lengths": [
+        464,
+        64,
+        701,
+        62
+      ],
+      "generation_wall_seconds": 45.723426818847656,
+      "decode_step_proxy": 701,
+      "generated_model_tokens": 1291,
+      "effective_decode_width": 1.841654778887304
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        11073,
+        5424,
+        11337,
+        10559
+      ],
+      "output_lengths": [
+        3346,
+        82,
+        800,
+        67
+      ],
+      "generation_wall_seconds": 213.01557278633118,
+      "decode_step_proxy": 3346,
+      "generated_model_tokens": 4295,
+      "effective_decode_width": 1.2836222355050806
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        14445,
+        5557,
+        12191,
+        10676
+      ],
+      "output_lengths": [
+        68,
+        64,
+        555,
+        86
+      ],
+      "generation_wall_seconds": 35.3516960144043,
+      "decode_step_proxy": 555,
+      "generated_model_tokens": 773,
+      "effective_decode_width": 1.3927927927927928
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        14537,
+        5672,
+        13299,
+        10812
+      ],
+      "output_lengths": [
+        84,
+        64,
+        331,
+        79
+      ],
+      "generation_wall_seconds": 21.46911907196045,
+      "decode_step_proxy": 331,
+      "generated_model_tokens": 558,
+      "effective_decode_width": 1.6858006042296072
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        14671,
+        5787,
+        13679,
+        10942
+      ],
+      "output_lengths": [
+        48,
+        64,
+        603,
+        62
+      ],
+      "generation_wall_seconds": 38.33526849746704,
+      "decode_step_proxy": 603,
+      "generated_model_tokens": 777,
+      "effective_decode_width": 1.2885572139303483
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        14769,
+        5902,
+        14518,
+        11055
+      ],
+      "output_lengths": [
+        1856,
+        866,
+        672,
+        62
+      ],
+      "generation_wall_seconds": 119.15214586257935,
+      "decode_step_proxy": 1856,
+      "generated_model_tokens": 3456,
+      "effective_decode_width": 1.8620689655172413
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        16658,
+        6791,
+        15426,
+        11168
+      ],
+      "output_lengths": [
+        337,
+        85,
+        159,
+        544
+      ],
+      "generation_wall_seconds": 35.44888687133789,
+      "decode_step_proxy": 544,
+      "generated_model_tokens": 1125,
+      "effective_decode_width": 2.068014705882353
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        17159,
+        6931,
+        17745,
+        12545
+      ],
+      "output_lengths": [
+        1071,
+        141,
+        568,
+        426
+      ],
+      "generation_wall_seconds": 69.35072660446167,
+      "decode_step_proxy": 1071,
+      "generated_model_tokens": 2206,
+      "effective_decode_width": 2.0597572362278243
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        18914,
+        8030,
+        18691,
+        13022
+      ],
+      "output_lengths": [
+        386,
+        586,
+        1722,
+        401
+      ],
+      "generation_wall_seconds": 109.9927327632904,
+      "decode_step_proxy": 1722,
+      "generated_model_tokens": 3095,
+      "effective_decode_width": 1.79732868757259
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        19350,
+        8639,
+        20464,
+        14731
+      ],
+      "output_lengths": [
+        1418,
+        108,
+        963,
+        1604
+      ],
+      "generation_wall_seconds": 104.99941277503967,
+      "decode_step_proxy": 1604,
+      "generated_model_tokens": 4093,
+      "effective_decode_width": 2.5517456359102244
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        20793,
+        9143,
+        21715,
+        16659
+      ],
+      "output_lengths": [
+        147,
+        107,
+        432,
+        1646
+      ],
+      "generation_wall_seconds": 104.59168815612793,
+      "decode_step_proxy": 1646,
+      "generated_model_tokens": 2332,
+      "effective_decode_width": 1.416767922235723
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        20971,
+        9310,
+        22169,
+        18465
+      ],
+      "output_lengths": [
+        265,
+        756,
+        165,
+        1622
+      ],
+      "generation_wall_seconds": 104.52329516410828,
+      "decode_step_proxy": 1622,
+      "generated_model_tokens": 2808,
+      "effective_decode_width": 1.7311960542540075
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        21330,
+        10494,
+        22571,
+        20164
+      ],
+      "output_lengths": [
+        172,
+        782,
+        679,
+        77
+      ],
+      "generation_wall_seconds": 51.35746693611145,
+      "decode_step_proxy": 782,
+      "generated_model_tokens": 1710,
+      "effective_decode_width": 2.186700767263427
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        21551,
+        11338,
+        23281,
+        20292
+      ],
+      "output_lengths": [
+        996,
+        771,
+        476,
+        2001
+      ],
+      "generation_wall_seconds": 128.53586840629578,
+      "decode_step_proxy": 2001,
+      "generated_model_tokens": 4244,
+      "effective_decode_width": 2.1209395302348826
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        23231,
+        12271,
+        23779,
+        22316
+      ],
+      "output_lengths": [
+        1587,
+        758,
+        563,
+        747
+      ],
+      "generation_wall_seconds": 101.93771624565125,
+      "decode_step_proxy": 1587,
+      "generated_model_tokens": 3655,
+      "effective_decode_width": 2.3030875866414617
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        25796,
+        13791,
+        24364,
+        23373
+      ],
+      "output_lengths": [
+        776,
+        281,
+        291,
+        357
+      ],
+      "generation_wall_seconds": 50.11982250213623,
+      "decode_step_proxy": 776,
+      "generated_model_tokens": 1705,
+      "effective_decode_width": 2.1971649484536084
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        26623,
+        14109,
+        28314,
+        23821
+      ],
+      "output_lengths": [
+        1012,
+        112,
+        1022,
+        86
+      ],
+      "generation_wall_seconds": 67.72422003746033,
+      "decode_step_proxy": 1022,
+      "generated_model_tokens": 2232,
+      "effective_decode_width": 2.183953033268102
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        28468,
+        14526,
+        29381,
+        23957
+      ],
+      "output_lengths": [
+        490,
+        724,
+        633,
+        672
+      ],
+      "generation_wall_seconds": 47.54288363456726,
+      "decode_step_proxy": 724,
+      "generated_model_tokens": 2519,
+      "effective_decode_width": 3.479281767955801
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        29091,
+        16946,
+        30620,
+        24694
+      ],
+      "output_lengths": [
+        1810,
+        1086,
+        755,
+        564
+      ],
+      "generation_wall_seconds": 116.63256907463074,
+      "decode_step_proxy": 1810,
+      "generated_model_tokens": 4215,
+      "effective_decode_width": 2.3287292817679557
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        32341,
+        18435,
+        31602,
+        27585
+      ],
+      "output_lengths": [
+        427,
+        986,
+        938,
+        2158
+      ],
+      "generation_wall_seconds": 138.85295629501343,
+      "decode_step_proxy": 2158,
+      "generated_model_tokens": 4509,
+      "effective_decode_width": 2.089434661723818
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        19573,
+        29786
+      ],
+      "output_lengths": [
+        864,
+        714
+      ],
+      "generation_wall_seconds": 56.33966588973999,
+      "decode_step_proxy": 864,
+      "generated_model_tokens": 1578,
+      "effective_decode_width": 1.8263888888888888
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        23281,
+        30815
+      ],
+      "output_lengths": [
+        821,
+        322
+      ],
+      "generation_wall_seconds": 52.67354965209961,
+      "decode_step_proxy": 821,
+      "generated_model_tokens": 1143,
+      "effective_decode_width": 1.392204628501827
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        24130,
+        31187
+      ],
+      "output_lengths": [
+        439,
+        62
+      ],
+      "generation_wall_seconds": 27.695273876190186,
+      "decode_step_proxy": 439,
+      "generated_model_tokens": 501,
+      "effective_decode_width": 1.14123006833713
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        24846,
+        31299
+      ],
+      "output_lengths": [
+        470,
+        62
+      ],
+      "generation_wall_seconds": 29.692899227142334,
+      "decode_step_proxy": 470,
+      "generated_model_tokens": 532,
+      "effective_decode_width": 1.1319148936170214
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        25517,
+        31411
+      ],
+      "output_lengths": [
+        680,
+        439
+      ],
+      "generation_wall_seconds": 43.86846208572388,
+      "decode_step_proxy": 680,
+      "generated_model_tokens": 1119,
+      "effective_decode_width": 1.6455882352941176
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        26229,
+        31881
+      ],
+      "output_lengths": [
+        555,
+        106
+      ],
+      "generation_wall_seconds": 35.11533975601196,
+      "decode_step_proxy": 555,
+      "generated_model_tokens": 661,
+      "effective_decode_width": 1.190990990990991
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        27160,
+        32040
+      ],
+      "output_lengths": [
+        584,
+        94
+      ],
+      "generation_wall_seconds": 36.93943381309509,
+      "decode_step_proxy": 584,
+      "generated_model_tokens": 678,
+      "effective_decode_width": 1.1609589041095891
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        27774
+      ],
+      "output_lengths": [
+        233
+      ],
+      "generation_wall_seconds": 14.775851011276245,
+      "decode_step_proxy": 233,
+      "generated_model_tokens": 233,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2314,
+        2170,
+        2188,
+        2163
+      ],
+      "output_lengths": [
+        232,
+        268,
+        220,
+        92
+      ],
+      "generation_wall_seconds": 18.235701084136963,
+      "decode_step_proxy": 268,
+      "generated_model_tokens": 812,
+      "effective_decode_width": 3.029850746268657
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        2594,
+        2488,
+        2457,
+        2332
+      ],
+      "output_lengths": [
+        430,
+        285,
+        114,
+        98
+      ],
+      "generation_wall_seconds": 27.957794189453125,
+      "decode_step_proxy": 430,
+      "generated_model_tokens": 927,
+      "effective_decode_width": 2.155813953488372
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        3426,
+        2969,
+        2598,
+        2522
+      ],
+      "output_lengths": [
+        548,
+        126,
+        85,
+        144
+      ],
+      "generation_wall_seconds": 34.98303294181824,
+      "decode_step_proxy": 548,
+      "generated_model_tokens": 903,
+      "effective_decode_width": 1.647810218978102
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        4006,
+        3524,
+        2931,
+        2715
+      ],
+      "output_lengths": [
+        622,
+        433,
+        161,
+        208
+      ],
+      "generation_wall_seconds": 40.61452126502991,
+      "decode_step_proxy": 622,
+      "generated_model_tokens": 1424,
+      "effective_decode_width": 2.289389067524116
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        5196,
+        4466,
+        3141,
+        3110
+      ],
+      "output_lengths": [
+        873,
+        416,
+        51,
+        76
+      ],
+      "generation_wall_seconds": 56.90055990219116,
+      "decode_step_proxy": 873,
+      "generated_model_tokens": 1416,
+      "effective_decode_width": 1.6219931271477663
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        6131,
+        4959,
+        3241,
+        3210
+      ],
+      "output_lengths": [
+        2087,
+        72,
+        51,
+        183
+      ],
+      "generation_wall_seconds": 130.7766399383545,
+      "decode_step_proxy": 2087,
+      "generated_model_tokens": 2393,
+      "effective_decode_width": 1.146621945376138
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        8500,
+        5081,
+        3341,
+        3423
+      ],
+      "output_lengths": [
+        1657,
+        292,
+        50,
+        62
+      ],
+      "generation_wall_seconds": 104.57668495178223,
+      "decode_step_proxy": 1657,
+      "generated_model_tokens": 2061,
+      "effective_decode_width": 1.2438141219070609
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        10657,
+        5402,
+        3440,
+        4456
+      ],
+      "output_lengths": [
+        293,
+        142,
+        51,
+        474
+      ],
+      "generation_wall_seconds": 30.894104719161987,
+      "decode_step_proxy": 474,
+      "generated_model_tokens": 960,
+      "effective_decode_width": 2.0253164556962027
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        11063,
+        5605,
+        3540,
+        4960
+      ],
+      "output_lengths": [
+        207,
+        555,
+        51,
+        71
+      ],
+      "generation_wall_seconds": 35.37490725517273,
+      "decode_step_proxy": 555,
+      "generated_model_tokens": 884,
+      "effective_decode_width": 1.5927927927927927
+    },
+    {
+      "requests": 4,
+      "prompt_lengths": [
+        11300,
+        6949,
+        3640,
+        5078
+      ],
+      "output_lengths": [
+        204,
+        632,
+        403,
+        380
+      ],
+      "generation_wall_seconds": 41.105878591537476,
+      "decode_step_proxy": 632,
+      "generated_model_tokens": 1619,
+      "effective_decode_width": 2.5617088607594938
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7631,
+        4091,
+        5539
+      ],
+      "output_lengths": [
+        56,
+        195,
+        336
+      ],
+      "generation_wall_seconds": 21.63560438156128,
+      "decode_step_proxy": 336,
+      "generated_model_tokens": 587,
+      "effective_decode_width": 1.7470238095238095
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7737,
+        4311,
+        5897
+      ],
+      "output_lengths": [
+        56,
+        92,
+        137
+      ],
+      "generation_wall_seconds": 9.07141375541687,
+      "decode_step_proxy": 137,
+      "generated_model_tokens": 285,
+      "effective_decode_width": 2.0802919708029197
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7843,
+        4446,
+        6309
+      ],
+      "output_lengths": [
+        56,
+        216,
+        363
+      ],
+      "generation_wall_seconds": 23.58240532875061,
+      "decode_step_proxy": 363,
+      "generated_model_tokens": 635,
+      "effective_decode_width": 1.7493112947658402
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        7949,
+        4691,
+        6694
+      ],
+      "output_lengths": [
+        69,
+        454,
+        181
+      ],
+      "generation_wall_seconds": 29.23891043663025,
+      "decode_step_proxy": 454,
+      "generated_model_tokens": 704,
+      "effective_decode_width": 1.550660792951542
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8068,
+        5170,
+        6922
+      ],
+      "output_lengths": [
+        56,
+        463,
+        160
+      ],
+      "generation_wall_seconds": 29.75305151939392,
+      "decode_step_proxy": 463,
+      "generated_model_tokens": 679,
+      "effective_decode_width": 1.4665226781857452
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8174,
+        5706,
+        7228
+      ],
+      "output_lengths": [
+        56,
+        199,
+        422
+      ],
+      "generation_wall_seconds": 27.249860286712646,
+      "decode_step_proxy": 422,
+      "generated_model_tokens": 677,
+      "effective_decode_width": 1.6042654028436019
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8281,
+        5984,
+        7672
+      ],
+      "output_lengths": [
+        56,
+        897,
+        381
+      ],
+      "generation_wall_seconds": 57.40216064453125,
+      "decode_step_proxy": 897,
+      "generated_model_tokens": 1334,
+      "effective_decode_width": 1.4871794871794872
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8388,
+        6925,
+        8219
+      ],
+      "output_lengths": [
+        339,
+        82,
+        1114
+      ],
+      "generation_wall_seconds": 70.8247332572937,
+      "decode_step_proxy": 1114,
+      "generated_model_tokens": 1535,
+      "effective_decode_width": 1.3779174147217235
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        8757,
+        7055,
+        9382
+      ],
+      "output_lengths": [
+        270,
+        486,
+        52
+      ],
+      "generation_wall_seconds": 31.291245460510254,
+      "decode_step_proxy": 486,
+      "generated_model_tokens": 808,
+      "effective_decode_width": 1.662551440329218
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9056,
+        7863,
+        9483
+      ],
+      "output_lengths": [
+        74,
+        462,
+        537
+      ],
+      "generation_wall_seconds": 34.990824699401855,
+      "decode_step_proxy": 537,
+      "generated_model_tokens": 1073,
+      "effective_decode_width": 1.9981378026070764
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9409,
+        8354,
+        10117
+      ],
+      "output_lengths": [
+        260,
+        1166,
+        377
+      ],
+      "generation_wall_seconds": 74.12014484405518,
+      "decode_step_proxy": 1166,
+      "generated_model_tokens": 1803,
+      "effective_decode_width": 1.5463121783876501
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9698,
+        10561,
+        10588
+      ],
+      "output_lengths": [
+        70,
+        245,
+        403
+      ],
+      "generation_wall_seconds": 26.077219486236572,
+      "decode_step_proxy": 403,
+      "generated_model_tokens": 718,
+      "effective_decode_width": 1.781637717121588
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9784,
+        10882,
+        11075
+      ],
+      "output_lengths": [
+        67,
+        77,
+        103
+      ],
+      "generation_wall_seconds": 6.8971168994903564,
+      "decode_step_proxy": 103,
+      "generated_model_tokens": 247,
+      "effective_decode_width": 2.3980582524271843
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        9918,
+        11008,
+        11384
+      ],
+      "output_lengths": [
+        261,
+        63,
+        221
+      ],
+      "generation_wall_seconds": 17.07257628440857,
+      "decode_step_proxy": 261,
+      "generated_model_tokens": 545,
+      "effective_decode_width": 2.0881226053639845
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        10208,
+        11121,
+        11791
+      ],
+      "output_lengths": [
+        57,
+        517,
+        257
+      ],
+      "generation_wall_seconds": 33.12437844276428,
+      "decode_step_proxy": 517,
+      "generated_model_tokens": 831,
+      "effective_decode_width": 1.6073500967117988
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        10553,
+        11983,
+        12098
+      ],
+      "output_lengths": [
+        871,
+        240,
+        54
+      ],
+      "generation_wall_seconds": 54.80547118186951,
+      "decode_step_proxy": 871,
+      "generated_model_tokens": 1165,
+      "effective_decode_width": 1.3375430539609645
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        11453,
+        12273,
+        12227
+      ],
+      "output_lengths": [
+        56,
+        296,
+        51
+      ],
+      "generation_wall_seconds": 18.898321628570557,
+      "decode_step_proxy": 296,
+      "generated_model_tokens": 403,
+      "effective_decode_width": 1.3614864864864864
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        11531,
+        12747,
+        12328
+      ],
+      "output_lengths": [
+        36,
+        271,
+        204
+      ],
+      "generation_wall_seconds": 17.691730499267578,
+      "decode_step_proxy": 271,
+      "generated_model_tokens": 511,
+      "effective_decode_width": 1.8856088560885609
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        11598,
+        13068,
+        12664
+      ],
+      "output_lengths": [
+        126,
+        1044,
+        314
+      ],
+      "generation_wall_seconds": 66.15257048606873,
+      "decode_step_proxy": 1044,
+      "generated_model_tokens": 1484,
+      "effective_decode_width": 1.421455938697318
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        11802,
+        14161,
+        13274
+      ],
+      "output_lengths": [
+        386,
+        273,
+        332
+      ],
+      "generation_wall_seconds": 25.1880886554718,
+      "decode_step_proxy": 386,
+      "generated_model_tokens": 991,
+      "effective_decode_width": 2.5673575129533677
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        12375,
+        14764,
+        13684
+      ],
+      "output_lengths": [
+        380,
+        681,
+        232
+      ],
+      "generation_wall_seconds": 43.83894634246826,
+      "decode_step_proxy": 681,
+      "generated_model_tokens": 1293,
+      "effective_decode_width": 1.8986784140969164
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        12784,
+        15678,
+        13963
+      ],
+      "output_lengths": [
+        144,
+        711,
+        270
+      ],
+      "generation_wall_seconds": 45.41792583465576,
+      "decode_step_proxy": 711,
+      "generated_model_tokens": 1125,
+      "effective_decode_width": 1.5822784810126582
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        13173,
+        16949,
+        14280
+      ],
+      "output_lengths": [
+        593,
+        288,
+        284
+      ],
+      "generation_wall_seconds": 38.197537660598755,
+      "decode_step_proxy": 593,
+      "generated_model_tokens": 1165,
+      "effective_decode_width": 1.9645868465430016
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        13795,
+        17312,
+        14756
+      ],
+      "output_lengths": [
+        186,
+        275,
+        378
+      ],
+      "generation_wall_seconds": 24.670687675476074,
+      "decode_step_proxy": 378,
+      "generated_model_tokens": 839,
+      "effective_decode_width": 2.2195767195767195
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        14162,
+        17638,
+        15211
+      ],
+      "output_lengths": [
+        396,
+        467,
+        53
+      ],
+      "generation_wall_seconds": 30.580294132232666,
+      "decode_step_proxy": 467,
+      "generated_model_tokens": 916,
+      "effective_decode_width": 1.9614561027837258
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        14587,
+        18240,
+        15313
+      ],
+      "output_lengths": [
+        366,
+        84,
+        67
+      ],
+      "generation_wall_seconds": 23.21724033355713,
+      "decode_step_proxy": 366,
+      "generated_model_tokens": 517,
+      "effective_decode_width": 1.4125683060109289
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        14982,
+        18401,
+        15429
+      ],
+      "output_lengths": [
+        383,
+        1045,
+        53
+      ],
+      "generation_wall_seconds": 66.48407912254333,
+      "decode_step_proxy": 1045,
+      "generated_model_tokens": 1481,
+      "effective_decode_width": 1.4172248803827752
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        15394,
+        19582,
+        15531
+      ],
+      "output_lengths": [
+        169,
+        178,
+        53
+      ],
+      "generation_wall_seconds": 11.796489238739014,
+      "decode_step_proxy": 178,
+      "generated_model_tokens": 400,
+      "effective_decode_width": 2.247191011235955
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        15592,
+        19809,
+        15633
+      ],
+      "output_lengths": [
+        55,
+        55,
+        53
+      ],
+      "generation_wall_seconds": 3.842135429382324,
+      "decode_step_proxy": 55,
+      "generated_model_tokens": 163,
+      "effective_decode_width": 2.963636363636364
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        15667,
+        19913,
+        15735
+      ],
+      "output_lengths": [
+        107,
+        54,
+        83
+      ],
+      "generation_wall_seconds": 7.105481386184692,
+      "decode_step_proxy": 107,
+      "generated_model_tokens": 244,
+      "effective_decode_width": 2.2803738317757007
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        15803,
+        20043,
+        15867
+      ],
+      "output_lengths": [
+        117,
+        89,
+        53
+      ],
+      "generation_wall_seconds": 7.84441351890564,
+      "decode_step_proxy": 117,
+      "generated_model_tokens": 259,
+      "effective_decode_width": 2.213675213675214
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        15949,
+        20178,
+        15969
+      ],
+      "output_lengths": [
+        94,
+        1268,
+        53
+      ],
+      "generation_wall_seconds": 79.04087901115417,
+      "decode_step_proxy": 1268,
+      "generated_model_tokens": 1415,
+      "effective_decode_width": 1.1159305993690851
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16072,
+        21791,
+        16071
+      ],
+      "output_lengths": [
+        81,
+        1566,
+        69
+      ],
+      "generation_wall_seconds": 98.060378074646,
+      "decode_step_proxy": 1566,
+      "generated_model_tokens": 1716,
+      "effective_decode_width": 1.0957854406130267
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16192,
+        23382,
+        16191
+      ],
+      "output_lengths": [
+        106,
+        483,
+        753
+      ],
+      "generation_wall_seconds": 48.88233470916748,
+      "decode_step_proxy": 753,
+      "generated_model_tokens": 1342,
+      "effective_decode_width": 1.7822045152722443
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16328,
+        24204,
+        16985
+      ],
+      "output_lengths": [
+        136,
+        1020,
+        251
+      ],
+      "generation_wall_seconds": 64.53442025184631,
+      "decode_step_proxy": 1020,
+      "generated_model_tokens": 1407,
+      "effective_decode_width": 1.3794117647058823
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16504,
+        25567,
+        17387
+      ],
+      "output_lengths": [
+        341,
+        819,
+        318
+      ],
+      "generation_wall_seconds": 52.48508954048157,
+      "decode_step_proxy": 819,
+      "generated_model_tokens": 1478,
+      "effective_decode_width": 1.8046398046398047
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        16874,
+        26414,
+        18436
+      ],
+      "output_lengths": [
+        727,
+        746,
+        462
+      ],
+      "generation_wall_seconds": 49.10184121131897,
+      "decode_step_proxy": 746,
+      "generated_model_tokens": 1935,
+      "effective_decode_width": 2.5938337801608577
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        17639,
+        27209,
+        19288
+      ],
+      "output_lengths": [
+        120,
+        838,
+        364
+      ],
+      "generation_wall_seconds": 53.56137275695801,
+      "decode_step_proxy": 838,
+      "generated_model_tokens": 1322,
+      "effective_decode_width": 1.577565632458234
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        17789,
+        28433,
+        19885
+      ],
+      "output_lengths": [
+        162,
+        552,
+        301
+      ],
+      "generation_wall_seconds": 35.68898677825928,
+      "decode_step_proxy": 552,
+      "generated_model_tokens": 1015,
+      "effective_decode_width": 1.838768115942029
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        17980,
+        29592,
+        20455
+      ],
+      "output_lengths": [
+        76,
+        774,
+        390
+      ],
+      "generation_wall_seconds": 49.85342860221863,
+      "decode_step_proxy": 774,
+      "generated_model_tokens": 1240,
+      "effective_decode_width": 1.6020671834625324
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18085,
+        30914,
+        21427
+      ],
+      "output_lengths": [
+        77,
+        84,
+        1416
+      ],
+      "generation_wall_seconds": 88.91705060005188,
+      "decode_step_proxy": 1416,
+      "generated_model_tokens": 1577,
+      "effective_decode_width": 1.1137005649717515
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18191,
+        31074,
+        22937
+      ],
+      "output_lengths": [
+        65,
+        87,
+        429
+      ],
+      "generation_wall_seconds": 27.632808446884155,
+      "decode_step_proxy": 429,
+      "generated_model_tokens": 581,
+      "effective_decode_width": 1.3543123543123543
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18348,
+        31208,
+        23443
+      ],
+      "output_lengths": [
+        221,
+        407,
+        58
+      ],
+      "generation_wall_seconds": 26.388464212417603,
+      "decode_step_proxy": 407,
+      "generated_model_tokens": 686,
+      "effective_decode_width": 1.6855036855036856
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18597,
+        31760,
+        23551
+      ],
+      "output_lengths": [
+        152,
+        847,
+        74
+      ],
+      "generation_wall_seconds": 53.631675720214844,
+      "decode_step_proxy": 847,
+      "generated_model_tokens": 1073,
+      "effective_decode_width": 1.2668240850059032
+    },
+    {
+      "requests": 3,
+      "prompt_lengths": [
+        18777,
+        32682,
+        23675
+      ],
+      "output_lengths": [
+        125,
+        86,
+        526
+      ],
+      "generation_wall_seconds": 32.841506481170654,
+      "decode_step_proxy": 526,
+      "generated_model_tokens": 737,
+      "effective_decode_width": 1.4011406844106464
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        19042,
+        24307
+      ],
+      "output_lengths": [
+        308,
+        395
+      ],
+      "generation_wall_seconds": 25.127379655838013,
+      "decode_step_proxy": 395,
+      "generated_model_tokens": 703,
+      "effective_decode_width": 1.779746835443038
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        19373,
+        24909
+      ],
+      "output_lengths": [
+        235,
+        1000
+      ],
+      "generation_wall_seconds": 62.658689737319946,
+      "decode_step_proxy": 1000,
+      "generated_model_tokens": 1235,
+      "effective_decode_width": 1.235
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        20058,
+        25970
+      ],
+      "output_lengths": [
+        1336,
+        141
+      ],
+      "generation_wall_seconds": 83.88884544372559,
+      "decode_step_proxy": 1336,
+      "generated_model_tokens": 1477,
+      "effective_decode_width": 1.1055389221556886
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        21866,
+        26172
+      ],
+      "output_lengths": [
+        509,
+        185
+      ],
+      "generation_wall_seconds": 32.44467067718506,
+      "decode_step_proxy": 509,
+      "generated_model_tokens": 694,
+      "effective_decode_width": 1.3634577603143418
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        25646,
+        26698
+      ],
+      "output_lengths": [
+        2171,
+        794
+      ],
+      "generation_wall_seconds": 135.352632522583,
+      "decode_step_proxy": 2171,
+      "generated_model_tokens": 2965,
+      "effective_decode_width": 1.3657300783049287
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        27868,
+        27951
+      ],
+      "output_lengths": [
+        57,
+        282
+      ],
+      "generation_wall_seconds": 18.045329570770264,
+      "decode_step_proxy": 282,
+      "generated_model_tokens": 339,
+      "effective_decode_width": 1.202127659574468
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        27976,
+        28279
+      ],
+      "output_lengths": [
+        100,
+        190
+      ],
+      "generation_wall_seconds": 12.37666130065918,
+      "decode_step_proxy": 190,
+      "generated_model_tokens": 290,
+      "effective_decode_width": 1.5263157894736843
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        28127,
+        28495
+      ],
+      "output_lengths": [
+        544,
+        271
+      ],
+      "generation_wall_seconds": 34.875354051589966,
+      "decode_step_proxy": 544,
+      "generated_model_tokens": 815,
+      "effective_decode_width": 1.4981617647058822
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        28687,
+        28898
+      ],
+      "output_lengths": [
+        63,
+        237
+      ],
+      "generation_wall_seconds": 15.337321996688843,
+      "decode_step_proxy": 237,
+      "generated_model_tokens": 300,
+      "effective_decode_width": 1.2658227848101267
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        28801,
+        29326
+      ],
+      "output_lengths": [
+        272,
+        125
+      ],
+      "generation_wall_seconds": 17.502874612808228,
+      "decode_step_proxy": 272,
+      "generated_model_tokens": 397,
+      "effective_decode_width": 1.4595588235294117
+    },
+    {
+      "requests": 2,
+      "prompt_lengths": [
+        29205,
+        29542
+      ],
+      "output_lengths": [
+        1278,
+        115
+      ],
+      "generation_wall_seconds": 80.14137315750122,
+      "decode_step_proxy": 1278,
+      "generated_model_tokens": 1393,
+      "effective_decode_width": 1.089984350547731
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        29708
+      ],
+      "output_lengths": [
+        64
+      ],
+      "generation_wall_seconds": 4.117752313613892,
+      "decode_step_proxy": 64,
+      "generated_model_tokens": 64,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        29824
+      ],
+      "output_lengths": [
+        453
+      ],
+      "generation_wall_seconds": 28.463847875595093,
+      "decode_step_proxy": 453,
+      "generated_model_tokens": 453,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        30332
+      ],
+      "output_lengths": [
+        225
+      ],
+      "generation_wall_seconds": 14.129135370254517,
+      "decode_step_proxy": 225,
+      "generated_model_tokens": 225,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        30697
+      ],
+      "output_lengths": [
+        552
+      ],
+      "generation_wall_seconds": 34.71831512451172,
+      "decode_step_proxy": 552,
+      "generated_model_tokens": 552,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        31444
+      ],
+      "output_lengths": [
+        795
+      ],
+      "generation_wall_seconds": 50.0028293132782,
+      "decode_step_proxy": 795,
+      "generated_model_tokens": 795,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        32289
+      ],
+      "output_lengths": [
+        408
+      ],
+      "generation_wall_seconds": 25.641409635543823,
+      "decode_step_proxy": 408,
+      "generated_model_tokens": 408,
+      "effective_decode_width": 1.0
+    },
+    {
+      "requests": 1,
+      "prompt_lengths": [
+        32747
+      ],
+      "output_lengths": [
+        21
+      ],
+      "generation_wall_seconds": 1.4905807971954346,
+      "decode_step_proxy": 21,
+      "generated_model_tokens": 21,
+      "effective_decode_width": 1.0
+    }
+  ],
+  "source_sha256": {
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-004/events.jsonl": "d42c14af5d6a8a922396dc1bfd4950d98880b71cc9a320e34cbe65adb4e6f62d",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-018/events.jsonl": "a638f31bd91ada729f89e1e1ea3ddd5a29df70e25062ec2de2976ee4242acd4b",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-022/events.jsonl": "effd5ddb5bb50d8a8bcbb8fa74fc7e058f4baf8263c942f00f406ced23572f07",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-026/events.jsonl": "b1606c68270600c104c53987aef2befb21ca589aa86a82d763edbe8351912341",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-030/events.jsonl": "fb9702047642149790e8f26656c4bdf08c71a51e0ff62e2939ea9a2dc7d02c79",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-033/events.jsonl": "ab61913c9f40778bc723ee58ef080f65f8241f95bc0e3572b01b25d46589dda1",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-043/events.jsonl": "3e680b04252149edac736a92a8546cdf9e7cb287810ba8e685560dfe2e5e9776",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-052/events.jsonl": "b3b023082ee4935c5096383f63ab7018750a916348a902d5162727eb7b56e651",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-053/events.jsonl": "6feb1d02f3cbba3fca17320d0265ef88146c92e3fbc484d49d2d57804c267e11",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-054/events.jsonl": "2cde5f607b5966dc5bee211aa647520623e4e0d72acbf64778789bfa69795484",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-055/events.jsonl": "ba131646a6aaf82c87e1b051685459d62092edbbebe7c8c2116f2f72c0dee2c2",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-061/events.jsonl": "50b45d62434a7b5603e1a9eb7d038ed5db147a0052c65a1721a85a8b0de8e4c8",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-062/events.jsonl": "66ef48c8f8d4d86ffb0b53a69c9dd17eb4ad86d77e67cf7bc67dce69277329a1",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-065/events.jsonl": "a14a2cc7eb9b19700cb60addf9d6716d8c58f2da5645ab1ddf9addc6ad96ff74",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-070/events.jsonl": "218498f55bbc8c5cab0ec7e4828f24fd8bf5c5469ccba93096a8095e2bef851f",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-074/events.jsonl": "6f77bd2e6eacf05c8f82bc308340c2c5a1a128a09023da54dba95bcef8e87d8a",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-076/events.jsonl": "f8cf8fbaf3c264bd80e03b3d2d17f8a00ad3c54d74b95aaa7fbf1e843f3f75e0",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-085/events.jsonl": "c560995bff8e38dc3ebc2a91aaa56b1730266954ebf5b3b5cd67eaad3a3a3838",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-090/events.jsonl": "079da69ead4ec5c4d6c860c06096b0a2005d46ed246387b9344d5ff3232471fb",
+    "/home/chen/runs/repro-benchmark500-20261019/training-rollout-v3-20261021/base/cases/ate-092/events.jsonl": "72ef7cffaa07452d07d850927b1660f520c50856d7c8ed8f6c2404ec58c1dc48"
+  },
+  "limits": [
+    "Effective width is output lengths / longest output, not measured per-step GPU occupancy.",
+    "Generation wall includes prefill and batch completion; this does not isolate a causal speed contribution.",
+    "Discarded tokens reflect original trainer truncation; no change to training generation logic is proposed."
+  ]
+}

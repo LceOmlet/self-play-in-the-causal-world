@@ -1,0 +1,9 @@
+{
+  "synthetic_tests_passed": 5,
+  "official_rule_tests_passed": 2,
+  "acceptance_policy": "official-only-vllm-v0.26.0",
+  "runner_sha256": "4146f53f964b8f9aede8954faf5aebb59a7fa8084a547f8394ee96c112517073",
+  "tolerance_report_sha256": "80410f087bfe2b9b8f271e2ff9d1b1856f93fb9b62cc77acf956f91365fd18d6",
+  "frozen_prompts_and_interface_unchanged": true,
+  "restart_or_resample": false
+}

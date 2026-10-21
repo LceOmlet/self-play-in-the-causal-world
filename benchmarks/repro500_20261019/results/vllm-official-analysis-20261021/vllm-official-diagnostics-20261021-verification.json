@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "files": 141,
+  "archive_bytes": 2619053,
+  "archive_sha256": "d5b5eafde9e8a016ac3074c252d5742ce1bfb3f0f21740bca70b6b04b319a7eb",
+  "all_members_verified_by_reading_archive": true,
+  "formal_rollouts_included": false,
+  "training_or_weight_changes": false,
+  "acceptance_policy": "official-only-vllm-v0.26.0"
+}
