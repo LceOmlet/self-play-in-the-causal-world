@@ -8,7 +8,7 @@ from run_training_rollout import read, write
 
 
 def summarize(root):
-    result = {'gate_report':read(root/'report.json'),'models':{},
+    result = {'official_report':read(root/'official-report.json'),'models':{},
         'scope':{'fixed_context_logprob_probes':'24 single-request contexts per engine',
                  'greedy_rank_probes':'8 prefixes in batches of four; top5 at first divergence',
                  'throughput':'four equal-length 512-token outputs; warmed; aggregate model tokens/s',

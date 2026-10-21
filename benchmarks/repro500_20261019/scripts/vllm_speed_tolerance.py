@@ -21,18 +21,15 @@ from run_training_rollout import BASE, write, read, digest
 
 def prepare():
     LAB.mkdir(exist_ok=False)
-    # Declare the acceptance rule before any candidate engine runs.
+    # Numerical acceptance comes only from the applicable pinned upstream rule.
     write(LAB/'protocol.json', {
         'version':1,'variable':'enforce_eager only; all other engine settings identical',
         'models':['base','checkpoint2350'],'independent_process_repeats':2,
         'fixed_prefix_offsets':[0,16,128],'greedy_tokens':128,
         'throughput_tokens':512,'throughput_repeats_per_engine':2,
-        'gate':{'official_vllm_reciprocal_top5_at_first_divergence':True,
-                'fixed_context_selected_logprob_mean_p99_max':
-                'each cross-mode statistic <= max(eager repeat, graph repeat) + 2**-7',
-                'minimum_warmed_mixed_batch_speedup_each_model':1.05},
-        'limitations':['Project numeric epsilon is not an official vLLM tolerance.',
-            'Rank comparator stops at first divergence; no full trajectory equivalence claim.',
+        'gate':'Pinned official compile generate_close comparison; see official_vllm_validation.py',
+        'fixed_context_logprob_differences':'Descriptive only; no project epsilon or repeat-noise acceptance margin.',
+        'limitations':['No universal epsilon is asserted.',
             'Selected-token processed logprobs do not bound full-vocabulary raw logits.',
             'Fixtures reuse only recorded public token contexts; no labels or grades read.',
             'Diagnostic 128/512-token limits do not apply to the 31497-token evaluation.']})
@@ -126,44 +123,8 @@ def worker(model,mode,repeat):
 
 
 def compare():
-    import numpy as np
-    tree = ast.parse((LAB/'official-utils.py').read_text())
-    function = next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name == 'check_logprobs_close')
-    ns = {}
-    exec('from __future__ import annotations\nimport warnings\n'+ast.unparse(function),ns)
-    def rank(a,b):
-        def convert(items):
-            return [(x[0],x[1],[{int(k):v for k,v in s.items()} for s in x[2]]) for x in items]
-        try:
-            ns['check_logprobs_close'](outputs_0_lst=convert(a['greedy']),
-                outputs_1_lst=convert(b['greedy']),name_0=a['mode'],name_1=b['mode'],warn_on_mismatch=False)
-            return True
-        except AssertionError:
-            return False
-    def delta(a,b):
-        values = []
-        for x,y in zip(a['probes'],b['probes'],strict=True):
-            assert {k:v for k,v in x.items() if k != 'logprob'} == {k:v for k,v in y.items() if k != 'logprob'}
-            values.append(abs(x['logprob']-y['logprob']))
-        return {'mean':float(np.mean(values)),'p99':float(np.percentile(values,99)),'max':max(values)}
-    models = {}
-    for model in ('base','checkpoint2350'):
-        e = [read(LAB/f'{model}-eager-{i}.json') for i in range(2)]
-        g = [read(LAB/f'{model}-graph-{i}.json') for i in range(2)]
-        controls = [delta(e[0],e[1]),delta(g[0],g[1])]
-        thresholds = {k:max(c[k] for c in controls)+2**-7 for k in controls[0]}
-        cross = [delta(a,b) for a in e for b in g]
-        numeric = all(c[k] <= thresholds[k] for c in cross for k in thresholds)
-        ranks = [rank(a,b) for a in e for b in g]
-        speeds = {mode:{shape:statistics.median(t['tokens_per_second'] for r in runs
-            for t in r['timings'] if t['shape'] == shape) for shape in ('mixed','clone')}
-            for mode,runs in [('eager',e),('graph',g)]}
-        speedup = speeds['graph']['mixed']/speeds['eager']['mixed']
-        models[model] = {'controls':controls,'thresholds':thresholds,'cross_mode':cross,
-            'official_rank_passes':ranks,'fixed_prefix_numeric_passed':numeric,
-            'speeds':speeds,'mixed_speedup':speedup,
-            'passed':numeric and all(ranks) and speedup >= 1.05}
-    write(LAB/'report.json',{'models':models,'passed':all(m['passed'] for m in models.values())})
+    from official_vllm_validation import validate
+    return validate(LAB,'graph')
 
 
 def orchestrate():
@@ -178,7 +139,7 @@ def orchestrate():
                         subprocess.run([sys.executable,'-u',__file__,'--worker',model,mode,str(repeat)],
                                        check=True,stdout=log,stderr=subprocess.STDOUT)
         compare()
-        write(LAB/'status.json',{'stage':'complete','passed':read(LAB/'report.json')['passed']})
+        write(LAB/'status.json',{'stage':'complete','passed':read(LAB/'official-report.json')['passed']})
     except BaseException as exc:
         write(LAB/'status.json',{'stage':'failed','error':repr(exc),'automatic_retry':False})
         raise
