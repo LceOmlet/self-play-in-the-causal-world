@@ -1,7 +1,7 @@
-"""Predeclared fallback: CUDA decode graphs with the eager operator implementations.
+"""CUDA decode graphs with eager operators, checked by official Graph test logic.
 
-Reuses the exact eager controls and fixed inputs. Does not alter the original
-candidate's thresholds or results. Starts GPU work only if that candidate fails.
+Reuses the exact eager controls and fixed inputs. No project numeric tolerance.
+Starts GPU work only if the compiled candidate fails the official compile rule.
 """
 import argparse
 import shutil
@@ -10,6 +10,7 @@ import sys
 import time
 from pathlib import Path
 import vllm_speed_tolerance as original
+from official_vllm_validation import validate, official_rules, PINNED
 from run_training_rollout import BASE, write, read, digest
 
 FIRST = original.LAB
@@ -77,9 +78,11 @@ def worker(model,repeat):
 
 def main():
     LAB.mkdir(exist_ok=False)
+    official_rules()
     write(LAB/'protocol.json',{'engine_profile':'decode_graph','compilation_config':CONFIG,
-        'gate':read(FIRST/'protocol.json')['gate'],
-        'original_protocol_sha256':digest((FIRST/'protocol.json').read_bytes()),
+        'acceptance_policy':'official-only-vllm-v0.26.0',
+        'gate':'Official TestFullCUDAGraph greedy response text equality after lowercasing',
+        'official_sources_sha256':PINNED,'project_epsilon':None,
         'fixtures_sha256':digest((FIRST/'fixtures.json').read_bytes()),
         'baseline':'Reuse exact two independent eager controls per model from first experiment',
         'source_sha256':digest(Path(__file__).read_bytes()),
@@ -93,8 +96,8 @@ def main():
             if state['stage'] == 'complete':
                 break
             time.sleep(20)
-        if read(FIRST/'report.json')['passed']:
-            write(LAB/'status.json',{'stage':'not_needed','reason':'Original candidate passed'})
+        if validate(FIRST,'graph')['passed']:
+            write(LAB/'status.json',{'stage':'not_needed','reason':'Compiled candidate passed official compile rule'})
             return
         assert digest((original.SUITE/'scripts/vllm_speed_tolerance.py').read_bytes()) == read(FIRST/'sources.json')['script_sha256']
         for name in ('fixtures.json','official-utils.py'):
@@ -113,12 +116,7 @@ def main():
                 with (LAB/f'{name}.log').open('w') as log:
                     subprocess.run([sys.executable,'-u',__file__,'--worker',model,str(repeat)],
                                    check=True,stdout=log,stderr=subprocess.STDOUT)
-        original.LAB = LAB
-        original.compare()
-        report = read(LAB/'report.json')
-        report['engine_profile'] = 'decode_graph'
-        report['compilation_config'] = CONFIG
-        write(LAB/'report.json',report)
+        report = validate(LAB,'decode_graph')
         write(LAB/'status.json',{'stage':'complete','passed':report['passed']})
     except BaseException as exc:
         write(LAB/'status.json',{'stage':'failed','error':repr(exc),'automatic_retry':False})

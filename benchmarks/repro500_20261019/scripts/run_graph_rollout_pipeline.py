@@ -28,18 +28,21 @@ def main(lab=LAB,profile='graph'):
             if state['stage'] == 'complete':
                 break
             time.sleep(20)
-        report = read(lab/'report.json')
+        report = read(lab/'official-report.json')
+        assert report['acceptance_policy'] == 'official-only-vllm-v0.26.0'
         assert report.get('engine_profile','graph') == profile
-        assert report['passed'], 'Predeclared speed/numeric gate failed; evaluation not started'
+        assert report['passed'], 'Official comparison failed; evaluation not started'
         write(OUTPUT/'tolerance-report.json',report)
         sys.path.insert(0,str(SUITE/'frozen/protocol'))
         from secure_backend import delegated_cgroup
         delegated_cgroup()
         status('preflight')
         run([SUITE/'scripts/tests_training_rollout.py'],'synthetic-tests.log')
+        run([SUITE/'scripts/tests_official_vllm_validation.py'],'official-rule-tests.log')
         merged = ROOT/'training-rollout-v3-20261021/merged-checkpoint2350'
         (OUTPUT/'merged-checkpoint2350').symlink_to(merged,target_is_directory=True)
         write(OUTPUT/'preflight.json',{'synthetic_tests_passed':5,
+            'official_rule_tests_passed':2,'acceptance_policy':report['acceptance_policy'],
             'runner_sha256':digest((SUITE/'run_training_rollout.py').read_bytes()),
             'tolerance_report_sha256':digest((OUTPUT/'tolerance-report.json').read_bytes()),
             'frozen_prompts_and_interface_unchanged':True,'restart_or_resample':False})

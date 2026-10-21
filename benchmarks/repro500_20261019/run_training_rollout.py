@@ -311,6 +311,7 @@ def run_model(args):
     contract = validate_contract(args.contract)
     if args.engine_profile != 'eager':
         evidence = read(args.tolerance_report)
+        assert evidence['acceptance_policy'] == 'official-only-vllm-v0.26.0', 'Withdrawn project tolerances cannot authorize evaluation'
         assert evidence.get('engine_profile','graph') == args.engine_profile
         assert evidence['passed'] and all(evidence['models'][m]['passed']
             for m in ('base','checkpoint2350')), 'Both model gates must pass before evaluation'
