@@ -1,0 +1,95 @@
+{
+  "stopped_by_user": true,
+  "stopped_unix": 1792570640.54314,
+  "reason": "Investigate slow eager execution and validate faster vLLM path before a uniform new run",
+  "progress_at_stop": {
+    "base": {
+      "model": "base",
+      "total": 100,
+      "started": 28,
+      "completed": 24,
+      "submitted": 14,
+      "stage": "running",
+      "active_task_ids": [
+        "individual_counterfactual_probability-020",
+        "individual_counterfactual_probability-027",
+        "individual_counterfactual_probability-028",
+        "individual_counterfactual_probability-032"
+      ]
+    }
+  },
+  "started_cases": {
+    "base": [
+      "ate-004",
+      "ate-018",
+      "ate-022",
+      "ate-026",
+      "ate-030",
+      "ate-033",
+      "ate-043",
+      "ate-052",
+      "ate-053",
+      "ate-054",
+      "ate-055",
+      "ate-061",
+      "ate-062",
+      "ate-065",
+      "ate-070",
+      "ate-074",
+      "ate-076",
+      "ate-085",
+      "ate-090",
+      "ate-092",
+      "individual_counterfactual_probability-002",
+      "individual_counterfactual_probability-003",
+      "individual_counterfactual_probability-010",
+      "individual_counterfactual_probability-019",
+      "individual_counterfactual_probability-020",
+      "individual_counterfactual_probability-027",
+      "individual_counterfactual_probability-028",
+      "individual_counterfactual_probability-032"
+    ]
+  },
+  "terminal_record_cases": {
+    "base": [
+      "ate-004",
+      "ate-018",
+      "ate-022",
+      "ate-026",
+      "ate-030",
+      "ate-033",
+      "ate-043",
+      "ate-052",
+      "ate-053",
+      "ate-054",
+      "ate-055",
+      "ate-061",
+      "ate-062",
+      "ate-065",
+      "ate-070",
+      "ate-074",
+      "ate-076",
+      "ate-085",
+      "ate-090",
+      "ate-092",
+      "individual_counterfactual_probability-002",
+      "individual_counterfactual_probability-003",
+      "individual_counterfactual_probability-010",
+      "individual_counterfactual_probability-019"
+    ]
+  },
+  "unfinished_cases": {
+    "base": [
+      "individual_counterfactual_probability-020",
+      "individual_counterfactual_probability-027",
+      "individual_counterfactual_probability-028",
+      "individual_counterfactual_probability-032"
+    ]
+  },
+  "unfinished_are_not_model_zeros": true,
+  "source_sha256": {
+    "run_training_rollout.py": "43c50e158c81f83fc8c003885e7a0b9cdb46a200418c8060cd5ca7f6e1931602",
+    "scripts/run_training_rollout_pipeline.py": "867c0d0ba1028517ca1734c3fbe15c5837ca85480b3719693faa43280f713b47",
+    "scripts/compile_training_rollout.py": "ee333b47394687836b2203d62f5b7ea9c6cf0252265dacbed3eb22f22e045929"
+  }
+}
