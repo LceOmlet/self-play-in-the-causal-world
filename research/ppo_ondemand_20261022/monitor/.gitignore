@@ -1,0 +1,8 @@
+.deps/
+checks/
+archives/
+latest/
+check-attempts/
+latest-check.json
+history.jsonl
+__pycache__/
