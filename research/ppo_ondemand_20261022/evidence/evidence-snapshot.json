@@ -1,0 +1,53 @@
+{
+  "service": "MainPID=597828\nExecMainStartTimestamp=Thu 2026-10-22 12:07:02 CST\nActiveState=active\nSubState=running\nInvocationID=ea894dbbe5d54d5ebf9226291e13f544\n",
+  "checkpoint_files": {
+    "training/checkpoints/checkpoint-1/training-state.json": {
+      "bytes": 91,
+      "sha256": "ac67574f1c3d8abca0230931b6750da2f195a379f1ce6e4d0916a03bfcb5f965"
+    },
+    "training/checkpoints/checkpoint-1/ppo_state.pt": {
+      "bytes": 173589691,
+      "sha256": "0dab38651aaa1cd557ec693d184332f237e55d4b7a0e65f70c7451cbf586699e"
+    },
+    "training/checkpoints/checkpoint-1/adapter_model.safetensors": {
+      "bytes": 86630872,
+      "sha256": "d4a98c5bf7680b07d752da0260b62e552778b3a107a9f3129e3781a95845a843"
+    },
+    "training/checkpoints/checkpoint-1/adapter_config.json": {
+      "bytes": 1375,
+      "sha256": "c705fa1ee1d88f6b58e1ba0a6a6cb249fcf95c50b40b0b0df106fbe2238ddb49"
+    },
+    "training/checkpoints/checkpoint-1/README.md": {
+      "bytes": 5220,
+      "sha256": "456b926344b003c4469428836b11d62e55737c4a9f907797d40ef4e2c9df0941"
+    }
+  },
+  "source_tar_sha256": "39546de1d68c5861b7b1571c5d551279cf22fbbcc5514ad32f4ce87e1dada58d",
+  "rollout_summary": {
+    "step-000001": {
+      "completed_generation_calls": 45,
+      "generated_model_tokens": 81978,
+      "generation_seconds": 1082.8129868507385,
+      "generation_tokens_per_second": 75.70836422864251,
+      "verified_receipt_only_queries": 59,
+      "completed_rollouts": 4,
+      "latest_generation_prompt_lengths": [
+        31214
+      ]
+    },
+    "step-000002": {
+      "completed_generation_calls": 19,
+      "generated_model_tokens": 19651,
+      "generation_seconds": 214.22810888290405,
+      "generation_tokens_per_second": 91.72932582222967,
+      "verified_receipt_only_queries": 31,
+      "completed_rollouts": 0,
+      "latest_generation_prompt_lengths": [
+        10766,
+        7688,
+        13711,
+        10215
+      ]
+    }
+  }
+}

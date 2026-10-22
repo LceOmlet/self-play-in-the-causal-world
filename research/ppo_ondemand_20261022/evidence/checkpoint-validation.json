@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "global_step": 1,
+  "value_head_finite_fp32": true,
+  "optimizer_states_at_step_one": 498,
+  "adapter_all_finite": true,
+  "nonzero_lora_B_layers": 248,
+  "checkpoint_files": {
+    "training/checkpoints/checkpoint-1/training-state.json": {
+      "bytes": 91,
+      "sha256": "ac67574f1c3d8abca0230931b6750da2f195a379f1ce6e4d0916a03bfcb5f965"
+    },
+    "training/checkpoints/checkpoint-1/ppo_state.pt": {
+      "bytes": 173589691,
+      "sha256": "0dab38651aaa1cd557ec693d184332f237e55d4b7a0e65f70c7451cbf586699e"
+    },
+    "training/checkpoints/checkpoint-1/adapter_model.safetensors": {
+      "bytes": 86630872,
+      "sha256": "d4a98c5bf7680b07d752da0260b62e552778b3a107a9f3129e3781a95845a843"
+    },
+    "training/checkpoints/checkpoint-1/adapter_config.json": {
+      "bytes": 1375,
+      "sha256": "c705fa1ee1d88f6b58e1ba0a6a6cb249fcf95c50b40b0b0df106fbe2238ddb49"
+    },
+    "training/checkpoints/checkpoint-1/README.md": {
+      "bytes": 5220,
+      "sha256": "456b926344b003c4469428836b11d62e55737c4a9f907797d40ef4e2c9df0941"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "upstream/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+  "upstream/tests/trainer/ppo/test_core_algos_on_cpu.py": "0a60e917589ab91646989f0a8616f810fea0dc70047d2b8c13914f4977f5569c",
+  "upstream/tests/trainer/ppo/test_loss_aggregation_on_cpu.py": "b22649fdfcfc1fabcebd3cc8ba4c08e88eacb12722fee41e67b785e15a6cae0f",
+  "upstream/tests/trainer/ppo/test_rollout_corr_integration.py": "3d8c1a1471043a5cbe03cf010c0b2e3dff293370c79b2273aa70a02261bdd759",
+  "upstream/tests/trainer/ppo/test_value_loss_normalization_on_cpu.py": "0d7dc94c4108d3aa091b4b58f80a78135239037980eb57458275cad1b3128b4b",
+  "upstream/verl/utils/torch_functional.py": "bc7ff798e2f5c06e0121668490739814efc519ff66d4d7dd7c8fc40b4840eb03",
+  "upstream/verl/trainer/ppo/core_algos.py": "369b614f239f237a04a38a40b1877cd6fd14aa7bd5f9ff4fe4d7758b682a6948",
+  "runtime-source/cumem.py": "109f56d2e297d22078424e6801435bb7164f1beb79b147e3b0cb4e0155f20d2d",
+  "runtime-source/grpo_trainer.py": "e83d1e9f836c32665bffb74ea82c446a040f08409c1efc64069b1ad90d1a63e6",
+  "runtime-source/official-report.json": "80410f087bfe2b9b8f271e2ff9d1b1856f93fb9b62cc77acf956f91365fd18d6",
+  "runtime-source/vllm_generation.py": "13c6b13c75eb310cf5e3413259b82896665ae0004279c283a5a5c2b0b30f3c45"
+}

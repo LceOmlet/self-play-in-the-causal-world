@@ -1,0 +1,15 @@
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights:  45%|████▌     | 343/760 [00:00<00:00, 3383.94it/s]Loading weights:  90%|████████▉ | 682/760 [00:00<00:00, 2885.48it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 2910.59it/s]
+Traceback (most recent call last):
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 161, in <module>
+    print(json.dumps(model_bench(a.root),default=str),flush=True)
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 107, in model_bench
+    actor,head=ppo.load_actor()
+               ^^^^^^^^^^^^^^^^
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/run_ppo_ondemand.py", line 113, in load_actor
+    require_gdn_kernels_active(actor)
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/grpo_kernel_check.py", line 63, in require_gdn_kernels_active
+    raise RuntimeError(
+RuntimeError: Required Qwen3.5 GDN Hub kernels are not active: missing=['chunk_gated_delta_rule', 'recurrent_gated_delta_rule'], fallback=['chunk_gated_delta_rule', 'recurrent_gated_delta_rule']

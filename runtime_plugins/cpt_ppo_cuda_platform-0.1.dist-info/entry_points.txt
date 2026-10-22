@@ -1,0 +1,2 @@
+[vllm.platform_plugins]
+cpt_ppo_cuda = ppo_cuda_platform:register

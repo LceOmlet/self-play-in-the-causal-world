@@ -1,0 +1,6 @@
+{
+  "global_step": 1,
+  "algorithm": "PPO",
+  "context_length": 32768,
+  "batch_size": 4
+}

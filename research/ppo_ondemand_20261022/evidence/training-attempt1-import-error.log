@@ -1,0 +1,14 @@
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Traceback (most recent call last):
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/run_ppo_ondemand.py", line 365, in <module>
+    train(a.root,a.runtime or a.root/'training',a.logprob_chunk_size)
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/run_ppo_ondemand.py", line 272, in train
+    from transformers import get_json_schema
+ImportError: cannot import name 'get_json_schema' from 'transformers' (/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/transformers/__init__.py)

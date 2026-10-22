@@ -1,0 +1,7 @@
+{
+  "model": "/home/chen/models/Qwen/Qwen3.5-9B",
+  "global_step": 0,
+  "lora_B_all_zero": true,
+  "resumed": false,
+  "runner_sha256": "872bf857297c345140843e7b536049b6b26eeac36597911d4db14a2ed70857e3"
+}

@@ -1,0 +1,13 @@
+{
+  "kernels-data": "0.16.2",
+  "kernels": "0.16.2",
+  "ray": "2.59.0",
+  "omegaconf": "2.4.0",
+  "tensordict": "0.15.2",
+  "peft": "0.20.0",
+  "torch": "2.11.0",
+  "vllm": "0.26.0",
+  "flash-linear-attention": "0.5.2",
+  "transformers": "5.15.1",
+  "trl": "1.14.0+cpt.rollout1"
+}

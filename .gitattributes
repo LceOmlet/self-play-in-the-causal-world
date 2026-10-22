@@ -6,3 +6,6 @@
 *.sh text eol=lf
 *.toml text eol=lf
 *.yml text eol=lf
+research/ppo_ondemand_20261022/** -text
+research/ppo_ondemand_20261022/evidence/*.log -diff
+research/ppo_ondemand_20261022/upstream/** whitespace=-blank-at-eol

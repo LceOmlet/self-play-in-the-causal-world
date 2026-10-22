@@ -1,0 +1,4 @@
+{
+  "passed": true,
+  "criterion": "upstream multi-turn torch.equal, unchanged observation mask positions"
+}

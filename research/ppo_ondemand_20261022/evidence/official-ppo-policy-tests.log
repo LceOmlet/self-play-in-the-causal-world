@@ -1,0 +1,8 @@
+...........                                                              [100%]
+=============================== warnings summary ===============================
+tests/trainer/ppo/test_rollout_corr_integration.py::TestRolloutISIntegration::test_policy_loss_with_rollout_is
+  /home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+    raw_cnt = _raw_device_count_nvml()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+11 passed, 1 warning in 7.04s

@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "protocol": "on-demand-data-v1.1",
+  "act_receipt_only": true,
+  "lossless_observation_available_without_llm_copy": true,
+  "workspace_persistent": true,
+  "answer_sessions_isolated": true,
+  "numerics_input": "read trusted public observations; no transcribed data"
+}

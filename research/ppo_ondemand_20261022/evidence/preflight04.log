@@ -1,0 +1,33 @@
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights:  45%|████▌     | 343/760 [00:00<00:00, 3384.10it/s]Loading weights:  90%|████████▉ | 682/760 [00:00<00:00, 2892.57it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 2919.67it/s]
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeluTanh`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `causal_conv1d_fn`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `causal_conv1d_update`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `Qwen3_5GatedDeltaNet`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `RMSNormGated`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+GDN_KERNELS={"chunk_gated_delta_rule": "_fla_cuda_df9aae1.layers", "recurrent_gated_delta_rule": "_fla_cuda_df9aae1.layers"}
+Traceback (most recent call last):
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 161, in <module>
+    print(json.dumps(model_bench(a.root),default=str),flush=True)
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 141, in model_bench
+    weights=weight_bridge(actor)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 98, in weight_bridge
+    assert torch.equal(expected,module.base_layer.weight), 'PEFT delta stream differs from official merge'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: PEFT delta stream differs from official merge

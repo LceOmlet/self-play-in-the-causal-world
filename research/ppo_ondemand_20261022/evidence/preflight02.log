@@ -1,0 +1,15 @@
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights:  48%|████▊     | 363/760 [00:00<00:00, 3627.31it/s]Loading weights:  96%|█████████▌| 726/760 [00:00<00:00, 2859.24it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 2931.28it/s]
+Traceback (most recent call last):
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 161, in <module>
+    print(json.dumps(model_bench(a.root),default=str),flush=True)
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/validate_ppo_ondemand.py", line 107, in model_bench
+    actor,head=ppo.load_actor()
+               ^^^^^^^^^^^^^^^^
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/run_ppo_ondemand.py", line 112, in load_actor
+    enable_local_fla_kernels(actor, Path('/home/chen/kernels/fla-v1-398dfa8c'))
+  File "/home/chen/runs/ppo-ondemand-from-base-20261022/project/scripts/grpo_kernel_check.py", line 18, in enable_local_fla_kernels
+    from kernels import LocalLayerRepository, Mode, kernelize, use_kernel_mapping
+ModuleNotFoundError: No module named 'kernels'

@@ -1,0 +1,199 @@
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights:  37%|███▋      | 283/760 [00:00<00:00, 2828.57it/s]Loading weights:  74%|███████▍  | 566/760 [00:00<00:00, 2414.01it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 2397.34it/s]
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeluTanh`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `causal_conv1d_fn`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `causal_conv1d_update`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `Qwen3_5GatedDeltaNet`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `RMSNormGated`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/home/chen/runs/ppo-ondemand-from-base-20261022/kernel-compat/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+GDN_KERNELS={"chunk_gated_delta_rule": "_fla_cuda_df9aae1.layers", "recurrent_gated_delta_rule": "_fla_cuda_df9aae1.layers"}
+[ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+[ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+/home/chen/runs/official-grpo-rollout-repair-20260928/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:1061: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+Loading safetensors checkpoint shards:   0% Completed | 0/4 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:  25% Completed | 1/4 [00:06<00:19,  6.47s/it]
+Loading safetensors checkpoint shards:  50% Completed | 2/4 [00:12<00:12,  6.39s/it]
+Loading safetensors checkpoint shards:  75% Completed | 3/4 [00:19<00:06,  6.53s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:22<00:00,  5.18s/it]
+Loading safetensors checkpoint shards: 100% Completed | 4/4 [00:22<00:00,  5.65s/it]
+
+Capturing CUDA graphs (decode, FULL):   0%|          | 0/3 [00:00<?, ?it/s]Capturing CUDA graphs (decode, FULL):  33%|███▎      | 1/3 [00:00<00:00,  2.88it/s]Capturing CUDA graphs (decode, FULL):  67%|██████▋   | 2/3 [00:00<00:00,  4.53it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 3/3 [00:00<00:00,  3.44it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 3/3 [00:00<00:00,  3.51it/s]
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Triton autotuning for function l2norm_fwd_kernel,
+with key as (128, 16, 'torch.bfloat16', 'torch.bfloat16', 'torch.float32'),
+finished after 10.74s,
+best config selected: BT: 32, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None;
+Autotuning kernel chunk_local_cumsum_scalar_kernel with config num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_local_cumsum_scalar_kernel with config num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_local_cumsum_scalar_kernel with config num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_local_cumsum_scalar_kernel with config num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Triton autotuning for function chunk_local_cumsum_scalar_kernel,
+with key as (1, 32, 64, False, False, 'torch.float32', 'torch.float32'),
+finished after 1.02s,
+best config selected: num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None;
+Autotuning kernel chunk_gated_delta_rule_fwd_kkt_solve_kernel with config BK: 32, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kkt_solve_kernel with config BK: 32, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kkt_solve_kernel with config BK: 32, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kkt_solve_kernel with config BK: 64, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kkt_solve_kernel with config BK: 64, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kkt_solve_kernel with config BK: 64, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Triton autotuning for function chunk_gated_delta_rule_fwd_kkt_solve_kernel,
+with key as (32, 32, 128, 16, 'torch.bfloat16', 'torch.float32', 'torch.bfloat16', 'torch.bfloat16'),
+finished after 12.45s,
+best config selected: BK: 64, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None;
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 2, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 4, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 8, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel recompute_w_u_fwd_kernel with config num_warps: 8, num_ctas: 1, num_stages: 4, maxnreg: None
+Triton autotuning for function recompute_w_u_fwd_kernel,
+with key as (32, 32, 128, 128, 64, 64, 64, False, 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32'),
+finished after 6.98s,
+best config selected: num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None;
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 32, num_warps: 2, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 64, num_warps: 2, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 32, num_warps: 2, num_ctas: 1, num_stages: 1, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 64, num_warps: 2, num_ctas: 1, num_stages: 1, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 32, num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 64, num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 32, num_warps: 4, num_ctas: 1, num_stages: 1, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_fwd_kernel_h_blockdim64 with config BV: 64, num_warps: 4, num_ctas: 1, num_stages: 1, maxnreg: None
+Triton autotuning for function chunk_gated_delta_rule_fwd_kernel_h_blockdim64,
+with key as (32, 32, 128, 128, 64, False, 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32', 'torch.bfloat16'),
+finished after 8.35s,
+best config selected: BV: 64, num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None;
+Autotuning kernel chunk_fwd_kernel_o with config BK: 128, BV: 128, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_fwd_kernel_o with config BK: 64, BV: 64, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_fwd_kernel_o with config BK: 32, BV: 32, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Triton autotuning for function chunk_fwd_kernel_o,
+with key as (32, 32, 128, 128, 64, False, 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32', 'torch.bfloat16'),
+finished after 2.80s,
+best config selected: BK: 128, BV: 128, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None;
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 1, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 8, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 16, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 32, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 64, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel l2norm_fwd_kernel with config BT: 128, num_warps: 16, num_ctas: 1, num_stages: 3, maxnreg: None
+Triton autotuning for function l2norm_fwd_kernel,
+with key as (128, 13, 'torch.bfloat16', 'torch.bfloat16', 'torch.float32'),
+finished after 10.84s,
+best config selected: BT: 8, num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None;
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 2, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 4, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 8, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dv_local with config num_warps: 8, num_ctas: 1, num_stages: 4, maxnreg: None
+Triton autotuning for function chunk_bwd_kernel_dv_local,
+with key as (32, 32, 128, 128, 64, 64, 64, True, 'torch.bfloat16', 'torch.bfloat16', 'torch.float32', 'torch.bfloat16', 'torch.bfloat16'),
+finished after 6.33s,
+best config selected: num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None;
+Autotuning kernel chunk_gated_delta_rule_bwd_kernel_dhu_blockdim64 with config BV: 32, num_warps: 2, num_ctas: 1, num_stages: 1, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_bwd_kernel_dhu_blockdim64 with config BV: 64, num_warps: 2, num_ctas: 1, num_stages: 1, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_bwd_kernel_dhu_blockdim64 with config BV: 32, num_warps: 4, num_ctas: 1, num_stages: 1, maxnreg: None
+Autotuning kernel chunk_gated_delta_rule_bwd_kernel_dhu_blockdim64 with config BV: 64, num_warps: 4, num_ctas: 1, num_stages: 1, maxnreg: None
+Triton autotuning for function chunk_gated_delta_rule_bwd_kernel_dhu_blockdim64,
+with key as (32, 32, 128, 128, 64, True, False, 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16'),
+finished after 6.34s,
+best config selected: BV: 32, num_warps: 4, num_ctas: 1, num_stages: 1, maxnreg: None;
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 2, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning failed with out of resource: shared memory, Required: 122884, Hardware limit: 101376. Reducing block sizes or `num_stages` may help.
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 4, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning failed with out of resource: shared memory, Required: 122888, Hardware limit: 101376. Reducing block sizes or `num_stages` may help.
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 8, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 8, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel chunk_bwd_kernel_dqkwg with config num_warps: 8, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning failed with out of resource: shared memory, Required: 122896, Hardware limit: 101376. Reducing block sizes or `num_stages` may help.
+Triton autotuning for function chunk_bwd_kernel_dqkwg,
+with key as (32, 32, 128, 128, 64, 64, 64, True, False, True, False, 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32'),
+finished after 14.51s,
+best config selected: num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None;
+Autotuning kernel prepare_wy_repr_bwd_kernel with config num_warps: 2, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel prepare_wy_repr_bwd_kernel with config num_warps: 2, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel prepare_wy_repr_bwd_kernel with config num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None
+Autotuning kernel prepare_wy_repr_bwd_kernel with config num_warps: 4, num_ctas: 1, num_stages: 2, maxnreg: None
+Autotuning kernel prepare_wy_repr_bwd_kernel with config num_warps: 4, num_ctas: 1, num_stages: 3, maxnreg: None
+Autotuning kernel prepare_wy_repr_bwd_kernel with config num_warps: 4, num_ctas: 1, num_stages: 4, maxnreg: None
+Triton autotuning for function prepare_wy_repr_bwd_kernel,
+with key as (32, 32, 128, 128, 64, 32, 32, False, 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.bfloat16', 'torch.float32'),
+finished after 12.05s,
+best config selected: num_warps: 2, num_ctas: 1, num_stages: 4, maxnreg: None;

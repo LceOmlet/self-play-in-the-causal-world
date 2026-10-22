@@ -9,3 +9,4 @@ build/
 dist/
 paper/tmp/
 paper/figures/overview-preview.png
+research/ppo_ondemand_20261022/evidence/training/rollouts/

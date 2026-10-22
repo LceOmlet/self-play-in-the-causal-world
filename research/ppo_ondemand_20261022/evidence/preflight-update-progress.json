@@ -1,0 +1,53 @@
+{
+  "completed_trials": 3,
+  "latest": {
+    "micro_batches": [
+      {
+        "policy_loss": 0.0002989959320984781,
+        "value_loss": 0.014339377172291279,
+        "actor/pg_clipfrac": 0.0,
+        "actor/ppo_kl": 0.0,
+        "actor/pg_clipfrac_lower": 0.0,
+        "value_clipfrac": 0.0
+      },
+      {
+        "policy_loss": 0.0001433559082215652,
+        "value_loss": 0.014283830299973488,
+        "actor/pg_clipfrac": 0.0,
+        "actor/ppo_kl": 0.0,
+        "actor/pg_clipfrac_lower": 0.0,
+        "value_clipfrac": 0.0
+      },
+      {
+        "policy_loss": -0.0001964521361514926,
+        "value_loss": 0.013675631955265999,
+        "actor/pg_clipfrac": 0.0,
+        "actor/ppo_kl": 0.0,
+        "actor/pg_clipfrac_lower": 0.0,
+        "value_clipfrac": 0.0
+      },
+      {
+        "policy_loss": -0.000245909410296008,
+        "value_loss": 0.013709915801882744,
+        "actor/pg_clipfrac": 0.0,
+        "actor/ppo_kl": 0.0,
+        "actor/pg_clipfrac_lower": 0.0,
+        "value_clipfrac": 0.0
+      }
+    ],
+    "grad_norm": 0.39193859696388245,
+    "first_lora_B_changed": true,
+    "active_policy_tokens": 100788,
+    "optimizer_steps": 1,
+    "gradient_accumulation_steps": 4,
+    "chunk": 1024,
+    "preparation_seconds": 26.682960748672485,
+    "update_seconds": 77.96018481254578,
+    "total_context_tokens": 131072,
+    "rollouts": 4,
+    "microbatch": 1,
+    "grad_accumulation": 4,
+    "peak_allocated": 39412779520,
+    "peak_reserved": 41085304832
+  }
+}
