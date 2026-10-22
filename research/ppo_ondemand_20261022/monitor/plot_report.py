@@ -65,7 +65,7 @@ def native_curve(ax, rows, field, label, color, transform='mean', support=None):
         windows[str(window)] = points
         vals = [p['value'] if p and p['value'] is not None else math.nan for p in points]
         if any(math.isfinite(v) for v in vals):
-            ax.plot(x, vals, style, color=color, lw=2, label=f'{label}: {window} full updates')
+            ax.plot(x, vals, style, marker='o', markersize=3, color=color, lw=2, label=f'{label}: {window} full updates')
     if support is not None:
         support.append({'field': field, 'label': label, 'transform': transform, 'steps': x,
                         'families': sorted({r['family'] for r in rows}),
