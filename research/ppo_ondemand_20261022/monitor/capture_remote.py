@@ -184,6 +184,8 @@ def main(root, output):
     assert source_ok, 'Launched source changed; do not silently recompute scores under a different owner'
     for path in (root / 'deps', project / 'src'):
         sys.path.insert(0, str(path))
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from gpu_probe import probe_gpu
     from cpt_world import CPTWorldEnvironment
     environment = CPTWorldEnvironment()
     runtime = root / 'training'
@@ -245,6 +247,7 @@ def main(root, output):
             'complete_files': all((path / n).is_file() and (path / n).stat().st_size > 0 for n in required),
             'files': {n: {'bytes': (path / n).stat().st_size, 'mtime_unix': (path / n).stat().st_mtime}
                       for n in required if (path / n).is_file()}})
+    gpu = probe_gpu(root)
     captured = {'checked_utc': datetime.now(timezone.utc).isoformat(), 'unix': time.time(),
         'capture_seconds': time.time() - started, 'service': service, 'process': process,
         'boot_id': Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
@@ -252,8 +255,9 @@ def main(root, output):
         'configuration': configuration, 'resources': resource, 'checkpoints': checkpoints,
         'last_active_artifact_unix': newest, 'active_artifact_age_seconds': time.time() - newest if newest else None,
         'failure': read(runtime / 'failure.json') if (runtime / 'failure.json').exists() else None,
-        'gpu_physical_memory_bytes': None, 'gpu_utilization': None, 'gpu_power_watts': None,
-        'gpu_missing_reason': 'Host NVML unavailable; vLLM sleep allocator counters are not physical residency',
+        'gpu': gpu, 'gpu_physical_memory_bytes': gpu['physical_memory_used_bytes'],
+        'gpu_utilization': gpu['utilization_percent_mean'], 'gpu_power_watts': gpu['power_watts'],
+        'gpu_missing_reason': None if gpu['available'] else gpu['errors'],
         'completed_steps': len(rows), 'captured_global_step': max((r['step'] for r in rows), default=0),
         'native_score_source': 'owner fields, no reward inversion',
         'source_receipt_sha256': sha(root / 'launch-receipt.json'), 'monitor_source_sha256': sha(Path(__file__))}

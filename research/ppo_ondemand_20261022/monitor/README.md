@@ -36,7 +36,7 @@ Set-Location 'C:/Users/Chen/Documents/ChatGPT/credit/repro-benchmark500-20261019
 - `latest/efficiency-budget.png`：生成/更新耗时、实际吞吐、模型/工具/总上下文长度、提交率和恰到上下文上限比例、原生预算使用比例与调用数。真实零预算比例在 log 轴外单列，不加 epsilon。
 - `latest/context-length.png`：独立上下文图，逐批展示四条回答的最终学习序列长度（各点、最小/最大、均值）、固定 32768 上限、初始 prompt/模型输出/工具反馈的精确长度构成，以及模型和工具 token 的分布。总上下文不是只计算模型输出，也不等同于每次生成调用的 prefill prompt 长度。
 - `latest/optimizer-state.png`：实际学习率、组合 PPO 损失、更新权重同步耗时、有效策略 token 的整批归一化分母。
-- `latest/resources.png`：训练 cgroup（含回答沙箱）RAM、相同 boot 与 invocation 内 CPU 计数差分的区间平均、距离最新完整文件 checkpoint 的步数。CPU 首次样本没有区间值，不填零。
+- `latest/resources.png`：真实 NVML GPU 利用率、物理显存、功耗；训练 cgroup（含回答沙箱）RAM、相同 boot 与 invocation 内 CPU 计数差分的区间平均、距离最新完整文件 checkpoint 的步数。GPU 利用率每次检查采 5 个相隔约 1 秒的实测值，画本次短窗口均值及 min/max，不冒称整小时平均；物理显存/功耗为本轮最后一个实测点。CPU 首次样本没有区间值，不填零。
 
 `latest/summary.json` 为简要状态；`capture.json` 包含服务、进程、cgroup、学习负载和源码检查；`series.jsonl` 保存每个完成优化步及逐回答原生诊断；`plot-series.json` 保存绘图实际数据、有效/总计数和每个完整窗口的步区间，便于审计。
 
@@ -60,7 +60,9 @@ Set-Location 'C:/Users/Chen/Documents/ChatGPT/credit/repro-benchmark500-20261019
 
 当前每组只有一次 PPO 更新。KL、policy/value clipfrac 是 optimizer.step 前记录的同权重前后向比较，出现 0 正常；不能因此宣称模型没有学习。policy/value loss 已按整批有效 token 归一化，所以四个 microbatch 的 loss 要**求和而非再平均**；KL/clipfrac 用各回答有效模型 token 数加权。
 
-NVML 目前不可用，GPU 利用率、功耗和物理显存不估算。PPO 原日志 `peak_cuda_allocated` 是 vLLM CuMem sleep 环境下的 PyTorch allocator 计数，不能当成物理显存峰值。原始值仍保留在 `series.jsonl` 的 metrics 中，但不绘制成硬件占用曲线。
+2026-10-22 14:15 CST 已恢复任务范围内的真实 NVML 监控：运行中内核驱动 595.84，系统用户态库已升级为 595.99.02；从 Ubuntu 官方的 595.84 包仅提取匹配的 NVML 与 nvidia-smi 到远端 `nvml-repair-20261022/runtime`，没有执行驱动安装、系统库替换或训练重启。修复前后训练 PID 都为 597828。`gpu_probe.py` 在独立监控子进程中选择该匹配库；内核版本改变后自动回到系统 nvidia-smi。包来源和 SHA256、提取文件 SHA256、实测结果见远端 `nvml-repair-20261022/repair-receipt.json`。
+
+可手动运行 `/home/chen/runs/ppo-ondemand-from-base-20261022/monitor/nvidia-smi`；这是任务范围的修复，系统默认 `/usr/bin/nvidia-smi` 的安装仍由管理员管理。监控通过实测 NVML 获取 GPU 利用率、物理显存、功耗和温度；修复前的历史数据仍缺失，不能回填。查询失效时保留缺失和原始错误，不估算。PPO 原日志 `peak_cuda_allocated` 仍然是 vLLM CuMem sleep 环境下的 PyTorch allocator 计数，不能当成物理显存峰值。原始值保留在 `series.jsonl` 的 metrics 中，物理占用图只使用新恢复的 NVML 实测。
 
 用户允许必要时修复和重启。健康时保持当前进程，不能为了常规检查重启，也不能因一次 SSH 失败或长 rollout 盲目重启。真实失败时先保留失败日志、checkpoint、未保存区间轨迹和源码，再做最小修复。恢复应校验并加载 actor/LoRA、value head、optimizer、LR/global_step、采样进度及可用 RNG，记录恢复来源和回退区间；不能从基座重训冒称续训，不能把回退重跑区间拼成新增独立步。
 

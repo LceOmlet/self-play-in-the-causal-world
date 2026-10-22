@@ -248,14 +248,24 @@ def main(out, history_path):
         dt = b['unix'] - a['unix']
         same = a['boot_id'] == b['boot_id'] and a['service']['InvocationID'] == b['service']['InvocationID']
         cpu.append((int(counter_b)-int(counter_a))/1e9/dt if same and dt > 0 and counter_a.isdigit() and counter_b.isdigit() else math.nan)
-    fig, axes = plt.subplots(2, 2, figsize=(12, 6))
-    axes[0, 0].plot(*with_gaps([ram(c) for c in captures]), '.-'); axes[0, 0].set(title='Training cgroup RAM incl. sandboxes', ylabel='GiB')
-    axes[0, 1].plot(*with_gaps(cpu), '.-'); axes[0, 1].set(title='CPU interval mean (same boot + invocation only)', ylabel='CPU cores')
-    axes[1, 0].plot(*with_gaps([c['status']['global_step'] - max((x['step'] for x in c['checkpoints'] if x['complete_files']), default=0) for c in captures]), '.-')
-    axes[1, 0].set(title='Steps since last complete-file checkpoint', ylabel='Steps (not proof of reloadability)')
-    axes[1, 1].text(.5, .58, 'GPU physical memory / utilization / power\nUnavailable: host NVML mismatch', ha='center', va='center', transform=axes[1, 1].transAxes)
-    axes[1, 1].text(.5, .28, 'No estimates; sleeping vLLM allocator counters\nare NOT physical memory occupancy.', ha='center', va='center', transform=axes[1, 1].transAxes, color='gray', fontsize=8)
-    axes[1, 1].axis('off')
+    def gpu_metric(key, factor=1.):
+        return [float(c['gpu'][key]) * factor if c.get('gpu', {}).get(key) is not None else math.nan for c in captures]
+    fig, axes = plt.subplots(3, 2, figsize=(13, 9))
+    axes[0, 0].plot(*with_gaps(gpu_metric('utilization_percent_mean')), '.-', label='5-sample check-window mean')
+    axes[0, 0].fill_between(times, gpu_metric('utilization_percent_min'), gpu_metric('utilization_percent_max'), alpha=.15, label='Observed min-max')
+    axes[0, 0].set(title='Actual NVML GPU utilization (not hourly average)', ylabel='Percent', ylim=(-2, 102))
+    axes[0, 1].plot(*with_gaps(gpu_metric('physical_memory_used_bytes', 1/2**30)), '.-', label='Used: latest real NVML sample')
+    axes[0, 1].plot(*with_gaps(gpu_metric('physical_memory_total_bytes', 1/2**30)), '.--', label='NVML total', color=COLORS[1])
+    axes[0, 1].set(title='Actual physical GPU memory (NVML)', ylabel='GiB', ylim=(0, None))
+    axes[1, 0].plot(*with_gaps(gpu_metric('power_watts')), '.-')
+    axes[1, 0].set(title='Actual GPU power (latest sample at each check)', ylabel='Watts', ylim=(0, None))
+    axes[1, 1].plot(*with_gaps([ram(c) for c in captures]), '.-'); axes[1, 1].set(title='Training cgroup RAM incl. sandboxes', ylabel='GiB')
+    axes[2, 0].plot(*with_gaps(cpu), '.-'); axes[2, 0].set(title='CPU interval mean (same boot + invocation only)', ylabel='CPU cores')
+    axes[2, 1].plot(*with_gaps([c['status']['global_step'] - max((x['step'] for x in c['checkpoints'] if x['complete_files']), default=0) for c in captures]), '.-')
+    axes[2, 1].set(title='Steps since last complete-file checkpoint', ylabel='Steps (not proof of reloadability)')
+    for ax, key in [(axes[0, 0], 'utilization_percent_mean'), (axes[0, 1], 'physical_memory_used_bytes'), (axes[1, 0], 'power_watts')]:
+        if not any(math.isfinite(v) for v in gpu_metric(key)):
+            ax.text(.5, .5, 'No valid NVML samples at these checks', ha='center', va='center', transform=ax.transAxes, color='gray')
     for ax in axes.flat:
         ax.set_xlabel('Check time (Asia/Shanghai)')
         if ax.axison:
@@ -277,6 +287,9 @@ def main(out, history_path):
         'all_step_checks_passed': all(all(r['checks'].values()) and all(all(c['checks'].values()) for c in r['cases']) for r in rows),
         'submitted': sum(c['submitted'] for r in rows for c in r['cases']), 'answers': len(rows)*4,
         'failure': capture['failure'], 'native_error_policy': 'conditional on accepted terminals; no reward inversion',
+        'gpu_available': capture.get('gpu', {}).get('available', False),
+        'gpu_utilization_check_window_mean': capture.get('gpu', {}).get('utilization_percent_mean'),
+        'gpu_utilization_samples': capture.get('gpu', {}).get('valid_utilization_samples', 0),
         'families': {f: {'groups': sum(r['family'] == f for r in rows),
             'submitted': sum(c['submitted'] for r in rows if r['family'] == f for c in r['cases'])} for f in FAMILIES}}
     (out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
