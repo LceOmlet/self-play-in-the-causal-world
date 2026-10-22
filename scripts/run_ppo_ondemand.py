@@ -15,6 +15,7 @@ import hashlib
 import inspect
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -75,7 +76,7 @@ def contract():
     old = read(BASELINE)
     pairs = {'context_length':'vllm_max_model_length'}
     for key in ('max_completion_length','generation_batch_size','num_generations',
-                'per_device_train_batch_size','gradient_accumulation_steps','learning_rate',
+                'per_device_train_batch_size','learning_rate',
                 'max_steps','warmup_steps','num_iterations','temperature','top_p','top_k',
                 'repetition_penalty','beta','max_grad_norm'):
         pairs[key] = key
@@ -120,7 +121,7 @@ def load_actor():
 
 
 def logprobs(hidden, weight, targets, chunk_size):
-    """Checkpoint ordinary PyTorch logits/CE; never materialize T × vocabulary.
+    """Checkpoint ordinary PyTorch logits/CE; never materialize T times vocabulary.
 
     Weight storage and matmul stay BF16, exactly as the original training model.
     Loss/normalization stay FP32. No custom low-precision tolerance is introduced.
@@ -168,7 +169,7 @@ def prepare_ppo(actor, head, cases, chunk_size):
     # Retain the original response/observation layout for upstream multi-turn GAE.
     # Observation values are immaterial by the upstream exact-equality test.
     width = max(len(c['completion_ids']) for c in cases)
-    values = torch.zeros((4,width),dtype=torch.float32)
+    values = torch.zeros((len(cases),width),dtype=torch.float32)
     mask = torch.zeros_like(values);rewards = torch.zeros_like(values)
     for i,((p,v),case) in enumerate(zip(old,cases,strict=True)):
         n = p.numel();assert n > 0
@@ -192,7 +193,7 @@ def update(actor, head, cases, opt, chunk_size, global_tokens):
     import torch
     from omegaconf import OmegaConf
     from verl.trainer.ppo.core_algos import compute_policy_loss_vanilla,compute_value_loss
-    info = {'dp_size':1,'batch_num_tokens':global_tokens,'global_batch_size':4}
+    info = {'dp_size':1,'batch_num_tokens':global_tokens,'global_batch_size':len(cases)}
     cfg = OmegaConf.create({'clip_ratio':.2,'clip_ratio_low':None,'clip_ratio_high':None,
                            'clip_ratio_c':3.,'global_batch_info':info})
     actor.train();head.train();opt.zero_grad(set_to_none=True)
@@ -206,7 +207,7 @@ def update(actor, head, cases, opt, chunk_size, global_tokens):
         vf,clip = compute_value_loss(v[None],row('returns'),row('old_values'),mask,.2,'token-mean',**info)
         loss = pg+.1*vf
         assert torch.isfinite(loss)
-        loss.backward()  # Upstream global denominator already accounts for all four micro-batches.
+        loss.backward()  # Upstream global denominator already accounts for all microbatches in the optimizer batch.
         metrics.append({'policy_loss':pg.item(),'value_loss':vf.item(),**pm,'value_clipfrac':clip.item()})
         del lp,v,pg,vf,loss
     params=[p for p in actor.parameters() if p.requires_grad]+list(head.parameters())
@@ -216,7 +217,7 @@ def update(actor, head, cases, opt, chunk_size, global_tokens):
     opt.step();opt.zero_grad(set_to_none=True)
     after=next(p for n,p in actor.named_parameters() if '.lora_B.' in n)
     return {'micro_batches':metrics,'grad_norm':norm.item(),'first_lora_B_changed':not torch.equal(before,after),
-            'active_policy_tokens':global_tokens,'optimizer_steps':1,'gradient_accumulation_steps':4}
+            'active_policy_tokens':global_tokens,'optimizer_steps':1,'gradient_accumulation_steps':len(cases)}
 
 
 def nonmutating_params(self):
@@ -258,15 +259,23 @@ class GenerationTrace:
         return outputs
 
 
-def save(actor,head,opt,runtime,step):
+def save(actor,head,opt,runtime,step,consumed_groups):
     import torch
-    folder=runtime/'checkpoints'/f'checkpoint-{step}'
+    folder=runtime/'checkpoints'/f'.checkpoint-{step}.incomplete'
+    assert not folder.exists()
     actor.save_pretrained(folder)
-    torch.save({'value_head':head.state_dict(),'optimizer':opt.state_dict(),'global_step':step},folder/'ppo_state.pt')
-    write(folder/'training-state.json',{'global_step':step,'algorithm':'PPO','context_length':32768,'batch_size':4})
+    torch.save({'value_head':head.state_dict(),'optimizer':opt.state_dict(),'global_step':step,'consumed_groups':consumed_groups,'torch_rng':torch.get_rng_state(),'cuda_rng':torch.cuda.get_rng_state_all()},folder/'ppo_state.pt')
+    write(folder/'training-state.json',{'global_step':step,'algorithm':'PPO','context_length':32768,'batch_size':LOAD['gradient_accumulation_steps'],'consumed_groups':consumed_groups})
+    folder.rename(folder.with_name(f'checkpoint-{step}'))
+    # Keep recent recovery points and every 50th archival checkpoint.
+    for path in (runtime/'checkpoints').glob('checkpoint-*'):
+        saved_step=int(path.name.split('-')[-1])
+        if saved_step < step-2 and saved_step != 1 and saved_step % 50:
+            assert path.resolve().parent == (runtime/'checkpoints').resolve()
+            shutil.rmtree(path)
 
 
-def train(root,runtime,chunk_size):
+def train(root,runtime,chunk_size,resume=None,checkpoint_every=1):
     import torch
     from accelerate import Accelerator
     from trl.generation.vllm_generation import DistributedBackend
@@ -279,10 +288,53 @@ def train(root,runtime,chunk_size):
     delegated_cgroup()
     assert not runtime.exists(), 'A fresh run cannot silently overwrite or resume prior training'
     runtime.mkdir(parents=True)
-    configuration=contract();write(runtime/'configuration.json',configuration)
+    configuration=contract()
+    configuration.update(resume_checkpoint=str(resume) if resume else None,fresh_lora=not bool(resume),optimizer_batch_size=LOAD['gradient_accumulation_steps'],checkpoint_every=checkpoint_every)
+    from verl.trainer.ppo import core_algos
+    official_file=root/'verl-source/verl/trainer/ppo/core_algos.py'
+    official_names=('compute_gae_advantage_return','compute_policy_loss_vanilla','compute_value_loss','agg_loss')
+    assert all(Path(inspect.getsourcefile(getattr(core_algos,n))).resolve()==official_file.resolve()
+               for n in official_names)
+    configuration['official_function_sources']={n:{'path':str(official_file),'sha256':sha(official_file),
+        'commit':VERL_COMMIT} for n in official_names}
     write(runtime/'status.json',{'stage':'loading_from_original','global_step':0})
     actor,head=load_actor()
-    write(runtime/'fresh-start.json',{'model':BASE,'global_step':0,'lora_B_all_zero':True,'resumed':False,
+    initial_step=0;consumed_groups=0;opt=None;restored_rng=None
+    if resume:
+        from safetensors.torch import load_file
+        from peft import set_peft_model_state_dict,get_peft_model_state_dict
+        adapter=load_file(str(resume/'adapter_model.safetensors'),device='cpu')
+        result=set_peft_model_state_dict(actor,adapter)
+        assert not result.unexpected_keys
+        assert not any('.lora_' in k for k in result.missing_keys)
+        restored=get_peft_model_state_dict(actor)
+        assert set(restored)==set(adapter)
+        assert all(torch.equal(restored[k].detach().cpu(),v) for k,v in adapter.items())
+        del restored,adapter
+        state=torch.load(resume/'ppo_state.pt',map_location='cpu',weights_only=True)
+        head.load_state_dict(state['value_head'],strict=True)
+        opt=optimizer_for(actor,head);opt.load_state_dict(state['optimizer'])
+        initial_step=int(state['global_step']);consumed_groups=int(state.get('consumed_groups',initial_step))
+        assert initial_step > 0
+        assert all(int(v['step'])==initial_step for v in opt.state.values())
+        assert all(torch.equal(head.state_dict()[k].cpu(),v) for k,v in state['value_head'].items())
+        actual_opt=opt.state_dict()
+        assert actual_opt['param_groups']==state['optimizer']['param_groups']
+        assert all(torch.equal(actual_opt['state'][k][n].cpu(),v) if torch.is_tensor(v)
+                   else actual_opt['state'][k][n]==v
+                   for k,entry in state['optimizer']['state'].items() for n,v in entry.items())
+        del actual_opt
+        restored_rng=state
+        configuration.update(initial_global_step=initial_step,consumed_groups_at_resume=consumed_groups,
+            resume_file_sha256={x:sha(resume/x) for x in ('adapter_model.safetensors','ppo_state.pt','training-state.json')},
+            rng_resume_exact=False,
+            sampling_resume_note='Row stream position restored; vLLM RNG restarts with engine seed 0. Legacy checkpoint lacks RNG state.')
+        write(runtime/'resume-validation.json',{'passed':True,'global_step':initial_step,'consumed_groups':consumed_groups,
+            'optimizer_states':len(opt.state),'actor_restored':True,'value_head_restored':True,'optimizer_restored':True,
+            'checkpoint':str(resume),'sha256':configuration['resume_file_sha256']})
+        del state
+    write(runtime/'configuration.json',configuration)
+    write(runtime/'fresh-start.json',{'model':BASE,'global_step':initial_step,'lora_B_all_zero':not bool(resume),'resumed':bool(resume),
                                      'runner_sha256':sha(Path(__file__))})
     actor.to('cpu');head.to('cpu');gc.collect();torch.cuda.empty_cache()
     llm=LLM(model=BASE,tokenizer=BASE,dtype='bfloat16',max_model_len=32768,
@@ -297,45 +349,62 @@ def train(root,runtime,chunk_size):
     backend._dist=DistributedBackend(backend.accelerator)
     backend._iter_named_params=MethodType(nonmutating_params,backend)
     backend.enable_sleep_mode=True;backend.rollout_residency=True
+    if resume:
+        # Resume must push trained weights through the same CUDA merge path as
+        # every existing post-update sync, before the first continued rollout.
+        llm.sleep(level=2)
+        backend._llm_weights_sleeping=True;backend._llm_kv_cache_sleeping=True
+        actor.to('cuda');head.to('cuda')
     processor,tokenizer,template=rollout.training_processor()
     factory=NsjailSessionFactory(runtime/'numeric-sessions')
     env_type=tool_mode.make_numeric_environment(CPTWorldEnvironment,factory)
     rows=iter(iter_random_balanced_training_rows())
-    opt=None
+    for _ in range(consumed_groups):next(rows)
+    if restored_rng and 'torch_rng' in restored_rng:
+        torch.set_rng_state(restored_rng['torch_rng']);torch.cuda.set_rng_state_all(restored_rng['cuda_rng'])
+    restored_rng=None
     try:
-        for step in range(1,LOAD['max_steps']+1):
+        for step in range(initial_step+1,LOAD['max_steps']+1):
             folder=runtime/'rollouts'/f'step-{step:06d}';folder.mkdir(parents=True)
-            row=tool_mode.prepare_row(next(rows))
-            # Same prompt/group-of-four workload; learning is PPO, not group-standardized GRPO.
-            envs=[]
-            for i in range(4):
-                e=env_type();e.reset(**copy.deepcopy(row))
-                case=folder/f'case-{i}';case.mkdir()
-                envs.append(rollout.LoggedEnvironment(e,f'{step}-{i}',case))
-            prompts=[copy.deepcopy(row['prompt']) for _ in range(4)]
-            write(folder/'task-row.json',row)
-            write(folder/'public-prompt.json',{'messages':row['prompt'],'tools':[get_json_schema(envs[0].act),get_json_schema(envs[0].numerics)]})
             if step > 1:
                 t=time.time();backend.sync_weights()
                 write(folder/'weight-sync.json',{'seconds':time.time()-t,'source':'updated PPO actor','frozen_weights_merged_in_place':False})
                 actor.to('cpu');head.to('cpu');gc.collect();torch.cuda.empty_cache()
-            proxy.path=folder/'generation-batches.jsonl.gz'
-            trainer=rollout.make_trainer(processor,tokenizer,template,backend,envs,cfg)
-            write(runtime/'status.json',{'stage':'rollout','global_step':step-1,'active_step':step,'batch_size':4,'context_length':32768})
-            start=time.time()
+            cases=[];task_families=[];start=time.time()
+            groups=LOAD['gradient_accumulation_steps']//4
+            # All groups share frozen weights; one optimizer step follows all cases.
             with backend.rollout_session():
-                result=trainer._generate(prompts)
-            prompt_ids,completion_ids,tool_masks=result[:3]
-            assert all(not e.infra_errors for e in envs)
-            cases=[]
-            for i,e in enumerate(envs):
-                c={'prompt_ids':prompt_ids[i],'completion_ids':completion_ids[i],'tool_mask':tool_masks[i],
-                   'reward':e.env.get_reward(),'submitted':bool(e.env.episode.completed),
-                   'tool_calls':e.calls,'observations_used':e.env.episode.observations_used}
-                assert len(c['completion_ids']) <= 31497
-                write(folder/f'case-{i}'/'rollout.json',c);cases.append(c)
+                for group_index in range(groups):
+                    group_folder=folder/f'group-{group_index:02d}';group_folder.mkdir()
+                    row=tool_mode.prepare_row(next(rows));task_families.append(row['query_type'])
+                    envs=[]
+                    for i in range(4):
+                        e=env_type();e.reset(**copy.deepcopy(row))
+                        case=group_folder/f'case-{i}';case.mkdir()
+                        envs.append(rollout.LoggedEnvironment(e,f'{step}-{group_index}-{i}',case))
+                    prompts=[copy.deepcopy(row['prompt']) for _ in range(4)]
+                    write(group_folder/'task-row.json',row)
+                    write(group_folder/'public-prompt.json',{'messages':row['prompt'],'tools':[get_json_schema(envs[0].act),get_json_schema(envs[0].numerics)]})
+                    proxy.path=group_folder/'generation-batches.jsonl.gz'
+                    trainer=rollout.make_trainer(processor,tokenizer,template,backend,envs,cfg)
+                    write(runtime/'status.json',{'stage':'rollout','global_step':step-1,'active_step':step,
+                        'active_group':group_index+1,'rollout_groups':groups,'batch_size':4*groups,
+                        'completed_cases':len(cases),'context_length':32768})
+                    result=trainer._generate(prompts)
+                    prompt_ids,completion_ids,tool_masks=result[:3]
+                    assert all(not e.infra_errors for e in envs)
+                    for i,e in enumerate(envs):
+                        c={'prompt_ids':prompt_ids[i],'completion_ids':completion_ids[i],'tool_mask':tool_masks[i],
+                           'reward':e.env.get_reward(),'submitted':bool(e.env.episode.completed),
+                           'tool_calls':e.calls,'observations_used':e.env.episode.observations_used}
+                        assert len(c['completion_ids']) <= 31497
+                        write(group_folder/f'case-{i}'/'rollout.json',c);cases.append(c)
+                    consumed_groups+=1
+            assert len(cases)==LOAD['gradient_accumulation_steps']
             rollout_seconds=time.time()-start
-            write(runtime/'status.json',{'stage':'ppo_update','global_step':step-1,'active_step':step})
+            write(runtime/'status.json',{'stage':'ppo_update','global_step':step-1,'active_step':step,
+                'batch_size':len(cases),'completed_cases':len(cases),'microbatch':1,
+                'gradient_accumulation_steps':len(cases)})
             actor.to('cuda');head.to('cuda')
             if opt is None:opt=optimizer_for(actor,head)
             for group in opt.param_groups:group['lr']=1e-6*(1-(step-1)/10000)
@@ -346,10 +415,10 @@ def train(root,runtime,chunk_size):
             metrics.update(step=step,rollout_seconds=rollout_seconds,update_seconds=time.time()-start,
                     rewards=[c['reward'] for c in cases],submitted=sum(c['submitted'] for c in cases),
                     peak_cuda_allocated=torch.cuda.max_memory_allocated(),logprob_chunk_size=chunk_size,
-                    learning_rate=opt.param_groups[0]['lr'],task_family=row['query_type'])
+                    learning_rate=opt.param_groups[0]['lr'],task_family=task_families[0] if len(task_families)==1 else 'mixed',task_families=task_families,consumed_groups=consumed_groups)
             event(runtime/'metrics.jsonl',metrics)
             write(runtime/'status.json',{'stage':'running','global_step':step,'latest_metrics':metrics})
-            if step == 1 or step % 50 == 0:save(actor,head,opt,runtime,step)
+            if step == initial_step+1 or step % checkpoint_every == 0 or step == LOAD['max_steps']:save(actor,head,opt,runtime,step,consumed_groups)
     except BaseException as exc:
         write(runtime/'failure.json',{'error_type':type(exc).__name__,'message':str(exc),'automatic_resample':False})
         raise
@@ -362,5 +431,12 @@ if __name__ == '__main__':
     p.add_argument('--root',type=Path,default=Path('/home/chen/runs/ppo-ondemand-from-base-20261022'))
     p.add_argument('--runtime',type=Path)
     p.add_argument('--logprob-chunk-size',type=int,default=512)
-    a=p.parse_args();setup(a.root)
-    train(a.root,a.runtime or a.root/'training',a.logprob_chunk_size)
+    p.add_argument('--optimizer-batch-size',type=int,default=4)
+    p.add_argument('--resume-checkpoint',type=Path)
+    p.add_argument('--checkpoint-every',type=int,default=1)
+    a=p.parse_args()
+    assert a.optimizer_batch_size > 0 and a.optimizer_batch_size % 4 == 0
+    assert a.checkpoint_every > 0
+    LOAD['gradient_accumulation_steps']=a.optimizer_batch_size
+    setup(a.root)
+    train(a.root,a.runtime or a.root/'training',a.logprob_chunk_size,a.resume_checkpoint,a.checkpoint_every)

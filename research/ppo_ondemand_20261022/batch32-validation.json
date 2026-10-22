@@ -1,0 +1,79 @@
+{
+  "scope": "2026-10-22 batch32 preflight and checkpoint-1 launch validation; not a completed formal batch32 update",
+  "official_verl_commit": "d1390eea0c94467d4ae1387eeda9e2f78f8d73ea",
+  "official_tests_original_assertions_passed": 45,
+  "official_function_sources": {
+    "compute_gae_advantage_return": {
+      "path": "/home/chen/runs/ppo-ondemand-from-base-20261022/verl-source/verl/trainer/ppo/core_algos.py",
+      "sha256": "369b614f239f237a04a38a40b1877cd6fd14aa7bd5f9ff4fe4d7758b682a6948",
+      "commit": "d1390eea0c94467d4ae1387eeda9e2f78f8d73ea"
+    },
+    "compute_policy_loss_vanilla": {
+      "path": "/home/chen/runs/ppo-ondemand-from-base-20261022/verl-source/verl/trainer/ppo/core_algos.py",
+      "sha256": "369b614f239f237a04a38a40b1877cd6fd14aa7bd5f9ff4fe4d7758b682a6948",
+      "commit": "d1390eea0c94467d4ae1387eeda9e2f78f8d73ea"
+    },
+    "compute_value_loss": {
+      "path": "/home/chen/runs/ppo-ondemand-from-base-20261022/verl-source/verl/trainer/ppo/core_algos.py",
+      "sha256": "369b614f239f237a04a38a40b1877cd6fd14aa7bd5f9ff4fe4d7758b682a6948",
+      "commit": "d1390eea0c94467d4ae1387eeda9e2f78f8d73ea"
+    },
+    "agg_loss": {
+      "path": "/home/chen/runs/ppo-ondemand-from-base-20261022/verl-source/verl/trainer/ppo/core_algos.py",
+      "sha256": "369b614f239f237a04a38a40b1877cd6fd14aa7bd5f9ff4fe4d7758b682a6948",
+      "commit": "d1390eea0c94467d4ae1387eeda9e2f78f8d73ea"
+    }
+  },
+  "preflight": {
+    "grad_norm": 0.5198622941970825,
+    "first_lora_B_changed": true,
+    "active_policy_tokens": 806304,
+    "optimizer_steps": 1,
+    "gradient_accumulation_steps": 32,
+    "passed": true,
+    "batch_size": 32,
+    "microbatch": 1,
+    "total_context_tokens": 1048576,
+    "preparation_seconds": 191.53946995735168,
+    "update_seconds": 624.1706259250641,
+    "peak_allocated": 39326205952,
+    "runner_sha256": "c78ba44394155e960c9ac8b0ef6b567c042880a6dfef3e3ed1a57a687436df42",
+    "method": "Production runner directly calls pinned unchanged VERL functions; unchanged official tests and assertions",
+    "numerical_tolerance_added": false,
+    "formal_training_reuses_no_preflight_weights": true
+  },
+  "resume_validation": {
+    "passed": true,
+    "global_step": 1,
+    "consumed_groups": 1,
+    "optimizer_states": 498,
+    "actor_restored": true,
+    "value_head_restored": true,
+    "optimizer_restored": true,
+    "checkpoint": "/home/chen/runs/ppo-ondemand-from-base-20261022/training/checkpoints/checkpoint-1",
+    "sha256": {
+      "adapter_model.safetensors": "d4a98c5bf7680b07d752da0260b62e552778b3a107a9f3129e3781a95845a843",
+      "ppo_state.pt": "0dab38651aaa1cd557ec693d184332f237e55d4b7a0e65f70c7451cbf586699e",
+      "training-state.json": "ac67574f1c3d8abca0230931b6750da2f195a379f1ce6e4d0916a03bfcb5f965"
+    }
+  },
+  "optimizer_batch_size": 32,
+  "microbatch": 1,
+  "gradient_accumulation_steps": 32,
+  "generation_batch_size": 4,
+  "generation_groups_per_update": 8,
+  "learning_functions_ast_identical_to_preflight": [
+    "load_actor",
+    "logprobs",
+    "forward_case",
+    "prepare_ppo",
+    "optimizer_for",
+    "update"
+  ],
+  "runner_sha256": "56c0de9f0d694fcaa0a39bb9e4af7be447abd1444fe6d7e4d88c94e0bd493e34",
+  "prior_source_receipt_sha256": "06d82bab4e66df6ff6c83d860a2ff12ee827f4c2f2012adf7eaea5aa90ebec0f",
+  "user_authorized_discard_unsaved_updates": true,
+  "rng_resume_exact": false,
+  "checkpoint_every": 1,
+  "checkpoint_retention": "latest three and every 50th; inherited checkpoint-1 preserved"
+}

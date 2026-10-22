@@ -1,4 +1,18 @@
-# 从原模型启动 PPO：32K、b4、按需数据沙箱
+# PPO：32K、按需数据沙箱；首发 b4，后续 b32 续训
+
+## 2026-10-22 用户要求的 batch=32 续训
+
+用户要求 optimizer minibatch 改为 `4 × 8 = 32`，并明确选择立即从完整的第 1 步 checkpoint 续训，接受舍弃之后未保存的更新。microbatch 仍为 1，梯度累积为 32；每次先用同一版策略连续收集 8 组四路生成，再只执行一次 optimizer 更新。32 条轨迹共用整批有效模型 token 分母；GAE、policy loss、value loss 及归一化继续直接调用固定 commit 的未修改 VERL 官方函数，没有新增 PPO 算法实现或数值容差。
+
+续训源码为远端 `project-b32`，数据为 `training-b32`，服务为 `cpt-numerics-ppo-ondemand-b32-20261022.service`。根目录 `active-run.json` 指定当前运行及 `launch-b32-receipt.json`。旧 `project`、`training` 和启动证据保持为历史记录。第 2 步之后被舍弃的旧更新不计入新曲线或样本数。
+
+恢复通过 PEFT 官方 `set_peft_model_state_dict` 和 PyTorch `load_state_dict` 执行，并逐张量精确核对 adapter、value head、optimizer 状态和 optimizer step。任务流跳过 checkpoint 已消费的组；旧 checkpoint 没有 RNG，vLLM 采样 RNG 重新初始化，因此不声称随机轨迹完全延续。学习率按继承的 global step 继续；其他模型、上下文、采样、学习率和优化参数不变。
+
+`scripts/validate_ppo_batch32.py` 原样运行 45 项官方测试和断言，再直接执行正式 runner 的完整 `32 × 32768` 更新预检，不写替代参考算法；预检参数不用于正式续训。`scripts/launch_ppo_batch32.py` 检查测试、完整负载预检、学习函数 AST 和 checkpoint SHA256 后启动。checkpoint 改为每次更新后写临时目录，再原子 rename；保留最近三份、step 1 和每 50 步长期存档。
+
+实际验证见 [batch32-validation.json](batch32-validation.json)：45 项官方测试通过；完整预检 1,048,576 个上下文 token、806,304 个有效策略 token，old-policy/GAE 191.539 秒、更新 624.171 秒，独立更新进程的 PyTorch allocated 峰值 36.625 GiB，32 次累积后执行一次 optimizer 更新，梯度有限且 LoRA B 改变。该预检不是正式训练样本。15:00 启动正式续训，invocation `bca34792783c4ad2914bf4908b3ca32a`，actor/value head/498 份 Adam 状态精确恢复通过；15:05 实测已进入第 2 步的第 1/8 组 rollout，尚未完成首个正式 b32 优化步。运行时记录四个实际官方函数的源文件路径及 SHA256。
+
+下面各节为 12:07 首发 b4 的历史配置与验证；当前状态以续训 receipt 和小时检查为准。
 
 ## 学习和环境约束
 

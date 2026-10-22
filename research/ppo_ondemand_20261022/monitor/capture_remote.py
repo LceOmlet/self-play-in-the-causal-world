@@ -128,33 +128,41 @@ def case_record(folder, row, environment):
 
 def step_record(runtime, metric, environment):
     folder = runtime / 'rollouts' / f"step-{metric['step']:06d}"
-    row = read(folder / 'task-row.json')
-    cases = [case_record(folder / f'case-{i}', row, environment) for i in range(4)]
+    groups = sorted(folder.glob('group-*')) or [folder]
+    cases = []; families = []; inputs = []
     requests = responses = model_tokens = 0
     seconds = 0.
     finite_logprobs = True
-    trace = folder / 'generation-batches.jsonl.gz'
-    with gzip.open(trace, 'rt', encoding='utf-8') as stream:
-        for line in stream:
-            item = json.loads(line)
-            if item['kind'] == 'generation_request':
-                requests += 1
-            else:
-                responses += 1
-                seconds += item['seconds']
-                for output in item['outputs']:
-                    for choice in output['choices']:
-                        model_tokens += len(choice['token_ids'])
-                        lp = choice['sampled_token_logprobs']
-                        finite_logprobs &= len(lp) == len(choice['token_ids']) and all(math.isfinite(v) for v in lp)
-    checks = {'four_cases': len(cases) == 4, 'generation_calls_paired': requests == responses,
+    for group in groups:
+        row = read(group / 'task-row.json'); families.append(row['query_type'])
+        group_cases = [case_record(group / f'case-{i}', row, environment) for i in range(4)]
+        for case in group_cases:
+            case.update(family=row['query_type'],group=group.name)
+        cases.extend(group_cases)
+        trace = group / 'generation-batches.jsonl.gz'
+        inputs.extend([group/'task-row.json',trace,*sorted(group.glob('case-*/events.jsonl')),
+                       *sorted(group.glob('case-*/rollout.json'))])
+        with gzip.open(trace, 'rt', encoding='utf-8') as stream:
+            for line in stream:
+                item = json.loads(line)
+                if item['kind'] == 'generation_request':
+                    requests += 1
+                else:
+                    responses += 1
+                    seconds += item['seconds']
+                    for output in item['outputs']:
+                        for choice in output['choices']:
+                            model_tokens += len(choice['token_ids'])
+                            lp = choice['sampled_token_logprobs']
+                            finite_logprobs &= len(lp) == len(choice['token_ids']) and all(math.isfinite(v) for v in lp)
+    checks = {'expected_batch_cases': len(cases) == metric['gradient_accumulation_steps'], 'generation_calls_paired': requests == responses,
         'sampled_logprobs_finite': finite_logprobs,
         'generated_tokens_match_masks': model_tokens == sum(c['model_tokens'] for c in cases),
         'active_policy_tokens_match': metric['active_policy_tokens'] == sum(c['model_tokens'] for c in cases),
         'rewards_match': metric['rewards'] == [c['reward'] for c in cases],
         'finite_losses_and_grad_norm': math.isfinite(metric['grad_norm']) and all(
             math.isfinite(v) for m in metric['micro_batches'] for v in m.values()),
-        'lora_changed': metric['first_lora_B_changed'], 'gradient_accumulation_4': metric['gradient_accumulation_steps'] == 4}
+        'lora_changed': metric['first_lora_B_changed'], 'gradient_accumulation_matches_cases': metric['gradient_accumulation_steps'] == len(cases)}
     # The loss functions already normalize by global policy-token count: sum, never mean, microbatch losses.
     micro = metric['micro_batches']
     pg = sum(x['policy_loss'] for x in micro)
@@ -162,7 +170,7 @@ def step_record(runtime, metric, environment):
     lengths = [c['model_tokens'] for c in cases]
     def token_weighted(key):
         return sum(x[key] * n for x, n in zip(micro, lengths, strict=True)) / sum(lengths)
-    return {'step': metric['step'], 'unix': metric['unix'], 'family': row['query_type'],
+    return {'step': metric['step'], 'unix': metric['unix'], 'family': families[0] if len(set(families))==1 else 'mixed', 'group_families': families,
         'metrics': metric, 'cases': cases, 'checks': checks,
         'policy_loss_global': pg, 'value_loss_global': vf, 'combined_loss_global': pg + .1 * vf,
         'ppo_kl_token_weighted': token_weighted('actor/ppo_kl'),
@@ -172,14 +180,15 @@ def step_record(runtime, metric, environment):
         'generation_tokens_per_second': model_tokens / seconds if seconds else None,
         'update_policy_tokens_per_second': metric['active_policy_tokens'] / metric['update_seconds'],
         'weight_sync': read(folder / 'weight-sync.json') if (folder / 'weight-sync.json').exists() else None,
-        'input_sha256': {str(p.relative_to(runtime)): sha(p) for p in [folder / 'task-row.json', trace,
-            *sorted(folder.glob('case-*/events.jsonl')), *sorted(folder.glob('case-*/rollout.json'))]}}
+        'input_sha256': {str(p.relative_to(runtime)): sha(p) for p in inputs}}
 
 
 def main(root, output):
     started = time.time()
-    project = root / 'project'
-    receipt = read(root / 'launch-receipt.json')
+    run_spec = read(root/'active-run.json') if (root/'active-run.json').exists() else {}
+    project = root / run_spec.get('project','project')
+    receipt_path=root/run_spec.get('receipt','launch-receipt.json')
+    receipt = read(receipt_path)
     source_ok = all(sha(project / name) == expected for name, expected in receipt['source_sha256'].items())
     assert source_ok, 'Launched source changed; do not silently recompute scores under a different owner'
     for path in (root / 'deps', project / 'src'):
@@ -188,8 +197,8 @@ def main(root, output):
     from gpu_probe import probe_gpu
     from cpt_world import CPTWorldEnvironment
     environment = CPTWorldEnvironment()
-    runtime = root / 'training'
-    cache = root / 'monitor' / 'diagnostics'
+    runtime = root / run_spec.get('runtime','training')
+    cache = root / 'monitor' / ('diagnostics-' + runtime.name)
     cache.mkdir(parents=True, exist_ok=True)
     rows = []
     for metric in lines(runtime / 'metrics.jsonl'):
@@ -211,7 +220,7 @@ def main(root, output):
                 'mtime_ns': (runtime / name).stat().st_mtime_ns} for name in record['input_sha256']}
             write(path, record)
         rows.append(record)
-    unit = 'cpt-numerics-ppo-ondemand-from-base-20261022.service'
+    unit = run_spec.get('service','cpt-numerics-ppo-ondemand-from-base-20261022.service')
     fields = ['ActiveState', 'SubState', 'MainPID', 'InvocationID', 'ExecMainStartTimestamp',
               'ExecMainStatus', 'CPUUsageNSec', 'MemoryCurrent', 'MemoryPeak', 'ControlGroup']
     command = ['systemctl', '--user', 'show', unit]
@@ -239,7 +248,7 @@ def main(root, output):
     configuration = read(runtime / 'configuration.json')
     load = configuration['load']
     load_ok = all(load[k] == v for k, v in {'context_length': 32768, 'generation_batch_size': 4,
-        'per_device_train_batch_size': 1, 'gradient_accumulation_steps': 4}.items())
+        'per_device_train_batch_size': 1, 'gradient_accumulation_steps': run_spec.get('optimizer_batch_size',4)}.items())
     checkpoints = []
     for path in sorted((runtime / 'checkpoints').glob('checkpoint-*'), key=lambda x: int(x.name.split('-')[-1])):
         required = ['adapter_model.safetensors', 'adapter_config.json', 'ppo_state.pt', 'training-state.json']
@@ -247,6 +256,13 @@ def main(root, output):
             'complete_files': all((path / n).is_file() and (path / n).stat().st_size > 0 for n in required),
             'files': {n: {'bytes': (path / n).stat().st_size, 'mtime_unix': (path / n).stat().st_mtime}
                       for n in required if (path / n).is_file()}})
+    if configuration.get('resume_checkpoint'):
+        path=Path(configuration['resume_checkpoint'])
+        step=read(path/'training-state.json')['global_step']
+        if not any(c['step']==step for c in checkpoints):
+            required=['adapter_model.safetensors','adapter_config.json','ppo_state.pt','training-state.json']
+            checkpoints.insert(0,{'name':path.name,'step':step,'inherited':True,'source':str(path),
+                'complete_files':all((path/n).is_file() and (path/n).stat().st_size>0 for n in required)})
     gpu = probe_gpu(root)
     captured = {'checked_utc': datetime.now(timezone.utc).isoformat(), 'unix': time.time(),
         'capture_seconds': time.time() - started, 'service': service, 'process': process,
@@ -258,9 +274,10 @@ def main(root, output):
         'gpu': gpu, 'gpu_physical_memory_bytes': gpu['physical_memory_used_bytes'],
         'gpu_utilization': gpu['utilization_percent_mean'], 'gpu_power_watts': gpu['power_watts'],
         'gpu_missing_reason': None if gpu['available'] else gpu['errors'],
-        'completed_steps': len(rows), 'captured_global_step': max((r['step'] for r in rows), default=0),
+        'completed_steps': len(rows), 'captured_global_step': max((r['step'] for r in rows), default=configuration.get('initial_global_step',0)),
+        'runtime':runtime.name,'run_lineage':run_spec,
         'native_score_source': 'owner fields, no reward inversion',
-        'source_receipt_sha256': sha(root / 'launch-receipt.json'), 'monitor_source_sha256': sha(Path(__file__))}
+        'source_receipt_sha256': sha(receipt_path), 'monitor_source_sha256': sha(Path(__file__))}
     output.mkdir(parents=True, exist_ok=False)
     write(output / 'capture.json', captured)
     with (output / 'series.jsonl').open('w', encoding='utf-8') as stream:

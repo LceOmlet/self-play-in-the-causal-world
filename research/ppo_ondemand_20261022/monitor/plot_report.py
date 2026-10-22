@@ -60,16 +60,16 @@ def native_curve(ax, rows, field, label, color, transform='mean', support=None):
                 points.append(None)
             else:
                 a = aggregate(rows[i-window+1:i+1], field, transform)
-                a.update(start_step=rows[i-window+1]['step'], end_step=rows[i]['step'], groups=window)
+                a.update(start_step=rows[i-window+1]['step'], end_step=rows[i]['step'], updates=window)
                 points.append(a)
         windows[str(window)] = points
         vals = [p['value'] if p and p['value'] is not None else math.nan for p in points]
         if any(math.isfinite(v) for v in vals):
-            ax.plot(x, vals, style, color=color, lw=2, label=f'{label}: {window} full groups')
+            ax.plot(x, vals, style, color=color, lw=2, label=f'{label}: {window} full updates')
     if support is not None:
         support.append({'field': field, 'label': label, 'transform': transform, 'steps': x,
                         'families': sorted({r['family'] for r in rows}),
-                        'raw': raw, 'trailing_full_groups': windows})
+                        'raw': raw, 'trailing_full_updates': windows})
 
 
 def finish(fig, axes, title, out, name):
@@ -93,17 +93,24 @@ def main(out, history_path):
     capture = read(out / 'capture.json')
     rows = [json.loads(x) for x in (out / 'series.jsonl').read_text(encoding='utf-8').splitlines()]
     checked = datetime.fromisoformat(capture['checked_utc']).astimezone(CST).strftime('%Y-%m-%d %H:%M:%S CST')
-    title = f'PPO from base | 32K / b4 | checked {checked}'
+    batch=capture['configuration']['load']['gradient_accumulation_steps']
+    title = f'PPO | 32K / optimizer batch {batch} / micro 1 | checked {checked}'
+    def family_rows(family):
+        result=[]
+        for r in rows:
+            selected=[c for c in r['cases'] if c.get('family',r['family'])==family]
+            if selected:result.append({**r,'cases':selected,'family':family})
+        return result
     support = []
     fig, axes = plt.subplots(2, 3, figsize=(14, 7))
     for i, (family, label) in enumerate([(None, 'All families')] + list(zip(FAMILIES, NAMES))):
         ax = axes.flat[i]
-        subset = rows if family is None else [r for r in rows if r['family'] == family]
-        native_curve(ax, subset, 'reward', 'Group mean', COLORS[i % 5], support=support)
+        subset = rows if family is None else family_rows(family)
+        native_curve(ax, subset, 'reward', 'Batch mean', COLORS[i % 5], support=support)
         for r in subset:
-            ax.scatter([r['step']] * 4, [c['reward'] for c in r['cases']], color=COLORS[i % 5], alpha=.25, s=14)
-        ax.set(title=f'{label}: {len(subset)} groups', ylabel='Owner reward', ylim=(-.04, 1.04))
-    finish(fig, axes, title + '\nRaw answers + group mean; trends use complete 5/20-group windows only', out, 'rewards.png')
+            ax.scatter([r['step']] * len(r['cases']), [c['reward'] for c in r['cases']], color=COLORS[i % 5], alpha=.25, s=14)
+        ax.set(title=f'{label}: {len(subset)} updates', ylabel='Owner reward', ylim=(-.04, 1.04))
+    finish(fig, axes, title + '\nRaw answers + batch mean; trends use complete 5/20-update windows only', out, 'rewards.png')
 
     specifications = [
         ('ate', 'ATE errors', [('squared_error', 'MSE', 'mean'), ('squared_error', 'RMSE', 'sqrt'), ('total_variation_error', 'TV', 'mean')]),
@@ -113,20 +120,20 @@ def main(out, history_path):
         ('mediator_set', 'Mediator errors', [('mediator_f1', '1 - node F1', 'one-minus'), ('order_f1', '1 - order F1', 'one-minus')])]
     fig, axes = plt.subplots(2, 3, figsize=(14, 7))
     for ax, (family, label, fields) in zip(axes.flat, specifications):
-        subset = [r for r in rows if r['family'] == family]
+        subset = family_rows(family)
         for i, (field, name, transform) in enumerate(fields):
             native_curve(ax, subset, field, name, COLORS[i], transform, support)
         ax.set(title=label, ylabel='Conditional native metric')
         ax.set_ylim(bottom=0)
     ax = axes.flat[5]
     for family, label, color in zip(FAMILIES, NAMES, COLORS):
-        subset = [r for r in rows if r['family'] == family]
-        ax.plot([r['step'] for r in subset], [sum(c['submitted'] for c in r['cases']) / 4 for r in subset], '.-', label=label, color=color)
-    ax.set(title='Terminal coverage (unsubmitted errors stay missing)', ylabel='Submitted / 4', ylim=(-.04, 1.04))
+        subset = family_rows(family)
+        ax.plot([r['step'] for r in subset], [sum(c['submitted'] for c in r['cases']) / len(r['cases']) for r in subset], '.-', label=label, color=color)
+    ax.set(title='Terminal coverage (unsubmitted errors stay missing)', ylabel='Submitted fraction', ylim=(-.04, 1.04))
     finish(fig, axes, title + '\nNative scorer fields; RMSE = sqrt(pooled MSE); no reward inversion or zero imputation', out, 'task-errors.png')
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4))
-    subset = [r for r in rows if r['family'] == 'mediator_set']
+    subset = family_rows('mediator_set')
     for ax, prefix, label in zip(axes[:2], ('mediator', 'order'), ('Mediator nodes', 'Mediator order pairs')):
         for i, field in enumerate(('precision', 'recall', 'f1')):
             native_curve(ax, subset, f'{prefix}_{field}', field, COLORS[i], support=support)
@@ -134,7 +141,7 @@ def main(out, history_path):
     for family, field, label, color in [('backadj_minimal_sets', 'valid_adjustment_set', 'Valid backdoor set', COLORS[0]),
         ('mediator_set', 'mediators_exact_match', 'Exact mediator nodes', COLORS[1]),
         ('mediator_set', 'order_exact_match', 'Exact order pairs', COLORS[2])]:
-        subset = [r for r in rows if r['family'] == family]
+        subset = family_rows(family)
         native_curve(axes[2], subset, field, label, color, support=support)
     axes[2].set(title='Native exact / valid flags', ylim=(-.04, 1.04))
     finish(fig, axes, title + '\nDirect precision / recall / F1 / validity fields; missing families are not estimated', out, 'discovery.png')
@@ -151,7 +158,7 @@ def main(out, history_path):
     axes[1, 1].set(title='Before-update PPO diagnostics', ylabel='Token-weighted metric')
     for field, label, color in [('explicit_numerics_error_outputs', 'Explicit Python error outputs', COLORS[0]), ('protocol_error_outputs', 'Protocol errors', COLORS[1]), ('tool_exceptions', 'Tool exceptions', COLORS[3]), ('state_lost_outputs', 'Sandbox state losses', COLORS[4])]:
         axes[2, 0].plot(x, [sum(c[field] for c in r['cases']) for r in rows], '.-', label=label, color=color)
-    axes[2, 0].set(title='Observed tool diagnostics (counts)', ylabel='Per group')
+    axes[2, 0].set(title='Observed tool diagnostics (counts)', ylabel='Per optimizer batch')
     names = list(rows[0]['checks']) if rows else []
     case_names = list(rows[0]['cases'][0]['checks']) if rows else []
     if rows:
@@ -172,10 +179,10 @@ def main(out, history_path):
     axes[0, 1].plot(x, [r['update_policy_tokens_per_second'] for r in rows], '.-', label='Update incl. old-policy/GAE', color=COLORS[1])
     axes[0, 1].set(title='Measured throughput', ylabel='Model tokens / second')
     for field, label, color in [('model_tokens', 'Model output', COLORS[0]), ('feedback_tokens', 'Tool feedback', COLORS[1]), ('total_context_tokens', 'Total context', COLORS[2])]:
-        axes[1, 0].plot(x, [sum(c[field] for c in r['cases'])/4 for r in rows], '.-', label=label, color=color)
+        axes[1, 0].plot(x, [sum(c[field] for c in r['cases'])/len(r['cases']) for r in rows], '.-', label=label, color=color)
     axes[1, 0].axhline(32768, color='gray', ls='--', label='Fixed context limit'); axes[1, 0].set(title='Mean per-answer lengths', ylabel='Tokens')
     for field, label, color in [('at_context_limit', 'Exactly at context cap', COLORS[0]), ('submitted', 'Submitted', COLORS[2])]:
-        axes[1, 1].plot(x, [sum(c[field] for c in r['cases'])/4 for r in rows], '.-', label=label, color=color)
+        axes[1, 1].plot(x, [sum(c[field] for c in r['cases'])/len(r['cases']) for r in rows], '.-', label=label, color=color)
     axes[1, 1].set(title='Observed terminal / context coverage', ylabel='Fraction', ylim=(-.04, 1.04))
     zeros = []
     for r in rows:
@@ -189,7 +196,7 @@ def main(out, history_path):
         axes[2, 0].scatter(zeros, [-.08]*len(zeros), transform=axes[2, 0].get_xaxis_transform(), marker='x', clip_on=False, color=COLORS[0], label='True zero (outside log axis)')
     axes[2, 0].set(title='Native used / total observation budget', ylabel='Fraction (log; zeros separate)')
     for field, label, color in [('queries_used', 'Successful queries', COLORS[0]), ('numerics_calls', 'Numerics calls', COLORS[1]), ('tool_calls', 'All tool calls', COLORS[2])]:
-        axes[2, 1].plot(x, [sum(c[field] for c in r['cases'])/4 for r in rows], '.-', label=label, color=color)
+        axes[2, 1].plot(x, [sum(c[field] for c in r['cases'])/len(r['cases']) for r in rows], '.-', label=label, color=color)
     axes[2, 1].set(title='Mean observed calls per answer', ylabel='Count')
     finish(fig, axes, title, out, 'efficiency-budget.png')
 
@@ -199,16 +206,16 @@ def main(out, history_path):
         (axes[1, 1], 'feedback_tokens', 'Tool-feedback tokens retained in context')]:
         values = [[c[field] for c in r['cases']] for r in rows]
         if values:
-            ax.fill_between(x, [min(v) for v in values], [max(v) for v in values], color=COLORS[0], alpha=.15, label='Min-max of four answers')
-            ax.plot(x, [sum(v)/4 for v in values], '.-', color=COLORS[0], label='Mean of four answers')
+            ax.fill_between(x, [min(v) for v in values], [max(v) for v in values], color=COLORS[0], alpha=.15, label='Min-max of batch answers')
+            ax.plot(x, [sum(v)/len(v) for v in values], '.-', color=COLORS[0], label='Mean of batch answers')
             for step, val in zip(x, values, strict=True):
-                ax.scatter([step]*4, val, color=COLORS[0], alpha=.35, s=16)
+                ax.scatter([step]*len(val), val, color=COLORS[0], alpha=.35, s=16)
         ax.set(title=label, ylabel='Tokens', ylim=(0, 34000))
     axes[0, 0].axhline(32768, color=COLORS[1], ls='--', label='Fixed 32768-token context cap')
     bottom = np.zeros(len(rows))
     for field, label, color in [('prompt_tokens', 'Initial prompt', COLORS[2]),
         ('model_tokens', 'Model output', COLORS[0]), ('feedback_tokens', 'Tool feedback', COLORS[1])]:
-        values = np.array([sum(c[field] for c in r['cases'])/4 for r in rows])
+        values = np.array([sum(c[field] for c in r['cases'])/len(r['cases']) for r in rows])
         axes[0, 1].bar(x, values, bottom=bottom, color=color, label=label, width=.65)
         bottom += values
     axes[0, 1].axhline(32768, color='gray', ls='--')
@@ -219,7 +226,7 @@ def main(out, history_path):
     for ax, values, label, unit in [(axes[0, 0], [r['metrics']['learning_rate'] for r in rows], 'Actual learning rate', 'Learning rate'),
         (axes[0, 1], [r['combined_loss_global'] for r in rows], 'Policy loss + 0.1 * value loss', 'Global loss'),
         (axes[1, 0], [r['weight_sync']['seconds'] if r['weight_sync'] else math.nan for r in rows], 'Updated actor weight synchronization', 'Seconds'),
-        (axes[1, 1], [r['metrics']['active_policy_tokens'] for r in rows], 'Actual active policy-token denominator', 'Tokens / group')]:
+        (axes[1, 1], [r['metrics']['active_policy_tokens'] for r in rows], 'Actual active policy-token denominator', 'Tokens / optimizer batch')]:
         ax.plot(x, values, '.-', color=COLORS[0]); ax.set(title=label, ylabel=unit)
     finish(fig, axes, title, out, 'optimizer-state.png')
 
@@ -279,19 +286,23 @@ def main(out, history_path):
     finish(fig, axes, title + '\nObserved check snapshots; gaps and restarts are not interpolated', out, 'resources.png')
     (out / 'plot-series.json').write_text(json.dumps(support, indent=2, allow_nan=False) + '\n', encoding='utf-8')
     latest_checkpoint = max((x['step'] for x in capture['checkpoints'] if x['complete_files']), default=0)
-    summary = {'checked_utc': capture['checked_utc'], 'completed_updates': capture.get('captured_global_step', len(rows)),
+    summary = {'checked_utc': capture['checked_utc'], 'completed_updates': capture.get('captured_global_step', len(rows)), 'updates_in_current_run':len(rows),
+        'optimizer_batch_size':batch,'resume_checkpoint':capture['configuration'].get('resume_checkpoint'),
         'live_status_global_step': capture['status']['global_step'],
         'active_step': capture['status'].get('active_step'), 'stage': capture['status']['stage'],
+        'active_group':capture['status'].get('active_group'),
+        'rollout_groups':capture['status'].get('rollout_groups'),
+        'completed_cases_in_active_batch':capture['status'].get('completed_cases'),
         'service_active': capture['service']['ActiveState'] == 'active', 'latest_checkpoint_files_step': latest_checkpoint,
         'source_matches_launch': capture['source_matches_launch'], 'load_unchanged': capture['learning_load_unchanged'],
-        'all_step_checks_passed': all(all(r['checks'].values()) and all(all(c['checks'].values()) for c in r['cases']) for r in rows),
-        'submitted': sum(c['submitted'] for r in rows for c in r['cases']), 'answers': len(rows)*4,
+        'all_step_checks_passed': all(all(r['checks'].values()) and all(all(c['checks'].values()) for c in r['cases']) for r in rows) if rows else None,
+        'submitted': sum(c['submitted'] for r in rows for c in r['cases']), 'answers': sum(len(r['cases']) for r in rows),
         'failure': capture['failure'], 'native_error_policy': 'conditional on accepted terminals; no reward inversion',
         'gpu_available': capture.get('gpu', {}).get('available', False),
         'gpu_utilization_check_window_mean': capture.get('gpu', {}).get('utilization_percent_mean'),
         'gpu_utilization_samples': capture.get('gpu', {}).get('valid_utilization_samples', 0),
-        'families': {f: {'groups': sum(r['family'] == f for r in rows),
-            'submitted': sum(c['submitted'] for r in rows if r['family'] == f for c in r['cases'])} for f in FAMILIES}}
+        'families': {f: {'updates_with_family':len(family_rows(f)),'groups':sum(c.get('family',r['family'])==f for r in rows for c in r['cases'])//4,
+            'submitted': sum(c['submitted'] for r in family_rows(f) for c in r['cases'])} for f in FAMILIES}}
     (out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(summary))
 

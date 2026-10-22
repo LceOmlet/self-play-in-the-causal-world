@@ -1,5 +1,13 @@
 # PPO 小时检查与原生指标曲线
 
+## 当前 b32 续训与曲线分界
+
+2026-10-22 用户要求 optimizer minibatch=`4×8=32`，microbatch=1、GA=32，生成仍为4路；明确接受从第1步 checkpoint 立即续训并舍弃未保存更新。远端 `active-run.json` 指定当前 `project-b32`、`training-b32`、`launch-b32-receipt.json` 和服务 `cpt-numerics-ppo-ondemand-b32-20261022.service`。采集器优先读此清单，旧默认路径仅为兼容历史运行。过渡阶段完整负载预检服务为 `cpt-numerics-ppo-batch32-preflight-20261022.service`，进度文件 `batch32-preflight-progress.json`，授权停止的旧服务不应被自动重启。
+
+新系列只收集 `training-b32` 的正式更新；继承 global step=1，但旧训练第2步以后不拼入新曲线。每次更新含8组，按各组原始 task row 评分，再按 case.family 统计五类指标，比例和长度用实际 case 数归一化。奖励/原生误差趋势用完整5/20个已完成优化步；家族窗口只包括含该家族的优化步。首次b32正式更新未完成时，图中留空，状态报告当前 active_group/8 与 completed_cases；不能把预检或单组生成冒充正式更新。旧时间戳快照保留原数据；资源曲线在服务 invocation 改变处断开。
+
+恢复经逐张量核对的actor/value head/Adam状态；旧checkpoint没有RNG，任务流位置恢复，vLLM采样随机状态重新初始化。checkpoint每步原子保存，保留最近三份及每50步存档。PPO数学继续直接调用固定版本未修改的VERL官方函数，验证沿用官方测试与断言，不新增影子计算或容差。以下早期b4说明为历史口径，当前负载以上述配置和实际receipt为准。
+
 2026-10-22 用户要求每小时检查训练、绘制多奖励/多误差/多检查曲线，并明确允许必要时重启训练。对应当前聊天 heartbeat 自动化为 **`ppo`**，每小时执行。旧 GRPO 的 `cpt-world` 自动化仍暂停，本监控不混入旧训练曲线。
 
 本轮设置时训练健康；监控采集器只运行 CPU 代码，不加载模型或申请 GPU，不需要重启训练。已完成首轮真实采集与原生评分一致性检查。
@@ -13,7 +21,7 @@ Set-Location 'C:/Users/Chen/Documents/ChatGPT/credit/repro-benchmark500-20261019
 & 'C:/Users/Chen/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' research/ppo_ondemand_20261022/monitor/monitor_once.py
 ```
 
-固定远端：`chen@e1b4acb6c4c142d5a00d326cec07fb11.hn.takin.cc:10179`；根目录 `/home/chen/runs/ppo-ondemand-from-base-20261022`；服务 `cpt-numerics-ppo-ondemand-from-base-20261022.service`；运行目录 `training`。采集器部署于远端 `monitor/capture_remote.py`，不修改原始训练源码、日志或轨迹。
+固定远端：`chen@e1b4acb6c4c142d5a00d326cec07fb11.hn.takin.cc:10179`；根目录 `/home/chen/runs/ppo-ondemand-from-base-20261022`；服务与运行目录由 `active-run.json` 指定（当前 b32 服务与 `training-b32`）。采集器部署于远端 `monitor/capture_remote.py`，不修改原始训练源码、日志或轨迹。
 
 本地绘图依赖安装在本目录 `.deps`，与训练环境隔离。缺失时执行：
 
@@ -29,12 +37,12 @@ Set-Location 'C:/Users/Chen/Documents/ChatGPT/credit/repro-benchmark500-20261019
 
 成功后展示本地绝对路径图片，优先奖励、原生误差和检查图，并链接其他图：
 
-- `latest/rewards.png`：总体及五任务家族的每条回答奖励、组均值；完整 5/20 组尾随趋势。总体奖励会受当前家族构成影响，不能把不同家族的首批差异称为学习改善。
+- `latest/rewards.png`：总体及五任务家族的每条回答奖励、组均值；完整 5/20 优化步尾随趋势。总体奖励会受当前家族构成影响，不能把不同家族的首批差异称为学习改善。
 - `latest/task-errors.png`：ATE MSE/RMSE/TV；反事实端点 MSE/RMSE/MAE；决策 regret/normalized_regret；后门 edit_distance；中介节点/顺序的 1−F1；提交覆盖率。
 - `latest/discovery.png`：中介节点和顺序各自的 precision/recall/F1；后门有效集、中介节点严格匹配、顺序严格匹配的原生布尔字段。
 - `latest/checks.png`：PPO policy/value loss、裁剪前梯度范数、近似 KL/clipfrac、观察到的工具错误计数、逐步一致性检查矩阵。
 - `latest/efficiency-budget.png`：生成/更新耗时、实际吞吐、模型/工具/总上下文长度、提交率和恰到上下文上限比例、原生预算使用比例与调用数。真实零预算比例在 log 轴外单列，不加 epsilon。
-- `latest/context-length.png`：独立上下文图，逐批展示四条回答的最终学习序列长度（各点、最小/最大、均值）、固定 32768 上限、初始 prompt/模型输出/工具反馈的精确长度构成，以及模型和工具 token 的分布。总上下文不是只计算模型输出，也不等同于每次生成调用的 prefill prompt 长度。
+- `latest/context-length.png`：独立上下文图，逐批展示实际32条回答的最终学习序列长度（各点、最小/最大、均值）、固定 32768 上限、初始 prompt/模型输出/工具反馈的精确长度构成，以及模型和工具 token 的分布。总上下文不是只计算模型输出，也不等同于每次生成调用的 prefill prompt 长度。
 - `latest/optimizer-state.png`：实际学习率、组合 PPO 损失、更新权重同步耗时、有效策略 token 的整批归一化分母。
 - `latest/resources.png`：真实 NVML GPU 利用率、物理显存、功耗；训练 cgroup（含回答沙箱）RAM、相同 boot 与 invocation 内 CPU 计数差分的区间平均、距离最新完整文件 checkpoint 的步数。GPU 利用率每次检查采 5 个相隔约 1 秒的实测值，画本次短窗口均值及 min/max，不冒称整小时平均；物理显存/功耗为本轮最后一个实测点。CPU 首次样本没有区间值，不填零。
 
@@ -42,7 +50,7 @@ Set-Location 'C:/Users/Chen/Documents/ChatGPT/credit/repro-benchmark500-20261019
 
 采集不暂停训练，指标读取与服务状态读取之间可能刚好完成一个新优化步。`captured_global_step`/`completed_updates` 是本次已完整采集的曲线前缀，`live_status_global_step` 是随后读取到的实时状态；两者分别记录，不能将尚未采集的步画进曲线。
 
-图表不足窗口时只显示实际点，不把初始几组扩展成“5 组均值”。每家族窗口按该家族已完成组计算。RMSE 对有效终局的原生 MSE 池化后开方；不是先逐回答开方再平均。没有有效终局时误差缺失，既不补零，也不使用 reward 推断答案误差。布尔字段直接读原生字段，1−F1 为显式数学变换。
+图表不足窗口时只显示实际点，不把初始几组扩展成“5 组均值”。每家族窗口按含该家族的已完成优化步计算，按有效回答池化。RMSE 对有效终局的原生 MSE 池化后开方；不是先逐回答开方再平均。没有有效终局时误差缺失，既不补零，也不使用 reward 推断答案误差。布尔字段直接读原生字段，1−F1 为显式数学变换。
 
 ## 直接取得误差，而非奖励反推
 
@@ -56,7 +64,7 @@ Set-Location 'C:/Users/Chen/Documents/ChatGPT/credit/repro-benchmark500-20261019
 
 ## 检查口径与恢复授权
 
-32K、b4、microbatch1、GA4 以及原学习/生成参数持续核对。检查矩阵包括四条轨迹、请求响应配对、采样 logprob 有限、生成/学习 token 对齐、reward 一致、损失/梯度有限、LoRA 改变、梯度累积、回执字段、预算链、原生评分、上下文、掩码及工具调用数。LoRA “改变”在逐步日志中检查首层 B；首个 checkpoint 的 248 层非零另有原先的独立校验，不把前者冒称所有层每步改变。
+32K、optimizer batch32、生成batch4、microbatch1、GA32 以及原学习/生成参数持续核对。检查矩阵包括实际32条轨迹、请求响应配对、采样 logprob 有限、生成/学习 token 对齐、reward 一致、损失/梯度有限、LoRA 改变、梯度累积、回执字段、预算链、原生评分、上下文、掩码及工具调用数。LoRA “改变”在逐步日志中检查首层 B；首个 checkpoint 的 248 层非零另有原先的独立校验，不把前者冒称所有层每步改变。
 
 当前每组只有一次 PPO 更新。KL、policy/value clipfrac 是 optimizer.step 前记录的同权重前后向比较，出现 0 正常；不能因此宣称模型没有学习。policy/value loss 已按整批有效 token 归一化，所以四个 microbatch 的 loss 要**求和而非再平均**；KL/clipfrac 用各回答有效模型 token 数加权。
 
