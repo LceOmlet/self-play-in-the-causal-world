@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "paired_cases": 100,
+  "native_archive_members_verified": 2338,
+  "v4_archive_members_verified": 823,
+  "all_prompt_json_values_identical": true,
+  "all_budgets_and_initial_public_tokens_identical": true,
+  "native_owner_and_dataset_source_sha256_match": true,
+  "all_archived_private_results_match_inputs": true,
+  "inputs": {
+    "results/native-agent-v2/native-results.json": "dd875df2a899f4776dd267441a43056f8ab10f9af9d8fa2be96fe3a235b918c8",
+    "results/native-agent-v2/archive-members-sha256.json": "7335487c61fc669d4c0aa1a8f789395c593507939310fa11d49b7ed8f2ca91c6",
+    "results/training-rollout-v4-20261021/paired-results.json": "3201292fe6317f33b78f4d4b1749cc74f2a1388a4c33b0fffee80b2809885418",
+    "results/training-rollout-v4-20261021/archive-members-sha256.json": "07fb5b4bb4585ddc947539d53e30af931ef48f94318c7d3ebb7156a08e23a11e",
+    "results/training-rollout-v4-20261021/archive-restore-index.json": "f38d0348fa20182cf6fdb158944b2a9e0f1aa7faf2bfe8e22d12de841085e7d5"
+  }
+}
